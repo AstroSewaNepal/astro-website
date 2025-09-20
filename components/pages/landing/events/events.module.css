@@ -1,0 +1,10 @@
+.line-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.total-panchang-background {
+  background: linear-gradient(90deg, #c0944a 0%, #f9db51 100%);
+}
