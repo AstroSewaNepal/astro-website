@@ -1,8 +1,6 @@
-import { IIconsProps } from "../icons.interface";
+import { IIconsProps } from '../icons.interface';
 
-const ArrowRight: React.FC<IIconsProps> = ({
-  className = "w-6 h-6 text-moonlight-600",
-}) => {
+const ArrowRight: React.FC<IIconsProps> = ({ className = 'w-6 h-6 text-moonlight-600' }) => {
   return (
     <svg
       width="25"

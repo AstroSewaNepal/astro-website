@@ -1,5 +1,5 @@
-import React from "react";
-import { IIconsProps } from "../../icons.interface";
+import React from 'react';
+import { IIconsProps } from '../../icons.interface';
 
 const UserLineIcon: React.FC<IIconsProps> = ({ className }) => {
   return (

@@ -1,15 +1,8 @@
-import { IIconsProps } from "../icons/icons.interface";
+import { IIconsProps } from '../icons/icons.interface';
 
-const AstroSewaLogo = ({
-  className = "w-[188px] h-[59px] text-[#611508]",
-}: IIconsProps) => {
+const AstroSewaLogo = ({ className = 'w-[188px] h-[59px] text-[#611508]' }: IIconsProps) => {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 188 59"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg className={className} viewBox="0 0 188 59" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip0_388_6135)">
         <path
           d="M48.4335 16.885C49.3432 17.5975 50.3426 18.1829 51.4445 18.6664C52.2004 18.9973 52.9564 19.3027 53.6995 19.5953L55.788 15.2944C55.1858 15.0271 54.5964 14.7599 54.0198 14.4927C52.9436 13.971 52.0595 13.3602 51.3804 12.6476C50.7014 11.9477 50.3554 11.1079 50.3554 10.1663C50.3554 8.77925 50.8679 7.71037 51.8929 6.92143C52.9051 6.1325 54.3017 5.75075 56.0699 5.75075C57.3383 5.75075 58.6452 5.96707 60.0033 6.39972C61.3615 6.83236 62.6299 7.35408 63.7959 7.96487L65.6024 4.2365C64.334 3.47301 62.8605 2.81132 61.1949 2.27688C59.5293 1.74244 57.5817 1.47522 55.3524 1.47522C53.4048 1.53884 51.6751 1.95876 50.1632 2.72225C48.6385 3.48574 47.4598 4.52917 46.6142 5.85255C45.7685 7.17593 45.3457 8.74108 45.3457 10.548C45.3457 12.0241 45.6276 13.2711 46.2041 14.3018C46.7807 15.3325 47.511 16.1978 48.4335 16.8977V16.885Z"
@@ -62,12 +55,7 @@ const AstroSewaLogo = ({
       </g>
       <defs>
         <clipPath id="clip0_388_6135">
-          <rect
-            width="187"
-            height="58.1778"
-            fill="white"
-            transform="translate(0.5)"
-          />
+          <rect width="187" height="58.1778" fill="white" transform="translate(0.5)" />
         </clipPath>
       </defs>
     </svg>

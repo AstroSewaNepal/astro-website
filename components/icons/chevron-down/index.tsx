@@ -1,8 +1,6 @@
-import { IIconsProps } from "../icons.interface";
+import { IIconsProps } from '../icons.interface';
 
-const ChevronDownIcon: React.FC<IIconsProps> = ({
-  className = "w-6 h-6 text-primary",
-}) => {
+const ChevronDownIcon: React.FC<IIconsProps> = ({ className = 'w-6 h-6 text-primary' }) => {
   return (
     <svg
       width="24"

@@ -1,3 +1,3 @@
-import HeroSectionImage from "./hero-section.png";
+import HeroSectionImage from './hero-section.png';
 
 export { HeroSectionImage };

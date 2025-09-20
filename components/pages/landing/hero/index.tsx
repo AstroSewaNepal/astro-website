@@ -1,8 +1,8 @@
-import React from "react";
-import Image from "next/image";
+import React from 'react';
+import Image from 'next/image';
 
-import { HeroSectionImage } from "@/components/images";
-import ArrowRight from "@/components/icons/arrow-right";
+import { HeroSectionImage } from '@/components/images';
+import ArrowRight from '@/components/icons/arrow-right';
 
 const LandingHero: React.FC = () => {
   return (
@@ -14,8 +14,8 @@ const LandingHero: React.FC = () => {
             Made Personal.
           </h1>
           <p className="font-mukta text-2xl leadning-[150%] text-black opacity-80 max-w-[580px]">
-            Astro Sewa combines ancient Vedic wisdom with Modern insight, to
-            help you transform uncertainty into Opportunity
+            Astro Sewa combines ancient Vedic wisdom with Modern insight, to help you transform
+            uncertainty into Opportunity
           </p>
         </div>
         <div className="mt-11 flex items-center gap-6 min-w-max">
@@ -31,12 +31,7 @@ const LandingHero: React.FC = () => {
         </div>
       </div>
       <div className="flex items-end justify-end">
-        <Image
-          src={HeroSectionImage}
-          alt="Hero Section Image"
-          width={516}
-          height={515.39}
-        />
+        <Image src={HeroSectionImage} alt="Hero Section Image" width={516} height={515.39} />
       </div>
     </section>
   );
