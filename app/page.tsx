@@ -2,6 +2,7 @@ import clsx from 'clsx';
 
 import LandingHero from '@/components/pages/landing/hero';
 import EventsPage from '@/components/pages/landing/events';
+import Services from '@/components/pages/landing/services';
 import TodayHoroscope from '@/components/pages/landing/today-horoscope';
 import { LandingHeader } from '@/components/pages/landing/header/landing-header';
 
@@ -14,6 +15,7 @@ export default function Home() {
       <LandingHero />
       <TodayHoroscope />
       <EventsPage />
+      <Services />
     </main>
   );
 }

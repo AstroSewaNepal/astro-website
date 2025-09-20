@@ -1,0 +1,40 @@
+<svg width="219" height="222" viewBox="0 0 219 222" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="219" height="222" fill="#FFFFFF" rx="8"/>
+  <!-- Horoscope Icon - Sun with zodiac ring -->
+  <g transform="translate(0, 0)">
+    <!-- Sun center -->
+    <circle cx="109.5" cy="111" r="40" fill="#FFD700" stroke="#000000" stroke-width="2"/>
+    <circle cx="109.5" cy="111" r="30" fill="#FFA500" stroke="#000000" stroke-width="1"/>
+    <circle cx="109.5" cy="111" r="20" fill="#FF8C00" stroke="#000000" stroke-width="1"/>
+    <!-- Sun rays -->
+    <line x1="109.5" y1="20" x2="109.5" y2="40" stroke="#000000" stroke-width="3"/>
+    <line x1="109.5" y1="182" x2="109.5" y2="202" stroke="#000000" stroke-width="3"/>
+    <line x1="20" y1="111" x2="40" y2="111" stroke="#000000" stroke-width="3"/>
+    <line x1="179" y1="111" x2="199" y2="111" stroke="#000000" stroke-width="3"/>
+    <!-- Diagonal rays -->
+    <line x1="30" y1="30" x2="45" y2="45" stroke="#000000" stroke-width="2"/>
+    <line x1="189" y1="30" x2="174" y2="45" stroke="#000000" stroke-width="2"/>
+    <line x1="30" y1="192" x2="45" y2="177" stroke="#000000" stroke-width="2"/>
+    <line x1="189" y1="192" x2="174" y2="177" stroke="#000000" stroke-width="2"/>
+    <!-- Zodiac ring -->
+    <circle cx="109.5" cy="111" r="80" stroke="#000000" stroke-width="2" fill="none"/>
+    <!-- Zodiac symbols -->
+    <text x="109.5" y="35" text-anchor="middle" font-size="16" fill="#000000">♈</text>
+    <text x="175" y="115" text-anchor="middle" font-size="16" fill="#000000">♋</text>
+    <text x="109.5" y="195" text-anchor="middle" font-size="16" fill="#000000">♎</text>
+    <text x="44" y="115" text-anchor="middle" font-size="16" fill="#000000">♑</text>
+    <text x="150" y="50" text-anchor="middle" font-size="14" fill="#000000">♊</text>
+    <text x="170" y="80" text-anchor="middle" font-size="14" fill="#000000">♌</text>
+    <text x="150" y="170" text-anchor="middle" font-size="14" fill="#000000">♏</text>
+    <text x="170" y="140" text-anchor="middle" font-size="14" fill="#000000">♐</text>
+    <text x="69" y="50" text-anchor="middle" font-size="14" fill="#000000">♉</text>
+    <text x="49" y="80" text-anchor="middle" font-size="14" fill="#000000">♍</text>
+    <text x="69" y="170" text-anchor="middle" font-size="14" fill="#000000">♒</text>
+    <text x="49" y="140" text-anchor="middle" font-size="14" fill="#000000">♓</text>
+    <!-- Decorative elements -->
+    <circle cx="50" cy="50" r="3" fill="#000000"/>
+    <circle cx="169" cy="50" r="3" fill="#000000"/>
+    <circle cx="50" cy="172" r="3" fill="#000000"/>
+    <circle cx="169" cy="172" r="3" fill="#000000"/>
+  </g>
+</svg>

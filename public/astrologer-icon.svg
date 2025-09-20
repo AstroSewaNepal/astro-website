@@ -1,0 +1,27 @@
+<svg width="138" height="222" viewBox="0 0 138 222" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="138" height="222" fill="#FFFFFF" rx="8"/>
+  <!-- Astrologer Icon - Person with crystal ball -->
+  <g transform="translate(0, 0)">
+    <!-- Person figure -->
+    <circle cx="69" cy="50" r="25" fill="#000000"/>
+    <!-- Body -->
+    <rect x="50" y="75" width="38" height="60" rx="5" fill="#000000"/>
+    <!-- Arms -->
+    <rect x="40" y="85" width="15" height="40" rx="7" fill="#000000"/>
+    <rect x="83" y="85" width="15" height="40" rx="7" fill="#000000"/>
+    <!-- Legs -->
+    <rect x="55" y="135" width="12" height="50" rx="6" fill="#000000"/>
+    <rect x="71" y="135" width="12" height="50" rx="6" fill="#000000"/>
+    <!-- Crystal ball -->
+    <circle cx="69" cy="160" r="20" stroke="#000000" stroke-width="2" fill="none"/>
+    <circle cx="69" cy="160" r="15" stroke="#000000" stroke-width="1" fill="none"/>
+    <!-- Mystical elements -->
+    <path d="M45 30 Q69 20 93 30" stroke="#000000" stroke-width="2" fill="none"/>
+    <path d="M45 35 Q69 25 93 35" stroke="#000000" stroke-width="1" fill="none"/>
+    <!-- Stars around -->
+    <path d="M20 40 L25 45 L20 50 L15 45 Z" fill="#000000"/>
+    <path d="M110 60 L115 65 L110 70 L105 65 Z" fill="#000000"/>
+    <path d="M15 120 L20 125 L15 130 L10 125 Z" fill="#000000"/>
+    <path d="M115 140 L120 145 L115 150 L110 145 Z" fill="#000000"/>
+  </g>
+</svg>

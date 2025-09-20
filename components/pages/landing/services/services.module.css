@@ -1,0 +1,270 @@
+.servicesSection {
+  padding: 80px 0;
+}
+
+.container {
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 1405px;
+  width: 100%;
+}
+
+.title {
+  font-family: 'Tiro Devanagari Sanskrit', serif;
+  font-weight: 400;
+  font-size: 56px;
+  line-height: 0.85em;
+  text-align: center;
+  color: #691709;
+  margin: 0;
+}
+
+.description {
+  font-family: 'Mukta', sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.5em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.81);
+  margin: 0;
+  max-width: 883px;
+}
+
+.servicesGrid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+  width: 100%;
+}
+
+.serviceCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 23px;
+  width: 100%;
+  min-height: 450px;
+  flex-shrink: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 20px 15px;
+}
+
+.iconContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 189px;
+  height: 222px;
+}
+
+.iconPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+}
+
+.serviceIcon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.serviceTitle {
+  font-family: 'Mukta', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.3em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.81);
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.serviceButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px;
+  width: 100%;
+  background: #691709;
+  border: none;
+  border-radius: 32px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.serviceButton:hover {
+  background: #8b1f0f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(105, 23, 9, 0.3);
+}
+
+.serviceButton:active {
+  transform: translateY(0);
+}
+
+.serviceButtonText {
+  font-family: 'Mukta', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.78em;
+  text-align: center;
+  color: #f8f3df;
+  margin: 0;
+}
+
+/* Splide Container Styles */
+.splideContainer {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+:global(.splide__track) {
+  overflow: hidden;
+  width: 100%;
+}
+
+:global(.splide__list) {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+:global(.splide__slide) {
+  height: auto;
+  display: flex;
+  justify-content: center;
+  flex: 1;
+}
+
+/* Ensure 4 cards take full width on larger screens */
+@media (min-width: 1024px) {
+  :global(.splide__slide) {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+}
+
+/* Custom Splide Pagination Styles */
+:global(.splide__pagination) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  margin-top: 30px;
+  list-style: none;
+  padding: 0;
+}
+
+:global(.splide__pagination__page) {
+  width: 10.36px;
+  height: 10.36px;
+  border-radius: 50%;
+  background: rgba(91, 91, 91, 0.4);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+:global(.splide__pagination__page.is-active) {
+  background: #5b5b5b;
+}
+
+:global(.splide__pagination__page:hover) {
+  background: #5b5b5b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .servicesSection {
+    padding: 60px 0;
+  }
+
+  .title {
+    font-size: 42px;
+  }
+
+  .description {
+    font-size: 20px;
+  }
+
+  .serviceCard {
+    max-width: 280px;
+  }
+
+  .iconContainer {
+    width: 160px;
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .servicesSection {
+    padding: 40px 0;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .description {
+    font-size: 18px;
+  }
+
+  .serviceCard {
+    max-width: 260px;
+  }
+
+  .iconContainer {
+    width: 140px;
+    height: 160px;
+  }
+
+  .serviceTitle {
+    font-size: 18px;
+  }
+
+  .serviceButtonText {
+    font-size: 16px;
+  }
+}

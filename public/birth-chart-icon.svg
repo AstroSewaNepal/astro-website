@@ -1,0 +1,25 @@
+<svg width="189" height="222" viewBox="0 0 189 222" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="189" height="222" fill="#FFFFFF" rx="8"/>
+  <!-- Birth Chart Icon - Complex astrological chart representation -->
+  <g transform="translate(0, 0)">
+    <!-- Outer circle -->
+    <circle cx="94.5" cy="111" r="80" stroke="#000000" stroke-width="2" fill="none"/>
+    <!-- Inner circles -->
+    <circle cx="94.5" cy="111" r="60" stroke="#000000" stroke-width="1" fill="none"/>
+    <circle cx="94.5" cy="111" r="40" stroke="#000000" stroke-width="1" fill="none"/>
+    <circle cx="94.5" cy="111" r="20" stroke="#000000" stroke-width="1" fill="none"/>
+    <!-- Zodiac symbols around the circle -->
+    <text x="94.5" y="35" text-anchor="middle" font-size="12" fill="#000000">♈</text>
+    <text x="150" y="115" text-anchor="middle" font-size="12" fill="#000000">♋</text>
+    <text x="94.5" y="195" text-anchor="middle" font-size="12" fill="#000000">♎</text>
+    <text x="35" y="115" text-anchor="middle" font-size="12" fill="#000000">♑</text>
+    <!-- Planetary positions -->
+    <circle cx="120" cy="80" r="3" fill="#000000"/>
+    <circle cx="70" cy="140" r="3" fill="#000000"/>
+    <circle cx="100" cy="160" r="3" fill="#000000"/>
+    <circle cx="80" cy="60" r="3" fill="#000000"/>
+    <!-- Connecting lines -->
+    <line x1="120" y1="80" x2="100" y2="160" stroke="#000000" stroke-width="1"/>
+    <line x1="70" y1="140" x2="80" y2="60" stroke="#000000" stroke-width="1"/>
+  </g>
+</svg>

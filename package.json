@@ -11,6 +11,8 @@
     "format": "prettier --write \"{app,components}/**/*.{ts,tsx,js,jsx,json,css,scss}\""
   },
   "dependencies": {
+    "@splidejs/react-splide": "^0.7.12",
+    "@splidejs/splide": "^4.1.4",
     "clsx": "^2.1.1",
     "moment": "^2.30.1",
     "next": "15.5.3",

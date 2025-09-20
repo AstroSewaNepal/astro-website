@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconProps } from '../icons.interface';
 
-const ArrowRight: React.FC<IconProps> = ({
+const ArrowLeft: React.FC<IconProps> = ({
   width = 6.14,
   height = 12.27,
   className = '',
@@ -18,7 +18,7 @@ const ArrowRight: React.FC<IconProps> = ({
       className={className}
     >
       <path
-        d="M0.64 1L5.14 6.135L0.64 11.27"
+        d="M5.5 1L1 6.135L5.5 11.27"
         stroke={stroke}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
@@ -28,4 +28,4 @@ const ArrowRight: React.FC<IconProps> = ({
   );
 };
 
-export default ArrowRight;
+export default ArrowLeft;
