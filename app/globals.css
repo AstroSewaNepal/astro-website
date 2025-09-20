@@ -1,26 +1,623 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --font-tiro-devanagari: "Tiro Devanagari Sanskrit", serif;
+  --font-sahitya: "Sahitya", serif;
+  --font-mukta: "Mukta", serif;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Deep Saffron Color Palette */
+  --saffron-50: #fff2e5;
+  --saffron-100: #ffdcb9;
+  --saffron-200: #ffc58e;
+  --saffron-300: #ffaf62;
+  --saffron-400: #ff9933;
+  --saffron-500: #d47f2c;
+  --saffron-600: #aa6625;
+  --saffron-700: #824f1e;
+  --saffron-800: #5c3817;
+  --saffron-900: #39230f;
+  --saffron-950: #1a0d00;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Turmeric Yellow Color Palette */
+  --turmeric-50: #fffbe5;
+  --turmeric-100: #fff3c1;
+  --turmeric-200: #ffec9d;
+  --turmeric-300: #ffe577;
+  --turmeric-400: #ffde4e;
+  --turmeric-500: #ffd700;
+  --turmeric-600: #cbac0e;
+  --turmeric-700: #9a8212;
+  --turmeric-800: #6b5b12;
+  --turmeric-900: #40370e;
+  --turmeric-950: #1a1600;
+
+  /* Sindoor Red Color Palette */
+  --sindoor-50: #fbeaea;
+  --sindoor-100: #f4cac5;
+  --sindoor-200: #ebaba2;
+  --sindoor-300: #e08c80;
+  --sindoor-400: #d36c5f;
+  --sindoor-500: #c34b40;
+  --sindoor-600: #b22222;
+  --sindoor-700: #871f1c;
+  --sindoor-800: #5e1a16;
+  --sindoor-900: #381310;
+  --sindoor-950: #150404;
+
+  /* Royal Purple Color Palette */
+  --royal-50: #f4ebf9;
+  --royal-100: #dbcbe3;
+  --royal-200: #c2accd;
+  --royal-300: #aa8eb7;
+  --royal-400: #9271a2;
+  --royal-500: #7a558d;
+  --royal-600: #633978;
+  --royal-700: #4b1d64;
+  --royal-800: #361847;
+  --royal-900: #23122d;
+  --royal-950: #0f0614;
+
+  /* Moonlight Cream Color Palette */
+  --moonlight-50: #f2f2f2;
+  --moonlight-100: #d7d7d7;
+  --moonlight-200: #bdbdbd;
+  --moonlight-300: #a3a3a3;
+  --moonlight-400: #8a8a8a;
+  --moonlight-500: #727272;
+  --moonlight-600: #5b5b5b;
+  --moonlight-700: #454545;
+  --moonlight-800: #303030;
+  --moonlight-900: #1c1c1c;
+  --moonlight-950: #0d0d0d;
+
+  /* Additional brand colors */
+  --black: #000000;
+  --dark-gray: #252525;
+  --white: #ffffff;
+
+  --primary: #611508;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-tiro-devanagari);
+}
+
+/* Custom font utilities for Tailwind CSS v4 */
+@utility font-tiro-devanagari {
+  font-family: var(--font-tiro-devanagari);
+}
+
+@utility font-sahitya {
+  font-family: var(--font-sahitya);
+}
+
+@utility font-mukta {
+  font-family: var(--font-mukta);
+}
+
+@utility text-primary {
+  color: var(--primary);
+}
+
+@utility border-primary {
+  border-color: var(--primary);
+}
+
+@utility bg-primary {
+  background-color: var(--primary);
+}
+
+/* Saffron Color Utilities */
+@utility text-saffron-50 {
+  color: var(--saffron-50);
+}
+@utility text-saffron-100 {
+  color: var(--saffron-100);
+}
+@utility text-saffron-200 {
+  color: var(--saffron-200);
+}
+@utility text-saffron-300 {
+  color: var(--saffron-300);
+}
+@utility text-saffron-400 {
+  color: var(--saffron-400);
+}
+@utility text-saffron-500 {
+  color: var(--saffron-500);
+}
+@utility text-saffron-600 {
+  color: var(--saffron-600);
+}
+@utility text-saffron-700 {
+  color: var(--saffron-700);
+}
+@utility text-saffron-800 {
+  color: var(--saffron-800);
+}
+@utility text-saffron-900 {
+  color: var(--saffron-900);
+}
+@utility text-saffron-950 {
+  color: var(--saffron-950);
+}
+
+@utility bg-saffron-50 {
+  background-color: var(--saffron-50);
+}
+@utility bg-saffron-100 {
+  background-color: var(--saffron-100);
+}
+@utility bg-saffron-200 {
+  background-color: var(--saffron-200);
+}
+@utility bg-saffron-300 {
+  background-color: var(--saffron-300);
+}
+@utility bg-saffron-400 {
+  background-color: var(--saffron-400);
+}
+@utility bg-saffron-500 {
+  background-color: var(--saffron-500);
+}
+@utility bg-saffron-600 {
+  background-color: var(--saffron-600);
+}
+@utility bg-saffron-700 {
+  background-color: var(--saffron-700);
+}
+@utility bg-saffron-800 {
+  background-color: var(--saffron-800);
+}
+@utility bg-saffron-900 {
+  background-color: var(--saffron-900);
+}
+@utility bg-saffron-950 {
+  background-color: var(--saffron-950);
+}
+
+@utility border-saffron-50 {
+  border-color: var(--saffron-50);
+}
+@utility border-saffron-100 {
+  border-color: var(--saffron-100);
+}
+@utility border-saffron-200 {
+  border-color: var(--saffron-200);
+}
+@utility border-saffron-300 {
+  border-color: var(--saffron-300);
+}
+@utility border-saffron-400 {
+  border-color: var(--saffron-400);
+}
+@utility border-saffron-500 {
+  border-color: var(--saffron-500);
+}
+@utility border-saffron-600 {
+  border-color: var(--saffron-600);
+}
+@utility border-saffron-700 {
+  border-color: var(--saffron-700);
+}
+@utility border-saffron-800 {
+  border-color: var(--saffron-800);
+}
+@utility border-saffron-900 {
+  border-color: var(--saffron-900);
+}
+@utility border-saffron-950 {
+  border-color: var(--saffron-950);
+}
+
+/* Turmeric Yellow Color Utilities */
+@utility text-turmeric-50 {
+  color: var(--turmeric-50);
+}
+@utility text-turmeric-100 {
+  color: var(--turmeric-100);
+}
+@utility text-turmeric-200 {
+  color: var(--turmeric-200);
+}
+@utility text-turmeric-300 {
+  color: var(--turmeric-300);
+}
+@utility text-turmeric-400 {
+  color: var(--turmeric-400);
+}
+@utility text-turmeric-500 {
+  color: var(--turmeric-500);
+}
+@utility text-turmeric-600 {
+  color: var(--turmeric-600);
+}
+@utility text-turmeric-700 {
+  color: var(--turmeric-700);
+}
+@utility text-turmeric-800 {
+  color: var(--turmeric-800);
+}
+@utility text-turmeric-900 {
+  color: var(--turmeric-900);
+}
+@utility text-turmeric-950 {
+  color: var(--turmeric-950);
+}
+
+@utility bg-turmeric-50 {
+  background-color: var(--turmeric-50);
+}
+@utility bg-turmeric-100 {
+  background-color: var(--turmeric-100);
+}
+@utility bg-turmeric-200 {
+  background-color: var(--turmeric-200);
+}
+@utility bg-turmeric-300 {
+  background-color: var(--turmeric-300);
+}
+@utility bg-turmeric-400 {
+  background-color: var(--turmeric-400);
+}
+@utility bg-turmeric-500 {
+  background-color: var(--turmeric-500);
+}
+@utility bg-turmeric-600 {
+  background-color: var(--turmeric-600);
+}
+@utility bg-turmeric-700 {
+  background-color: var(--turmeric-700);
+}
+@utility bg-turmeric-800 {
+  background-color: var(--turmeric-800);
+}
+@utility bg-turmeric-900 {
+  background-color: var(--turmeric-900);
+}
+@utility bg-turmeric-950 {
+  background-color: var(--turmeric-950);
+}
+
+@utility border-turmeric-50 {
+  border-color: var(--turmeric-50);
+}
+@utility border-turmeric-100 {
+  border-color: var(--turmeric-100);
+}
+@utility border-turmeric-200 {
+  border-color: var(--turmeric-200);
+}
+@utility border-turmeric-300 {
+  border-color: var(--turmeric-300);
+}
+@utility border-turmeric-400 {
+  border-color: var(--turmeric-400);
+}
+@utility border-turmeric-500 {
+  border-color: var(--turmeric-500);
+}
+@utility border-turmeric-600 {
+  border-color: var(--turmeric-600);
+}
+@utility border-turmeric-700 {
+  border-color: var(--turmeric-700);
+}
+@utility border-turmeric-800 {
+  border-color: var(--turmeric-800);
+}
+@utility border-turmeric-900 {
+  border-color: var(--turmeric-900);
+}
+@utility border-turmeric-950 {
+  border-color: var(--turmeric-950);
+}
+
+/* Sindoor Red Color Utilities */
+@utility text-sindoor-50 {
+  color: var(--sindoor-50);
+}
+@utility text-sindoor-100 {
+  color: var(--sindoor-100);
+}
+@utility text-sindoor-200 {
+  color: var(--sindoor-200);
+}
+@utility text-sindoor-300 {
+  color: var(--sindoor-300);
+}
+@utility text-sindoor-400 {
+  color: var(--sindoor-400);
+}
+@utility text-sindoor-500 {
+  color: var(--sindoor-500);
+}
+@utility text-sindoor-600 {
+  color: var(--sindoor-600);
+}
+@utility text-sindoor-700 {
+  color: var(--sindoor-700);
+}
+@utility text-sindoor-800 {
+  color: var(--sindoor-800);
+}
+@utility text-sindoor-900 {
+  color: var(--sindoor-900);
+}
+@utility text-sindoor-950 {
+  color: var(--sindoor-950);
+}
+
+@utility bg-sindoor-50 {
+  background-color: var(--sindoor-50);
+}
+@utility bg-sindoor-100 {
+  background-color: var(--sindoor-100);
+}
+@utility bg-sindoor-200 {
+  background-color: var(--sindoor-200);
+}
+@utility bg-sindoor-300 {
+  background-color: var(--sindoor-300);
+}
+@utility bg-sindoor-400 {
+  background-color: var(--sindoor-400);
+}
+@utility bg-sindoor-500 {
+  background-color: var(--sindoor-500);
+}
+@utility bg-sindoor-600 {
+  background-color: var(--sindoor-600);
+}
+@utility bg-sindoor-700 {
+  background-color: var(--sindoor-700);
+}
+@utility bg-sindoor-800 {
+  background-color: var(--sindoor-800);
+}
+@utility bg-sindoor-900 {
+  background-color: var(--sindoor-900);
+}
+@utility bg-sindoor-950 {
+  background-color: var(--sindoor-950);
+}
+
+@utility border-sindoor-50 {
+  border-color: var(--sindoor-50);
+}
+@utility border-sindoor-100 {
+  border-color: var(--sindoor-100);
+}
+@utility border-sindoor-200 {
+  border-color: var(--sindoor-200);
+}
+@utility border-sindoor-300 {
+  border-color: var(--sindoor-300);
+}
+@utility border-sindoor-400 {
+  border-color: var(--sindoor-400);
+}
+@utility border-sindoor-500 {
+  border-color: var(--sindoor-500);
+}
+@utility border-sindoor-600 {
+  border-color: var(--sindoor-600);
+}
+@utility border-sindoor-700 {
+  border-color: var(--sindoor-700);
+}
+@utility border-sindoor-800 {
+  border-color: var(--sindoor-800);
+}
+@utility border-sindoor-900 {
+  border-color: var(--sindoor-900);
+}
+@utility border-sindoor-950 {
+  border-color: var(--sindoor-950);
+}
+
+/* Royal Purple Color Utilities */
+@utility text-royal-50 {
+  color: var(--royal-50);
+}
+@utility text-royal-100 {
+  color: var(--royal-100);
+}
+@utility text-royal-200 {
+  color: var(--royal-200);
+}
+@utility text-royal-300 {
+  color: var(--royal-300);
+}
+@utility text-royal-400 {
+  color: var(--royal-400);
+}
+@utility text-royal-500 {
+  color: var(--royal-500);
+}
+@utility text-royal-600 {
+  color: var(--royal-600);
+}
+@utility text-royal-700 {
+  color: var(--royal-700);
+}
+@utility text-royal-800 {
+  color: var(--royal-800);
+}
+@utility text-royal-900 {
+  color: var(--royal-900);
+}
+@utility text-royal-950 {
+  color: var(--royal-950);
+}
+
+@utility bg-royal-50 {
+  background-color: var(--royal-50);
+}
+@utility bg-royal-100 {
+  background-color: var(--royal-100);
+}
+@utility bg-royal-200 {
+  background-color: var(--royal-200);
+}
+@utility bg-royal-300 {
+  background-color: var(--royal-300);
+}
+@utility bg-royal-400 {
+  background-color: var(--royal-400);
+}
+@utility bg-royal-500 {
+  background-color: var(--royal-500);
+}
+@utility bg-royal-600 {
+  background-color: var(--royal-600);
+}
+@utility bg-royal-700 {
+  background-color: var(--royal-700);
+}
+@utility bg-royal-800 {
+  background-color: var(--royal-800);
+}
+@utility bg-royal-900 {
+  background-color: var(--royal-900);
+}
+@utility bg-royal-950 {
+  background-color: var(--royal-950);
+}
+
+@utility border-royal-50 {
+  border-color: var(--royal-50);
+}
+@utility border-royal-100 {
+  border-color: var(--royal-100);
+}
+@utility border-royal-200 {
+  border-color: var(--royal-200);
+}
+@utility border-royal-300 {
+  border-color: var(--royal-300);
+}
+@utility border-royal-400 {
+  border-color: var(--royal-400);
+}
+@utility border-royal-500 {
+  border-color: var(--royal-500);
+}
+@utility border-royal-600 {
+  border-color: var(--royal-600);
+}
+@utility border-royal-700 {
+  border-color: var(--royal-700);
+}
+@utility border-royal-800 {
+  border-color: var(--royal-800);
+}
+@utility border-royal-900 {
+  border-color: var(--royal-900);
+}
+@utility border-royal-950 {
+  border-color: var(--royal-950);
+}
+
+/* Moonlight Cream Color Utilities */
+@utility text-moonlight-50 {
+  color: var(--moonlight-50);
+}
+@utility text-moonlight-100 {
+  color: var(--moonlight-100);
+}
+@utility text-moonlight-200 {
+  color: var(--moonlight-200);
+}
+@utility text-moonlight-300 {
+  color: var(--moonlight-300);
+}
+@utility text-moonlight-400 {
+  color: var(--moonlight-400);
+}
+@utility text-moonlight-500 {
+  color: var(--moonlight-500);
+}
+@utility text-moonlight-600 {
+  color: var(--moonlight-600);
+}
+@utility text-moonlight-700 {
+  color: var(--moonlight-700);
+}
+@utility text-moonlight-800 {
+  color: var(--moonlight-800);
+}
+@utility text-moonlight-900 {
+  color: var(--moonlight-900);
+}
+@utility text-moonlight-950 {
+  color: var(--moonlight-950);
+}
+
+@utility bg-moonlight-50 {
+  background-color: var(--moonlight-50);
+}
+@utility bg-moonlight-100 {
+  background-color: var(--moonlight-100);
+}
+@utility bg-moonlight-200 {
+  background-color: var(--moonlight-200);
+}
+@utility bg-moonlight-300 {
+  background-color: var(--moonlight-300);
+}
+@utility bg-moonlight-400 {
+  background-color: var(--moonlight-400);
+}
+@utility bg-moonlight-500 {
+  background-color: var(--moonlight-500);
+}
+@utility bg-moonlight-600 {
+  background-color: var(--moonlight-600);
+}
+@utility bg-moonlight-700 {
+  background-color: var(--moonlight-700);
+}
+@utility bg-moonlight-800 {
+  background-color: var(--moonlight-800);
+}
+@utility bg-moonlight-900 {
+  background-color: var(--moonlight-900);
+}
+@utility bg-moonlight-950 {
+  background-color: var(--moonlight-950);
+}
+
+@utility border-moonlight-50 {
+  border-color: var(--moonlight-50);
+}
+@utility border-moonlight-100 {
+  border-color: var(--moonlight-100);
+}
+@utility border-moonlight-200 {
+  border-color: var(--moonlight-200);
+}
+@utility border-moonlight-300 {
+  border-color: var(--moonlight-300);
+}
+@utility border-moonlight-400 {
+  border-color: var(--moonlight-400);
+}
+@utility border-moonlight-500 {
+  border-color: var(--moonlight-500);
+}
+@utility border-moonlight-600 {
+  border-color: var(--moonlight-600);
+}
+@utility border-moonlight-700 {
+  border-color: var(--moonlight-700);
+}
+@utility border-moonlight-800 {
+  border-color: var(--moonlight-800);
+}
+@utility border-moonlight-900 {
+  border-color: var(--moonlight-900);
+}
+@utility border-moonlight-950 {
+  border-color: var(--moonlight-950);
 }

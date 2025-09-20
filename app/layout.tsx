@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { Tiro_Devanagari_Sanskrit, Sahitya, Mukta } from "next/font/google";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+import "./globals.css";
+import clsx from "clsx";
+
+const tiroDevanagari = Tiro_Devanagari_Sanskrit({
+  variable: "--font-tiro-devanagari",
+  subsets: ["latin", "devanagari"],
+  weight: "400",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const sahitya = Sahitya({
+  variable: "--font-sahitya",
+  subsets: ["latin", "devanagari"],
+  weight: ["400", "700"],
+});
+
+const mukta = Mukta({
+  variable: "--font-mukta",
+  subsets: ["latin", "devanagari"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -25,7 +35,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={clsx(
+          tiroDevanagari.variable,
+          sahitya.variable,
+          mukta.variable,
+          `antialiased`
+        )}
       >
         {children}
       </body>
