@@ -9,7 +9,6 @@ import Clarity from '@/components/pages/landing/clarity';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import CustomerFeedback from '@/components/pages/landing/customer-feedback';
 
-import LandingPageCSS from './landing-page.module.css';
 import AstrologerBlogListing from '@/components/pages/landing/blog-listing';
 import WhoWeAre from '@/components/pages/landing/who-we-are';
 import HotTopics from '@/components/pages/landing/hot-topics';
@@ -19,7 +18,7 @@ import Footer from '@/components/pages/landing/footer';
 
 export default function Home() {
   return (
-    <main className={clsx('min-h-screen space-y-[100px]', LandingPageCSS.background)}>
+    <main className={clsx('min-h-screen space-y-[100px]', 'background')}>
       <div>
         <LandingHeader />
         <LandingHero />

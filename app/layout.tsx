@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Tiro_Devanagari_Sanskrit, Sahitya, Mukta } from 'next/font/google';
 
-import './globals.css';
 import clsx from 'clsx';
+
+import './globals.css';
+import './landing-page.module.css';
 
 const tiroDevanagari = Tiro_Devanagari_Sanskrit({
   variable: '--font-tiro-devanagari',

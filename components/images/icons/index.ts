@@ -9,6 +9,7 @@ import TiktokIcon from './tiktok.png';
 import YoutubeIcon from './youtube.png';
 import TwitterIcon from './twitter.png';
 import LinkedinIcon from './linkedin.png';
+import CheckImageIcon from './check-image.png';
 
 export {
   SquareIcon,
@@ -22,4 +23,5 @@ export {
   YoutubeIcon,
   TwitterIcon,
   LinkedinIcon,
+  CheckImageIcon, 
 };

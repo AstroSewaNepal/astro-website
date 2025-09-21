@@ -3,6 +3,7 @@ import TransparentBellIcon from '@/components/icons/bell';
 import UserLineIcon from '@/components/icons/user/user-line';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import LanguageEarthIcon from '@/components/icons/language/earth';
+import Link from 'next/link';
 
 const LANDING_NAV = [
   { title: 'Zodiac Signs', children: [] },
@@ -10,7 +11,7 @@ const LANDING_NAV = [
   { title: 'Compatibility' },
   { title: 'Puja Bidhi', children: [] },
   { title: 'Calculator', children: [] },
-  { title: 'About Us' },
+  { title: 'About Us', link: '/about-us' },
   { title: 'Blog' },
   { title: 'Calendar' },
 ];
@@ -38,13 +39,15 @@ export const LandingHeader = () => {
       <nav className="mt-10 flex items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl">
         {LANDING_NAV.map(value => {
           return (
-            <div
-              key={value.title}
-              className="text-white flex items-center justify-center py-[7px] px-[17px]"
-            >
-              <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
-              {value.children && <ChevronDownIcon className="text-white" />}
-            </div>
+            <Link href={value.link ?? ''} key={value.title}>
+              <div
+                key={value.title}
+                className="text-white flex items-center justify-center py-[7px] px-[17px]"
+              >
+                <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
+                {value.children && <ChevronDownIcon className="text-white" />}
+              </div>
+            </Link>
           );
         })}
       </nav>
