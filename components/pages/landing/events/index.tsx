@@ -15,7 +15,7 @@ const EventsPage: React.FC = () => {
   );
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-[100px] flex flex-col lg:flex-row gap-10">
+    <section className="container mx-auto px-6 lg:px-0 flex flex-col lg:flex-row gap-10">
       <div className="w-full lg:w-3/5">
         <div className="bg-[#691709] text-[#F8F3DF] px-10 py-2 rounded-lg flex items-center justify-between">
           <h2 className="font-mukta text-4xl leading-12">Festival Calendar</h2>

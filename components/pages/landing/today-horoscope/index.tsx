@@ -13,7 +13,7 @@ const TodayHoroscope: React.FC = () => {
   const [language, setLanguage] = useState<ELanguage>(ELanguage.ENGLISH);
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-[100px]">
+    <section className="container mx-auto px-6 lg:px-0">
       <div className="flex w-full items-center justify-center flex-col">
         <h2 className="text-[56px] leading-[47.83px] font-normal text-primary text-center">
           Today&apos;s Astrology Horoscope
@@ -64,7 +64,7 @@ const TodayHoroscope: React.FC = () => {
               <p className="font-mukta text-sm leading-[120%] font-light text-[#5b5b5b]">
                 {item.detail}
               </p>
-              <button className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2">
+              <button className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF]">
                 <p className="font-mukta text-sm leading-7 font-semibold text-primary">Read More</p>
                 <ArrowRight />
               </button>

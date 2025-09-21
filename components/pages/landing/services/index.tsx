@@ -119,7 +119,7 @@ const Services = () => {
   }, [isDragging]);
 
   return (
-    <section className="py-20">
+    <section>
       <div className="max-w-[1450px] mx-auto px-5 flex flex-col items-center gap-12">
         {/* Header */}
         <div className="flex flex-col items-center gap-6 max-w-[1405px] w-full">

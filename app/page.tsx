@@ -7,15 +7,19 @@ import TodayHoroscope from '@/components/pages/landing/today-horoscope';
 import { LandingHeader } from '@/components/pages/landing/header/landing-header';
 
 import LandingPageCSS from './landing-page.module.css';
+import Clarity from '@/components/pages/landing/clarity';
 
 export default function Home() {
   return (
-    <main className={clsx('min-h-screen', LandingPageCSS.background)}>
-      <LandingHeader />
-      <LandingHero />
+    <main className={clsx('min-h-screen space-y-[100px]', LandingPageCSS.background)}>
+      <div>
+        <LandingHeader />
+        <LandingHero />
+      </div>
       <TodayHoroscope />
       <EventsPage />
       <Services />
+      <Clarity />
     </main>
   );
 }
