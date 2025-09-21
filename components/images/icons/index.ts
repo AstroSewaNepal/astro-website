@@ -23,5 +23,5 @@ export {
   YoutubeIcon,
   TwitterIcon,
   LinkedinIcon,
-  CheckImageIcon, 
+  CheckImageIcon,
 };

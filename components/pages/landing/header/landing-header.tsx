@@ -12,7 +12,7 @@ const LANDING_NAV = [
   { title: 'Puja Bidhi', children: [] },
   { title: 'Calculator', children: [] },
   { title: 'About Us', link: '/about-us' },
-  { title: 'Blog' },
+  { title: 'Blog', link: '/blogs' },
   { title: 'Calendar' },
 ];
 

@@ -15,7 +15,7 @@ const AstrologerBlogListing: React.FC = () => {
         </p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 mt-[50px] lg:gap-[32px] 2xl:gap-[64px]">
-        {BLOG_LISTING_CONST.map(item => (
+        {BLOG_LISTING_CONST.splice(0, 3).map(item => (
           <BlogComponents key={`blog-component-${item.id}`} {...item} />
         ))}
       </div>
