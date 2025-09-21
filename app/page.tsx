@@ -8,6 +8,7 @@ import { LandingHeader } from '@/components/pages/landing/header/landing-header'
 
 import LandingPageCSS from './landing-page.module.css';
 import Clarity from '@/components/pages/landing/clarity';
+import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
       <EventsPage />
       <Services />
       <Clarity />
+      <TalkToOurAstrologer />
     </main>
   );
 }

@@ -621,3 +621,35 @@ body {
 @utility border-moonlight-950 {
   border-color: var(--moonlight-950);
 }
+
+/* Custom Swiper Pagination Styles */
+.swiper-pagination {
+  position: static !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+}
+
+.swiper-pagination-bullet {
+  width: 10.36px !important;
+  height: 10.36px !important;
+  border-radius: 50% !important;
+  background: rgba(91, 91, 91, 0.4) !important;
+  opacity: 1 !important;
+  margin: 0 !important;
+  transition: background-color 0.3s ease !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #5b5b5b !important;
+}
+
+.swiper-pagination-bullet:hover {
+  background: #5b5b5b !important;
+}
+
+/* Hide default Swiper navigation arrows */
+.swiper-button-prev,
+.swiper-button-next {
+  display: none !important;
+}

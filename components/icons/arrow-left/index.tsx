@@ -1,17 +1,14 @@
 import React from 'react';
-import { IconProps } from '../icons.interface';
 
-const ArrowLeft: React.FC<IconProps> = ({
-  width = 6.14,
-  height = 12.27,
-  className = '',
-  stroke = '#5B5B5B',
-  strokeWidth = 1.27,
+import { IIconsProps } from '../icons.interface';
+
+const ArrowLeft: React.FC<IIconsProps> = ({
+  className = 'w-[6.14px] h-[12.27px] text-[#5B5B5B]',
 }) => {
   return (
     <svg
-      width={width}
-      height={height}
+      width={'6.14'}
+      height={'12.27'}
       viewBox="0 0 6.14 12.27"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -19,8 +16,8 @@ const ArrowLeft: React.FC<IconProps> = ({
     >
       <path
         d="M5.5 1L1 6.135L5.5 11.27"
-        stroke={stroke}
-        strokeWidth={strokeWidth}
+        stroke={'currentColor'}
+        strokeWidth={1.27}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
