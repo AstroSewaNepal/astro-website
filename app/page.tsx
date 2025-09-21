@@ -5,10 +5,12 @@ import EventsPage from '@/components/pages/landing/events';
 import Services from '@/components/pages/landing/services';
 import TodayHoroscope from '@/components/pages/landing/today-horoscope';
 import { LandingHeader } from '@/components/pages/landing/header/landing-header';
-
-import LandingPageCSS from './landing-page.module.css';
 import Clarity from '@/components/pages/landing/clarity';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
+import CustomerFeedback from '@/components/pages/landing/customer-feedback';
+
+import LandingPageCSS from './landing-page.module.css';
+import AstrologerBlogListing from '@/components/pages/landing/blog-listing';
 
 export default function Home() {
   return (
@@ -22,6 +24,8 @@ export default function Home() {
       <Services />
       <Clarity />
       <TalkToOurAstrologer />
+      <CustomerFeedback />
+      <AstrologerBlogListing />
     </main>
   );
 }
