@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 
 :root {
   --font-tiro-devanagari: 'Tiro Devanagari Sanskrit', serif;

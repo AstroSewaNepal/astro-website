@@ -16,7 +16,7 @@ export const PUJA_BIDHI_CONST = [
     title: 'Shiva Puja Bidhi',
     description:
       'Lord Shiva is revered as the Supreme Consciousness  the destroyer of negativity, the source of transformation,',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 2,
@@ -29,7 +29,7 @@ export const PUJA_BIDHI_CONST = [
     title: 'Vishnu Puja Bidhi',
     description:
       'Lord Vishnu is worshipped as the protector and sustainer of life. Performing Vishnu pūjā brings harmony, prosperity.',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 3,
@@ -42,7 +42,7 @@ export const PUJA_BIDHI_CONST = [
     title: 'Ganesh Puja Bidhi',
     description:
       'Lord Ganesha is always worshipped first before any other deity or new beginning. This pūjā invokes blessings for wisdom',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 4,
@@ -55,7 +55,7 @@ export const PUJA_BIDHI_CONST = [
     title: 'Shiva Puja Bidhi',
     description:
       'Lord Shiva is revered as the Supreme Consciousness  the destroyer of negativity, the source of transformation,',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 5,
@@ -68,7 +68,7 @@ export const PUJA_BIDHI_CONST = [
     title: 'Vishnu Puja Bidhi',
     description:
       'Lord Vishnu is worshipped as the protector and sustainer of life. Performing Vishnu pūjā brings harmony, prosperity.',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 6,
@@ -81,7 +81,7 @@ export const PUJA_BIDHI_CONST = [
     title: 'Ganesh Puja Bidhi',
     description:
       'Lord Ganesha is always worshipped first before any other deity or new beginning. This pūjā invokes blessings for wisdom',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 7,
@@ -94,7 +94,7 @@ export const PUJA_BIDHI_CONST = [
     title: 'Shiva Puja Bidhi',
     description:
       'Lord Shiva is revered as the Supreme Consciousness  the destroyer of negativity, the source of transformation,',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 8,
@@ -107,7 +107,7 @@ export const PUJA_BIDHI_CONST = [
     title: 'Vishnu Puja Bidhi',
     description:
       'Lord Vishnu is worshipped as the protector and sustainer of life. Performing Vishnu pūjā brings harmony, prosperity.',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 9,
@@ -120,7 +120,7 @@ export const PUJA_BIDHI_CONST = [
     title: 'Ganesh Puja Bidhi',
     description:
       'Lord Ganesha is always worshipped first before any other deity or new beginning. This pūjā invokes blessings for wisdom',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 10,
@@ -133,7 +133,7 @@ export const PUJA_BIDHI_CONST = [
     title: 'Shiva Puja Bidhi',
     description:
       'Lord Shiva is revered as the Supreme Consciousness  the destroyer of negativity, the source of transformation,',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 11,
@@ -146,7 +146,7 @@ export const PUJA_BIDHI_CONST = [
     title: 'Vishnu Puja Bidhi',
     description:
       'Lord Vishnu is worshipped as the protector and sustainer of life. Performing Vishnu pūjā brings harmony, prosperity.',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 12,
@@ -159,6 +159,6 @@ export const PUJA_BIDHI_CONST = [
     title: 'Ganesh Puja Bidhi',
     description:
       'Lord Ganesha is always worshipped first before any other deity or new beginning. This pūjā invokes blessings for wisdom',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
 ];

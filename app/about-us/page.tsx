@@ -23,7 +23,7 @@ const AboutUsPage = () => {
       <AboutUsVision />
       <AboutUsWhatWeDo />
       <AboutUsWhyUs />
-      <TalkToOurAstrologer />
+      {/* <TalkToOurAstrologer /> */}
       <Services />
       <Footer />
     </main>

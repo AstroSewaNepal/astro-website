@@ -36,14 +36,15 @@ const BlogComponents: React.FC<IBlogComponentsProps> = ({
       <div className="flex items-center justify-between">
         <p className="font-mukta text-xl text-[#5B5B5B]">{date}</p>
         <div className="flex items-center gap-1">
-          {feature.map((item, index) => (
+          {feature.slice(0, 1).map((item, index) => (
             <BlogCard content={item} key={`${item}-${index}`} />
           ))}
+          {feature.length > 1 && <BlogCard content={`+${feature.length - 1}`} />}
         </div>
       </div>
       <div>
         <div className="flex items-center justify-center mt-[15px] rounded-[8px]">
-          <Image src={image} alt="Blog Placeholder" />
+          <Image src={image} width={500} height={100} alt="Blog Placeholder" />
         </div>
         <div className="mt-[11px] flex items-center justify-between">
           <div className="flex items-center gap-4 text-sm font-mukta">

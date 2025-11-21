@@ -18,7 +18,7 @@ const PujaBidhiPage = () => {
         <LandingHeader />
         <PujaBidhiHeader />
       </div>
-      <TalkToOurAstrologer />
+      {/* <TalkToOurAstrologer /> */}
       <Services />
       <DownloadApp />
       <Footer />

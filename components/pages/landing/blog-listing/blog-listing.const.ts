@@ -12,7 +12,7 @@ export const BLOG_LISTING_CONST = [
     title: 'Best Pujari in the town: You should probably',
     description:
       'Lorem ipsum dolor sit amet, consectetur fdshf adipiscing elit, sed do eiusmod tempor dghfhf incididunt ut labore etc',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 2,
@@ -25,7 +25,7 @@ export const BLOG_LISTING_CONST = [
     title: 'Best Pujari in the town: You should probably do more',
     description:
       'Lorem ipsum dolor sit amet, consectetur fdshf adipiscing elit, sed do eiusmod tempor dghfhf incididunt ut labore etc',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 3,
@@ -38,7 +38,7 @@ export const BLOG_LISTING_CONST = [
     title: 'Best Pujari in the town: You should probably do more',
     description:
       'Lorem ipsum dolor sit amet, consectetur fdshf adipiscing elit, sed do eiusmod tempor dghfhf incididunt ut labore etc',
-    link: '/blog/best-pujari-in-the-town-you-should-probably',
+    link: '/blogs/best-pujari-in-the-town-you-should-probably',
   },
   {
     id: 4,

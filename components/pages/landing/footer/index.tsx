@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import {
   AppleDownloadImage,
@@ -105,18 +106,18 @@ const Footer: React.FC = () => {
                   >
                     Talk to Astrologer
                   </a>
-                  <a
-                    href="#"
+                  <Link
+                    href="/puja-bidhi"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
                     Puja Bidhi
-                  </a>
-                  <a
-                    href="#"
+                  </Link>
+                  <Link
+                    href="/blogs"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
                     Blog
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -124,12 +125,12 @@ const Footer: React.FC = () => {
               <div className="flex flex-col gap-3">
                 <h4 className="text-[22px] font-normal mb-3">Useful Links</h4>
                 <div className="flex flex-col gap-2">
-                  <a
-                    href="#"
+                  <Link
+                    href="/about-us"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
                     About Us
-                  </a>
+                  </Link>
                   <a
                     href="#"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
@@ -180,26 +181,26 @@ const Footer: React.FC = () => {
 
             {/* Terms & Conditions Section */}
             <div className="flex items-center gap-8 mt-8">
-              <a
-                href="#"
+              <Link
+                href="/terms-and-conditions"
                 className="font-mukta text-[20px] font-normal text-[#F8F3DF] hover:opacity-75 transition-opacity underline"
               >
                 Terms & Conditions
-              </a>
+              </Link>
               <div className="w-px h-6 bg-[#F8F3DF]"></div>
-              <a
-                href="#"
+              <Link
+                href="/pricing-policy"
                 className="font-mukta text-[20px] font-normal text-[#F8F3DF] hover:opacity-75 transition-opacity underline"
               >
-                Privacy Policy
-              </a>
+                Pricing Policy
+              </Link>
               <div className="w-px h-6 bg-[#F8F3DF]"></div>
-              <a
-                href="#"
+              <Link
+                href="/disclaimer"
                 className="font-mukta text-[20px] font-normal text-[#F8F3DF] hover:opacity-75 transition-opacity underline"
               >
                 Disclaimer
-              </a>
+              </Link>
             </div>
           </div>
         </div>

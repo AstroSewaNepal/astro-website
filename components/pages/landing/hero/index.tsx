@@ -6,26 +6,26 @@ import ArrowRight from '@/components/icons/arrow-right';
 
 const LandingHero: React.FC = () => {
   return (
-    <section className="container mx-auto px-6 lg:px-0 grid grid-cols-2 pt-10 border-b border-b-[#79787A] pb-[100px]">
+    <section className="container mx-auto px-6 lg:px-0 grid grid-cols-1 lg:grid-cols-2 pt-10 gap-10 border-b border-b-[#79787A] pb-[100px]">
       <div className="flex flex-col justify-center">
         <div className="space-x-2.5">
-          <h1 className="text-[80px] leading-[120%] text-primary font-normal">
+          <h1 className="text-[34px] md:text-[40px] lg:text-[80px] leading-[120%] text-primary font-normal">
             Astrology, <br />
             Made Personal.
           </h1>
-          <p className="font-mukta text-2xl leadning-[150%] text-black opacity-80 max-w-[580px]">
+          <p className="font-mukta text-base md:text-lg lg:text-2xl leading-[150%] text-black opacity-80 max-w-[580px]">
             Astro Sewa combines ancient Vedic wisdom with Modern insight, to help you transform
             uncertainty into Opportunity
           </p>
         </div>
-        <div className="mt-11 flex items-center gap-6 min-w-max">
-          <button className="border border-solid border-moonlight-600 rounded-3xl px-8 py-3 flex items-center cursor-pointer">
-            <p className="font-mukta text-2xl leading-7 text-moonlight-600 font-normal">
+        <div className="mt-11 flex flex-col lg:flex-row items-center gap-6 min-w-max">
+          <button className="border border-solid border-moonlight-600 rounded-3xl px-6 md:px-8 py-2 md:py-3 flex items-center cursor-pointer w-full lg:w-auto justify-center gap-2">
+            <p className="font-mukta text-base md:text-lg lg:text-2xl leading-7 text-moonlight-600 font-normal">
               Book Consultation
             </p>
             <ArrowRight />
           </button>
-          <button className="font-mukta text-2xl leading-7 text-white bg-primary rounded-3xl px-8 py-3 cursor-pointer">
+          <button className="font-mukta text-base md:text-lg lg:text-2xl leading-7 text-white bg-primary rounded-3xl px-6 md:px-8 py-2 md:py-3 cursor-pointer w-full lg:w-auto justify-center gap-2">
             Download App
           </button>
         </div>
