@@ -21,7 +21,7 @@ const LANDING_NAV: NavItem[] = [
   { title: 'Compatibility' },
   { title: 'Puja Bidhi', children: [] },
   { title: 'Calculator', children: [] },
-  { title: 'Blog' },
+  { title: 'Blog', link: '/blogs' },
 ];
 
 const MOBILE_NAV: NavItem[] = [
