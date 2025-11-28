@@ -53,8 +53,11 @@ const makeResponseBody = (resource: GhostResource, items: unknown[]): Record<str
       };
 };
 
-export async function GET(request: NextRequest, context: { params: { resource: string } }) {
-  const { resource } = context.params;
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ resource: string }> },
+) {
+  const { resource } = await context.params;
 
   if (!isGhostResource(resource)) {
     logger.warn('Unsupported Ghost resource requested', { resource });

@@ -1,17 +1,17 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+
 import clsx from 'clsx';
 
+import { ghostClient } from '@/lib/ghostClient';
 import Footer from '@/components/pages/landing/footer';
+import Services from '@/components/pages/landing/services';
+import LandingPageCSS from '../../landing-page.module.css';
+import BlogContent from '@/components/pages/blogs/content';
+import DownloadApp from '@/components/pages/landing/download-app';
 import { LandingHeader } from '@/components/pages/landing/header/landing-header';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
-import Services from '@/components/pages/landing/services';
-
-import LandingPageCSS from '../../landing-page.module.css';
-import DownloadApp from '@/components/pages/landing/download-app';
-import BlogContent from '@/components/pages/blogs/content';
-import { ghostClient } from '@/lib/ghostClient';
 
 type BlogPostData = {
   id: string;

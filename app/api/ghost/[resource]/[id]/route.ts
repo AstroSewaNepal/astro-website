@@ -36,9 +36,9 @@ const isNotFoundError = (error: unknown) =>
 
 export async function GET(
   request: NextRequest,
-  context: { params: { resource: string; id: string } },
+  context: { params: Promise<{ resource: string; id: string }> },
 ) {
-  const { resource, id } = context.params;
+  const { resource, id } = await context.params;
 
   if (!isGhostResource(resource)) {
     logger.warn('Unsupported Ghost resource requested by id', { resource, id });
