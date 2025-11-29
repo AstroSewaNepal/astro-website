@@ -3,6 +3,7 @@ import clsx from 'clsx';
 
 import LandingPageCSS from './landing-page.module.css';
 import Footer from '@/components/pages/landing/footer';
+import { HeroSectionImage } from '@/components/images';
 import LandingFAQ from '@/components/pages/landing/faq';
 import Clarity from '@/components/pages/landing/clarity';
 import LandingHero from '@/components/pages/landing/hero';
@@ -15,7 +16,6 @@ import TodayHoroscope from '@/components/pages/landing/today-horoscope';
 import CustomerFeedback from '@/components/pages/landing/customer-feedback';
 import AstrologerBlogListing from '@/components/pages/landing/blog-listing';
 import { LandingHeader } from '@/components/pages/landing/header/landing-header';
-import { HeroSectionImage } from '@/components/images';
 
 export const metadata: Metadata = {
   title: 'Home',
@@ -66,12 +66,12 @@ export default function Home() {
         <LandingHeader />
         <LandingHero />
       </div>
-      <TodayHoroscope />
-      <EventsPage />
+      {/* <TodayHoroscope /> */}
+      {/* <EventsPage /> */}
       <Services />
       <Clarity />
       {/* <TalkToOurAstrologer /> */}
-      <CustomerFeedback />
+      {/* <CustomerFeedback /> */}
       <AstrologerBlogListing />
       <WhoWeAre />
       <LandingFAQ />
