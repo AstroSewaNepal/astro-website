@@ -6,26 +6,26 @@ import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 
-import 'swiper/css';
-
-import ArrowRight from '@/components/icons/arrow-right';
-// import StartIcon from '@/components/icons/start-icon';
-import Pagination from '@/components/common/pagination';
 import {
+  EnglishLeoLight,
   EnglishAriesLight,
+  EnglishVirgoLight,
+  EnglishLibraLight,
   EnglishTaurusLight,
   EnglishGeminiLight,
   EnglishCancerLight,
-  EnglishLeoLight,
-  EnglishVirgoLight,
-  EnglishLibraLight,
-  EnglishScorpioLight,
-  EnglishSagittariusLight,
-  EnglishCapricornLight,
-  EnglishAquariusLight,
   EnglishPiscesLight,
+  EnglishScorpioLight,
+  EnglishAquariusLight,
+  EnglishCapricornLight,
+  EnglishSagittariusLight,
 } from '@/components/images/zodiac/english';
+import ArrowRight from '@/components/icons/arrow-right';
+// import StartIcon from '@/components/icons/start-icon';
+import Pagination from '@/components/common/pagination';
 import { ELanguage } from '@/components/enums/language.enum';
+
+import 'swiper/css';
 
 interface HoroscopeApiResponse {
   _id: string;
@@ -90,7 +90,10 @@ const TodayHoroscope: React.FC = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://54.225.40.197/api/v1/astrology/horoscope');
+        const response = await fetch(
+          process.env.NEXT_PUBLIC_BACKEND_URL + 'api/v1/astrology/horoscope',
+        );
+        console.log(response);
         if (!response.ok) {
           throw new Error('Failed to fetch horoscope data');
         }

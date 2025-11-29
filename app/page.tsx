@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import clsx from 'clsx';
 
 import LandingPageCSS from './landing-page.module.css';
@@ -14,6 +15,49 @@ import TodayHoroscope from '@/components/pages/landing/today-horoscope';
 import CustomerFeedback from '@/components/pages/landing/customer-feedback';
 import AstrologerBlogListing from '@/components/pages/landing/blog-listing';
 import { LandingHeader } from '@/components/pages/landing/header/landing-header';
+import { HeroSectionImage } from '@/components/images';
+
+export const metadata: Metadata = {
+  title: 'Home',
+  description:
+    'Astro Sewa combines ancient Vedic wisdom with modern insight to help you transform uncertainty into opportunity. Get daily horoscopes, connect with verified astrologers, and access personalized astrology guidance for love, career, health, and finances.',
+  keywords: [
+    'astrology Nepal',
+    'online astrology consultation',
+    'daily horoscope',
+    'vedic astrology',
+    'astrologer chat',
+    'birth chart reading',
+    'astrology app',
+    'Nepal astrologer',
+    'astrology services',
+    'horoscope today',
+  ],
+  openGraph: {
+    title: 'Astro Sewa - Astrology Made Personal',
+    description:
+      'Transform uncertainty into opportunity with personalized Vedic astrology guidance. Connect with 1000+ verified astrologers, get daily horoscopes, and expert consultations.',
+    images: [
+      {
+        url: HeroSectionImage.src,
+        width: 516,
+        height: 516,
+        alt: 'Astro Sewa - Astrology Made Personal',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Astro Sewa - Astrology Made Personal',
+    description:
+      'Transform uncertainty into opportunity with personalized Vedic astrology guidance. Connect with 1000+ verified astrologers.',
+    images: [HeroSectionImage.src],
+  },
+  alternates: {
+    canonical: '/',
+  },
+};
 
 export default function Home() {
   return (
