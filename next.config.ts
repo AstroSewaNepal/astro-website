@@ -12,6 +12,12 @@ const nextConfig: NextConfig = {
         },
         {
           protocol: 'https',
+          hostname: 'blog.dev.astrosewa.com',
+          port:'',
+          pathname: '/**',
+        },
+        {
+          protocol: 'https',
           hostname: 'static.ghost.org',
           port:'',
           pathname: '/**',
