@@ -143,12 +143,13 @@ async function getBlogPost(slug: string): Promise<BlogPostData | null> {
 }
 
 type BlogDetailPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
-const BlogDetailPage = async ({ params }: BlogDetailPageProps) => {
+const BlogDetailPage = async (props: BlogDetailPageProps) => {
+  const params = await props.params;
   const post = await getBlogPost(params.slug);
 
   if (!post) {
