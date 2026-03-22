@@ -53,7 +53,6 @@ module.exports = {
       },
     ],
     additionalSitemaps: [
-      'https://www.astrosewa.com/sitemap.xml',
     ],
   },
 }
