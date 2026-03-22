@@ -1,54 +1,59 @@
 const GhostContentAPI = require('@tryghost/content-api');
-const isProduction =
-  process.env.VERCEL_ENV === 'production' ||
-  process.env.NEXT_PUBLIC_VERCEL_ENV === 'production';
 
-// Initialize the Ghost API
+/** * We use process.env to grab the keys you just saved in Vercel.
+ * This keeps your keys hidden from the public.
+ */
 const api = new GhostContentAPI({
-  url: 'https://blog.dev.astrosewa.com',
-  key: 'dc7f97acd361ee022f82df3f58',
+  url: process.env.GHOST_URL || 'https://blog.dev.astrosewa.com',
+  key: process.env.GHOST_CONTENT_KEY,
   version: "v5.0"
 });
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
   siteUrl: 'https://www.astrosewa.com',
-  generateRobotsTxt: true,
+  generateRobotsTxt: true, 
   exclude: ['/_next/*', '/api/*'],
-
-  // This function fetches your Ghost blogs during the build
-  additionalPaths: async config => {
-    let allPosts = [];
-    let page = 1;
-    let hasNextPage = true;
-
-    while (hasNextPage) {
-      const response = await api.posts.browse({
-        limit: 15, // Fetch in smaller chunks
-        page: page,
-        fields: 'slug,updated_at',
-      });
-
-      allPosts.push(...response);
-
-      // Check if there are more pages
-      if (response.meta.pagination.next) {
-        page++;
-      } else {
-        hasNextPage = false;
-      }
+  
+  // Fetching Ghost Blogs (Optimized & Secure)
+  additionalPaths: async (config) => {
+    // If the API Key is missing (e.g., local dev), skip this step to avoid errors
+    if (!process.env.GHOST_CONTENT_KEY) {
+      console.warn("Sitemap: GHOST_CONTENT_KEY is missing. Skipping blog fetch.");
+      return [];
     }
-    return allPosts.map(post => ({ loc: `/blogs/${post.slug}`, priority: 0.7 }));
+
+    try {
+      const posts = await api.posts.browse({ 
+        limit: 'all', 
+        fields: 'slug,updated_at' 
+      });
+      
+      return posts.map(post => ({
+        loc: `/blogs/${post.slug}`, 
+        priority: 0.7,
+        lastmod: post.updated_at || new Date().toISOString(),
+      }));
+    } catch (error) {
+      console.error("Sitemap Ghost Fetch Error:", error);
+      return []; 
+    }
   },
 
   robotsTxtOptions: {
     policies: [
       {
         userAgent: '*',
-        allow: isProduction ? '/' : undefined,
-        disallow: isProduction ? ['/_next/', '/api/', '/*?url='] : ['/'],
+        allow: '/',
+        disallow: [
+          '/_next/',    
+          '/api/',      
+          '/*?url=',    
+        ],
       },
     ],
-    additionalSitemaps: ['https://www.astrosewa.com/sitemap.xml'],
+    additionalSitemaps: [
+      'https://www.astrosewa.com/sitemap.xml',
+    ],
   },
-};
+}
