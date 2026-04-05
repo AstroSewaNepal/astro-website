@@ -7,13 +7,13 @@ import { HeroSectionImage } from '@/components/images';
 import LandingFAQ from '@/components/pages/landing/faq';
 import Clarity from '@/components/pages/landing/clarity';
 import LandingHero from '@/components/pages/landing/hero';
-import EventsPage from '@/components/pages/landing/events';
+// import EventsPage from '@/components/pages/landing/events';
 import Services from '@/components/pages/landing/services';
 import WhoWeAre from '@/components/pages/landing/who-we-are';
 import HotTopics from '@/components/pages/landing/hot-topics';
 import DownloadApp from '@/components/pages/landing/download-app';
-import TodayHoroscope from '@/components/pages/landing/today-horoscope';
-import CustomerFeedback from '@/components/pages/landing/customer-feedback';
+// import TodayHoroscope from '@/components/pages/landing/today-horoscope';
+// import CustomerFeedback from '@/components/pages/landing/customer-feedback';
 import AstrologerBlogListing from '@/components/pages/landing/blog-listing';
 import { LandingHeader } from '@/components/pages/landing/header/landing-header';
 

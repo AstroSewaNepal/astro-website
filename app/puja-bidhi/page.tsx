@@ -4,7 +4,7 @@ import clsx from 'clsx';
 
 import Footer from '@/components/pages/landing/footer';
 import { LandingHeader } from '@/components/pages/landing/header/landing-header';
-import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
+// import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
 
 import LandingPageCSS from '../landing-page.module.css';
