@@ -1,6 +1,7 @@
 'use client';
 import React, { useRef } from 'react';
 
+import clsx from 'clsx';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
@@ -18,7 +19,17 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
-const TalkToOurAstrologer: React.FC = () => {
+interface TalkToOurAstrologerProps {
+  title?: string;
+  description?: string;
+  className?: string;
+}
+
+const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
+  title = 'Talk To Our Top Astrologer',
+  description = 'Connect with our most trusted and experienced astrologers for personalized guidance, accurate predictions, and compassionate support on your life’s journey.',
+  className,
+}) => {
   const swiperRef = useRef<SwiperType | null>(null);
 
   const handlePrevious = () => {
@@ -34,19 +45,30 @@ const TalkToOurAstrologer: React.FC = () => {
   };
 
   return (
-    <section className="container mx-auto px-6 lg:px-0">
+    <section className={clsx('container mx-auto px-6 lg:px-0', className)}>
       <div className="flex flex-col items-center justify-center gap-6">
-        <h2 className="text-[56px] leading-[47.83px] text-primary">Talk To Our Top Astrologer</h2>
+        <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[34px] md:leading-[40px] lg:leading-[47.83px] text-primary text-center">
+          {title}
+        </h2>
         <p className="font-mukta text-2xl text-[#000000CF] max-w-[810px] text-center">
-          Connect with our most trusted and experienced astrologers for personalized guidance,
-          accurate predictions, and compassionate support on your life’s journey.
+          {description}
         </p>
       </div>
       <div className="mt-[50px]">
         <Swiper
           modules={[Pagination]}
-          slidesPerView={3}
+          slidesPerView={1}
           spaceBetween={30}
+          breakpoints={{
+            768: {
+              slidesPerView: 2,
+              spaceBetween: 24,
+            },
+            1024: {
+              slidesPerView: 3,
+              spaceBetween: 30,
+            },
+          }}
           className="mySwiper"
           onSwiper={swiper => {
             swiperRef.current = swiper;
