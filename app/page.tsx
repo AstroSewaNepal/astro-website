@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     images: [HeroSectionImage.src],
   },
   alternates: {
-    canonical: '/',
+    canonical: 'https://www.astrosewa.com',
   },
 };
 
