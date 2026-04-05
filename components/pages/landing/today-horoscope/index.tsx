@@ -24,17 +24,10 @@ import ArrowRight from '@/components/icons/arrow-right';
 // import StartIcon from '@/components/icons/start-icon';
 import Pagination from '@/components/common/pagination';
 import { ELanguage } from '@/components/enums/language.enum';
+import type { HoroscopeRecord } from '@/lib/types/horoscope';
+import { fetchActiveHoroscopes } from '@/lib/api/horoscope';
 
 import 'swiper/css';
-
-interface HoroscopeApiResponse {
-  _id: string;
-  sign: string;
-  content: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
 
 interface HoroscopeItem {
   name: string;
@@ -90,19 +83,12 @@ const TodayHoroscope: React.FC = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(
-          process.env.NEXT_PUBLIC_BACKEND_URL + 'api/v1/astrology/horoscope',
-        );
-        console.log(response);
-        if (!response.ok) {
-          throw new Error('Failed to fetch horoscope data');
-        }
-        const result = await response.json();
+        const result = await fetchActiveHoroscopes();
 
         if (result.success && result.data) {
           const transformedData: HoroscopeItem[] = result.data
-            .filter((item: HoroscopeApiResponse) => item.isActive)
-            .map((item: HoroscopeApiResponse) => ({
+            .filter((item: HoroscopeRecord) => item.isActive)
+            .map((item: HoroscopeRecord) => ({
               name: capitalizeSign(item.sign),
               detail: getShortDescription(item.content),
               image: getZodiacImage(item.sign),
