@@ -38,7 +38,8 @@ export function getZodiacSignsUrl(): string {
 }
 
 /** @deprecated Vedastro has no type filter; returns full list (client may filter). */
-export function getZodiacSignsByTypeUrl(_type: ZodiacType): string {
+export function getZodiacSignsByTypeUrl(type: ZodiacType): string {
+  void type;
   return getZodiacSignsUrl();
 }
 

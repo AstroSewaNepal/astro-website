@@ -60,8 +60,6 @@ const otherSignPairs = [
 const introText =
   'When Taurus and Cancer are zodiac close together in a love compatibility, they depict an amazing flow of love because of sharing deep karmic ties. There is immediate deep, sincere and harmonious vibration, more open to another, sometimes emotional in the Taurus-Cancer love match. The former will love to material life, while the latter will long to intimacy and emotional nourishment. In a single sentence they create a perfect balance of stability and emotional support, which makes them one of the most compatible pairings.';
 
-const calloutTitle = "Do you want to know more about Cancer and Taurus? We've got your answers.";
-
 const calloutButtons = [{ label: 'Start the chat' }, { label: 'Start call now' }];
 
 export default function CompatibilityMatchPage() {

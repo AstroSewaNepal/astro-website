@@ -112,17 +112,16 @@ export function HoroscopeDetailsClient() {
   const [detail, setDetail] = useState<HoroscopeDetailData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState<HoroscopeBodyKey>('general');
-
-  useEffect(() => {
-    setActiveSection('general');
-  }, [validSign, rangeType]);
+  const [activeSectionByView, setActiveSectionByView] = useState<{
+    key: string;
+    section: HoroscopeBodyKey;
+  }>({ key: '', section: 'general' });
+  const activeViewKey = `${validSign ?? 'none'}:${rangeType}`;
+  const activeSection =
+    activeSectionByView.key === activeViewKey ? activeSectionByView.section : 'general';
 
   useEffect(() => {
     if (!validSign) {
-      setDetail(null);
-      setLoading(false);
-      setError(null);
       return;
     }
     let cancelled = false;
@@ -208,7 +207,9 @@ export function HoroscopeDetailsClient() {
                     alt={capitalizeSign(slug)}
                     className="h-12 w-12 object-contain"
                   />
-                  <span className="font-mukta text-[11px] text-[#6f2618]">{capitalizeSign(slug)}</span>
+                  <span className="font-mukta text-[11px] text-[#6f2618]">
+                    {capitalizeSign(slug)}
+                  </span>
                 </Link>
               ))}
             </div>
@@ -249,7 +250,9 @@ export function HoroscopeDetailsClient() {
                         className="h-full w-full object-contain"
                       />
                     </div>
-                    <span className="font-mukta text-[10px] text-[#8a7463]">{capitalizeSign(slug)}</span>
+                    <span className="font-mukta text-[10px] text-[#8a7463]">
+                      {capitalizeSign(slug)}
+                    </span>
                   </Link>
                 );
               })}
@@ -285,12 +288,13 @@ export function HoroscopeDetailsClient() {
                       {detail.basic.element} · Ruled by {detail.basic.ruling_planet}
                     </p>
                     <p className="mt-1 font-mukta text-[12px] text-[#8a7463]">
-                      {detail.horoscope.start_date} — {detail.horoscope.end_date} · {detail.horoscope.type}
+                      {detail.horoscope.start_date} — {detail.horoscope.end_date} ·{' '}
+                      {detail.horoscope.type}
                     </p>
                     <p className="mt-2 font-mukta text-[12px] leading-relaxed text-[#6b5a4e]">
                       Moon in {detail.astro_signals.moon_sign}
-                      {detail.astro_signals.mercury_retrograde ? ' · Mercury retrograde' : ''} · Energy{' '}
-                      {detail.astro_signals.energy_score}/10 · Intensity:{' '}
+                      {detail.astro_signals.mercury_retrograde ? ' · Mercury retrograde' : ''} ·
+                      Energy {detail.astro_signals.energy_score}/10 · Intensity:{' '}
                       {detail.astro_signals.emotional_intensity}
                     </p>
                     <p className="mt-3 font-mukta text-[14px] leading-7 text-[#5e4f45]">
@@ -315,7 +319,9 @@ export function HoroscopeDetailsClient() {
                       <button
                         key={pill.id}
                         type="button"
-                        onClick={() => setActiveSection(pill.id)}
+                        onClick={() =>
+                          setActiveSectionByView({ key: activeViewKey, section: pill.id })
+                        }
                         className={clsx(
                           'rounded-full border px-3 py-1.5 font-mukta text-[10px] uppercase tracking-wide',
                           activeSection === pill.id
@@ -331,7 +337,9 @@ export function HoroscopeDetailsClient() {
                   <h4 className="mt-6 font-mukta text-[13px] font-semibold uppercase text-[#6f2618]">
                     {SECTION_PILLS.find(p => p.id === activeSection)?.label}
                   </h4>
-                  <p className="mt-2 font-mukta text-[14px] leading-7 text-[#5e4f45]">{sectionBody}</p>
+                  <p className="mt-2 font-mukta text-[14px] leading-7 text-[#5e4f45]">
+                    {sectionBody}
+                  </p>
                 </div>
 
                 <div className="mt-8">

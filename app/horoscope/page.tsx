@@ -14,7 +14,10 @@ import Services from '@/components/pages/landing/services';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Footer from '@/components/pages/landing/footer';
 import { fetchVedastroHoroscopeList } from '@/lib/api/vedastro/horoscope';
-import { horoscopeDetailPageHref, parseHoroscopeRangeFromUrl } from '@/lib/constants/horoscope-range-nav';
+import {
+  horoscopeDetailPageHref,
+  parseHoroscopeRangeFromUrl,
+} from '@/lib/constants/horoscope-range-nav';
 import type { HoroscopeSummaryRow, VedastroHoroscopeRangeType } from '@/lib/types/vedastro';
 
 import LandingPageCSS from '../landing-page.module.css';
@@ -182,11 +185,7 @@ function HoroscopePageContent() {
       const meta = META_BY_SLUG[slug];
       const fallbackImage = staticFallback[0]!.image;
       const name =
-        meta == null
-          ? row.sign
-          : language === ELanguage.ENGLISH
-            ? meta.en.name
-            : meta.np.name;
+        meta == null ? row.sign : language === ELanguage.ENGLISH ? meta.en.name : meta.np.name;
       const image =
         meta == null
           ? fallbackImage
@@ -261,60 +260,60 @@ function HoroscopePageContent() {
             ) : null}
 
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 xl:gap-5">
-              {cards === 'loading'
-                ? Array.from({ length: 12 }).map((_, i) => (
-                    <div
-                      key={`horoscope-skeleton-${selectedRange}-${i}`}
-                      className="h-[120px] animate-pulse rounded-[26px] border border-[#c8ad93]/50 bg-[#f4eadf]/60"
-                    />
-                  ))
-                : cards.length === 0
-                  ? (
-                      <p className="col-span-full text-center font-mukta text-[15px] text-[#6b5a4e]">
-                        No horoscope summaries are available for this period.
-                      </p>
-                    )
-                  : cards.map(card => (
-                      <Link
-                        key={`${selectedRange}-${card.key}`}
-                        href={horoscopeDetailPageHref(card.key, selectedRange)}
-                        className="block rounded-[26px] border border-[#c8ad93] bg-[#fbf6ee]/90 px-4 py-3 shadow-[0_6px_20px_rgba(97,21,8,0.06)] transition-transform duration-200 hover:-translate-y-0.5"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="flex h-[78px] w-[78px] shrink-0 items-center justify-center rounded-[22px] border border-[#dfcebc] bg-[#f4eadf]">
-                            <Image
-                              src={card.image}
-                              alt={card.name}
-                              className="h-[60px] w-[60px] object-contain"
-                            />
-                          </div>
-                          <div className="min-w-0 flex-1 text-left">
-                            <div className="flex items-center gap-1.5">
-                              <p className="truncate font-mukta text-[15px] font-bold leading-6 text-[#742718] sm:text-[16px]">
-                                {card.name}
-                              </p>
-                              <div className="flex items-center gap-0.5 text-[#ef8a20]">
-                                {Array.from({ length: card.stars }).map((_, starIndex) => (
-                                  <StartIcon
-                                    key={`${card.key}-star-${starIndex}`}
-                                    className="h-3.5 w-3.5 text-[#ef8a20]"
-                                  />
-                                ))}
-                              </div>
-                            </div>
-
-                            <p className="mt-1 line-clamp-2 font-mukta text-[11px] leading-[1.35] text-[#706258]">
-                              {card.summary}
-                            </p>
-
-                            <span className="mt-2 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[12px] font-semibold text-[#7b3b27]">
-                              Read More
-                              <ArrowRight className="h-3 w-3 text-[#7b3b27]" />
-                            </span>
+              {cards === 'loading' ? (
+                Array.from({ length: 12 }).map((_, i) => (
+                  <div
+                    key={`horoscope-skeleton-${selectedRange}-${i}`}
+                    className="h-[120px] animate-pulse rounded-[26px] border border-[#c8ad93]/50 bg-[#f4eadf]/60"
+                  />
+                ))
+              ) : cards.length === 0 ? (
+                <p className="col-span-full text-center font-mukta text-[15px] text-[#6b5a4e]">
+                  No horoscope summaries are available for this period.
+                </p>
+              ) : (
+                cards.map(card => (
+                  <Link
+                    key={`${selectedRange}-${card.key}`}
+                    href={horoscopeDetailPageHref(card.key, selectedRange)}
+                    className="block rounded-[26px] border border-[#c8ad93] bg-[#fbf6ee]/90 px-4 py-3 shadow-[0_6px_20px_rgba(97,21,8,0.06)] transition-transform duration-200 hover:-translate-y-0.5"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-[78px] w-[78px] shrink-0 items-center justify-center rounded-[22px] border border-[#dfcebc] bg-[#f4eadf]">
+                        <Image
+                          src={card.image}
+                          alt={card.name}
+                          className="h-[60px] w-[60px] object-contain"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1 text-left">
+                        <div className="flex items-center gap-1.5">
+                          <p className="truncate font-mukta text-[15px] font-bold leading-6 text-[#742718] sm:text-[16px]">
+                            {card.name}
+                          </p>
+                          <div className="flex items-center gap-0.5 text-[#ef8a20]">
+                            {Array.from({ length: card.stars }).map((_, starIndex) => (
+                              <StartIcon
+                                key={`${card.key}-star-${starIndex}`}
+                                className="h-3.5 w-3.5 text-[#ef8a20]"
+                              />
+                            ))}
                           </div>
                         </div>
-                      </Link>
-                    ))}
+
+                        <p className="mt-1 line-clamp-2 font-mukta text-[11px] leading-[1.35] text-[#706258]">
+                          {card.summary}
+                        </p>
+
+                        <span className="mt-2 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[12px] font-semibold text-[#7b3b27]">
+                          Read More
+                          <ArrowRight className="h-3 w-3 text-[#7b3b27]" />
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
           </section>
           <section className="mx-auto mt-10 max-w-[1180px] px-1 sm:px-2 lg:mt-12">

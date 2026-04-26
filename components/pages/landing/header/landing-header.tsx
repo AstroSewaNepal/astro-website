@@ -91,8 +91,13 @@ function LandingHeaderClient() {
     pathname === '/horoscope' ? parseHoroscopeRangeFromUrl(searchParams.get('type')) : null;
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [horoscopeMenuOpen, setHoroscopeMenuOpen] = useState(false);
+  const [horoscopeMenuState, setHoroscopeMenuState] = useState<{
+    routeKey: string;
+    open: boolean;
+  }>({ routeKey: '', open: false });
   const horoscopeNavRef = useRef<HTMLDivElement>(null);
+  const routeKey = `${pathname}?${searchParams.toString()}`;
+  const horoscopeMenuOpen = horoscopeMenuState.open && horoscopeMenuState.routeKey === routeKey;
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -106,17 +111,13 @@ function LandingHeaderClient() {
   }, [isMobileMenuOpen]);
 
   useEffect(() => {
-    setHoroscopeMenuOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
     if (!horoscopeMenuOpen) {
       return;
     }
     const onPointerDown = (e: PointerEvent) => {
       const el = horoscopeNavRef.current;
       if (el && !el.contains(e.target as Node)) {
-        setHoroscopeMenuOpen(false);
+        setHoroscopeMenuState(state => ({ ...state, open: false }));
       }
     };
     document.addEventListener('pointerdown', onPointerDown);
@@ -169,7 +170,12 @@ function LandingHeaderClient() {
                     type="button"
                     aria-expanded={horoscopeMenuOpen}
                     aria-haspopup="true"
-                    onClick={() => setHoroscopeMenuOpen(open => !open)}
+                    onClick={() =>
+                      setHoroscopeMenuState(state => ({
+                        routeKey,
+                        open: state.routeKey === routeKey ? !state.open : true,
+                      }))
+                    }
                     className="text-white flex items-center justify-center gap-1 py-[7px] px-[17px]"
                   >
                     <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
@@ -192,7 +198,9 @@ function LandingHeaderClient() {
                             key={opt.type}
                             href={horoscopeListPageHref(opt.type)}
                             role="menuitem"
-                            onClick={() => setHoroscopeMenuOpen(false)}
+                            onClick={() =>
+                              setHoroscopeMenuState(state => ({ ...state, open: false }))
+                            }
                             className={clsx(
                               'block px-5 py-3 text-center font-sahitya text-[16px] leading-snug text-[#4a1a1a] transition-colors sm:text-[17px]',
                               active ? 'bg-[#f9f2e9] text-[#3a1414]' : 'hover:bg-[#faf6f0]',
