@@ -291,8 +291,7 @@ function LandingHeaderClient() {
                     >
                       {HOROSCOPE_RANGE_NAV_OPTIONS.map(opt => {
                         const active = activeHoroscopeRange === opt.type;
-                        const rangeLabel =
-                          uiLang === ELanguage.NEPALI ? opt.labelNp : opt.labelEn;
+                        const rangeLabel = uiLang === ELanguage.NEPALI ? opt.labelNp : opt.labelEn;
                         return (
                           <Link
                             key={opt.type}
@@ -319,7 +318,9 @@ function LandingHeaderClient() {
             return (
               <Link href={value.link ?? '#'} key={value.id}>
                 <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
-                  <p className="font-mukta font-light text-xl leading-7">{d.header.nav[value.id]}</p>
+                  <p className="font-mukta font-light text-xl leading-7">
+                    {d.header.nav[value.id]}
+                  </p>
                   {value.children && <ChevronDownIcon className="text-white" />}
                 </div>
               </Link>

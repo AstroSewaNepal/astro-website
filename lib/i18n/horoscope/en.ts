@@ -42,6 +42,11 @@ export const horoscopeEn: HoroscopeMessages = {
       'A horoscope is a chart or reading based on the positions of celestial bodies at a given time—often your birth date or the present day. Many traditions use it as a gentle guide for mood, timing, and self-reflection rather than a fixed prediction.',
     whatIsP2:
       'On Astro Sewa we present daily, weekly, and longer-range summaries in a clear layout so you can explore each sign at your own pace. Use it as one perspective among many when making decisions about work, relationships, and wellbeing.',
+    whyTitle: 'Why Horoscope?',
+    whyP1:
+      'Many people check their horoscope to notice patterns in energy, relationships, and focus over time. It can be a simple ritual that encourages mindfulness at the start or end of the day.',
+    whyP2:
+      'We keep interpretations grounded and easy to read so you can take what resonates and leave the rest—whether you follow a daily, weekly, or monthly rhythm.',
   },
   details: {
     unknownSign: 'Unknown zodiac sign',

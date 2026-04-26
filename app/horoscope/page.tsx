@@ -1,16 +1,17 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination } from 'swiper/modules';
+import type { Swiper as SwiperType } from 'swiper';
 
+import { ChevronLeftIcon } from '@/components/images/icons';
 import { useHoroscopeLocale } from '@/lib/i18n/horoscope/horoscope-locale-context';
-import {
-  persistCardDisplayLanguage,
-  readCardDisplayLanguage,
-} from '@/lib/i18n/horoscope';
+import { persistCardDisplayLanguage, readCardDisplayLanguage } from '@/lib/i18n/horoscope';
 import ArrowRight from '@/components/icons/arrow-right';
 import StartIcon from '@/components/icons/start-icon';
 import { ELanguage } from '@/components/enums/language.enum';
@@ -23,9 +24,12 @@ import {
   horoscopeDetailPageHref,
   parseHoroscopeRangeFromUrl,
 } from '@/lib/constants/horoscope-range-nav';
-import type { HoroscopeSummaryRow } from '@/lib/types/vedastro';
+import type { HoroscopeSummaryRow, VedastroHoroscopeRangeType } from '@/lib/types/vedastro';
 
 import LandingPageCSS from '../landing-page.module.css';
+
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 type HoroscopeCardMeta = {
   en: (typeof HOROSCOPE_DATA)[ELanguage.ENGLISH][number];
@@ -49,6 +53,106 @@ function starCountFromRating(rating: number): number {
     return 3;
   }
   return Math.min(5, Math.max(1, Math.round(rating)));
+}
+
+type DisplayCard = {
+  key: string;
+  name: string;
+  image: (typeof HOROSCOPE_DATA)[ELanguage.ENGLISH][number]['image'];
+  summary: string;
+  stars: number;
+};
+
+type SignCardLayout = 'grid' | 'carousel';
+
+function HoroscopeSignCardLink(props: {
+  card: DisplayCard;
+  selectedRange: VedastroHoroscopeRangeType;
+  uiLanguage: ELanguage;
+  readMoreLabel: string;
+  layout: SignCardLayout;
+}) {
+  const { card, selectedRange, uiLanguage, readMoreLabel, layout } = props;
+  /** Mobile carousel mock shows three stars; grid keeps API rating. */
+  const starCount = layout === 'carousel' ? 3 : card.stars;
+  const innerFlex =
+    layout === 'grid'
+      ? 'flex flex-col items-center gap-3 text-center md:flex-row md:items-center md:gap-4 md:text-left'
+      : 'flex min-h-0 flex-row items-center gap-3 text-left';
+
+  return (
+    <Link
+      href={horoscopeDetailPageHref(card.key, selectedRange, uiLanguage)}
+      className={clsx(
+        'group block h-full rounded-[20px] border px-4 py-4 transition-[transform,box-shadow,colors] duration-200 active:scale-[0.99] sm:px-4 sm:py-3 md:rounded-[24px] xl:rounded-[26px]',
+        layout === 'carousel' &&
+          clsx(
+            'snap-start border-[#d4d4d8] bg-white py-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)] hover:border-[#c4c4c9] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] sm:py-6',
+            'min-[380px]:px-5',
+          ),
+        layout === 'grid' &&
+          'border-[#5c4033]/35 bg-transparent hover:-translate-y-0.5 hover:border-[#5c4033]/55 hover:bg-white/15 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)]',
+      )}
+    >
+      <div className={innerFlex}>
+        <div
+          className={clsx(
+            'flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[18px] border border-transparent bg-transparent',
+            'sm:h-[76px] sm:w-[76px] sm:rounded-[20px]',
+            'md:h-[78px] md:w-[78px] md:rounded-[22px]',
+            layout === 'grid' && 'md:border-[#dfcebc]/40 md:bg-[#f4eadf]/40',
+          )}
+        >
+          <Image
+            src={card.image}
+            alt={card.name}
+            className="h-[54px] w-[54px] object-contain sm:h-[58px] sm:w-[58px] md:h-[60px] md:w-[60px]"
+          />
+        </div>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <div
+            className={clsx(
+              'flex flex-wrap items-center gap-1.5',
+              layout === 'grid' ? 'justify-center md:justify-start' : 'justify-start',
+            )}
+          >
+            <p className="font-mukta text-[15px] font-bold leading-snug text-[#742718] sm:text-[16px]">
+              {card.name}
+            </p>
+            <div className="flex items-center gap-0.5 text-[#ef8a20]">
+              {Array.from({ length: starCount }).map((_, starIndex) => (
+                <StartIcon
+                  key={`${card.key}-star-${starIndex}`}
+                  className="h-3 w-3 text-[#ef8a20] sm:h-3.5 sm:w-3.5"
+                />
+              ))}
+            </div>
+          </div>
+
+          <p
+            className={clsx(
+              'mt-1.5 line-clamp-3 font-mukta text-[11px] leading-[1.45] sm:line-clamp-2 sm:text-[11px] md:leading-[1.35]',
+              layout === 'carousel'
+                ? 'text-[#6b6560] line-clamp-3 sm:line-clamp-3 sm:text-[12px]'
+                : 'text-[#706258]',
+            )}
+          >
+            {card.summary}
+          </p>
+
+          <span
+            className={clsx(
+              'mt-3 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[12px] font-semibold text-[#7b3b27]',
+              layout === 'grid' ? 'justify-center self-center md:mt-2 md:justify-start md:self-start' : 'mt-2 self-start',
+            )}
+          >
+            {readMoreLabel}
+            <ArrowRight className="h-3 w-3 text-[#7b3b27]" />
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
 }
 
 function HoroscopePageContent() {
@@ -101,13 +205,7 @@ function HoroscopePageContent() {
     };
   }, [selectedRange]);
 
-  type DisplayCard = {
-    key: string;
-    name: string;
-    image: (typeof HOROSCOPE_DATA)[ELanguage.ENGLISH][number]['image'];
-    summary: string;
-    stars: number;
-  };
+  const swiperRef = useRef<SwiperType | null>(null);
 
   const cards = useMemo((): DisplayCard[] | 'loading' => {
     const staticFallback = HOROSCOPE_DATA[signLanguage];
@@ -131,11 +229,7 @@ function HoroscopePageContent() {
       const meta = META_BY_SLUG[slug];
       const fallbackImage = staticFallback[0]!.image;
       const name =
-        meta == null
-          ? row.sign
-          : signLanguage === ELanguage.ENGLISH
-            ? meta.en.name
-            : meta.np.name;
+        meta == null ? row.sign : signLanguage === ELanguage.ENGLISH ? meta.en.name : meta.np.name;
       const image =
         meta == null
           ? fallbackImage
@@ -155,33 +249,42 @@ function HoroscopePageContent() {
   return (
     <main className={clsx('min-h-screen overflow-hidden', LandingPageCSS.background)}>
       <div className="relative isolate">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.75),_rgba(255,255,255,0)_65%)]" />
-        <div className="mx-auto max-w-[1240px] px-4 pb-16 pt-4 sm:px-6 lg:px-8">
-          <section className="mt-4 rounded-[30px] border border-[#d9c3ad] bg-[rgba(249,242,233,0.88)] px-3 py-4 shadow-[0_18px_60px_rgba(92,56,23,0.12)] backdrop-blur-[2px] sm:px-5 sm:py-6 lg:px-8 lg:py-8">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_120%_80%_at_50%_0%,rgba(255,255,255,0.82),rgba(255,255,255,0)_58%)] sm:h-72" />
+        <div className="mx-auto max-w-[1240px] px-3 pb-12 pt-2 sm:px-5 sm:pb-16 sm:pt-4 lg:px-8">
+          {/* Hero: transparent panel (page bg). Mobile cards: white tiles per Figma; md+ grid: transparent tiles. */}
+          <section
+            className={clsx(
+              'mt-2 bg-transparent px-2 py-4 sm:mt-4 sm:px-3 sm:py-5 md:px-4 md:py-6 lg:px-6 lg:py-8',
+            )}
+          >
             <div className="mx-auto max-w-5xl text-center">
-              <h1 className="font-sahitya text-[34px] leading-none text-[#6b2417] sm:text-[44px] lg:text-[62px]">
+              <h1
+                className={clsx(
+                  'w-full text-center font-tiro-devanagari text-[24px] font-normal leading-[47.83px] tracking-normal text-[#691709]',
+                  'md:text-[56px] md:leading-[47.83px] md:text-[#611508]',
+                )}
+              >
                 {copy.title}
               </h1>
 
-              <div className="mt-5 flex items-center justify-center gap-2 text-[#ef8a20]">
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <StartIcon key={`title-star-${index}`} className="h-4 w-4 text-[#ef8a20]" />
-                ))}
-              </div>
-
-              <p className="mx-auto mt-4 max-w-3xl font-mukta text-[14px] leading-7 text-[#6b5a4e] sm:text-[16px]">
+              <p
+                className={clsx(
+                  'mx-auto mt-3 max-w-3xl font-mukta leading-relaxed text-[#6b5a4e]',
+                  'text-[13px] sm:mt-4 sm:text-[15px] sm:leading-7 lg:text-[16px]',
+                )}
+              >
                 {copy.intro}
               </p>
 
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <div className="mx-auto mt-5 flex w-full max-w-sm flex-col gap-2 sm:mt-6 sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setSignLanguage(ELanguage.ENGLISH)}
                   className={clsx(
-                    'rounded-full border px-6 py-2.5 font-mukta text-[15px] transition-colors',
+                    'min-h-[44px] w-full rounded-full border px-5 py-2.5 font-mukta text-[15px] transition-colors sm:w-auto sm:min-h-0 sm:px-6',
                     signLanguage === ELanguage.ENGLISH
-                      ? 'border-[#6f2618] bg-[#6f2618] text-white'
-                      : 'border-[#b48f74] bg-transparent text-[#6f2618] hover:bg-white/50',
+                      ? 'border-[#6f2618] bg-[#6f2618] text-white shadow-sm'
+                      : 'border-[#6f2618] bg-white text-[#6f2618] hover:bg-white/90',
                   )}
                 >
                   English
@@ -190,10 +293,10 @@ function HoroscopePageContent() {
                   type="button"
                   onClick={() => setSignLanguage(ELanguage.NEPALI)}
                   className={clsx(
-                    'rounded-full border px-6 py-2.5 font-mukta text-[15px] transition-colors',
+                    'min-h-[44px] w-full rounded-full border px-5 py-2.5 font-mukta text-[15px] transition-colors sm:w-auto sm:min-h-0 sm:px-6',
                     signLanguage === ELanguage.NEPALI
-                      ? 'border-[#6f2618] bg-[#6f2618] text-white'
-                      : 'border-[#b48f74] bg-transparent text-[#6f2618] hover:bg-white/50',
+                      ? 'border-[#6f2618] bg-[#6f2618] text-white shadow-sm'
+                      : 'border-[#6f2618] bg-white text-[#6f2618] hover:bg-white/90',
                   )}
                 >
                   Nepali
@@ -202,82 +305,147 @@ function HoroscopePageContent() {
             </div>
 
             {listError && (!rows || rows.length === 0) ? (
-              <p className="mt-4 text-center font-mukta text-[13px] text-[#a94442]" role="alert">
+              <p
+                className="mt-4 px-1 text-center font-mukta text-[12px] text-[#a94442] sm:text-[13px]"
+                role="alert"
+              >
                 {listError} {dict.list.errorFallbackSuffix}
               </p>
             ) : null}
 
-            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 xl:gap-5">
-              {cards === 'loading' ? (
-                Array.from({ length: 12 }).map((_, i) => (
-                  <div
-                    key={`horoscope-skeleton-${selectedRange}-${i}`}
-                    className="h-[120px] animate-pulse rounded-[26px] border border-[#c8ad93]/50 bg-[#f4eadf]/60"
-                  />
-                ))
-              ) : cards.length === 0 ? (
-                <p className="col-span-full text-center font-mukta text-[15px] text-[#6b5a4e]">
-                  {dict.list.empty}
-                </p>
-              ) : (
-                cards.map(card => (
-                  <Link
-                    key={`${selectedRange}-${card.key}`}
-                    href={horoscopeDetailPageHref(card.key, selectedRange, uiLanguage)}
-                    className="block rounded-[26px] border border-[#c8ad93] bg-[#fbf6ee]/90 px-4 py-3 shadow-[0_6px_20px_rgba(97,21,8,0.06)] transition-transform duration-200 hover:-translate-y-0.5"
+            {cards !== 'loading' && cards.length === 0 ? (
+              <p className="mt-6 py-6 text-center font-mukta text-[14px] text-[#6b5a4e] sm:mt-8 sm:text-[15px]">
+                {dict.list.empty}
+              </p>
+            ) : (
+              <>
+                {/* Mobile: carousel with peek, side arrows, pagination dots */}
+                <div className="horoscope-hero-swiper-mob relative mt-6 sm:mt-8 md:hidden">
+                  <button
+                    type="button"
+                    aria-label="Previous sign"
+                    onClick={() => swiperRef.current?.slidePrev()}
+                    className="absolute left-0 top-[42%] z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-[78px] w-[78px] shrink-0 items-center justify-center rounded-[22px] border border-[#dfcebc] bg-[#f4eadf]">
-                        <Image
-                          src={card.image}
-                          alt={card.name}
-                          className="h-[60px] w-[60px] object-contain"
+                    <Image src={ChevronLeftIcon} alt="" className="h-2.5 w-2.5 opacity-75" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Next sign"
+                    onClick={() => swiperRef.current?.slideNext()}
+                    className="absolute right-0 top-[42%] z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white"
+                  >
+                    <Image src={ChevronLeftIcon} alt="" className="h-2.5 w-2.5 rotate-180 opacity-75" />
+                  </button>
+                  <Swiper
+                    key={`horoscope-mob-${selectedRange}-${signLanguage}-${cards === 'loading' ? 'loading' : cards.map(c => c.key).join(',')}`}
+                    modules={[Pagination]}
+                    slidesPerView={1.28}
+                    spaceBetween={10}
+                    centeredSlides
+                    slidesOffsetBefore={4}
+                    slidesOffsetAfter={4}
+                    breakpoints={{
+                      400: { slidesPerView: 1.38, spaceBetween: 11 },
+                      480: { slidesPerView: 1.48, spaceBetween: 12 },
+                    }}
+                    className="horoscope-cards-swiper !overflow-visible px-10 pb-9"
+                    pagination={{ clickable: true }}
+                    onSwiper={swiper => {
+                      swiperRef.current = swiper;
+                    }}
+                  >
+                    {cards === 'loading'
+                      ? Array.from({ length: 8 }).map((_, i) => (
+                          <SwiperSlide key={`horoscope-skeleton-mob-${selectedRange}-${i}`} className="!h-auto">
+                            <div className="min-h-[140px] animate-pulse rounded-[20px] border border-[#d4d4d8] bg-neutral-100" />
+                          </SwiperSlide>
+                        ))
+                      : cards.map(card => (
+                          <SwiperSlide key={`mob-${selectedRange}-${card.key}`} className="!h-auto">
+                            <HoroscopeSignCardLink
+                              card={card}
+                              selectedRange={selectedRange}
+                              uiLanguage={uiLanguage}
+                              readMoreLabel={dict.list.readMore}
+                              layout="carousel"
+                            />
+                          </SwiperSlide>
+                        ))}
+                  </Swiper>
+                </div>
+
+                <div
+                  className={clsx(
+                    'mt-6 hidden grid-cols-1 gap-3 md:grid',
+                    'sm:mt-8 sm:grid-cols-2 sm:gap-4',
+                    'xl:grid-cols-4 xl:gap-5',
+                  )}
+                >
+                  {cards === 'loading'
+                    ? Array.from({ length: 12 }).map((_, i) => (
+                        <div
+                          key={`horoscope-skeleton-${selectedRange}-${i}`}
+                          className="min-h-[120px] animate-pulse rounded-[20px] border border-[#5c4033]/25 bg-transparent md:min-h-[120px] md:rounded-[24px] xl:rounded-[26px]"
                         />
-                      </div>
-                      <div className="min-w-0 flex-1 text-left">
-                        <div className="flex items-center gap-1.5">
-                          <p className="truncate font-mukta text-[15px] font-bold leading-6 text-[#742718] sm:text-[16px]">
-                            {card.name}
-                          </p>
-                          <div className="flex items-center gap-0.5 text-[#ef8a20]">
-                            {Array.from({ length: card.stars }).map((_, starIndex) => (
-                              <StartIcon
-                                key={`${card.key}-star-${starIndex}`}
-                                className="h-3.5 w-3.5 text-[#ef8a20]"
-                              />
-                            ))}
-                          </div>
-                        </div>
-
-                        <p className="mt-1 line-clamp-2 font-mukta text-[11px] leading-[1.35] text-[#706258]">
-                          {card.summary}
-                        </p>
-
-                        <span className="mt-2 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[12px] font-semibold text-[#7b3b27]">
-                          {dict.list.readMore}
-                          <ArrowRight className="h-3 w-3 text-[#7b3b27]" />
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ))
-              )}
-            </div>
+                      ))
+                    : cards.map(card => (
+                        <HoroscopeSignCardLink
+                          key={`${selectedRange}-${card.key}`}
+                          card={card}
+                          selectedRange={selectedRange}
+                          uiLanguage={uiLanguage}
+                          readMoreLabel={dict.list.readMore}
+                          layout="grid"
+                        />
+                      ))}
+                </div>
+              </>
+            )}
           </section>
-          <section className="mx-auto mt-10 max-w-[1180px] px-1 sm:px-2 lg:mt-12">
-            <h2 className="font-sahitya text-[26px] font-bold leading-tight text-[#6b2417] sm:text-[28px] lg:text-[30px]">
+
+          <section
+            className={clsx(
+              'mx-auto mt-8 max-w-[1180px] px-2 sm:mt-10 sm:px-3 lg:mt-12 lg:px-4',
+            )}
+          >
+            <h2
+              className={clsx(
+                'font-sahitya font-bold leading-tight text-[#6b2417]',
+                'text-[22px] sm:text-[26px] sm:leading-tight lg:text-[30px]',
+              )}
+            >
               {dict.section.whatIsTitle}
             </h2>
 
-            <div className="mt-4 space-y-5 font-mukta text-[15px] leading-8 text-[#5f5248] sm:text-[16px]">
+            <div className="mt-3 space-y-4 font-mukta text-[14px] leading-7 text-[#5f5248] sm:mt-4 sm:space-y-5 sm:text-[15px] sm:leading-8 lg:text-[16px]">
               <p>{dict.section.whatIsP1}</p>
               <p>{dict.section.whatIsP2}</p>
             </div>
           </section>
 
-          <TalkToOurAstrologer className="mx-auto mt-14 max-w-[1180px]" />
+          <section
+            className={clsx(
+              'mx-auto mt-8 max-w-[1180px] px-2 sm:mt-10 sm:px-3 lg:mt-10 lg:px-4',
+            )}
+          >
+            <h2
+              className={clsx(
+                'font-sahitya font-bold leading-tight text-[#6b2417]',
+                'text-[22px] sm:text-[26px] sm:leading-tight lg:text-[30px]',
+              )}
+            >
+              {dict.section.whyTitle}
+            </h2>
+            <div className="mt-3 space-y-4 font-mukta text-[14px] leading-7 text-[#5f5248] sm:mt-4 sm:space-y-5 sm:text-[15px] sm:leading-8 lg:text-[16px]">
+              <p>{dict.section.whyP1}</p>
+              <p>{dict.section.whyP2}</p>
+            </div>
+          </section>
 
-          <div className="mx-auto mt-14 max-w-[1180px]">
+          <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+
+          <div className="mx-auto mt-10 max-w-[1180px] sm:mt-14">
             <Services />
           </div>
         </div>
@@ -291,7 +459,7 @@ function HoroscopePageFallback() {
   const { dict } = useHoroscopeLocale();
   return (
     <main className={clsx('min-h-screen overflow-hidden', LandingPageCSS.background)}>
-      <div className="mx-auto max-w-[1240px] px-4 py-20 text-center font-mukta text-[15px] text-[#6b5a4e]">
+      <div className="mx-auto max-w-[1240px] px-4 py-16 text-center font-mukta text-[14px] text-[#6b5a4e] sm:py-20 sm:text-[15px]">
         {dict.list.loading}
       </div>
       <Footer />

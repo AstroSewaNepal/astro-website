@@ -16,6 +16,9 @@ export type HoroscopeMessages = {
     whatIsTitle: string;
     whatIsP1: string;
     whatIsP2: string;
+    whyTitle: string;
+    whyP1: string;
+    whyP2: string;
   };
   details: {
     unknownSign: string;

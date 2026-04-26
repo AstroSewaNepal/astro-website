@@ -649,6 +649,38 @@ body {
   background: #5b5b5b !important;
 }
 
+/* Talk to astrologer — bullets on cream background */
+.talk-to-our-astrologer-section .swiper-pagination-bullet {
+  background: rgba(97, 21, 8, 0.22) !important;
+}
+.talk-to-our-astrologer-section .swiper-pagination-bullet-active {
+  background: var(--primary) !important;
+}
+.talk-to-our-astrologer-section .swiper-pagination-bullet:hover {
+  background: rgba(97, 21, 8, 0.45) !important;
+}
+
+/* Horoscope hero mobile — dots under cards (active dark, inactive light gray) */
+.horoscope-hero-swiper-mob .swiper-pagination {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  margin-top: 0 !important;
+}
+.horoscope-hero-swiper-mob .swiper-pagination-bullet {
+  width: 8px !important;
+  height: 8px !important;
+  background: rgba(120, 120, 120, 0.35) !important;
+  opacity: 1 !important;
+}
+.horoscope-hero-swiper-mob .swiper-pagination-bullet-active {
+  background: #4a4a4a !important;
+}
+.horoscope-hero-swiper-mob .swiper-pagination-bullet:hover {
+  background: rgba(74, 74, 74, 0.55) !important;
+}
+
 /* Hide default Swiper navigation arrows */
 .swiper-button-prev,
 .swiper-button-next {

@@ -4,7 +4,7 @@ import { EducationIcon, GoldMedalIcon, LanguageIcon, SquareIcon } from '@/compon
 export const ASTROLOGER_FEATURE = [
   {
     icon: LanguageIcon,
-    title: 'English, Nepali',
+    title: 'English, Hindi, Nepali',
   },
   {
     icon: SquareIcon,

@@ -7,10 +7,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 import { useHoroscopeLocale } from '@/lib/i18n/horoscope/horoscope-locale-context';
-import {
-  interpolate,
-  readCardDisplayLanguage,
-} from '@/lib/i18n/horoscope';
+import { interpolate, readCardDisplayLanguage } from '@/lib/i18n/horoscope';
 import Footer from '@/components/pages/landing/footer';
 import ArrowRight from '@/components/icons/arrow-right';
 import StartIcon from '@/components/icons/start-icon';
