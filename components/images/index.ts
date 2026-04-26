@@ -10,6 +10,11 @@ import AppleDownloadImage from './apple-download.png';
 import GoogleDownloadImage from './google-download.png';
 import DownloadPhoneImage from './download-phone.png';
 import AstroSewaTransparentLogo from './astro-sewa-transparent.png';
+import FreeKundaliIllustration from './free-kundali-illustration.png';
+import KundaliSavedSigninIllustration from './kundali-saved-signin-illustration.png';
+import astrology from './astrology.png';
+import AstrologyPrimaryColor from './icons/astrology-primarycolor.png';
+import SquareNumberChart from './icons/SquareNumberChart.png';
 
 export {
   TeejImage,
@@ -24,4 +29,9 @@ export {
   GoogleDownloadImage,
   DownloadPhoneImage,
   AstroSewaTransparentLogo,
+  FreeKundaliIllustration,
+  KundaliSavedSigninIllustration,
+  astrology,
+  AstrologyPrimaryColor,
+  SquareNumberChart,
 };

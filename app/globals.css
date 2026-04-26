@@ -5,6 +5,7 @@
   --font-tiro-devanagari: 'Tiro Devanagari Sanskrit', serif;
   --font-sahitya: 'Sahitya', serif;
   --font-mukta: 'Mukta', serif;
+  --font-raleway: 'Raleway', sans-serif;
 
   /* Deep Saffron Color Palette */
   --saffron-50: #fff2e5;
@@ -77,6 +78,10 @@
   --white: #ffffff;
 
   --primary: #611508;
+  --secondary: #f8f3df;
+  --Trinary: #be7b71;
+  --Paragraph: #464646;
+  --hoverColor: #f8f3df26;
 }
 
 body {
@@ -96,6 +101,10 @@ body {
   font-family: var(--font-mukta);
 }
 
+@utility font-raleway {
+  font-family: var(--font-raleway);
+}
+
 @utility text-primary {
   color: var(--primary);
 }
@@ -106,6 +115,38 @@ body {
 
 @utility bg-primary {
   background-color: var(--primary);
+}
+
+@utility bg-hoverColor {
+  background-color: var(--hoverColor);
+}
+
+@utility text-secondary {
+  color: var(--secondary);
+}
+
+@utility bg-secondary {
+  background-color: var(--secondary);
+}
+
+@utility border-secondary {
+  border-color: var(--secondary);
+}
+
+@utility text-Trinary {
+  color: var(--Trinary);
+}
+
+@utility bg-Trinary {
+  background-color: var(--Trinary);
+}
+
+@utility border-Trinary {
+  border-color: var(--Trinary);
+}
+
+@utility text-Paragraph {
+  color: var(--Paragraph);
 }
 
 /* Saffron Color Utilities */
