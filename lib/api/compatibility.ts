@@ -1,15 +1,24 @@
 /**
- * Astro Sewa backend — kundali / Ashtakoot compatibility (match-making).
- * Base: /api/v1/astrology/match-making (MatchMakingController, JWT required).
+ * Compatibility:
+ * - **Zodiac (Vedastro)** — `POST /api/v1/vedastro/zodiac-compatibility` (public, no JWT in current backend).
+ * - **Kundali / Ashtakoot** — `POST /api/v1/astrology/match-making/ashtakoot-score` (JWT) — unchanged below.
  */
 
+import { getVedastroZodiacCompatibilityUrl } from '@/lib/api/vedastro/zodiac-compatibility';
+import type { VedastroFetchOptions } from '@/lib/api/vedastro/http';
 import type { AstroBackendResult } from '@/lib/types/api';
 import type {
   CreateMatchMakingInput,
   MatchMakingAshtakootData,
   MatchMakingConfigInput,
 } from '@/lib/types/compatibility';
+import type {
+  ResultEnvelope,
+  ZodiacCompatibilityData,
+  ZodiacCompatibilityRequestDto,
+} from '@/lib/types/vedastro';
 import { readAstroBackendResult } from '@/lib/utils/api';
+import { parseVedastroResponse } from '@/lib/utils/vedastro-result';
 import { getPublicBackendBaseUrl, joinUrl } from '@/lib/utils/url';
 
 const DEFAULT_CONFIG: Required<MatchMakingConfigInput> = {
@@ -33,12 +42,10 @@ function normalizeCreateMatchMakingBody(
   };
 }
 
-/** Base URL for the match-making controller. */
 export function getMatchMakingBaseUrl(): string {
   return joinUrl(getPublicBackendBaseUrl(), 'api/v1/astrology/match-making');
 }
 
-/** URL with pagination query for match-making history. */
 export function getMatchMakingHistoryUrl(page = 1, limit = 10): string {
   const base = getMatchMakingBaseUrl();
   const q = new URLSearchParams({
@@ -48,12 +55,10 @@ export function getMatchMakingHistoryUrl(page = 1, limit = 10): string {
   return `${base}?${q.toString()}`;
 }
 
-/** URL for the Ashtakoot score endpoint. */
 export function getAshtakootScoreUrl(): string {
   return joinUrl(getMatchMakingBaseUrl(), 'ashtakoot-score');
 }
 
-/** Paginated history for the authenticated user (GET). */
 export async function fetchMatchMakingHistory(
   accessToken: string,
   page = 1,
@@ -72,7 +77,6 @@ export async function fetchMatchMakingHistory(
   return readAstroBackendResult<unknown[]>(response, 'match-making API');
 }
 
-/** Run Ashtakoot compatibility (POST). */
 export async function postAshtakootScore(
   accessToken: string,
   body: CreateMatchMakingInput,
@@ -92,5 +96,31 @@ export async function postAshtakootScore(
   return readAstroBackendResult<MatchMakingAshtakootData>(
     response,
     'match-making API',
+  );
+}
+
+/**
+ * Vedastro zodiac love compatibility (sun signs + gender), `Result<ZodiacCompatibilityData>`.
+ */
+export async function postZodiacCompatibility(
+  body: ZodiacCompatibilityRequestDto,
+  init?: VedastroFetchOptions,
+): Promise<ResultEnvelope<ZodiacCompatibilityData>> {
+  const { timezone, ...rest } = init ?? {};
+  const headers = new Headers(rest?.headers);
+  headers.set('Accept', 'application/json');
+  headers.set('Content-Type', 'application/json');
+  if (timezone) {
+    headers.set('x-timezone', timezone);
+  }
+  const response = await fetch(getVedastroZodiacCompatibilityUrl(), {
+    ...rest,
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+  });
+  return parseVedastroResponse<ZodiacCompatibilityData>(
+    response,
+    'Vedastro zodiac-compatibility',
   );
 }

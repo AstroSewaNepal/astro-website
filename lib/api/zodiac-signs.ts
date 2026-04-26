@@ -1,74 +1,78 @@
 /**
- * Astro Sewa backend — public zodiac sign catalog.
- * Base: GET /api/v1/users/zodiac-signs (ZodiacSignPublicController).
- * Response bodies are plain JSON arrays/objects, not the Result wrapper.
+ * Zodiac catalog — backed by Vedastro `GET /api/v1/vedastro/zodiac-sign` (+ detail by slug).
+ * Legacy {@link ZodiacSignRecord} shape is mapped for callers that still use it.
  */
 
+import {
+  fetchVedastroZodiacSignBySlug,
+  fetchVedastroZodiacSignList,
+} from '@/lib/api/vedastro/zodiac-sign';
+import type { VedastroFetchOptions } from '@/lib/api/vedastro/http';
+import type { VedastroZodiacSignRow } from '@/lib/types/vedastro';
 import type { ZodiacSignRecord, ZodiacType } from '@/lib/types/zodiac-signs';
-import { readJsonOk } from '@/lib/utils/api';
+import { unwrapResult } from '@/lib/utils/vedastro-result';
 import { getPublicBackendBaseUrl, joinUrl } from '@/lib/utils/url';
 
-/** Full URL for all zodiac signs. */
+function mapRow(row: VedastroZodiacSignRow): ZodiacSignRecord {
+  return {
+    _id: row.slug,
+    sign_key: row.slug,
+    name_en: row.sign,
+    name_ne: row.sign,
+    name_hi: row.sign,
+    type: 'sun',
+    ruling_planet_en: row.ruling_planet,
+    ruling_planet_np: row.ruling_planet,
+    element_en: row.element,
+    element_np: row.element,
+    created_at: row.last_synced_at,
+    updated_at: row.last_synced_at,
+    nakshatras_en: row.compatibility ?? [],
+    nakshatras_np: [],
+  };
+}
+
+/** @deprecated Prefer `getVedastroZodiacSignListUrl` from `@/lib/api/vedastro`. */
 export function getZodiacSignsUrl(): string {
-  return joinUrl(getPublicBackendBaseUrl(), 'api/v1/users/zodiac-signs');
+  return joinUrl(getPublicBackendBaseUrl(), 'api/v1/vedastro/zodiac-sign');
 }
 
-/** Full URL for zodiac signs filtered by type (sun/moon). */
-export function getZodiacSignsByTypeUrl(type: ZodiacType): string {
-  return joinUrl(
-    getPublicBackendBaseUrl(),
-    `api/v1/users/zodiac-signs/type/${type}`,
-  );
+/** @deprecated Vedastro has no type filter; returns full list (client may filter). */
+export function getZodiacSignsByTypeUrl(_type: ZodiacType): string {
+  return getZodiacSignsUrl();
 }
 
-/** Full URL for a single zodiac sign by Mongo id. */
+/** Slug is used instead of Mongo ObjectId for Vedastro detail. */
 export function getZodiacSignByIdUrl(id: string): string {
-  return joinUrl(getPublicBackendBaseUrl(), `api/v1/users/zodiac-signs/${id}`);
+  return joinUrl(getPublicBackendBaseUrl(), `api/v1/vedastro/zodiac-sign/${id}`);
 }
 
-/** All zodiac signs (public GET). */
+/** All zodiac rows from Vedastro / Mongo. */
 export async function fetchZodiacSigns(
-  init?: RequestInit,
+  init?: VedastroFetchOptions,
 ): Promise<ZodiacSignRecord[]> {
-  const response = await fetch(getZodiacSignsUrl(), {
-    ...init,
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      ...init?.headers,
-    },
-  });
-  return readJsonOk<ZodiacSignRecord[]>(response, 'zodiac signs API');
+  const envelope = await fetchVedastroZodiacSignList(init);
+  const rows = unwrapResult(envelope);
+  return rows.map(mapRow);
 }
 
-/** Filter by sun / moon (public GET). */
+/**
+ * Vedastro does not expose `sun`/`moon` split; returns same list (filter client-side if needed).
+ */
 export async function fetchZodiacSignsByType(
   type: ZodiacType,
-  init?: RequestInit,
+  init?: VedastroFetchOptions,
 ): Promise<ZodiacSignRecord[]> {
-  const response = await fetch(getZodiacSignsByTypeUrl(type), {
-    ...init,
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      ...init?.headers,
-    },
-  });
-  return readJsonOk<ZodiacSignRecord[]>(response, 'zodiac signs API');
+  const all = await fetchZodiacSigns(init);
+  return all.filter(r => r.type === type);
 }
 
-/** Single catalog row by Mongo id (public GET). */
+/** Pass **slug** (e.g. `aries`) — Vedastro detail is by slug, not Mongo `_id`. */
 export async function fetchZodiacSignById(
-  id: string,
-  init?: RequestInit,
+  idOrSlug: string,
+  init?: VedastroFetchOptions,
 ): Promise<ZodiacSignRecord> {
-  const response = await fetch(getZodiacSignByIdUrl(id), {
-    ...init,
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      ...init?.headers,
-    },
-  });
-  return readJsonOk<ZodiacSignRecord>(response, 'zodiac signs API');
+  const envelope = await fetchVedastroZodiacSignBySlug(idOrSlug, init);
+  const row = unwrapResult(envelope);
+  return mapRow(row);
 }

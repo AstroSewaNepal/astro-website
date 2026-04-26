@@ -1,12 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
 import AstroSewaLogo from '@/components/logo';
 import TransparentBellIcon from '@/components/icons/bell';
 import UserLineIcon from '@/components/icons/user/user-line';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import LanguageEarthIcon from '@/components/icons/language/earth';
 import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
+import {
+  HOROSCOPE_RANGE_NAV_OPTIONS,
+  horoscopeListPageHref,
+  parseHoroscopeRangeFromUrl,
+} from '@/lib/constants/horoscope-range-nav';
 
 type NavItem = {
   title: string;
@@ -77,22 +84,44 @@ const CloseIcon = ({ onClick }: { onClick: () => void }) => {
   );
 };
 
-export const LandingHeader = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+function LandingHeaderClient() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const activeHoroscopeRange =
+    pathname === '/horoscope' ? parseHoroscopeRangeFromUrl(searchParams.get('type')) : null;
 
-  // Prevent body scroll when menu is open
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [horoscopeMenuOpen, setHoroscopeMenuOpen] = useState(false);
+  const horoscopeNavRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-
-    // Cleanup on unmount
     return () => {
       document.body.style.overflow = 'unset';
     };
   }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    setHoroscopeMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!horoscopeMenuOpen) {
+      return;
+    }
+    const onPointerDown = (e: PointerEvent) => {
+      const el = horoscopeNavRef.current;
+      if (el && !el.contains(e.target as Node)) {
+        setHoroscopeMenuOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [horoscopeMenuOpen]);
 
   const openMobileMenu = () => {
     setIsMobileMenuOpen(true);
@@ -131,14 +160,57 @@ export const LandingHeader = () => {
             </button>
           </div>
         </div>
-        <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex">
+        <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex relative z-40">
           {LANDING_NAV.map(value => {
+            if (value.title === 'Horoscope') {
+              return (
+                <div key="horoscope" className="relative" ref={horoscopeNavRef}>
+                  <button
+                    type="button"
+                    aria-expanded={horoscopeMenuOpen}
+                    aria-haspopup="true"
+                    onClick={() => setHoroscopeMenuOpen(open => !open)}
+                    className="text-white flex items-center justify-center gap-1 py-[7px] px-[17px]"
+                  >
+                    <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
+                    <ChevronDownIcon
+                      className={clsx(
+                        'text-white transition-transform duration-200',
+                        horoscopeMenuOpen && 'rotate-180',
+                      )}
+                    />
+                  </button>
+                  {horoscopeMenuOpen ? (
+                    <div
+                      className="absolute left-1/2 top-[calc(100%+8px)] z-50 min-w-[240px] -translate-x-1/2 overflow-hidden rounded-[22px] border border-[#e8ddd0] bg-white py-2 shadow-[0_12px_40px_rgba(92,56,23,0.18)]"
+                      role="menu"
+                    >
+                      {HOROSCOPE_RANGE_NAV_OPTIONS.map(opt => {
+                        const active = activeHoroscopeRange === opt.type;
+                        return (
+                          <Link
+                            key={opt.type}
+                            href={horoscopeListPageHref(opt.type)}
+                            role="menuitem"
+                            onClick={() => setHoroscopeMenuOpen(false)}
+                            className={clsx(
+                              'block px-5 py-3 text-center font-sahitya text-[16px] leading-snug text-[#4a1a1a] transition-colors sm:text-[17px]',
+                              active ? 'bg-[#f9f2e9] text-[#3a1414]' : 'hover:bg-[#faf6f0]',
+                            )}
+                          >
+                            {opt.labelEn}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            }
+
             return (
-              <Link href={value.link ?? ''} key={value.title}>
-                <div
-                  key={value.title}
-                  className="text-white flex items-center justify-center py-[7px] px-[17px]"
-                >
+              <Link href={value.link ?? '#'} key={value.title}>
+                <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
                   <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
                   {value.children && <ChevronDownIcon className="text-white" />}
                 </div>
@@ -148,36 +220,62 @@ export const LandingHeader = () => {
         </nav>
       </header>
 
-      {/* Full-screen Mobile Menu */}
       <div
         className={`fixed inset-0 z-50 md:hidden transition-opacity duration-300 ${
           isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
         style={{ pointerEvents: isMobileMenuOpen ? 'auto' : 'none' }}
       >
-        {/* Overlay backdrop */}
         <div
           className="absolute inset-0 bg-black/20 transition-opacity duration-300"
           onClick={closeMobileMenu}
           aria-hidden="true"
         />
 
-        {/* Sidebar Menu */}
         <div
           className={`absolute left-0 top-0 h-full w-[377px] max-w-full bg-white shadow-[0px_1px_4px_0px_rgba(0,0,0,0.25)] overflow-y-auto transition-transform duration-300 ease-out ${
             isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
           <div className="flex flex-col gap-[29px] px-[33px] py-[19px]">
-            {/* Header with Logo and Close Button */}
             <div className="flex items-center justify-between w-full">
               <AstroSewaLogo className="max-w-[64px] text-[#611508] w-full" />
               <CloseIcon onClick={closeMobileMenu} />
             </div>
 
-            {/* Navigation Items */}
             <div className="flex flex-col gap-3">
               {MOBILE_NAV.map((item, index) => {
+                if (item.title === 'Horoscope') {
+                  return (
+                    <div key={`${item.title}-${index}`} className="w-full">
+                      <div className="flex items-center justify-between w-full">
+                        <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709]">
+                          {item.title}
+                        </p>
+                        <ChevronDownIcon className="text-[#691709] w-[13.3px] h-[7.66px]" />
+                      </div>
+                      <div className="mt-3 flex flex-col gap-1 border-l-2 border-[#e8ddd0] pl-3">
+                        {HOROSCOPE_RANGE_NAV_OPTIONS.map(opt => {
+                          const active = activeHoroscopeRange === opt.type;
+                          return (
+                            <Link
+                              key={opt.type}
+                              href={horoscopeListPageHref(opt.type)}
+                              onClick={closeMobileMenu}
+                              className={clsx(
+                                'rounded-lg py-2 pl-2 font-mukta text-[15px] text-[#4a1a1a]',
+                                active ? 'bg-[#f9f2e9] font-semibold' : 'hover:bg-[#faf6f0]',
+                              )}
+                            >
+                              {opt.labelEn}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                }
+
                 const hasChildren = item.children && item.children.length > 0;
                 const content = (
                   <div className="flex items-center justify-between w-full">
@@ -210,4 +308,49 @@ export const LandingHeader = () => {
       </div>
     </>
   );
-};
+}
+
+function LandingHeaderFallback() {
+  return (
+    <header className="container mx-auto px-6 lg:px-0 py-10">
+      <div className="flex justify-between">
+        <div className="flex gap-2">
+          <div className="block md:hidden w-12" />
+          <Link href="/">
+            <AstroSewaLogo className="max-w-[84px] text-[#611508] md:max-w-[100px] lg:max-w-[188px] w-full" />
+          </Link>
+        </div>
+        <div className="flex gap-4">
+          <div className="px-[15px] py-2 rounded-3xl border border-solid border-primary max-h-fit items-center gap-1 text-primary hidden lg:flex">
+            <LanguageEarthIcon />
+            <p className="font-mukta text-primary text-sm md:text-lg lg:text-xl leading-7">EN</p>
+            <ChevronDownIcon />
+          </div>
+          <button className="bg-primary rounded-3xl px-5 py-2 text-white flex gap-1.5 max-h-fit items-center cursor-pointer">
+            <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
+            <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">Sign in</p>
+          </button>
+          <button className="bg-primary p-2.5 rounded-full text-white max-h-fit">
+            <TransparentBellIcon />
+          </button>
+        </div>
+      </div>
+      <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex">
+        {LANDING_NAV.map(value => (
+          <Link href={value.link ?? '#'} key={value.title}>
+            <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
+              <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
+              {value.children && <ChevronDownIcon className="text-white" />}
+            </div>
+          </Link>
+        ))}
+      </nav>
+    </header>
+  );
+}
+
+export const LandingHeader = () => (
+  <Suspense fallback={<LandingHeaderFallback />}>
+    <LandingHeaderClient />
+  </Suspense>
+);
