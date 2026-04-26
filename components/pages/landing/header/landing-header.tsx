@@ -11,29 +11,47 @@ import Link from 'next/link';
 type NavItem = {
   title: string;
   link?: string;
-  children?: unknown[];
+  children?: { title: string; link: string }[];
 };
 
 const LANDING_NAV: NavItem[] = [
   { title: 'Horoscope', children: [] },
   { title: 'Zodiac Signs', children: [] },
-  { title: 'Kundali', children: [] },
+  {
+    title: 'Kundali',
+    link: '/kundali-details',
+    children: [
+      { title: 'Free Kundali', link: '/free-kundali' },
+      { title: 'Kundali Matching', link: '/kundali-matching' },
+      { title: 'Kundali Details', link: '/kundali-details' },
+    ],
+  },
   { title: 'Compatibility' },
   { title: 'Puja Bidhi', children: [] },
-  { title: 'Calculator', children: [] },
+  { title: 'Calculator', children: [], link: '/calculators' },
   { title: 'Blog', link: '/blogs' },
+  { title: 'Calander', link: '/calander' },
 ];
 
 const MOBILE_NAV: NavItem[] = [
-  { title: 'Home' },
+  { title: 'Home', link: '/' },
   { title: 'About Us', link: '/about-us' },
   { title: 'Horoscope', children: [] },
   { title: 'Zodiac Sign', children: [] },
-  { title: 'Kundali', children: [] },
+  {
+    title: 'Kundali',
+    link: '/kundali-details',
+    children: [
+      { title: 'Free Kundali', link: '/free-kundali' },
+      { title: 'Kundali Matching', link: '/kundali-matching' },
+      { title: 'Kundali Details', link: '/kundali-details' },
+    ],
+  },
   { title: 'Compatibility' },
   { title: 'Puja Bidhi', children: [] },
-  { title: 'Calculator', children: [] },
+  { title: 'Calculator', children: [], link: '/calculators' },
   { title: 'Blog', link: '/blogs' },
+  { title: 'Calander', link: '/calander' },
 ];
 
 const NavIcon = ({ onClick }: { onClick: () => void }) => {
@@ -79,6 +97,7 @@ const CloseIcon = ({ onClick }: { onClick: () => void }) => {
 
 export const LandingHeader = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -100,6 +119,7 @@ export const LandingHeader = () => {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+    setOpenMobileDropdown(null);
   };
 
   return (
@@ -133,16 +153,31 @@ export const LandingHeader = () => {
         </div>
         <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex">
           {LANDING_NAV.map(value => {
+            const hasChildren = !!value.children?.length;
+
             return (
-              <Link href={value.link ?? ''} key={value.title}>
-                <div
-                  key={value.title}
-                  className="text-white flex items-center justify-center py-[7px] px-[17px]"
-                >
-                  <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
-                  {value.children && <ChevronDownIcon className="text-white" />}
-                </div>
-              </Link>
+              <div key={value.title} className="relative group">
+                <Link href={value.link ?? '#'} className="block">
+                  <div className="text-white flex items-center justify-center py-[7px] px-[17px] rounded-xl hover:bg-hoverColor active:bg-hoverColor">
+                    <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
+                    {hasChildren && <ChevronDownIcon className="text-white" />}
+                  </div>
+                </Link>
+
+                {hasChildren ? (
+                  <div className="absolute left-0 top-[calc(100%+12px)] min-w-[220px] rounded-none bg-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20">
+                    {value.children?.map(child => (
+                      <Link
+                        key={child.title}
+                        href={child.link}
+                        className="block px-4 py-2 font-mukta text-[16px] leading-6 text-primary hover:bg-[#f8f3df]"
+                      >
+                        {child.title}
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             );
           })}
         </nav>
@@ -179,16 +214,49 @@ export const LandingHeader = () => {
             <div className="flex flex-col gap-3">
               {MOBILE_NAV.map((item, index) => {
                 const hasChildren = item.children && item.children.length > 0;
+                const isExpanded = openMobileDropdown === item.title;
                 const content = (
                   <div className="flex items-center justify-between w-full">
                     <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709]">
                       {item.title}
                     </p>
                     {hasChildren && (
-                      <ChevronDownIcon className="text-[#691709] w-[13.3px] h-[7.66px]" />
+                      <ChevronDownIcon
+                        className={`text-[#691709] w-[18px] h-[18px] transition-transform duration-200 ${
+                          isExpanded ? 'rotate-180' : ''
+                        }`}
+                      />
                     )}
                   </div>
                 );
+
+                if (hasChildren) {
+                  return (
+                    <div key={`${item.title}-${index}`} className="w-full">
+                      <button
+                        type="button"
+                        className="w-full text-left"
+                        onClick={() => setOpenMobileDropdown(isExpanded ? null : item.title)}
+                      >
+                        {content}
+                      </button>
+                      {isExpanded ? (
+                        <div className="mt-2 ml-4 flex flex-col gap-2">
+                          {item.children?.map(child => (
+                            <Link
+                              key={child.title}
+                              href={child.link}
+                              onClick={closeMobileMenu}
+                              className="font-mukta text-[18px] leading-[28px] text-[#691709]"
+                            >
+                              {child.title}
+                            </Link>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                }
 
                 if (item.link) {
                   return (

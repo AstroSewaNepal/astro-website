@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Tiro_Devanagari_Sanskrit, Sahitya, Mukta } from 'next/font/google';
+import { Tiro_Devanagari_Sanskrit, Sahitya, Mukta, Raleway } from 'next/font/google';
 import Script from 'next/script';
 
 import './globals.css';
@@ -21,6 +21,12 @@ const mukta = Mukta({
   variable: '--font-mukta',
   subsets: ['latin', 'devanagari'],
   weight: '400',
+});
+
+const raleway = Raleway({
+  variable: '--font-raleway',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
@@ -86,7 +92,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={clsx(tiroDevanagari.variable, sahitya.variable, mukta.variable, `antialiased`)}
+        className={clsx(tiroDevanagari.variable, sahitya.variable, mukta.variable, raleway.variable, `antialiased`)}
       >
         {gaId && (
           <>
