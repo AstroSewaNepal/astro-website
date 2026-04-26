@@ -6,6 +6,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
+import { useHoroscopeLocale } from '@/lib/i18n/horoscope/horoscope-locale-context';
+import {
+  persistCardDisplayLanguage,
+  readCardDisplayLanguage,
+} from '@/lib/i18n/horoscope';
 import ArrowRight from '@/components/icons/arrow-right';
 import StartIcon from '@/components/icons/start-icon';
 import { ELanguage } from '@/components/enums/language.enum';
@@ -18,7 +23,7 @@ import {
   horoscopeDetailPageHref,
   parseHoroscopeRangeFromUrl,
 } from '@/lib/constants/horoscope-range-nav';
-import type { HoroscopeSummaryRow, VedastroHoroscopeRangeType } from '@/lib/types/vedastro';
+import type { HoroscopeSummaryRow } from '@/lib/types/vedastro';
 
 import LandingPageCSS from '../landing-page.module.css';
 
@@ -45,82 +50,23 @@ function starCountFromRating(rating: number): number {
   }
   return Math.min(5, Math.max(1, Math.round(rating)));
 }
-const RANGE_HERO_COPY: Record<
-  VedastroHoroscopeRangeType,
-  Record<ELanguage, { title: string; intro: string }>
-> = {
-  today: {
-    [ELanguage.ENGLISH]: {
-      title: "Today's Astrology Horoscope",
-      intro:
-        'See your horoscope for today with a calm, traditional presentation that keeps the zodiac at the center of the page.',
-    },
-    [ELanguage.NEPALI]: {
-      title: 'आजको ज्योतिषीय राशिफल',
-      intro:
-        'आजको राशिफललाई नेपाली भाषामा स्पष्ट र सजिलो शैलीमा हेर्नुहोस्, जहाँ प्रत्येक राशि छुट्टै रूपमा प्रस्तुत गरिएको छ।',
-    },
-  },
-  yesterday: {
-    [ELanguage.ENGLISH]: {
-      title: "Yesterday's Astrology Horoscope",
-      intro: 'Review yesterday’s sign-by-sign guidance and see how the themes still resonate.',
-    },
-    [ELanguage.NEPALI]: {
-      title: 'हिजोको ज्योतिषीय राशिफल',
-      intro: 'हिजोको राशिफल पुनः हेर्नुहोस् र दैनिक संकेतहरूलाई बुझ्नुहोस्।',
-    },
-  },
-  tomorrow: {
-    [ELanguage.ENGLISH]: {
-      title: "Tomorrow's Astrology Horoscope",
-      intro: 'Preview tomorrow’s summaries for every sign so you can plan with a little foresight.',
-    },
-    [ELanguage.NEPALI]: {
-      title: 'भोलिको ज्योतिषीय राशिफल',
-      intro: 'भोलिको दिनका लागि राशिअनुसार संक्षिप्त मार्गदर्शन हेर्नुहोस्।',
-    },
-  },
-  week: {
-    [ELanguage.ENGLISH]: {
-      title: 'Weekly Astrology Horoscope',
-      intro: 'Browse the week’s horoscope blurbs for each zodiac sign in one calm grid.',
-    },
-    [ELanguage.NEPALI]: {
-      title: 'साप्ताहिक ज्योतिषीय राशिफल',
-      intro: 'यस साताको राशिफल सबै राशिहरूका लागि एकै ठाउँमा।',
-    },
-  },
-  month: {
-    [ELanguage.ENGLISH]: {
-      title: 'Monthly Astrology Horoscope',
-      intro: 'Month-level outlooks for all twelve signs, easy to scan and compare.',
-    },
-    [ELanguage.NEPALI]: {
-      title: 'मासिक ज्योतिषीय राशिफल',
-      intro: 'यस महिनाको संक्षिप्त राशिफल सबै राशिहरूका लागि।',
-    },
-  },
-  year: {
-    [ELanguage.ENGLISH]: {
-      title: 'Yearly Astrology Horoscope',
-      intro: 'Year-ahead summaries by sign — a wide lens on the themes ahead.',
-    },
-    [ELanguage.NEPALI]: {
-      title: 'वार्षिक ज्योतिषीय राशिफल',
-      intro: 'वर्षभरिको दिशा र संकेतहरू राशिअनुसार संक्षेपमा।',
-    },
-  },
-};
 
 function HoroscopePageContent() {
   const searchParams = useSearchParams();
   const selectedRange = parseHoroscopeRangeFromUrl(searchParams.get('type'));
+  const { dict, uiLanguage } = useHoroscopeLocale();
+  const copy = dict.range[selectedRange];
 
-  const [language, setLanguage] = useState<ELanguage>(ELanguage.ENGLISH);
+  /** Zodiac cards only — does not change header/footer/page chrome. */
+  const [signLanguage, setSignLanguage] = useState<ELanguage>(() => readCardDisplayLanguage());
+
   const [rows, setRows] = useState<HoroscopeSummaryRow[] | null>(null);
   const [listError, setListError] = useState<string | null>(null);
   const [listLoading, setListLoading] = useState(true);
+
+  useEffect(() => {
+    persistCardDisplayLanguage(signLanguage);
+  }, [signLanguage]);
 
   useEffect(() => {
     let cancelled = false;
@@ -164,7 +110,7 @@ function HoroscopePageContent() {
   };
 
   const cards = useMemo((): DisplayCard[] | 'loading' => {
-    const staticFallback = HOROSCOPE_DATA[language];
+    const staticFallback = HOROSCOPE_DATA[signLanguage];
     if (listLoading && rows === null) {
       return 'loading';
     }
@@ -185,11 +131,15 @@ function HoroscopePageContent() {
       const meta = META_BY_SLUG[slug];
       const fallbackImage = staticFallback[0]!.image;
       const name =
-        meta == null ? row.sign : language === ELanguage.ENGLISH ? meta.en.name : meta.np.name;
+        meta == null
+          ? row.sign
+          : signLanguage === ELanguage.ENGLISH
+            ? meta.en.name
+            : meta.np.name;
       const image =
         meta == null
           ? fallbackImage
-          : language === ELanguage.ENGLISH
+          : signLanguage === ELanguage.ENGLISH
             ? meta.en.image
             : meta.np.image;
       return {
@@ -200,9 +150,7 @@ function HoroscopePageContent() {
         stars: starCountFromRating(row.rating),
       };
     });
-  }, [language, listError, listLoading, rows]);
-
-  const copy = RANGE_HERO_COPY[selectedRange][language];
+  }, [signLanguage, listError, listLoading, rows]);
 
   return (
     <main className={clsx('min-h-screen overflow-hidden', LandingPageCSS.background)}>
@@ -228,10 +176,10 @@ function HoroscopePageContent() {
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setLanguage(ELanguage.ENGLISH)}
+                  onClick={() => setSignLanguage(ELanguage.ENGLISH)}
                   className={clsx(
                     'rounded-full border px-6 py-2.5 font-mukta text-[15px] transition-colors',
-                    language === ELanguage.ENGLISH
+                    signLanguage === ELanguage.ENGLISH
                       ? 'border-[#6f2618] bg-[#6f2618] text-white'
                       : 'border-[#b48f74] bg-transparent text-[#6f2618] hover:bg-white/50',
                   )}
@@ -240,10 +188,10 @@ function HoroscopePageContent() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setLanguage(ELanguage.NEPALI)}
+                  onClick={() => setSignLanguage(ELanguage.NEPALI)}
                   className={clsx(
                     'rounded-full border px-6 py-2.5 font-mukta text-[15px] transition-colors',
-                    language === ELanguage.NEPALI
+                    signLanguage === ELanguage.NEPALI
                       ? 'border-[#6f2618] bg-[#6f2618] text-white'
                       : 'border-[#b48f74] bg-transparent text-[#6f2618] hover:bg-white/50',
                   )}
@@ -255,7 +203,7 @@ function HoroscopePageContent() {
 
             {listError && (!rows || rows.length === 0) ? (
               <p className="mt-4 text-center font-mukta text-[13px] text-[#a94442]" role="alert">
-                {listError} Showing sample cards.
+                {listError} {dict.list.errorFallbackSuffix}
               </p>
             ) : null}
 
@@ -269,13 +217,13 @@ function HoroscopePageContent() {
                 ))
               ) : cards.length === 0 ? (
                 <p className="col-span-full text-center font-mukta text-[15px] text-[#6b5a4e]">
-                  No horoscope summaries are available for this period.
+                  {dict.list.empty}
                 </p>
               ) : (
                 cards.map(card => (
                   <Link
                     key={`${selectedRange}-${card.key}`}
-                    href={horoscopeDetailPageHref(card.key, selectedRange)}
+                    href={horoscopeDetailPageHref(card.key, selectedRange, uiLanguage)}
                     className="block rounded-[26px] border border-[#c8ad93] bg-[#fbf6ee]/90 px-4 py-3 shadow-[0_6px_20px_rgba(97,21,8,0.06)] transition-transform duration-200 hover:-translate-y-0.5"
                   >
                     <div className="flex items-center gap-4">
@@ -306,7 +254,7 @@ function HoroscopePageContent() {
                         </p>
 
                         <span className="mt-2 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[12px] font-semibold text-[#7b3b27]">
-                          Read More
+                          {dict.list.readMore}
                           <ArrowRight className="h-3 w-3 text-[#7b3b27]" />
                         </span>
                       </div>
@@ -318,31 +266,12 @@ function HoroscopePageContent() {
           </section>
           <section className="mx-auto mt-10 max-w-[1180px] px-1 sm:px-2 lg:mt-12">
             <h2 className="font-sahitya text-[26px] font-bold leading-tight text-[#6b2417] sm:text-[28px] lg:text-[30px]">
-              What is Horoscope?
+              {dict.section.whatIsTitle}
             </h2>
 
             <div className="mt-4 space-y-5 font-mukta text-[15px] leading-8 text-[#5f5248] sm:text-[16px]">
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-                pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum.
-              </p>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-                pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur
-                adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
-                esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </p>
+              <p>{dict.section.whatIsP1}</p>
+              <p>{dict.section.whatIsP2}</p>
             </div>
           </section>
 
@@ -359,10 +288,11 @@ function HoroscopePageContent() {
 }
 
 function HoroscopePageFallback() {
+  const { dict } = useHoroscopeLocale();
   return (
     <main className={clsx('min-h-screen overflow-hidden', LandingPageCSS.background)}>
       <div className="mx-auto max-w-[1240px] px-4 py-20 text-center font-mukta text-[15px] text-[#6b5a4e]">
-        Loading horoscopes…
+        {dict.list.loading}
       </div>
       <Footer />
     </main>

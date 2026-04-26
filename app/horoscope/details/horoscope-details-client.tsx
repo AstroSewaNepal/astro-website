@@ -6,10 +6,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
+import { useHoroscopeLocale } from '@/lib/i18n/horoscope/horoscope-locale-context';
+import {
+  interpolate,
+  readCardDisplayLanguage,
+} from '@/lib/i18n/horoscope';
 import Footer from '@/components/pages/landing/footer';
 import ArrowRight from '@/components/icons/arrow-right';
 import StartIcon from '@/components/icons/start-icon';
-import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
@@ -30,6 +34,7 @@ import {
 import { fetchVedastroHoroscopeDetail } from '@/lib/api/vedastro/horoscope';
 import {
   horoscopeDetailPageHref,
+  horoscopeListPageHref,
   parseHoroscopeRangeFromUrl,
 } from '@/lib/constants/horoscope-range-nav';
 import { HOROSCOPE_SIGNS, isHoroscopeSign, type HoroscopeSign } from '@/lib/types/horoscope';
@@ -53,53 +58,37 @@ const SIGN_COLOR_IMAGE: Record<HoroscopeSign, typeof EnglishAriesColor> = {
   pisces: EnglishPiscesColor,
 };
 
-const RANGE_TABS: { label: string; type: VedastroHoroscopeRangeType }[] = [
-  { label: 'Yesterday', type: 'yesterday' },
-  { label: 'Today', type: 'today' },
-  { label: 'Weekly', type: 'week' },
-  { label: 'Tomorrow', type: 'tomorrow' },
-  { label: 'Monthly', type: 'month' },
-  { label: 'Yearly', type: 'year' },
-];
+const RANGE_TAB_TYPES = [
+  'yesterday',
+  'today',
+  'week',
+  'tomorrow',
+  'month',
+  'year',
+] as const satisfies readonly VedastroHoroscopeRangeType[];
 
 type HoroscopeBodyKey = 'general' | 'love' | 'career' | 'health';
 
-const SECTION_PILLS: { id: HoroscopeBodyKey; label: string }[] = [
-  { id: 'general', label: 'General' },
-  { id: 'love', label: 'Love & Relationships' },
-  { id: 'career', label: 'Career & Finance' },
-  { id: 'health', label: 'Health & Wellness' },
-];
+const SECTION_PILL_IDS: HoroscopeBodyKey[] = ['general', 'love', 'career', 'health'];
 
 function capitalizeSign(slug: string): string {
   return slug.charAt(0).toUpperCase() + slug.slice(1);
 }
 
-function rangeSectionHeading(type: VedastroHoroscopeRangeType): string {
-  const map: Record<VedastroHoroscopeRangeType, string> = {
-    today: "Today's Horoscope",
-    yesterday: "Yesterday's Horoscope",
-    tomorrow: "Tomorrow's Horoscope",
-    week: 'Weekly Horoscope',
-    month: 'Monthly Horoscope',
-    year: 'Yearly Horoscope',
-  };
-  return map[type];
-}
-
-function rangeSubheading(type: VedastroHoroscopeRangeType): string {
-  const map: Record<VedastroHoroscopeRangeType, string> = {
-    today: "Check your today's horoscope",
-    yesterday: 'Review yesterday’s horoscope',
-    tomorrow: 'Preview tomorrow’s horoscope',
-    week: 'Horoscope for the week ahead',
-    month: 'Horoscope for this month',
-    year: 'Horoscope for the year',
-  };
-  return map[type];
-}
-
 export function HoroscopeDetailsClient() {
+  const { dict, uiLanguage } = useHoroscopeLocale();
+  const signLanguage = readCardDisplayLanguage();
+
+  const rangeTabs = RANGE_TAB_TYPES.map(type => ({
+    type,
+    label: dict.details.tabs[type],
+  }));
+
+  const sectionPills = SECTION_PILL_IDS.map(id => ({
+    id,
+    label: dict.details.sections[id],
+  }));
+
   const searchParams = useSearchParams();
   const rawSign = searchParams.get('sign');
   const trimmedSign = rawSign?.trim() ?? '';
@@ -156,7 +145,7 @@ export function HoroscopeDetailsClient() {
     };
   }, [validSign, rangeType]);
 
-  const bottomCards = HOROSCOPE_DATA[ELanguage.ENGLISH];
+  const bottomCards = HOROSCOPE_DATA[signLanguage];
 
   const sectionBody = useMemo(() => {
     if (!detail) {
@@ -182,24 +171,22 @@ export function HoroscopeDetailsClient() {
         {!validSign ? (
           <section className="mt-7 rounded-[20px] border border-[#dcccbc] bg-[#f9f2e8]/95 px-4 py-10 text-center sm:px-6">
             <h1 className="font-sahitya text-[28px] text-[#6f2618]">
-              {signInvalid ? 'Unknown zodiac sign' : 'Choose a zodiac sign'}
+              {signInvalid ? dict.details.unknownSign : dict.details.chooseSign}
             </h1>
             <p className="mx-auto mt-3 max-w-lg font-mukta text-[15px] leading-7 text-[#5e4f45]">
-              {signInvalid
-                ? 'Use a valid sign in the URL (aries, taurus, …).'
-                : 'Open a sign from the horoscope list, or pick one below.'}
+              {signInvalid ? dict.details.invalidSignHelp : dict.details.pickFromListHelp}
             </p>
             <Link
-              href="/horoscope"
+              href={horoscopeListPageHref('today', uiLanguage)}
               className="mt-6 inline-block rounded-full bg-[#6f2618] px-6 py-2.5 font-mukta text-[14px] text-white"
             >
-              Back to horoscopes
+              {dict.details.backToList}
             </Link>
             <div className="mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
               {HOROSCOPE_SIGNS.map(slug => (
                 <Link
                   key={slug}
-                  href={horoscopeDetailPageHref(slug, rangeType)}
+                  href={horoscopeDetailPageHref(slug, rangeType, uiLanguage)}
                   className="flex flex-col items-center gap-1 rounded-xl border border-[#d7c3b1] bg-[#fdf8f1] p-2 transition-colors hover:border-[#f4a11a]"
                 >
                   <Image
@@ -217,9 +204,11 @@ export function HoroscopeDetailsClient() {
         ) : (
           <section className="mt-7 rounded-[20px] border border-[#dcccbc] bg-[#f9f2e8]/95 px-4 py-5 sm:px-6 lg:px-8">
             <h1 className="font-sahitya text-[30px] leading-none text-[#6f2618] sm:text-[44px]">
-              {rangeSectionHeading(rangeType)}
+              {dict.details.rangeHeading[rangeType]}
             </h1>
-            <p className="mt-1 font-mukta text-sm text-[#7a6a5e]">{rangeSubheading(rangeType)}</p>
+            <p className="mt-1 font-mukta text-sm text-[#7a6a5e]">
+              {dict.details.rangeSub[rangeType]}
+            </p>
 
             {error ? (
               <p className="mt-6 font-mukta text-[14px] text-[#a94442]" role="alert">
@@ -233,7 +222,7 @@ export function HoroscopeDetailsClient() {
                 return (
                   <Link
                     key={slug}
-                    href={horoscopeDetailPageHref(slug, rangeType)}
+                    href={horoscopeDetailPageHref(slug, rangeType, uiLanguage)}
                     className="group flex flex-col items-center gap-1"
                   >
                     <div
@@ -259,10 +248,10 @@ export function HoroscopeDetailsClient() {
             </div>
 
             <div className="mt-7 flex flex-wrap gap-2 border-b border-[#e1d3c6] pb-4">
-              {RANGE_TABS.map(tab => (
+              {rangeTabs.map(tab => (
                 <Link
                   key={tab.type}
-                  href={horoscopeDetailPageHref(validSign, tab.type)}
+                  href={horoscopeDetailPageHref(validSign, tab.type, uiLanguage)}
                   className={clsx(
                     'rounded-sm px-3 py-2 font-mukta text-[10px] uppercase tracking-wide',
                     tab.type === rangeType
@@ -285,17 +274,20 @@ export function HoroscopeDetailsClient() {
                       {capitalizeSign(validSign)} ({detail.basic.date_range})
                     </h2>
                     <p className="mt-1 font-mukta text-[12px] text-[#8a7463]">
-                      {detail.basic.element} · Ruled by {detail.basic.ruling_planet}
+                      {detail.basic.element} · {dict.details.astro.ruledBy}{' '}
+                      {detail.basic.ruling_planet}
                     </p>
                     <p className="mt-1 font-mukta text-[12px] text-[#8a7463]">
                       {detail.horoscope.start_date} — {detail.horoscope.end_date} ·{' '}
                       {detail.horoscope.type}
                     </p>
                     <p className="mt-2 font-mukta text-[12px] leading-relaxed text-[#6b5a4e]">
-                      Moon in {detail.astro_signals.moon_sign}
-                      {detail.astro_signals.mercury_retrograde ? ' · Mercury retrograde' : ''} ·
-                      Energy {detail.astro_signals.energy_score}/10 · Intensity:{' '}
-                      {detail.astro_signals.emotional_intensity}
+                      {dict.details.astro.moonIn} {detail.astro_signals.moon_sign}
+                      {detail.astro_signals.mercury_retrograde
+                        ? ` · ${dict.details.astro.mercuryRetrograde}`
+                        : ''}{' '}
+                      · {dict.details.astro.energy} {detail.astro_signals.energy_score}/10 ·{' '}
+                      {dict.details.astro.intensity}: {detail.astro_signals.emotional_intensity}
                     </p>
                     <p className="mt-3 font-mukta text-[14px] leading-7 text-[#5e4f45]">
                       {detail.horoscope.general}
@@ -312,10 +304,10 @@ export function HoroscopeDetailsClient() {
 
                 <div className="mt-6">
                   <h3 className="font-mukta text-[18px] font-semibold text-[#6f2618]">
-                    More for {capitalizeSign(validSign)}
+                    {interpolate(dict.details.moreFor, { sign: capitalizeSign(validSign) })}
                   </h3>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {SECTION_PILLS.map(pill => (
+                    {sectionPills.map(pill => (
                       <button
                         key={pill.id}
                         type="button"
@@ -335,7 +327,7 @@ export function HoroscopeDetailsClient() {
                   </div>
 
                   <h4 className="mt-6 font-mukta text-[13px] font-semibold uppercase text-[#6f2618]">
-                    {SECTION_PILLS.find(p => p.id === activeSection)?.label}
+                    {sectionPills.find(p => p.id === activeSection)?.label}
                   </h4>
                   <p className="mt-2 font-mukta text-[14px] leading-7 text-[#5e4f45]">
                     {sectionBody}
@@ -344,13 +336,13 @@ export function HoroscopeDetailsClient() {
 
                 <div className="mt-8">
                   <h3 className="font-mukta text-[18px] font-semibold text-[#6f2618]">
-                    {capitalizeSign(validSign)} compatibility
+                    {interpolate(dict.details.compatibility, { sign: capitalizeSign(validSign) })}
                   </h3>
                   <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
                     {compatibilitySigns.map(item => (
                       <Link
                         key={item.slug}
-                        href={horoscopeDetailPageHref(item.slug, rangeType)}
+                        href={horoscopeDetailPageHref(item.slug, rangeType, uiLanguage)}
                         className="rounded-[10px] border border-[#d7c3b1] bg-[#fdf8f1] px-2 py-2 transition-colors hover:border-[#f4a11a]/80"
                       >
                         <div className="flex items-center justify-center gap-1">
@@ -379,7 +371,7 @@ export function HoroscopeDetailsClient() {
 
                 <div className="mt-9">
                   <h3 className="font-mukta text-[18px] font-semibold text-[#6f2618]">
-                    Read horoscope for other signs
+                    {dict.details.readOtherSigns}
                   </h3>
 
                   <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -388,7 +380,7 @@ export function HoroscopeDetailsClient() {
                       return (
                         <Link
                           key={card.name}
-                          href={horoscopeDetailPageHref(slug, rangeType)}
+                          href={horoscopeDetailPageHref(slug, rangeType, uiLanguage)}
                           className="block rounded-[16px] border border-[#cfb8a5] bg-[#fcf6ed] px-3 py-2 transition-transform hover:-translate-y-0.5"
                         >
                           <div className="flex items-center gap-2">
@@ -415,7 +407,7 @@ export function HoroscopeDetailsClient() {
                                 {card.detail}
                               </p>
                               <span className="mt-1 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[10px] font-semibold text-[#7b3b27]">
-                                Read More
+                                {dict.list.readMore}
                                 <ArrowRight className="h-2.5 w-2.5 text-[#7b3b27]" />
                               </span>
                             </div>
@@ -434,7 +426,10 @@ export function HoroscopeDetailsClient() {
           <section className="mx-auto mt-8 max-w-[1180px] px-1 sm:px-2">
             <div>
               <h2 className="font-sahitya text-[24px] font-bold text-[#6b2417] sm:text-[28px]">
-                {rangeSectionHeading(rangeType)} — {capitalizeSign(validSign)}
+                {interpolate(dict.details.combinedHeading, {
+                  range: dict.details.rangeHeading[rangeType],
+                  sign: capitalizeSign(validSign),
+                })}
               </h2>
               <p className="mt-3 font-mukta text-[14px] leading-7 text-[#5e4f45]">
                 {detail.horoscope.general}
@@ -443,7 +438,7 @@ export function HoroscopeDetailsClient() {
 
             <div className="mt-8">
               <h2 className="font-sahitya text-[24px] font-bold text-[#6b2417] sm:text-[28px]">
-                Traits — {capitalizeSign(validSign)}
+                {interpolate(dict.details.traitsTitle, { sign: capitalizeSign(validSign) })}
               </h2>
               <p className="mt-3 font-mukta text-[14px] leading-7 text-[#5e4f45]">
                 {detail.personality.traits}

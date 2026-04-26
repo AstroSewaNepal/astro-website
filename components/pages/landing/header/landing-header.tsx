@@ -9,38 +9,49 @@ import ChevronDownIcon from '@/components/icons/chevron-down';
 import LanguageEarthIcon from '@/components/icons/language/earth';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
+
+import { ELanguage } from '@/components/enums/language.enum';
 import {
   HOROSCOPE_RANGE_NAV_OPTIONS,
   horoscopeListPageHref,
   parseHoroscopeRangeFromUrl,
 } from '@/lib/constants/horoscope-range-nav';
+import { horoscopeEn } from '@/lib/i18n/horoscope';
+import { useHoroscopeLocaleOptional } from '@/lib/i18n/horoscope/horoscope-locale-context';
+import type { HoroscopeMessages } from '@/lib/i18n/horoscope/schema';
 
-type NavItem = {
-  title: string;
+type DesktopNavId = keyof HoroscopeMessages['header']['nav'];
+
+const LANDING_NAV: {
+  id: DesktopNavId;
   link?: string;
   children?: unknown[];
-};
-
-const LANDING_NAV: NavItem[] = [
-  { title: 'Horoscope', children: [] },
-  { title: 'Zodiac Signs', children: [] },
-  { title: 'Kundali', children: [] },
-  { title: 'Compatibility' },
-  { title: 'Puja Bidhi', children: [] },
-  { title: 'Calculator', children: [] },
-  { title: 'Blog', link: '/blogs' },
+}[] = [
+  { id: 'horoscope', children: [] },
+  { id: 'zodiacSigns', children: [] },
+  { id: 'kundali', children: [] },
+  { id: 'compatibility' },
+  { id: 'pujaBidhi', children: [] },
+  { id: 'calculator', children: [] },
+  { id: 'blog', link: '/blogs' },
 ];
 
-const MOBILE_NAV: NavItem[] = [
-  { title: 'Home' },
-  { title: 'About Us', link: '/about-us' },
-  { title: 'Horoscope', children: [] },
-  { title: 'Zodiac Sign', children: [] },
-  { title: 'Kundali', children: [] },
-  { title: 'Compatibility' },
-  { title: 'Puja Bidhi', children: [] },
-  { title: 'Calculator', children: [] },
-  { title: 'Blog', link: '/blogs' },
+type MobileRow =
+  | { kind: 'horoscope' }
+  | { kind: 'blog' }
+  | { kind: 'item'; mobileKey: keyof HoroscopeMessages['header']['mobile']; link?: string }
+  | { kind: 'nav'; navId: DesktopNavId; link?: string };
+
+const MOBILE_NAV: MobileRow[] = [
+  { kind: 'item', mobileKey: 'home' },
+  { kind: 'item', mobileKey: 'aboutUs', link: '/about-us' },
+  { kind: 'horoscope' },
+  { kind: 'item', mobileKey: 'zodiacSign' },
+  { kind: 'nav', navId: 'kundali' },
+  { kind: 'nav', navId: 'compatibility' },
+  { kind: 'nav', navId: 'pujaBidhi' },
+  { kind: 'nav', navId: 'calculator' },
+  { kind: 'blog' },
 ];
 
 const NavIcon = ({ onClick }: { onClick: () => void }) => {
@@ -87,6 +98,10 @@ const CloseIcon = ({ onClick }: { onClick: () => void }) => {
 function LandingHeaderClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const horoscopeLocale = useHoroscopeLocaleOptional();
+  const d = horoscopeLocale?.dict ?? horoscopeEn;
+  const uiLang = horoscopeLocale?.uiLanguage;
+
   const activeHoroscopeRange =
     pathname === '/horoscope' ? parseHoroscopeRangeFromUrl(searchParams.get('type')) : null;
 
@@ -95,7 +110,9 @@ function LandingHeaderClient() {
     routeKey: string;
     open: boolean;
   }>({ routeKey: '', open: false });
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
   const horoscopeNavRef = useRef<HTMLDivElement>(null);
+  const langMenuRef = useRef<HTMLDivElement>(null);
   const routeKey = `${pathname}?${searchParams.toString()}`;
   const horoscopeMenuOpen = horoscopeMenuState.open && horoscopeMenuState.routeKey === routeKey;
 
@@ -124,6 +141,20 @@ function LandingHeaderClient() {
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [horoscopeMenuOpen]);
 
+  useEffect(() => {
+    if (!langMenuOpen) {
+      return;
+    }
+    const onPointerDown = (e: PointerEvent) => {
+      const el = langMenuRef.current;
+      if (el && !el.contains(e.target as Node)) {
+        setLangMenuOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [langMenuOpen]);
+
   const openMobileMenu = () => {
     setIsMobileMenuOpen(true);
   };
@@ -131,6 +162,75 @@ function LandingHeaderClient() {
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
+
+  const langCodeLabel =
+    horoscopeLocale?.uiLanguage === ELanguage.NEPALI ? d.header.langNe : d.header.langEn;
+
+  const languageControl = horoscopeLocale ? (
+    <div className="relative" ref={langMenuRef}>
+      <button
+        type="button"
+        aria-expanded={langMenuOpen}
+        aria-haspopup="listbox"
+        aria-label="Page language"
+        onClick={() => setLangMenuOpen(o => !o)}
+        className="flex cursor-pointer items-center gap-1 rounded-3xl border border-solid border-primary px-[15px] py-2 text-primary max-h-fit"
+      >
+        <LanguageEarthIcon />
+        <span className="font-mukta text-sm md:text-lg lg:text-xl leading-7">{langCodeLabel}</span>
+        <ChevronDownIcon
+          className={clsx('transition-transform duration-200', langMenuOpen && 'rotate-180')}
+        />
+      </button>
+      {langMenuOpen ? (
+        <ul
+          className="absolute right-0 z-[60] mt-2 min-w-[160px] overflow-hidden rounded-[18px] border border-[#e8ddd0] bg-white py-1 shadow-[0_12px_40px_rgba(92,56,23,0.18)]"
+          role="listbox"
+        >
+          <li>
+            <button
+              type="button"
+              role="option"
+              aria-selected={horoscopeLocale.uiLanguage === ELanguage.ENGLISH}
+              onClick={() => {
+                horoscopeLocale.setUiLanguage(ELanguage.ENGLISH);
+                setLangMenuOpen(false);
+              }}
+              className={clsx(
+                'flex w-full px-4 py-3 text-left font-mukta text-[15px] text-[#4a1a1a] hover:bg-[#faf6f0]',
+                horoscopeLocale.uiLanguage === ELanguage.ENGLISH && 'bg-[#f9f2e9] font-semibold',
+              )}
+            >
+              {d.list.langEnglish} ({d.header.langEn})
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              role="option"
+              aria-selected={horoscopeLocale.uiLanguage === ELanguage.NEPALI}
+              onClick={() => {
+                horoscopeLocale.setUiLanguage(ELanguage.NEPALI);
+                setLangMenuOpen(false);
+              }}
+              className={clsx(
+                'flex w-full px-4 py-3 text-left font-mukta text-[15px] text-[#4a1a1a] hover:bg-[#faf6f0]',
+                horoscopeLocale.uiLanguage === ELanguage.NEPALI && 'bg-[#f9f2e9] font-semibold',
+              )}
+            >
+              {d.list.langNepali} ({d.header.langNe})
+            </button>
+          </li>
+        </ul>
+      ) : null}
+    </div>
+  ) : (
+    <div className="hidden max-h-fit items-center gap-1 rounded-3xl border border-solid border-primary px-[15px] py-2 text-primary lg:flex">
+      <LanguageEarthIcon />
+      <p className="font-mukta text-primary text-sm md:text-lg lg:text-xl leading-7">EN</p>
+      <ChevronDownIcon />
+    </div>
+  );
 
   return (
     <>
@@ -145,15 +245,11 @@ function LandingHeaderClient() {
             </Link>
           </div>
           <div className="flex gap-4">
-            <div className="px-[15px] py-2 rounded-3xl border border-solid border-primary max-h-fit items-center gap-1 text-primary hidden lg:flex">
-              <LanguageEarthIcon />
-              <p className="font-mukta text-primary text-sm md:text-lg lg:text-xl leading-7">EN</p>
-              <ChevronDownIcon />
-            </div>
+            {languageControl}
             <button className="bg-primary rounded-3xl px-5 py-2 text-white flex gap-1.5 max-h-fit items-center cursor-pointer">
               <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
               <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">
-                Sign in
+                {d.header.signIn}
               </p>
             </button>
             <button className="bg-primary p-2.5 rounded-full text-white max-h-fit">
@@ -163,7 +259,7 @@ function LandingHeaderClient() {
         </div>
         <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex relative z-40">
           {LANDING_NAV.map(value => {
-            if (value.title === 'Horoscope') {
+            if (value.id === 'horoscope') {
               return (
                 <div key="horoscope" className="relative" ref={horoscopeNavRef}>
                   <button
@@ -178,7 +274,9 @@ function LandingHeaderClient() {
                     }
                     className="text-white flex items-center justify-center gap-1 py-[7px] px-[17px]"
                   >
-                    <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
+                    <p className="font-mukta font-light text-xl leading-7">
+                      {d.header.nav[value.id]}
+                    </p>
                     <ChevronDownIcon
                       className={clsx(
                         'text-white transition-transform duration-200',
@@ -193,10 +291,12 @@ function LandingHeaderClient() {
                     >
                       {HOROSCOPE_RANGE_NAV_OPTIONS.map(opt => {
                         const active = activeHoroscopeRange === opt.type;
+                        const rangeLabel =
+                          uiLang === ELanguage.NEPALI ? opt.labelNp : opt.labelEn;
                         return (
                           <Link
                             key={opt.type}
-                            href={horoscopeListPageHref(opt.type)}
+                            href={horoscopeListPageHref(opt.type, uiLang)}
                             role="menuitem"
                             onClick={() =>
                               setHoroscopeMenuState(state => ({ ...state, open: false }))
@@ -206,7 +306,7 @@ function LandingHeaderClient() {
                               active ? 'bg-[#f9f2e9] text-[#3a1414]' : 'hover:bg-[#faf6f0]',
                             )}
                           >
-                            {opt.labelEn}
+                            {rangeLabel}
                           </Link>
                         );
                       })}
@@ -217,9 +317,9 @@ function LandingHeaderClient() {
             }
 
             return (
-              <Link href={value.link ?? '#'} key={value.title}>
+              <Link href={value.link ?? '#'} key={value.id}>
                 <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
-                  <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
+                  <p className="font-mukta font-light text-xl leading-7">{d.header.nav[value.id]}</p>
                   {value.children && <ChevronDownIcon className="text-white" />}
                 </div>
               </Link>
@@ -253,29 +353,31 @@ function LandingHeaderClient() {
 
             <div className="flex flex-col gap-3">
               {MOBILE_NAV.map((item, index) => {
-                if (item.title === 'Horoscope') {
+                if (item.kind === 'horoscope') {
                   return (
-                    <div key={`${item.title}-${index}`} className="w-full">
+                    <div key={`horoscope-${index}`} className="w-full">
                       <div className="flex items-center justify-between w-full">
                         <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709]">
-                          {item.title}
+                          {d.header.nav.horoscope}
                         </p>
                         <ChevronDownIcon className="text-[#691709] w-[13.3px] h-[7.66px]" />
                       </div>
                       <div className="mt-3 flex flex-col gap-1 border-l-2 border-[#e8ddd0] pl-3">
                         {HOROSCOPE_RANGE_NAV_OPTIONS.map(opt => {
                           const active = activeHoroscopeRange === opt.type;
+                          const rangeLabel =
+                            uiLang === ELanguage.NEPALI ? opt.labelNp : opt.labelEn;
                           return (
                             <Link
                               key={opt.type}
-                              href={horoscopeListPageHref(opt.type)}
+                              href={horoscopeListPageHref(opt.type, uiLang)}
                               onClick={closeMobileMenu}
                               className={clsx(
                                 'rounded-lg py-2 pl-2 font-mukta text-[15px] text-[#4a1a1a]',
                                 active ? 'bg-[#f9f2e9] font-semibold' : 'hover:bg-[#faf6f0]',
                               )}
                             >
-                              {opt.labelEn}
+                              {rangeLabel}
                             </Link>
                           );
                         })}
@@ -284,28 +386,32 @@ function LandingHeaderClient() {
                   );
                 }
 
-                const hasChildren = item.children && item.children.length > 0;
+                const title =
+                  item.kind === 'blog'
+                    ? d.header.nav.blog
+                    : item.kind === 'item'
+                      ? d.header.mobile[item.mobileKey]
+                      : d.header.nav[item.navId];
+
                 const content = (
                   <div className="flex items-center justify-between w-full">
                     <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709]">
-                      {item.title}
+                      {title}
                     </p>
-                    {hasChildren && (
-                      <ChevronDownIcon className="text-[#691709] w-[13.3px] h-[7.66px]" />
-                    )}
                   </div>
                 );
 
-                if (item.link) {
+                if (item.kind === 'blog' || (item.kind === 'item' && item.link)) {
+                  const to = item.kind === 'blog' ? '/blogs' : item.link!;
                   return (
-                    <Link key={`${item.title}-${index}`} href={item.link} onClick={closeMobileMenu}>
+                    <Link key={`m-${index}`} href={to} onClick={closeMobileMenu}>
                       {content}
                     </Link>
                   );
                 }
 
                 return (
-                  <div key={`${item.title}-${index}`} className="w-full">
+                  <div key={`m-${index}`} className="w-full">
                     {content}
                   </div>
                 );
@@ -319,6 +425,7 @@ function LandingHeaderClient() {
 }
 
 function LandingHeaderFallback() {
+  const d = horoscopeEn;
   return (
     <header className="container mx-auto px-6 lg:px-0 py-10">
       <div className="flex justify-between">
@@ -329,14 +436,18 @@ function LandingHeaderFallback() {
           </Link>
         </div>
         <div className="flex gap-4">
-          <div className="px-[15px] py-2 rounded-3xl border border-solid border-primary max-h-fit items-center gap-1 text-primary hidden lg:flex">
+          <div className="hidden max-h-fit items-center gap-1 rounded-3xl border border-solid border-primary px-[15px] py-2 text-primary lg:flex">
             <LanguageEarthIcon />
-            <p className="font-mukta text-primary text-sm md:text-lg lg:text-xl leading-7">EN</p>
+            <p className="font-mukta text-primary text-sm md:text-lg lg:text-xl leading-7">
+              {d.header.langEn}
+            </p>
             <ChevronDownIcon />
           </div>
           <button className="bg-primary rounded-3xl px-5 py-2 text-white flex gap-1.5 max-h-fit items-center cursor-pointer">
             <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
-            <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">Sign in</p>
+            <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">
+              {d.header.signIn}
+            </p>
           </button>
           <button className="bg-primary p-2.5 rounded-full text-white max-h-fit">
             <TransparentBellIcon />
@@ -345,9 +456,9 @@ function LandingHeaderFallback() {
       </div>
       <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex">
         {LANDING_NAV.map(value => (
-          <Link href={value.link ?? '#'} key={value.title}>
+          <Link href={value.link ?? '#'} key={value.id}>
             <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
-              <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
+              <p className="font-mukta font-light text-xl leading-7">{d.header.nav[value.id]}</p>
               {value.children && <ChevronDownIcon className="text-white" />}
             </div>
           </Link>

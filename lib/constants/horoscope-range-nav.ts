@@ -1,3 +1,5 @@
+import { ELanguage } from '@/components/enums/language.enum';
+
 import type { VedastroHoroscopeRangeType } from '@/lib/types/vedastro';
 
 const RANGE_ORDER = [
@@ -23,17 +25,38 @@ export function parseHoroscopeRangeFromUrl(
   return 'today';
 }
 
-export function horoscopeListPageHref(range: VedastroHoroscopeRangeType): string {
-  return range === 'today' ? '/horoscope' : `/horoscope?type=${range}`;
+/** Preserves optional UI `lang` (header) on horoscope URLs. */
+export function horoscopeListPageHref(
+  range: VedastroHoroscopeRangeType,
+  uiLang?: ELanguage,
+): string {
+  const params = new URLSearchParams();
+  if (range !== 'today') {
+    params.set('type', range);
+  }
+  if (uiLang && uiLang !== ELanguage.ENGLISH) {
+    params.set('lang', uiLang);
+  }
+  const q = params.toString();
+  return q ? `/horoscope?${q}` : '/horoscope';
 }
 
 /** `/horoscope/details?sign=&type=` — `sign` is lowercase slug (`aries`, …). */
 export function horoscopeDetailPageHref(
   signSlug: string,
   range: VedastroHoroscopeRangeType,
+  uiLang?: ELanguage,
 ): string {
   const s = signSlug.trim().toLowerCase();
-  return `/horoscope/details?sign=${encodeURIComponent(s)}&type=${encodeURIComponent(range)}`;
+  const params = new URLSearchParams();
+  params.set('sign', s);
+  if (range !== 'today') {
+    params.set('type', range);
+  }
+  if (uiLang && uiLang !== ELanguage.ENGLISH) {
+    params.set('lang', uiLang);
+  }
+  return `/horoscope/details?${params.toString()}`;
 }
 
 export const HOROSCOPE_RANGE_NAV_OPTIONS: {
