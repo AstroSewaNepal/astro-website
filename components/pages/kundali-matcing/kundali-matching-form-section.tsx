@@ -13,7 +13,9 @@ type InputProps = {
 const InputPill = ({ label, placeholder, rightIcon, className }: InputProps) => {
   return (
     <label className={['block', className].filter(Boolean).join(' ')}>
-      <span className="block font-mukta text-[12px] md:text-[13px] text-primary mb-1.5">{label}</span>
+      <span className="block font-mukta text-[12px] md:text-[13px] text-primary mb-1.5">
+        {label}
+      </span>
       <span className="relative block">
         <input
           placeholder={placeholder}
@@ -32,7 +34,9 @@ const InputPill = ({ label, placeholder, rightIcon, className }: InputProps) => 
 const SelectPill = ({ label, placeholder = 'Select', rightIcon, className }: InputProps) => {
   return (
     <label className={['block', className].filter(Boolean).join(' ')}>
-      <span className="block font-mukta text-[12px] md:text-[13px] text-primary mb-1.5">{label}</span>
+      <span className="block font-mukta text-[12px] md:text-[13px] text-primary mb-1.5">
+        {label}
+      </span>
       <span className="relative block">
         <select className="w-full h-10 md:h-11 appearance-none rounded-full border-2 border-primary bg-[#fbf5ec]/70 px-4 pr-10 font-mukta text-[13px] md:text-[14px] text-[#141414] outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
           <option value="">{placeholder}</option>
@@ -114,7 +118,12 @@ const KundaliMatchingFormSection: React.FC = () => {
                   placeholder="John Doe"
                   rightIcon={
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M20 21a8 8 0 10-16 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      <path
+                        d="M20 21a8 8 0 10-16 0"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
                       <path
                         d="M12 13a4 4 0 100-8 4 4 0 000 8z"
                         stroke="currentColor"
@@ -131,9 +140,25 @@ const KundaliMatchingFormSection: React.FC = () => {
                     label="Enter date of birth"
                     placeholder="M / D / Y"
                     rightIcon={
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M8 3v3M16 3v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                        <path d="M4 9h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M8 3v3M16 3v3"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                        />
+                        <path
+                          d="M4 9h16"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                        />
                         <path
                           d="M6 6h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2z"
                           stroke="currentColor"
@@ -148,7 +173,13 @@ const KundaliMatchingFormSection: React.FC = () => {
                     label="Enter birth place"
                     placeholder="Kathmandu, Nepal"
                     rightIcon={
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                      >
                         <path
                           d="M12 21s7-4.4 7-11a7 7 0 10-14 0c0 6.6 7 11 7 11z"
                           stroke="currentColor"
@@ -173,7 +204,13 @@ const KundaliMatchingFormSection: React.FC = () => {
                     label="Enter birth time"
                     placeholder="hh / mm / am"
                     rightIcon={
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                      >
                         <path
                           d="M12 22a10 10 0 100-20 10 10 0 000 20z"
                           stroke="currentColor"
@@ -235,7 +272,12 @@ const KundaliMatchingFormSection: React.FC = () => {
                   placeholder="John Doe"
                   rightIcon={
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M20 21a8 8 0 10-16 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      <path
+                        d="M20 21a8 8 0 10-16 0"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
                       <path
                         d="M12 13a4 4 0 100-8 4 4 0 000 8z"
                         stroke="currentColor"
@@ -252,9 +294,25 @@ const KundaliMatchingFormSection: React.FC = () => {
                     label="Enter date of birth"
                     placeholder="M / D / Y"
                     rightIcon={
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M8 3v3M16 3v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                        <path d="M4 9h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M8 3v3M16 3v3"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                        />
+                        <path
+                          d="M4 9h16"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                        />
                         <path
                           d="M6 6h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2z"
                           stroke="currentColor"
@@ -269,7 +327,13 @@ const KundaliMatchingFormSection: React.FC = () => {
                     label="Enter birth place"
                     placeholder="Kathmandu, Nepal"
                     rightIcon={
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                      >
                         <path
                           d="M12 21s7-4.4 7-11a7 7 0 10-14 0c0 6.6 7 11 7 11z"
                           stroke="currentColor"
@@ -294,7 +358,13 @@ const KundaliMatchingFormSection: React.FC = () => {
                     label="Enter birth time"
                     placeholder="hh / mm / am"
                     rightIcon={
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                      >
                         <path
                           d="M12 22a10 10 0 100-20 10 10 0 000 20z"
                           stroke="currentColor"
@@ -359,13 +429,18 @@ const KundaliMatchingFormSection: React.FC = () => {
             />
           </div>
 
-          <h3 className="font-sahitya font-bold text-[28px] leading-[38px] text-center">View your saved Kundali</h3>
+          <h3 className="font-sahitya font-bold text-[28px] leading-[38px] text-center">
+            View your saved Kundali
+          </h3>
 
           <button
             type="button"
             className="w-full max-w-[320px] inline-flex items-center justify-center gap-3 rounded-full bg-[#fbf5ec] px-5 py-2.5 md:py-3 font-mukta text-[14px] md:text-[15px] font-semibold text-primary shadow-[0_10px_24px_rgba(0,0,0,0.18)] hover:bg-white transition-colors"
           >
-            <span aria-hidden className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white">
+            <span
+              aria-hidden
+              className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white"
+            >
               <Image src={GoogleGIcon} alt="" width={24} height={24} />
             </span>
             <span

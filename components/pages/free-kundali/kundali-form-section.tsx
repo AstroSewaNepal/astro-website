@@ -225,7 +225,7 @@ const KundaliFormSection: React.FC = () => {
                     <span className="h-2 w-2 rounded-full bg-white" aria-hidden="true"></span>
                   )}
                 </span>
-                <span>Don't know my exact birth time</span>
+                <span>Don&apos;t know my exact birth time</span>
               </label>
 
               <button

@@ -24,12 +24,12 @@ const KundaliDetails: React.FC = () => {
         </h2>
         <p className="font-mukta font-normal text-[16px] leading-6 tracking-[0] md:text-[24px] md:leading-[34px] text-[#464646] text-justify py-4">
           Kundli, or Kundali, holds great importance in Nepali astrology (Vedic astrology). It is
-          created using a person's date, time, and place of birth. Based on these details, the
+          created using a person&apos;s date, time, and place of birth. Based on these details, the
           positions of the nine planets and the rising sign (Lagna) are calculated at the exact
           moment of birth. A visual chart is then drawn, showing the planets, the rising sign, and
           the twelve zodiac houses. With the help of this Kundali or birth chart, astrologers can
-          study and predict different aspects and events of an individual's life. This makes Kundali
-          an essential tool in astrology and for astrologers.
+          study and predict different aspects and events of an individual&apos;s life. This makes
+          Kundali an essential tool in astrology and for astrologers.
         </p>
       </section>
 

@@ -36,7 +36,13 @@ const PanchangTimingStrip: React.FC = () => {
         {panchangTimings.map((item, index) => (
           <React.Fragment key={item.label}>
             <div className="flex h-full w-full md:w-auto md:min-w-[250px] flex-col items-center justify-center px-3 md:px-5 py-3 md:py-2">
-              <Image src={item.icon} alt={item.label} width={48} height={48} className="md:w-[54px] md:h-[54px]" />
+              <Image
+                src={item.icon}
+                alt={item.label}
+                width={48}
+                height={48}
+                className="md:w-[54px] md:h-[54px]"
+              />
               <p className="mt-2 font-mukta text-[24px] leading-[32px] md:text-[32px] md:leading-[40px] font-semibold text-Trinary text-center">
                 {item.label}
               </p>

@@ -69,8 +69,8 @@ export default function KundaliCard({
           className={imageClassName}
           style={{
             width: imageClassName ? undefined : '100%',
-            maxWidth: imageClassName ? undefined : imageWidth ?? 463,
-            height: imageClassName ? undefined : imageHeight ?? 379,
+            maxWidth: imageClassName ? undefined : (imageWidth ?? 463),
+            height: imageClassName ? undefined : (imageHeight ?? 379),
             opacity: imageOpacity ?? 1,
             transform: `rotate(${imageRotation ?? 0}deg)`,
           }}

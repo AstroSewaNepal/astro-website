@@ -37,11 +37,20 @@ const CalculatorCard = ({
         .filter(Boolean)
         .join(' ')}
     >
-      <div className={mobileHorizontal ? 'hidden md:flex flex-col items-center text-center' : 'flex flex-col items-center text-center'}>
+      <div
+        className={
+          mobileHorizontal
+            ? 'hidden md:flex flex-col items-center text-center'
+            : 'flex flex-col items-center text-center'
+        }
+      >
         <div className="h-[120px] flex items-start justify-center">{icon}</div>
 
         <h3
-          className={['mt-4 font-sahitya font-bold text-[14px] md:text-[15px] text-primary', titleClassName]
+          className={[
+            'mt-4 font-sahitya font-bold text-[14px] md:text-[15px] text-primary',
+            titleClassName,
+          ]
             .filter(Boolean)
             .join(' ')}
         >
@@ -69,7 +78,9 @@ const CalculatorCard = ({
       {mobileHorizontal ? (
         <div className="md:hidden grid grid-cols-[128.2434px_1fr] gap-[16px] items-start">
           <div className="h-[168.0032px] flex flex-col items-center justify-between">
-            <div className="h-[130.0032px] w-[128.2434px] flex items-center justify-center">{icon}</div>
+            <div className="h-[130.0032px] w-[128.2434px] flex items-center justify-center">
+              {icon}
+            </div>
             <button
               type="button"
               className="w-[134px] h-[28px] min-w-[84px] max-w-[480px] rounded-[24px] px-[16px] bg-primary font-mukta font-semibold text-[16px] leading-[28px] tracking-[0] text-center text-secondary opacity-100"

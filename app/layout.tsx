@@ -92,7 +92,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={clsx(tiroDevanagari.variable, sahitya.variable, mukta.variable, raleway.variable, `antialiased`)}
+        className={clsx(
+          tiroDevanagari.variable,
+          sahitya.variable,
+          mukta.variable,
+          raleway.variable,
+          `antialiased`,
+        )}
       >
         {gaId && (
           <>
