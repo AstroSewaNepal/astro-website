@@ -142,9 +142,11 @@ export const LandingHeader = () => {
             </div>
             <button className="bg-primary rounded-3xl px-5 py-2 text-white flex gap-1.5 max-h-fit items-center cursor-pointer">
               <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
-              <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">
-                Sign in
-              </p>
+              <Link href={'/login'}>
+                <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">
+                  Sign in
+                </p>
+              </Link>
             </button>
             <button className="bg-primary p-2.5 rounded-full text-white max-h-fit">
               <TransparentBellIcon />
