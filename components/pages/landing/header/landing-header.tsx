@@ -373,15 +373,20 @@ export const LandingHeader = () => {
                         <div className="mt-2 ml-4 flex flex-col gap-2">
                           {item.children?.map((child, childIndex) => {
                             const hasNestedChildren = child.children && child.children.length > 0;
-                            const isNestedExpanded = openMobileDropdown === `${item.title}-${child.title}`;
-                            
+                            const isNestedExpanded =
+                              openMobileDropdown === `${item.title}-${child.title}`;
+
                             if (hasNestedChildren) {
                               return (
                                 <div key={`${child.title}-${childIndex}`} className="w-full">
                                   <button
                                     type="button"
                                     className="w-full text-left flex items-center justify-between"
-                                    onClick={() => setOpenMobileDropdown(isNestedExpanded ? null : `${item.title}-${child.title}`)}
+                                    onClick={() =>
+                                      setOpenMobileDropdown(
+                                        isNestedExpanded ? null : `${item.title}-${child.title}`,
+                                      )
+                                    }
                                   >
                                     <span className="font-mukta text-[18px] leading-[28px] text-[#691709]">
                                       {child.title}
@@ -409,7 +414,7 @@ export const LandingHeader = () => {
                                 </div>
                               );
                             }
-                            
+
                             return (
                               <Link
                                 key={`${child.title}-${childIndex}`}
