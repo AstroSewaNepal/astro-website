@@ -399,7 +399,7 @@ export const LandingHeader = () => {
                                   </button>
                                   {isNestedExpanded ? (
                                     <div className="mt-2 ml-4 flex flex-col gap-2">
-                                      {child.children.map(grandchild => (
+                                      {child.children?.map(grandchild => (
                                         <Link
                                           key={grandchild.title}
                                           href={grandchild.link}
