@@ -11,12 +11,67 @@ import Link from 'next/link';
 type NavItem = {
   title: string;
   link?: string;
+  children?: NavChild[];
+};
+
+type NavChild = {
+  title: string;
+  link?: string;
   children?: { title: string; link: string }[];
 };
 
 const LANDING_NAV: NavItem[] = [
-  { title: 'Horoscope', children: [] },
-  { title: 'Zodiac Signs', children: [] },
+  {
+    title: 'Horoscope',
+    children: [
+      { title: "Today's Horoscope", link: '/horoscope' },
+      { title: "Tomorrow's Horoscope", link: '/horoscope' },
+      { title: 'Weekly Horoscope', link: '/horoscope' },
+      { title: 'Monthly Horoscope', link: '/horoscope' },
+      { title: 'Love Horoscope', link: '/horoscope' },
+      { title: 'Chinese Horoscope', link: '/horoscope' },
+      { title: 'Marriage Horoscope', link: '/horoscope' },
+    ],
+  },
+  {
+    title: 'Zodiac Signs',
+    children: [
+      {
+        title: 'English Zodiac',
+        children: [
+          { title: 'Aries', link: '/zodiac-signs/english/aries' },
+          { title: 'Taurus', link: '/zodiac-signs/english/taurus' },
+          { title: 'Gemini', link: '/zodiac-signs/english/gemini' },
+          { title: 'Cancer', link: '/zodiac-signs/english/cancer' },
+          { title: 'Leo', link: '/zodiac-signs/english/leo' },
+          { title: 'Virgo', link: '/zodiac-signs/english/virgo' },
+          { title: 'Libra', link: '/zodiac-signs/english/libra' },
+          { title: 'Scorpio', link: '/zodiac-signs/english/scorpio' },
+          { title: 'Sagittarius', link: '/zodiac-signs/english/sagittarius' },
+          { title: 'Capricorn', link: '/zodiac-signs/english/capricorn' },
+          { title: 'Aquarius', link: '/zodiac-signs/english/aquarius' },
+          { title: 'Pisces', link: '/zodiac-signs/english/pisces' },
+        ],
+      },
+      {
+        title: 'Nepali Zodiac',
+        children: [
+          { title: 'Mesh Rashi', link: '/zodiac-signs/nepali/mesh' },
+          { title: 'Brish Rashi', link: '/zodiac-signs/nepali/brish' },
+          { title: 'Mithun Rashi', link: '/zodiac-signs/nepali/mithun' },
+          { title: 'Karkat Rashi', link: '/zodiac-signs/nepali/karkat' },
+          { title: 'Simha Rashi', link: '/zodiac-signs/nepali/simha' },
+          { title: 'Kanya Rashi', link: '/zodiac-signs/nepali/kanya' },
+          { title: 'Tula Rashi', link: '/zodiac-signs/nepali/tula' },
+          { title: 'Brischik Rashi', link: '/zodiac-signs/nepali/brischik' },
+          { title: 'Dhanu Rashi', link: '/zodiac-signs/nepali/dhanu' },
+          { title: 'Makar Rashi', link: '/zodiac-signs/nepali/makar' },
+          { title: 'Kumbha Rashi', link: '/zodiac-signs/nepali/kumbha' },
+          { title: 'Meen Rashi', link: '/zodiac-signs/nepali/meen' },
+        ],
+      },
+    ],
+  },
   {
     title: 'Kundali',
     link: '/kundali-details',
@@ -36,8 +91,57 @@ const LANDING_NAV: NavItem[] = [
 const MOBILE_NAV: NavItem[] = [
   { title: 'Home', link: '/' },
   { title: 'About Us', link: '/about-us' },
-  { title: 'Horoscope', children: [] },
-  { title: 'Zodiac Sign', children: [] },
+  {
+    title: 'Horoscope',
+    children: [
+      { title: "Today's Horoscope", link: '/horoscope' },
+      { title: "Tomorrow's Horoscope", link: '/horoscope' },
+      { title: 'Weekly Horoscope', link: '/horoscope' },
+      { title: 'Monthly Horoscope', link: '/horoscope' },
+      { title: 'Love Horoscope', link: '/horoscope' },
+      { title: 'Chinese Horoscope', link: '/horoscope' },
+      { title: 'Marriage Horoscope', link: '/horoscope' },
+    ],
+  },
+  {
+    title: 'Zodiac Sign',
+    children: [
+      {
+        title: 'English Zodiac',
+        children: [
+          { title: 'Aries', link: '/zodiac-signs/english/aries' },
+          { title: 'Taurus', link: '/zodiac-signs/english/taurus' },
+          { title: 'Gemini', link: '/zodiac-signs/english/gemini' },
+          { title: 'Cancer', link: '/zodiac-signs/english/cancer' },
+          { title: 'Leo', link: '/zodiac-signs/english/leo' },
+          { title: 'Virgo', link: '/zodiac-signs/english/virgo' },
+          { title: 'Libra', link: '/zodiac-signs/english/libra' },
+          { title: 'Scorpio', link: '/zodiac-signs/english/scorpio' },
+          { title: 'Sagittarius', link: '/zodiac-signs/english/sagittarius' },
+          { title: 'Capricorn', link: '/zodiac-signs/english/capricorn' },
+          { title: 'Aquarius', link: '/zodiac-signs/english/aquarius' },
+          { title: 'Pisces', link: '/zodiac-signs/english/pisces' },
+        ],
+      },
+      {
+        title: 'Nepali Zodiac',
+        children: [
+          { title: 'Mesh Rashi', link: '/zodiac-signs/nepali/mesh' },
+          { title: 'Brish Rashi', link: '/zodiac-signs/nepali/brish' },
+          { title: 'Mithun Rashi', link: '/zodiac-signs/nepali/mithun' },
+          { title: 'Karkat Rashi', link: '/zodiac-signs/nepali/karkat' },
+          { title: 'Simha Rashi', link: '/zodiac-signs/nepali/simha' },
+          { title: 'Kanya Rashi', link: '/zodiac-signs/nepali/kanya' },
+          { title: 'Tula Rashi', link: '/zodiac-signs/nepali/tula' },
+          { title: 'Brischik Rashi', link: '/zodiac-signs/nepali/brischik' },
+          { title: 'Dhanu Rashi', link: '/zodiac-signs/nepali/dhanu' },
+          { title: 'Makar Rashi', link: '/zodiac-signs/nepali/makar' },
+          { title: 'Kumbha Rashi', link: '/zodiac-signs/nepali/kumbha' },
+          { title: 'Meen Rashi', link: '/zodiac-signs/nepali/meen' },
+        ],
+      },
+    ],
+  },
   {
     title: 'Kundali',
     link: '/kundali-details',
@@ -167,13 +271,38 @@ export const LandingHeader = () => {
                 {hasChildren ? (
                   <div className="absolute left-0 top-[calc(100%+12px)] min-w-[220px] rounded-none bg-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20">
                     {value.children?.map(child => (
-                      <Link
-                        key={child.title}
-                        href={child.link}
-                        className="block px-4 py-2 font-mukta text-[16px] leading-6 text-primary hover:bg-[#f8f3df]"
-                      >
-                        {child.title}
-                      </Link>
+                      <div key={child.title} className="relative group/nested">
+                        <Link
+                          href={child.link ?? '#'}
+                          className="flex items-center justify-between px-4 py-2 font-mukta text-[16px] leading-6 text-primary hover:bg-[#f8f3df]"
+                        >
+                          <span>{child.title}</span>
+                          {child.children && child.children.length > 0 && (
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                              <path
+                                d="M6 3l4 5-4 5"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          )}
+                        </Link>
+                        {child.children && child.children.length > 0 && (
+                          <div className="absolute left-full top-0 ml-1 min-w-[200px] rounded-none bg-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] py-2 opacity-0 invisible group-hover/nested:opacity-100 group-hover/nested:visible transition-all duration-200 z-20">
+                            {child.children.map(grandchild => (
+                              <Link
+                                key={grandchild.title}
+                                href={grandchild.link}
+                                className="block px-4 py-2 font-mukta text-[16px] leading-6 text-primary hover:bg-[#f8f3df]"
+                              >
+                                {grandchild.title}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
                 ) : null}
@@ -242,16 +371,56 @@ export const LandingHeader = () => {
                       </button>
                       {isExpanded ? (
                         <div className="mt-2 ml-4 flex flex-col gap-2">
-                          {item.children?.map(child => (
-                            <Link
-                              key={child.title}
-                              href={child.link}
-                              onClick={closeMobileMenu}
-                              className="font-mukta text-[18px] leading-[28px] text-[#691709]"
-                            >
-                              {child.title}
-                            </Link>
-                          ))}
+                          {item.children?.map((child, childIndex) => {
+                            const hasNestedChildren = child.children && child.children.length > 0;
+                            const isNestedExpanded = openMobileDropdown === `${item.title}-${child.title}`;
+                            
+                            if (hasNestedChildren) {
+                              return (
+                                <div key={`${child.title}-${childIndex}`} className="w-full">
+                                  <button
+                                    type="button"
+                                    className="w-full text-left flex items-center justify-between"
+                                    onClick={() => setOpenMobileDropdown(isNestedExpanded ? null : `${item.title}-${child.title}`)}
+                                  >
+                                    <span className="font-mukta text-[18px] leading-[28px] text-[#691709]">
+                                      {child.title}
+                                    </span>
+                                    <ChevronDownIcon
+                                      className={`text-[#691709] w-[16px] h-[16px] transition-transform duration-200 ${
+                                        isNestedExpanded ? 'rotate-180' : ''
+                                      }`}
+                                    />
+                                  </button>
+                                  {isNestedExpanded ? (
+                                    <div className="mt-2 ml-4 flex flex-col gap-2">
+                                      {child.children.map(grandchild => (
+                                        <Link
+                                          key={grandchild.title}
+                                          href={grandchild.link}
+                                          onClick={closeMobileMenu}
+                                          className="font-mukta text-[16px] leading-[24px] text-[#691709]"
+                                        >
+                                          {grandchild.title}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  ) : null}
+                                </div>
+                              );
+                            }
+                            
+                            return (
+                              <Link
+                                key={`${child.title}-${childIndex}`}
+                                href={child.link ?? '#'}
+                                onClick={closeMobileMenu}
+                                className="font-mukta text-[18px] leading-[28px] text-[#691709]"
+                              >
+                                {child.title}
+                              </Link>
+                            );
+                          })}
                         </div>
                       ) : null}
                     </div>
