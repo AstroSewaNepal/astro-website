@@ -246,9 +246,7 @@ export function HoroscopeDetailsClient() {
                     <span
                       className={clsx(
                         'text-center font-tiro-devanagari text-[11px] font-normal leading-tight transition-colors duration-200 sm:text-[12px]',
-                        selected
-                          ? 'text-[#611508]'
-                          : 'text-[#9a6b5c] group-hover:text-[#691709]',
+                        selected ? 'text-[#611508]' : 'text-[#9a6b5c] group-hover:text-[#691709]',
                       )}
                     >
                       {capitalizeSign(slug)}

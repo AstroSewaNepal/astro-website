@@ -8,50 +8,159 @@ import UserLineIcon from '@/components/icons/user/user-line';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import LanguageEarthIcon from '@/components/icons/language/earth';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
 
 import { ELanguage } from '@/components/enums/language.enum';
-import {
-  HOROSCOPE_RANGE_NAV_OPTIONS,
-  horoscopeListPageHref,
-  parseHoroscopeRangeFromUrl,
-} from '@/lib/constants/horoscope-range-nav';
 import { horoscopeEn } from '@/lib/i18n/horoscope';
 import { useHoroscopeLocaleOptional } from '@/lib/i18n/horoscope/horoscope-locale-context';
-import type { HoroscopeMessages } from '@/lib/i18n/horoscope/schema';
 
-type DesktopNavId = keyof HoroscopeMessages['header']['nav'];
-
-const LANDING_NAV: {
-  id: DesktopNavId;
+type NavChild = {
+  title: string;
   link?: string;
-  children?: unknown[];
-}[] = [
-  { id: 'horoscope', children: [] },
-  { id: 'zodiacSigns', children: [] },
-  { id: 'kundali', children: [] },
-  { id: 'compatibility' },
-  { id: 'pujaBidhi', children: [] },
-  { id: 'calculator', children: [] },
-  { id: 'blog', link: '/blogs' },
+  children?: { title: string; link: string }[];
+};
+
+type NavItem = {
+  title: string;
+  link?: string;
+  children?: NavChild[];
+};
+
+const LANDING_NAV: NavItem[] = [
+  {
+    title: 'Horoscope',
+    children: [
+      { title: "Today's Horoscope", link: '/horoscope' },
+      { title: "Tomorrow's Horoscope", link: '/horoscope' },
+      { title: 'Weekly Horoscope', link: '/horoscope' },
+      { title: 'Monthly Horoscope', link: '/horoscope' },
+      { title: 'Love Horoscope', link: '/horoscope' },
+      { title: 'Chinese Horoscope', link: '/horoscope' },
+      { title: 'Marriage Horoscope', link: '/horoscope' },
+    ],
+  },
+  {
+    title: 'Zodiac Signs',
+    children: [
+      {
+        title: 'English Zodiac',
+        children: [
+          { title: 'Aries', link: '/zodiac-signs/english/aries' },
+          { title: 'Taurus', link: '/zodiac-signs/english/taurus' },
+          { title: 'Gemini', link: '/zodiac-signs/english/gemini' },
+          { title: 'Cancer', link: '/zodiac-signs/english/cancer' },
+          { title: 'Leo', link: '/zodiac-signs/english/leo' },
+          { title: 'Virgo', link: '/zodiac-signs/english/virgo' },
+          { title: 'Libra', link: '/zodiac-signs/english/libra' },
+          { title: 'Scorpio', link: '/zodiac-signs/english/scorpio' },
+          { title: 'Sagittarius', link: '/zodiac-signs/english/sagittarius' },
+          { title: 'Capricorn', link: '/zodiac-signs/english/capricorn' },
+          { title: 'Aquarius', link: '/zodiac-signs/english/aquarius' },
+          { title: 'Pisces', link: '/zodiac-signs/english/pisces' },
+        ],
+      },
+      {
+        title: 'Nepali Zodiac',
+        children: [
+          { title: 'Mesh Rashi', link: '/zodiac-signs/nepali/mesh' },
+          { title: 'Brish Rashi', link: '/zodiac-signs/nepali/brish' },
+          { title: 'Mithun Rashi', link: '/zodiac-signs/nepali/mithun' },
+          { title: 'Karkat Rashi', link: '/zodiac-signs/nepali/karkat' },
+          { title: 'Simha Rashi', link: '/zodiac-signs/nepali/simha' },
+          { title: 'Kanya Rashi', link: '/zodiac-signs/nepali/kanya' },
+          { title: 'Tula Rashi', link: '/zodiac-signs/nepali/tula' },
+          { title: 'Brischik Rashi', link: '/zodiac-signs/nepali/brischik' },
+          { title: 'Dhanu Rashi', link: '/zodiac-signs/nepali/dhanu' },
+          { title: 'Makar Rashi', link: '/zodiac-signs/nepali/makar' },
+          { title: 'Kumbha Rashi', link: '/zodiac-signs/nepali/kumbha' },
+          { title: 'Meen Rashi', link: '/zodiac-signs/nepali/meen' },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Kundali',
+    link: '/kundali-details',
+    children: [
+      { title: 'Free Kundali', link: '/free-kundali' },
+      { title: 'Kundali Matching', link: '/kundali-matching' },
+      { title: 'Kundali Details', link: '/kundali-details' },
+    ],
+  },
+  { title: 'Compatibility' },
+  { title: 'Puja Bidhi', children: [] },
+  { title: 'Calculator', children: [], link: '/calculators' },
+  { title: 'Blog', link: '/blogs' },
+  { title: 'Calander', link: '/calander' },
 ];
 
-type MobileRow =
-  | { kind: 'horoscope' }
-  | { kind: 'blog' }
-  | { kind: 'item'; mobileKey: keyof HoroscopeMessages['header']['mobile']; link?: string }
-  | { kind: 'nav'; navId: DesktopNavId; link?: string };
-
-const MOBILE_NAV: MobileRow[] = [
-  { kind: 'item', mobileKey: 'home' },
-  { kind: 'item', mobileKey: 'aboutUs', link: '/about-us' },
-  { kind: 'horoscope' },
-  { kind: 'item', mobileKey: 'zodiacSign' },
-  { kind: 'nav', navId: 'kundali' },
-  { kind: 'nav', navId: 'compatibility' },
-  { kind: 'nav', navId: 'pujaBidhi' },
-  { kind: 'nav', navId: 'calculator' },
-  { kind: 'blog' },
+const MOBILE_NAV: NavItem[] = [
+  { title: 'Home', link: '/' },
+  { title: 'About Us', link: '/about-us' },
+  {
+    title: 'Horoscope',
+    children: [
+      { title: "Today's Horoscope", link: '/horoscope' },
+      { title: "Tomorrow's Horoscope", link: '/horoscope' },
+      { title: 'Weekly Horoscope', link: '/horoscope' },
+      { title: 'Monthly Horoscope', link: '/horoscope' },
+      { title: 'Love Horoscope', link: '/horoscope' },
+      { title: 'Chinese Horoscope', link: '/horoscope' },
+      { title: 'Marriage Horoscope', link: '/horoscope' },
+    ],
+  },
+  {
+    title: 'Zodiac Sign',
+    children: [
+      {
+        title: 'English Zodiac',
+        children: [
+          { title: 'Aries', link: '/zodiac-signs/english/aries' },
+          { title: 'Taurus', link: '/zodiac-signs/english/taurus' },
+          { title: 'Gemini', link: '/zodiac-signs/english/gemini' },
+          { title: 'Cancer', link: '/zodiac-signs/english/cancer' },
+          { title: 'Leo', link: '/zodiac-signs/english/leo' },
+          { title: 'Virgo', link: '/zodiac-signs/english/virgo' },
+          { title: 'Libra', link: '/zodiac-signs/english/libra' },
+          { title: 'Scorpio', link: '/zodiac-signs/english/scorpio' },
+          { title: 'Sagittarius', link: '/zodiac-signs/english/sagittarius' },
+          { title: 'Capricorn', link: '/zodiac-signs/english/capricorn' },
+          { title: 'Aquarius', link: '/zodiac-signs/english/aquarius' },
+          { title: 'Pisces', link: '/zodiac-signs/english/pisces' },
+        ],
+      },
+      {
+        title: 'Nepali Zodiac',
+        children: [
+          { title: 'Mesh Rashi', link: '/zodiac-signs/nepali/mesh' },
+          { title: 'Brish Rashi', link: '/zodiac-signs/nepali/brish' },
+          { title: 'Mithun Rashi', link: '/zodiac-signs/nepali/mithun' },
+          { title: 'Karkat Rashi', link: '/zodiac-signs/nepali/karkat' },
+          { title: 'Simha Rashi', link: '/zodiac-signs/nepali/simha' },
+          { title: 'Kanya Rashi', link: '/zodiac-signs/nepali/kanya' },
+          { title: 'Tula Rashi', link: '/zodiac-signs/nepali/tula' },
+          { title: 'Brischik Rashi', link: '/zodiac-signs/nepali/brischik' },
+          { title: 'Dhanu Rashi', link: '/zodiac-signs/nepali/dhanu' },
+          { title: 'Makar Rashi', link: '/zodiac-signs/nepali/makar' },
+          { title: 'Kumbha Rashi', link: '/zodiac-signs/nepali/kumbha' },
+          { title: 'Meen Rashi', link: '/zodiac-signs/nepali/meen' },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Kundali',
+    link: '/kundali-details',
+    children: [
+      { title: 'Free Kundali', link: '/free-kundali' },
+      { title: 'Kundali Matching', link: '/kundali-matching' },
+      { title: 'Kundali Details', link: '/kundali-details' },
+    ],
+  },
+  { title: 'Compatibility' },
+  { title: 'Puja Bidhi', children: [] },
+  { title: 'Calculator', children: [], link: '/calculators' },
+  { title: 'Blog', link: '/blogs' },
+  { title: 'Calander', link: '/calander' },
 ];
 
 const NavIcon = ({ onClick }: { onClick: () => void }) => {
@@ -96,25 +205,12 @@ const CloseIcon = ({ onClick }: { onClick: () => void }) => {
 };
 
 function LandingHeaderClient() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const horoscopeLocale = useHoroscopeLocaleOptional();
-  const d = horoscopeLocale?.dict ?? horoscopeEn;
-  const uiLang = horoscopeLocale?.uiLanguage;
-
-  const activeHoroscopeRange =
-    pathname === '/horoscope' ? parseHoroscopeRangeFromUrl(searchParams.get('type')) : null;
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [horoscopeMenuState, setHoroscopeMenuState] = useState<{
-    routeKey: string;
-    open: boolean;
-  }>({ routeKey: '', open: false });
-  const [langMenuOpen, setLangMenuOpen] = useState(false);
-  const horoscopeNavRef = useRef<HTMLDivElement>(null);
+  const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
   const langMenuRef = useRef<HTMLDivElement>(null);
-  const routeKey = `${pathname}?${searchParams.toString()}`;
-  const horoscopeMenuOpen = horoscopeMenuState.open && horoscopeMenuState.routeKey === routeKey;
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const horoscopeLocale = useHoroscopeLocaleOptional();
+  const d = horoscopeEn;
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -126,20 +222,6 @@ function LandingHeaderClient() {
       document.body.style.overflow = 'unset';
     };
   }, [isMobileMenuOpen]);
-
-  useEffect(() => {
-    if (!horoscopeMenuOpen) {
-      return;
-    }
-    const onPointerDown = (e: PointerEvent) => {
-      const el = horoscopeNavRef.current;
-      if (el && !el.contains(e.target as Node)) {
-        setHoroscopeMenuState(state => ({ ...state, open: false }));
-      }
-    };
-    document.addEventListener('pointerdown', onPointerDown);
-    return () => document.removeEventListener('pointerdown', onPointerDown);
-  }, [horoscopeMenuOpen]);
 
   useEffect(() => {
     if (!langMenuOpen) {
@@ -161,6 +243,7 @@ function LandingHeaderClient() {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+    setOpenMobileDropdown(null);
   };
 
   const langCodeLabel =
@@ -248,9 +331,11 @@ function LandingHeaderClient() {
             {languageControl}
             <button className="bg-primary rounded-3xl px-5 py-2 text-white flex gap-1.5 max-h-fit items-center cursor-pointer">
               <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
-              <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">
-                {d.header.signIn}
-              </p>
+              <Link href={'/login'}>
+                <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">
+                  Sign in
+                </p>
+              </Link>
             </button>
             <button className="bg-primary p-2.5 rounded-full text-white max-h-fit">
               <TransparentBellIcon />
@@ -259,71 +344,56 @@ function LandingHeaderClient() {
         </div>
         <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex relative z-40">
           {LANDING_NAV.map(value => {
-            if (value.id === 'horoscope') {
-              return (
-                <div key="horoscope" className="relative" ref={horoscopeNavRef}>
-                  <button
-                    type="button"
-                    aria-expanded={horoscopeMenuOpen}
-                    aria-haspopup="true"
-                    onClick={() =>
-                      setHoroscopeMenuState(state => ({
-                        routeKey,
-                        open: state.routeKey === routeKey ? !state.open : true,
-                      }))
-                    }
-                    className="text-white flex items-center justify-center gap-1 py-[7px] px-[17px]"
-                  >
-                    <p className="font-mukta font-light text-xl leading-7">
-                      {d.header.nav[value.id]}
-                    </p>
-                    <ChevronDownIcon
-                      className={clsx(
-                        'text-white transition-transform duration-200',
-                        horoscopeMenuOpen && 'rotate-180',
-                      )}
-                    />
-                  </button>
-                  {horoscopeMenuOpen ? (
-                    <div
-                      className="absolute left-1/2 top-[calc(100%+8px)] z-50 min-w-[240px] -translate-x-1/2 overflow-hidden rounded-[22px] border border-[#e8ddd0] bg-white py-2 shadow-[0_12px_40px_rgba(92,56,23,0.18)]"
-                      role="menu"
-                    >
-                      {HOROSCOPE_RANGE_NAV_OPTIONS.map(opt => {
-                        const active = activeHoroscopeRange === opt.type;
-                        const rangeLabel = uiLang === ELanguage.NEPALI ? opt.labelNp : opt.labelEn;
-                        return (
-                          <Link
-                            key={opt.type}
-                            href={horoscopeListPageHref(opt.type, uiLang)}
-                            role="menuitem"
-                            onClick={() =>
-                              setHoroscopeMenuState(state => ({ ...state, open: false }))
-                            }
-                            className={clsx(
-                              'block px-5 py-3 text-center font-sahitya text-[16px] leading-snug text-[#4a1a1a] transition-colors sm:text-[17px]',
-                              active ? 'bg-[#f9f2e9] text-[#3a1414]' : 'hover:bg-[#faf6f0]',
-                            )}
-                          >
-                            {rangeLabel}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  ) : null}
-                </div>
-              );
-            }
+            const hasChildren = !!value.children?.length;
 
             return (
-              <Link href={value.link ?? '#'} key={value.id}>
-                <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
-                  <p className="font-mukta font-light text-xl leading-7">
-                    {d.header.nav[value.id]}
-                  </p>
-                  {value.children && <ChevronDownIcon className="text-white" />}
-                </div>
-              </Link>
+              <div key={value.title} className="relative group">
+                <Link href={value.link ?? '#'} className="block">
+                  <div className="text-white flex items-center justify-center py-[7px] px-[17px] rounded-xl hover:bg-hoverColor active:bg-hoverColor">
+                    <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
+                    {hasChildren && <ChevronDownIcon className="text-white" />}
+                  </div>
+                </Link>
+
+                {hasChildren ? (
+                  <div className="absolute left-0 top-[calc(100%+12px)] min-w-[220px] rounded-none bg-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20">
+                    {value.children?.map(child => (
+                      <div key={child.title} className="relative group/nested">
+                        <Link
+                          href={child.link ?? '#'}
+                          className="flex items-center justify-between px-4 py-2 font-mukta text-[16px] leading-6 text-primary hover:bg-[#f8f3df]"
+                        >
+                          <span>{child.title}</span>
+                          {child.children && child.children.length > 0 && (
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                              <path
+                                d="M6 3l4 5-4 5"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          )}
+                        </Link>
+                        {child.children && child.children.length > 0 && (
+                          <div className="absolute left-full top-0 ml-1 min-w-[200px] rounded-none bg-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] py-2 opacity-0 invisible group-hover/nested:opacity-100 group-hover/nested:visible transition-all duration-200 z-20">
+                            {child.children.map(grandchild => (
+                              <Link
+                                key={grandchild.title}
+                                href={grandchild.link}
+                                className="block px-4 py-2 font-mukta text-[16px] leading-6 text-primary hover:bg-[#f8f3df]"
+                              >
+                                {grandchild.title}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             );
           })}
         </nav>
@@ -354,58 +424,99 @@ function LandingHeaderClient() {
 
             <div className="flex flex-col gap-3">
               {MOBILE_NAV.map((item, index) => {
-                if (item.kind === 'horoscope') {
+                const hasChildren = item.children && item.children.length > 0;
+                const isExpanded = openMobileDropdown === item.title;
+                const content = (
+                  <div className="flex items-center justify-between w-full">
+                    <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709]">
+                      {item.title}
+                    </p>
+                    {hasChildren && (
+                      <ChevronDownIcon
+                        className={`text-[#691709] w-[18px] h-[18px] transition-transform duration-200 ${
+                          isExpanded ? 'rotate-180' : ''
+                        }`}
+                      />
+                    )}
+                  </div>
+                );
+
+                if (hasChildren) {
                   return (
-                    <div key={`horoscope-${index}`} className="w-full">
-                      <div className="flex items-center justify-between w-full">
-                        <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709]">
-                          {d.header.nav.horoscope}
-                        </p>
-                        <ChevronDownIcon className="text-[#691709] w-[13.3px] h-[7.66px]" />
-                      </div>
-                      <div className="mt-3 flex flex-col gap-1 border-l-2 border-[#e8ddd0] pl-3">
-                        {HOROSCOPE_RANGE_NAV_OPTIONS.map(opt => {
-                          const active = activeHoroscopeRange === opt.type;
-                          const rangeLabel =
-                            uiLang === ELanguage.NEPALI ? opt.labelNp : opt.labelEn;
-                          return (
-                            <Link
-                              key={opt.type}
-                              href={horoscopeListPageHref(opt.type, uiLang)}
-                              onClick={closeMobileMenu}
-                              className={clsx(
-                                'rounded-lg py-2 pl-2 font-mukta text-[15px] text-[#4a1a1a]',
-                                active ? 'bg-[#f9f2e9] font-semibold' : 'hover:bg-[#faf6f0]',
-                              )}
-                            >
-                              {rangeLabel}
-                            </Link>
-                          );
-                        })}
-                      </div>
+                    <div key={`${item.title}-${index}`} className="w-full">
+                      <button
+                        type="button"
+                        className="w-full text-left"
+                        onClick={() => setOpenMobileDropdown(isExpanded ? null : item.title)}
+                      >
+                        {content}
+                      </button>
+                      {isExpanded ? (
+                        <div className="mt-2 ml-4 flex flex-col gap-2">
+                          {item.children?.map((child, childIndex) => {
+                            const hasNestedChildren = child.children && child.children.length > 0;
+                            const isNestedExpanded =
+                              openMobileDropdown === `${item.title}-${child.title}`;
+
+                            if (hasNestedChildren) {
+                              return (
+                                <div key={`${child.title}-${childIndex}`} className="w-full">
+                                  <button
+                                    type="button"
+                                    className="w-full text-left flex items-center justify-between"
+                                    onClick={() =>
+                                      setOpenMobileDropdown(
+                                        isNestedExpanded ? null : `${item.title}-${child.title}`,
+                                      )
+                                    }
+                                  >
+                                    <span className="font-mukta text-[18px] leading-[28px] text-[#691709]">
+                                      {child.title}
+                                    </span>
+                                    <ChevronDownIcon
+                                      className={`text-[#691709] w-[16px] h-[16px] transition-transform duration-200 ${
+                                        isNestedExpanded ? 'rotate-180' : ''
+                                      }`}
+                                    />
+                                  </button>
+                                  {isNestedExpanded ? (
+                                    <div className="mt-2 ml-4 flex flex-col gap-2">
+                                      {child.children?.map(grandchild => (
+                                        <Link
+                                          key={grandchild.title}
+                                          href={grandchild.link}
+                                          onClick={closeMobileMenu}
+                                          className="font-mukta text-[16px] leading-[24px] text-[#691709]"
+                                        >
+                                          {grandchild.title}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  ) : null}
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <Link
+                                key={`${child.title}-${childIndex}`}
+                                href={child.link ?? '#'}
+                                onClick={closeMobileMenu}
+                                className="font-mukta text-[18px] leading-[28px] text-[#691709]"
+                              >
+                                {child.title}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      ) : null}
                     </div>
                   );
                 }
 
-                const title =
-                  item.kind === 'blog'
-                    ? d.header.nav.blog
-                    : item.kind === 'item'
-                      ? d.header.mobile[item.mobileKey]
-                      : d.header.nav[item.navId];
-
-                const content = (
-                  <div className="flex items-center justify-between w-full">
-                    <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709]">
-                      {title}
-                    </p>
-                  </div>
-                );
-
-                if (item.kind === 'blog' || (item.kind === 'item' && item.link)) {
-                  const to = item.kind === 'blog' ? '/blogs' : item.link!;
+                if (item.link) {
                   return (
-                    <Link key={`m-${index}`} href={to} onClick={closeMobileMenu}>
+                    <Link key={`m-${index}`} href={item.link} onClick={closeMobileMenu}>
                       {content}
                     </Link>
                   );
@@ -457,9 +568,9 @@ function LandingHeaderFallback() {
       </div>
       <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex">
         {LANDING_NAV.map(value => (
-          <Link href={value.link ?? '#'} key={value.id}>
+          <Link href={value.link ?? '#'} key={value.title}>
             <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
-              <p className="font-mukta font-light text-xl leading-7">{d.header.nav[value.id]}</p>
+              <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
               {value.children && <ChevronDownIcon className="text-white" />}
             </div>
           </Link>

@@ -5,6 +5,7 @@
   --font-tiro-devanagari: 'Tiro Devanagari Sanskrit', serif;
   --font-sahitya: 'Sahitya', serif;
   --font-mukta: 'Mukta', serif;
+  --font-raleway: 'Raleway', sans-serif;
 
   /* Deep Saffron Color Palette */
   --saffron-50: #fff2e5;
@@ -77,6 +78,10 @@
   --white: #ffffff;
 
   --primary: #611508;
+  --secondary: #f8f3df;
+  --Trinary: #be7b71;
+  --Paragraph: #464646;
+  --hoverColor: #f8f3df26;
 }
 
 body {
@@ -96,8 +101,16 @@ body {
   font-family: var(--font-mukta);
 }
 
+@utility font-raleway {
+  font-family: var(--font-raleway);
+}
+
 @utility text-primary {
   color: var(--primary);
+}
+
+@utility text-destructive {
+  color: hsl(var(--destructive));
 }
 
 @utility border-primary {
@@ -106,6 +119,38 @@ body {
 
 @utility bg-primary {
   background-color: var(--primary);
+}
+
+@utility bg-hoverColor {
+  background-color: var(--hoverColor);
+}
+
+@utility text-secondary {
+  color: var(--secondary);
+}
+
+@utility bg-secondary {
+  background-color: var(--secondary);
+}
+
+@utility border-secondary {
+  border-color: var(--secondary);
+}
+
+@utility text-Trinary {
+  color: var(--Trinary);
+}
+
+@utility bg-Trinary {
+  background-color: var(--Trinary);
+}
+
+@utility border-Trinary {
+  border-color: var(--Trinary);
+}
+
+@utility text-Paragraph {
+  color: var(--Paragraph);
 }
 
 /* Saffron Color Utilities */
@@ -694,4 +739,45 @@ body {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
+}
+
+/* ================================================================
+   shadcn/ui CSS variables — themed to brand #611508
+   Appended below existing tokens — DO NOT remove content above
+   ================================================================ */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 20 14.3% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14.3% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14.3% 4.1%;
+    /* Primary mapped to brand #611508 (burgundy/maroon) — HSL 5 84% 22% */
+    --primary: 5 84% 22%;
+    --primary-foreground: 46 72% 92%;
+    --secondary: 60 4.8% 95.9%;
+    --secondary-foreground: 24 9.8% 10%;
+    --muted: 60 4.8% 95.9%;
+    --muted-foreground: 25 5.3% 44.7%;
+    --accent: 60 4.8% 95.9%;
+    --accent-foreground: 24 9.8% 10%;
+    /* Destructive mapped to sindoor-500: #c34b40 */
+    --destructive: 4 56% 51%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 20 5.9% 90%;
+    --input: 20 5.9% 90%;
+    --ring: 5 84% 22%;
+    --radius: 0.75rem;
+    /* Sidebar — matches landing header background */
+    --sidebar-background: 5 84% 22%;
+    --sidebar-foreground: 46 72% 92%;
+    --sidebar-primary: 46 72% 92%;
+    --sidebar-primary-foreground: 5 84% 22%;
+    --sidebar-accent: 5 70% 28%;
+    --sidebar-accent-foreground: 46 72% 92%;
+    --sidebar-border: 5 70% 18%;
+    --sidebar-ring: 46 72% 92%;
+  }
 }

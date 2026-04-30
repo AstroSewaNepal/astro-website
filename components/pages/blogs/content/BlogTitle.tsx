@@ -32,6 +32,25 @@ interface BlogTitleProps {
   views?: string;
 }
 
+const ChevronIcon = () => (
+  <svg
+    width="8"
+    height="13"
+    viewBox="0 0 8 13"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className="w-[7.66px] h-[13.3px]"
+  >
+    <path
+      d="M1 1L7 6.5L1 12"
+      stroke="#5B5B5B"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 const BlogTitle: React.FC<BlogTitleProps> = ({
   title = 'The Timeless Power of Vedic Astrology',
   author = 'Prakrity Shahh',

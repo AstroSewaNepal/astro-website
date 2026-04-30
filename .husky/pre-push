@@ -1,5 +1,10 @@
 echo '🤔🤔🤔🤔... Alright.... Trying to build now  Before push. 🤔🤔🤔🤔'
 
+# Same PATH issue as pre-commit when Git is launched from GUIs.
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" 2>/dev/null || true
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
 npm run build ||
 (
     echo '❌👷🔨❌ Better open Editor .. Because your build failed ❌👷🔨❌
