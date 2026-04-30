@@ -184,14 +184,16 @@ export function HoroscopeDetailsClient() {
                 <Link
                   key={slug}
                   href={horoscopeDetailPageHref(slug, rangeType, uiLanguage)}
-                  className="flex flex-col items-center gap-1 rounded-xl border border-[#d7c3b1] bg-[#fdf8f1] p-2 transition-colors hover:border-[#f4a11a]"
+                  className="group flex flex-col items-center gap-1.5 rounded-lg outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d5d3d0]"
                 >
-                  <Image
-                    src={SIGN_COLOR_IMAGE[slug]}
-                    alt={capitalizeSign(slug)}
-                    className="h-12 w-12 object-contain"
-                  />
-                  <span className="font-mukta text-[11px] text-[#6f2618]">
+                  <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-[#d5d3d0] bg-[#f2f0ee] p-1.5 transition-[border-color,background-color,box-shadow] duration-200 group-hover:border-[#c9a88a] group-hover:bg-[#faf8f6] group-hover:shadow-sm">
+                    <Image
+                      src={SIGN_COLOR_IMAGE[slug]}
+                      alt={capitalizeSign(slug)}
+                      className="h-full w-full object-contain grayscale contrast-[0.95] brightness-[0.98] transition-[filter,opacity,transform] duration-200 ease-out group-hover:grayscale-0 group-hover:brightness-100 group-hover:contrast-100 group-hover:scale-[1.03] group-focus-visible:grayscale-0"
+                    />
+                  </div>
+                  <span className="text-center font-tiro-devanagari text-[11px] font-normal leading-tight text-[#9a6b5c] transition-colors duration-200 group-hover:text-[#691709] sm:text-[12px]">
                     {capitalizeSign(slug)}
                   </span>
                 </Link>
@@ -220,23 +222,35 @@ export function HoroscopeDetailsClient() {
                   <Link
                     key={slug}
                     href={horoscopeDetailPageHref(slug, rangeType, uiLanguage)}
-                    className="group flex flex-col items-center gap-1"
+                    className="group flex flex-col items-center gap-1 rounded-lg outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#f4a11a]/80"
                   >
                     <div
                       className={clsx(
-                        'flex h-[52px] w-[52px] items-center justify-center rounded-full border bg-[#fcf7ef] p-1.5 transition-colors',
+                        'flex h-[52px] w-[52px] items-center justify-center rounded-full border p-1.5 transition-[border-color,box-shadow,background-color] duration-200',
                         selected
-                          ? 'border-[#f4a11a] ring-2 ring-[#f4a11a]/25'
-                          : 'border-[#ccb39f] group-hover:border-[#f4a11a]/70',
+                          ? 'border-[#c9a063] bg-[#faf6f0] ring-2 ring-[#e8c47a]/35'
+                          : 'border-[#d5d3d0] bg-[#f2f0ee] group-hover:border-[#c9a88a] group-hover:bg-[#faf8f6] group-hover:shadow-sm',
                       )}
                     >
                       <Image
                         src={SIGN_COLOR_IMAGE[slug]}
                         alt={capitalizeSign(slug)}
-                        className="h-full w-full object-contain"
+                        className={clsx(
+                          'h-full w-full object-contain transition-[filter,opacity,transform] duration-200 ease-out',
+                          selected
+                            ? 'grayscale-0 contrast-100 brightness-100 scale-[1.02]'
+                            : 'grayscale contrast-[0.95] brightness-[0.98] opacity-[0.92] group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-100 group-hover:opacity-100 group-hover:scale-[1.03] group-focus-visible:grayscale-0 group-focus-visible:opacity-100',
+                        )}
                       />
                     </div>
-                    <span className="font-mukta text-[10px] text-[#8a7463]">
+                    <span
+                      className={clsx(
+                        'text-center font-tiro-devanagari text-[11px] font-normal leading-tight transition-colors duration-200 sm:text-[12px]',
+                        selected
+                          ? 'text-[#611508]'
+                          : 'text-[#9a6b5c] group-hover:text-[#691709]',
+                      )}
+                    >
                       {capitalizeSign(slug)}
                     </span>
                   </Link>

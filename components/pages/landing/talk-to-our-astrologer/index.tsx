@@ -115,13 +115,22 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
                         <p className="font-mukta text-[19px] font-semibold leading-tight text-[#5a6a8a] sm:text-[22px] md:text-[24px]">
                           {data.name}
                         </p>
-                        <Image src={VerifiedIcon} alt="" className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" width={20} height={20} />
+                        <Image
+                          src={VerifiedIcon}
+                          alt=""
+                          className="h-4 w-4 shrink-0 sm:h-5 sm:w-5"
+                          width={20}
+                          height={20}
+                        />
                       </div>
                       <div className="mt-1.5 flex items-center justify-center gap-0.5 sm:mt-2">
                         {Array(data.rating)
                           .fill(0)
                           .map((_, index) => (
-                            <StartIcon className="h-3.5 w-3.5 text-[#F59236] sm:h-4 sm:w-4" key={`star-${index}`} />
+                            <StartIcon
+                              className="h-3.5 w-3.5 text-[#F59236] sm:h-4 sm:w-4"
+                              key={`star-${index}`}
+                            />
                           ))}
                       </div>
                     </div>
@@ -196,7 +205,11 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
               className="flex aspect-square h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/35 bg-white/90 text-primary shadow-sm transition-colors hover:bg-[#fbf6ee] sm:h-[40px] sm:w-[40px]"
               aria-label="Previous astrologer"
             >
-              <Image src={ChevronLeftIcon} alt="" className="h-2 w-2 opacity-80 sm:h-2.5 sm:w-2.5" />
+              <Image
+                src={ChevronLeftIcon}
+                alt=""
+                className="h-2 w-2 opacity-80 sm:h-2.5 sm:w-2.5"
+              />
             </button>
 
             <div className="swiper-pagination flex min-h-[11px] items-center gap-2 sm:gap-[9px]" />
@@ -207,7 +220,11 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
               className="flex aspect-square h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/35 bg-white/90 text-primary shadow-sm transition-colors hover:bg-[#fbf6ee] sm:h-[40px] sm:w-[40px]"
               aria-label="Next astrologer"
             >
-              <Image src={ChevronLeftIcon} alt="" className="h-2 w-2 rotate-180 opacity-80 sm:h-2.5 sm:w-2.5" />
+              <Image
+                src={ChevronLeftIcon}
+                alt=""
+                className="h-2 w-2 rotate-180 opacity-80 sm:h-2.5 sm:w-2.5"
+              />
             </button>
           </div>
         </div>

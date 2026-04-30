@@ -91,7 +91,11 @@ function HoroscopeSignCardLink(props: {
             'min-[380px]:px-5',
           ),
         layout === 'grid' &&
-          'border-[#5c4033]/35 bg-transparent hover:-translate-y-0.5 hover:border-[#5c4033]/55 hover:bg-white/15 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)]',
+          clsx(
+            'border-[#5c4033]/25 bg-transparent hover:-translate-y-0.5 hover:border-[#5c4033]/45 hover:bg-white/20 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)]',
+            /* Desktop grid (Figma): light cards with neutral border */
+            'md:border-[#d4d4d8] md:bg-white md:shadow-[0_2px_12px_rgba(0,0,0,0.05)] md:hover:border-[#c4c4c9] md:hover:bg-white',
+          ),
       )}
     >
       <div className={innerFlex}>
@@ -143,7 +147,9 @@ function HoroscopeSignCardLink(props: {
           <span
             className={clsx(
               'mt-3 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[12px] font-semibold text-[#7b3b27]',
-              layout === 'grid' ? 'justify-center self-center md:mt-2 md:justify-start md:self-start' : 'mt-2 self-start',
+              layout === 'grid'
+                ? 'justify-center self-center md:mt-2 md:justify-start md:self-start'
+                : 'mt-2 self-start',
             )}
           >
             {readMoreLabel}
@@ -260,8 +266,14 @@ function HoroscopePageContent() {
             <div className="mx-auto max-w-5xl text-center">
               <h1
                 className={clsx(
-                  'w-full text-center font-tiro-devanagari text-[24px] font-normal leading-[47.83px] tracking-normal text-[#691709]',
-                  'md:text-[56px] md:leading-[47.83px] md:text-[#611508]',
+                  'w-full text-center font-tiro-devanagari font-normal tracking-normal',
+                  /* Mobile (Figma): 24px / 47.83px, #691709 */
+                  'text-[24px] leading-[47.83px] text-[#691709]',
+                  /* Tablet scale */
+                  'sm:text-[32px] sm:leading-snug',
+                  'md:text-[44px] md:leading-[1.08] md:text-[#611508]',
+                  /* Desktop (Figma): 56px; line-height proportional so 56px glyphs are not clipped */
+                  'lg:text-[56px] lg:leading-[1.05]',
                 )}
               >
                 {copy.title}
@@ -270,7 +282,9 @@ function HoroscopePageContent() {
               <p
                 className={clsx(
                   'mx-auto mt-3 max-w-3xl font-mukta leading-relaxed text-[#6b5a4e]',
-                  'text-[13px] sm:mt-4 sm:text-[15px] sm:leading-7 lg:text-[16px]',
+                  'text-[13px] sm:mt-3.5 sm:text-[14px] sm:leading-7',
+                  'md:mt-4 md:max-w-[46rem] md:text-[15px]',
+                  'lg:mt-5 lg:text-[16px]',
                 )}
               >
                 {copy.intro}
@@ -335,7 +349,11 @@ function HoroscopePageContent() {
                     onClick={() => swiperRef.current?.slideNext()}
                     className="absolute right-0 top-[42%] z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white"
                   >
-                    <Image src={ChevronLeftIcon} alt="" className="h-2.5 w-2.5 rotate-180 opacity-75" />
+                    <Image
+                      src={ChevronLeftIcon}
+                      alt=""
+                      className="h-2.5 w-2.5 rotate-180 opacity-75"
+                    />
                   </button>
                   <Swiper
                     key={`horoscope-mob-${selectedRange}-${signLanguage}-${cards === 'loading' ? 'loading' : cards.map(c => c.key).join(',')}`}
@@ -357,7 +375,10 @@ function HoroscopePageContent() {
                   >
                     {cards === 'loading'
                       ? Array.from({ length: 8 }).map((_, i) => (
-                          <SwiperSlide key={`horoscope-skeleton-mob-${selectedRange}-${i}`} className="!h-auto">
+                          <SwiperSlide
+                            key={`horoscope-skeleton-mob-${selectedRange}-${i}`}
+                            className="!h-auto"
+                          >
                             <div className="min-h-[140px] animate-pulse rounded-[20px] border border-[#d4d4d8] bg-neutral-100" />
                           </SwiperSlide>
                         ))
@@ -386,7 +407,7 @@ function HoroscopePageContent() {
                     ? Array.from({ length: 12 }).map((_, i) => (
                         <div
                           key={`horoscope-skeleton-${selectedRange}-${i}`}
-                          className="min-h-[120px] animate-pulse rounded-[20px] border border-[#5c4033]/25 bg-transparent md:min-h-[120px] md:rounded-[24px] xl:rounded-[26px]"
+                          className="min-h-[120px] animate-pulse rounded-[20px] border border-[#5c4033]/25 bg-transparent md:border-[#d4d4d8] md:bg-neutral-100 md:min-h-[120px] md:rounded-[24px] xl:rounded-[26px]"
                         />
                       ))
                     : cards.map(card => (
@@ -405,39 +426,35 @@ function HoroscopePageContent() {
           </section>
 
           <section
-            className={clsx(
-              'mx-auto mt-8 max-w-[1180px] px-2 sm:mt-10 sm:px-3 lg:mt-12 lg:px-4',
-            )}
+            className={clsx('mx-auto mt-8 max-w-[1180px] px-2 sm:mt-10 sm:px-3 lg:mt-12 lg:px-4')}
           >
             <h2
               className={clsx(
-                'font-sahitya font-bold leading-tight text-[#6b2417]',
-                'text-[22px] sm:text-[26px] sm:leading-tight lg:text-[30px]',
+                'text-center font-tiro-devanagari font-normal leading-tight text-[#611508]',
+                'text-[22px] sm:text-[26px] lg:text-[32px]',
               )}
             >
               {dict.section.whatIsTitle}
             </h2>
 
-            <div className="mt-3 space-y-4 font-mukta text-[14px] leading-7 text-[#5f5248] sm:mt-4 sm:space-y-5 sm:text-[15px] sm:leading-8 lg:text-[16px]">
+            <div className="mx-auto mt-3 max-w-3xl space-y-4 text-left font-mukta text-[14px] leading-7 text-[#5f5248] sm:mt-4 sm:space-y-5 sm:text-[15px] sm:leading-8 lg:mt-5 lg:text-[16px] lg:leading-8">
               <p>{dict.section.whatIsP1}</p>
               <p>{dict.section.whatIsP2}</p>
             </div>
           </section>
 
           <section
-            className={clsx(
-              'mx-auto mt-8 max-w-[1180px] px-2 sm:mt-10 sm:px-3 lg:mt-10 lg:px-4',
-            )}
+            className={clsx('mx-auto mt-8 max-w-[1180px] px-2 sm:mt-10 sm:px-3 lg:mt-10 lg:px-4')}
           >
             <h2
               className={clsx(
-                'font-sahitya font-bold leading-tight text-[#6b2417]',
-                'text-[22px] sm:text-[26px] sm:leading-tight lg:text-[30px]',
+                'text-center font-tiro-devanagari font-normal leading-tight text-[#611508]',
+                'text-[22px] sm:text-[26px] lg:text-[32px]',
               )}
             >
               {dict.section.whyTitle}
             </h2>
-            <div className="mt-3 space-y-4 font-mukta text-[14px] leading-7 text-[#5f5248] sm:mt-4 sm:space-y-5 sm:text-[15px] sm:leading-8 lg:text-[16px]">
+            <div className="mx-auto mt-3 max-w-3xl space-y-4 text-left font-mukta text-[14px] leading-7 text-[#5f5248] sm:mt-4 sm:space-y-5 sm:text-[15px] sm:leading-8 lg:mt-5 lg:text-[16px] lg:leading-8">
               <p>{dict.section.whyP1}</p>
               <p>{dict.section.whyP2}</p>
             </div>
