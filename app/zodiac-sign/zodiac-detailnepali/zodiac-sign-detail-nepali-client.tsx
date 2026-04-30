@@ -62,10 +62,7 @@ function parseSignParam(raw: string | null): HoroscopeSign {
 
 export function ZodiacSignDetailNepaliClient() {
   const searchParams = useSearchParams();
-  const slug = useMemo(
-    () => parseSignParam(searchParams.get('sign')),
-    [searchParams],
-  );
+  const slug = useMemo(() => parseSignParam(searchParams.get('sign')), [searchParams]);
 
   const [language, setLanguage] = useState<'english' | 'nepali'>('english');
   const [row, setRow] = useState<VedastroZodiacSignRow | null>(null);
@@ -202,7 +199,9 @@ export function ZodiacSignDetailNepaliClient() {
                       <td className="w-[36%] px-4 py-3 font-mukta text-[13px] text-[#7c6556]">
                         {tr.label}
                       </td>
-                      <td className="px-4 py-3 font-mukta text-[13px] text-[#4f463f]">{tr.value}</td>
+                      <td className="px-4 py-3 font-mukta text-[13px] text-[#4f463f]">
+                        {tr.value}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -12,7 +12,10 @@ import { usePathname } from 'next/navigation';
 
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
-import { HOROSCOPE_RANGE_NAV_OPTIONS, horoscopeListPageHref } from '@/lib/constants/horoscope-range-nav';
+import {
+  HOROSCOPE_RANGE_NAV_OPTIONS,
+  horoscopeListPageHref,
+} from '@/lib/constants/horoscope-range-nav';
 import { zodiacEnglishDetailHref, zodiacNepaliDetailHref } from '@/lib/constants/zodiac-sign-nav';
 import { horoscopeEn, type HoroscopeMessages, useHoroscopeLocaleOptional } from '@/lib/i18n';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';

@@ -69,10 +69,7 @@ function parseSignParam(raw: string | null): HoroscopeSign {
 
 export function ZodiacSignDetailsClient() {
   const searchParams = useSearchParams();
-  const slug = useMemo(
-    () => parseSignParam(searchParams.get('sign')),
-    [searchParams],
-  );
+  const slug = useMemo(() => parseSignParam(searchParams.get('sign')), [searchParams]);
 
   const [language, setLanguage] = useState<ELanguage>(ELanguage.ENGLISH);
   const [row, setRow] = useState<VedastroZodiacSignRow | null>(null);
@@ -233,7 +230,9 @@ export function ZodiacSignDetailsClient() {
                   className="h-[190px] w-[190px] object-contain"
                 />
               </div>
-              <p className="mt-2 font-mukta text-[12px] text-[#7a5e4f]">{displayName} zodiac sign</p>
+              <p className="mt-2 font-mukta text-[12px] text-[#7a5e4f]">
+                {displayName} zodiac sign
+              </p>
             </div>
           </div>
         </section>
