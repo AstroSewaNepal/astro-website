@@ -7,7 +7,7 @@ import { LandingHeader } from '@/components/pages/landing/header/landing-header'
 import AboutUsHero from '@/components/pages/about-us/hero';
 import AboutUsVision from '@/components/pages/about-us/vision';
 import AboutUsWhatWeDo from '@/components/pages/about-us/what-we-do';
-import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
+// import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
 import AboutUsWhyUs from '@/components/pages/about-us/why-us';
 

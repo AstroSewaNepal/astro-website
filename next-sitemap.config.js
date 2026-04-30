@@ -16,7 +16,7 @@ module.exports = {
   exclude: ['/_next/*', '/api/*'],
   
   // Fetching Ghost Blogs (Optimized & Secure)
-  additionalPaths: async (config) => {
+  additionalPaths: async () => {
     // If the API Key is missing (e.g., local dev), skip this step to avoid errors
     if (!process.env.GHOST_CONTENT_KEY) {
       console.warn("Sitemap: GHOST_CONTENT_KEY is missing. Skipping blog fetch.");

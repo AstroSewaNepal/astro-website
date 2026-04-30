@@ -2,16 +2,8 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { EyeIcon, FacebookIcon, TwitterIcon, LinkedinIcon } from '@/components/images/icons';
+// import { EyeIcon, FacebookIcon, TwitterIcon, LinkedinIcon } from '@/components/images/icons';
 import { BsFacebook, BsLinkedin, BsTwitterX } from 'react-icons/bs';
-
-interface BlogTitleProps {
-  title?: string;
-  author?: string;
-  authorImage?: string;
-  date?: string;
-  views?: string;
-}
 
 const ChevronIcon = () => (
   <svg
@@ -32,12 +24,20 @@ const ChevronIcon = () => (
   </svg>
 );
 
+interface BlogTitleProps {
+  title?: string;
+  author?: string;
+  authorImage?: string;
+  date?: string;
+  views?: string;
+}
+
 const BlogTitle: React.FC<BlogTitleProps> = ({
   title = 'The Timeless Power of Vedic Astrology',
   author = 'Prakrity Shahh',
   authorImage,
   date = 'August 20, 2022',
-  views = '8523',
+  // views = '8523',
 }) => {
   // Get current page URL
   const getCurrentUrl = () => {

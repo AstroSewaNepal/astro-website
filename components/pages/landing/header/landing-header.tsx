@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
 import AstroSewaLogo from '@/components/logo';
 import TransparentBellIcon from '@/components/icons/bell';
 import UserLineIcon from '@/components/icons/user/user-line';
@@ -8,16 +9,20 @@ import ChevronDownIcon from '@/components/icons/chevron-down';
 import LanguageEarthIcon from '@/components/icons/language/earth';
 import Link from 'next/link';
 
-type NavItem = {
-  title: string;
-  link?: string;
-  children?: NavChild[];
-};
+import { ELanguage } from '@/components/enums/language.enum';
+import { horoscopeEn } from '@/lib/i18n/horoscope';
+import { useHoroscopeLocaleOptional } from '@/lib/i18n/horoscope/horoscope-locale-context';
 
 type NavChild = {
   title: string;
   link?: string;
   children?: { title: string; link: string }[];
+};
+
+type NavItem = {
+  title: string;
+  link?: string;
+  children?: NavChild[];
 };
 
 const LANDING_NAV: NavItem[] = [
@@ -199,23 +204,38 @@ const CloseIcon = ({ onClick }: { onClick: () => void }) => {
   );
 };
 
-export const LandingHeader = () => {
+function LandingHeaderClient() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
+  const langMenuRef = useRef<HTMLDivElement>(null);
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const horoscopeLocale = useHoroscopeLocaleOptional();
+  const d = horoscopeEn;
 
-  // Prevent body scroll when menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-
-    // Cleanup on unmount
     return () => {
       document.body.style.overflow = 'unset';
     };
   }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (!langMenuOpen) {
+      return;
+    }
+    const onPointerDown = (e: PointerEvent) => {
+      const el = langMenuRef.current;
+      if (el && !el.contains(e.target as Node)) {
+        setLangMenuOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [langMenuOpen]);
 
   const openMobileMenu = () => {
     setIsMobileMenuOpen(true);
@@ -225,6 +245,75 @@ export const LandingHeader = () => {
     setIsMobileMenuOpen(false);
     setOpenMobileDropdown(null);
   };
+
+  const langCodeLabel =
+    horoscopeLocale?.uiLanguage === ELanguage.NEPALI ? d.header.langNe : d.header.langEn;
+
+  const languageControl = horoscopeLocale ? (
+    <div className="relative" ref={langMenuRef}>
+      <button
+        type="button"
+        aria-expanded={langMenuOpen}
+        aria-haspopup="listbox"
+        aria-label="Page language"
+        onClick={() => setLangMenuOpen(o => !o)}
+        className="flex cursor-pointer items-center gap-1 rounded-3xl border border-solid border-primary px-[15px] py-2 text-primary max-h-fit"
+      >
+        <LanguageEarthIcon />
+        <span className="font-mukta text-sm md:text-lg lg:text-xl leading-7">{langCodeLabel}</span>
+        <ChevronDownIcon
+          className={clsx('transition-transform duration-200', langMenuOpen && 'rotate-180')}
+        />
+      </button>
+      {langMenuOpen ? (
+        <ul
+          className="absolute right-0 z-[60] mt-2 min-w-[160px] overflow-hidden rounded-[18px] border border-[#e8ddd0] bg-white py-1 shadow-[0_12px_40px_rgba(92,56,23,0.18)]"
+          role="listbox"
+        >
+          <li>
+            <button
+              type="button"
+              role="option"
+              aria-selected={horoscopeLocale.uiLanguage === ELanguage.ENGLISH}
+              onClick={() => {
+                horoscopeLocale.setUiLanguage(ELanguage.ENGLISH);
+                setLangMenuOpen(false);
+              }}
+              className={clsx(
+                'flex w-full px-4 py-3 text-left font-mukta text-[15px] text-[#4a1a1a] hover:bg-[#faf6f0]',
+                horoscopeLocale.uiLanguage === ELanguage.ENGLISH && 'bg-[#f9f2e9] font-semibold',
+              )}
+            >
+              {d.list.langEnglish} ({d.header.langEn})
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              role="option"
+              aria-selected={horoscopeLocale.uiLanguage === ELanguage.NEPALI}
+              onClick={() => {
+                horoscopeLocale.setUiLanguage(ELanguage.NEPALI);
+                setLangMenuOpen(false);
+              }}
+              className={clsx(
+                'flex w-full px-4 py-3 text-left font-mukta text-[15px] text-[#4a1a1a] hover:bg-[#faf6f0]',
+                horoscopeLocale.uiLanguage === ELanguage.NEPALI && 'bg-[#f9f2e9] font-semibold',
+              )}
+            >
+              {d.list.langNepali} ({d.header.langNe})
+            </button>
+          </li>
+        </ul>
+      ) : null}
+    </div>
+  ) : (
+    <div className="hidden max-h-fit items-center gap-1 rounded-3xl border border-solid border-primary px-[15px] py-2 text-primary lg:flex">
+      <LanguageEarthIcon />
+      <p className="font-mukta text-primary text-sm md:text-lg lg:text-xl leading-7">EN</p>
+      <ChevronDownIcon />
+    </div>
+  );
 
   return (
     <>
@@ -239,11 +328,7 @@ export const LandingHeader = () => {
             </Link>
           </div>
           <div className="flex gap-4">
-            <div className="px-[15px] py-2 rounded-3xl border border-solid border-primary max-h-fit items-center gap-1 text-primary hidden lg:flex">
-              <LanguageEarthIcon />
-              <p className="font-mukta text-primary text-sm md:text-lg lg:text-xl leading-7">EN</p>
-              <ChevronDownIcon />
-            </div>
+            {languageControl}
             <button className="bg-primary rounded-3xl px-5 py-2 text-white flex gap-1.5 max-h-fit items-center cursor-pointer">
               <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
               <Link href={'/login'}>
@@ -257,7 +342,7 @@ export const LandingHeader = () => {
             </button>
           </div>
         </div>
-        <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex">
+        <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex relative z-40">
           {LANDING_NAV.map(value => {
             const hasChildren = !!value.children?.length;
 
@@ -314,34 +399,29 @@ export const LandingHeader = () => {
         </nav>
       </header>
 
-      {/* Full-screen Mobile Menu */}
       <div
         className={`fixed inset-0 z-50 md:hidden transition-opacity duration-300 ${
           isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
         style={{ pointerEvents: isMobileMenuOpen ? 'auto' : 'none' }}
       >
-        {/* Overlay backdrop */}
         <div
           className="absolute inset-0 bg-black/20 transition-opacity duration-300"
           onClick={closeMobileMenu}
           aria-hidden="true"
         />
 
-        {/* Sidebar Menu */}
         <div
           className={`absolute left-0 top-0 h-full w-[377px] max-w-full bg-white shadow-[0px_1px_4px_0px_rgba(0,0,0,0.25)] overflow-y-auto transition-transform duration-300 ease-out ${
             isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
           <div className="flex flex-col gap-[29px] px-[33px] py-[19px]">
-            {/* Header with Logo and Close Button */}
             <div className="flex items-center justify-between w-full">
               <AstroSewaLogo className="max-w-[64px] text-[#611508] w-full" />
               <CloseIcon onClick={closeMobileMenu} />
             </div>
 
-            {/* Navigation Items */}
             <div className="flex flex-col gap-3">
               {MOBILE_NAV.map((item, index) => {
                 const hasChildren = item.children && item.children.length > 0;
@@ -436,14 +516,14 @@ export const LandingHeader = () => {
 
                 if (item.link) {
                   return (
-                    <Link key={`${item.title}-${index}`} href={item.link} onClick={closeMobileMenu}>
+                    <Link key={`m-${index}`} href={item.link} onClick={closeMobileMenu}>
                       {content}
                     </Link>
                   );
                 }
 
                 return (
-                  <div key={`${item.title}-${index}`} className="w-full">
+                  <div key={`m-${index}`} className="w-full">
                     {content}
                   </div>
                 );
@@ -454,4 +534,54 @@ export const LandingHeader = () => {
       </div>
     </>
   );
-};
+}
+
+function LandingHeaderFallback() {
+  const d = horoscopeEn;
+  return (
+    <header className="container mx-auto px-6 lg:px-0 py-10">
+      <div className="flex justify-between">
+        <div className="flex gap-2">
+          <div className="block md:hidden w-12" />
+          <Link href="/">
+            <AstroSewaLogo className="max-w-[84px] text-[#611508] md:max-w-[100px] lg:max-w-[188px] w-full" />
+          </Link>
+        </div>
+        <div className="flex gap-4">
+          <div className="hidden max-h-fit items-center gap-1 rounded-3xl border border-solid border-primary px-[15px] py-2 text-primary lg:flex">
+            <LanguageEarthIcon />
+            <p className="font-mukta text-primary text-sm md:text-lg lg:text-xl leading-7">
+              {d.header.langEn}
+            </p>
+            <ChevronDownIcon />
+          </div>
+          <button className="bg-primary rounded-3xl px-5 py-2 text-white flex gap-1.5 max-h-fit items-center cursor-pointer">
+            <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
+            <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">
+              {d.header.signIn}
+            </p>
+          </button>
+          <button className="bg-primary p-2.5 rounded-full text-white max-h-fit">
+            <TransparentBellIcon />
+          </button>
+        </div>
+      </div>
+      <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex">
+        {LANDING_NAV.map(value => (
+          <Link href={value.link ?? '#'} key={value.title}>
+            <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
+              <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
+              {value.children && <ChevronDownIcon className="text-white" />}
+            </div>
+          </Link>
+        ))}
+      </nav>
+    </header>
+  );
+}
+
+export const LandingHeader = () => (
+  <Suspense fallback={<LandingHeaderFallback />}>
+    <LandingHeaderClient />
+  </Suspense>
+);
