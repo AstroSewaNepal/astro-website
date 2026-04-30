@@ -1,6 +1,7 @@
 import type { HoroscopeMessages } from './schema';
 
-export const horoscopeEn: HoroscopeMessages = {
+export default {
+  HOROSCOPE: {
   range: {
     today: {
       title: "Today's Astrology Horoscope",
@@ -142,4 +143,5 @@ export const horoscopeEn: HoroscopeMessages = {
       disclaimer: 'Disclaimer',
     },
   },
+  } satisfies HoroscopeMessages,
 };

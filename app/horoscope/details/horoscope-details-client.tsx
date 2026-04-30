@@ -6,8 +6,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-import { useHoroscopeLocale } from '@/lib/i18n/horoscope/horoscope-locale-context';
-import { interpolate, readCardDisplayLanguage } from '@/lib/i18n/horoscope';
 import Footer from '@/components/pages/landing/footer';
 import ArrowRight from '@/components/icons/arrow-right';
 import StartIcon from '@/components/icons/start-icon';
@@ -34,6 +32,7 @@ import {
   horoscopeListPageHref,
   parseHoroscopeRangeFromUrl,
 } from '@/lib/constants/horoscope-range-nav';
+import { interpolate, readCardDisplayLanguage, useHoroscopeLocale } from '@/lib/i18n';
 import { HOROSCOPE_SIGNS, isHoroscopeSign, type HoroscopeSign } from '@/lib/types/horoscope';
 import type { HoroscopeDetailData } from '@/lib/types/vedastro';
 import type { VedastroHoroscopeRangeType } from '@/lib/types/vedastro';

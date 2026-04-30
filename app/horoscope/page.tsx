@@ -10,8 +10,6 @@ import { Pagination } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 
 import { ChevronLeftIcon } from '@/components/images/icons';
-import { useHoroscopeLocale } from '@/lib/i18n/horoscope/horoscope-locale-context';
-import { persistCardDisplayLanguage, readCardDisplayLanguage } from '@/lib/i18n/horoscope';
 import ArrowRight from '@/components/icons/arrow-right';
 import StartIcon from '@/components/icons/start-icon';
 import { ELanguage } from '@/components/enums/language.enum';
@@ -24,6 +22,11 @@ import {
   horoscopeDetailPageHref,
   parseHoroscopeRangeFromUrl,
 } from '@/lib/constants/horoscope-range-nav';
+import {
+  persistCardDisplayLanguage,
+  readCardDisplayLanguage,
+  useHoroscopeLocale,
+} from '@/lib/i18n';
 import type { HoroscopeSummaryRow, VedastroHoroscopeRangeType } from '@/lib/types/vedastro';
 
 import LandingPageCSS from '../landing-page.module.css';

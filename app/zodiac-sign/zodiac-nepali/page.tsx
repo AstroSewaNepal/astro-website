@@ -3,14 +3,9 @@
 import clsx from 'clsx';
 import Image from 'next/image';
 
-import AstroSewaLogo from '@/components/logo';
-import NavigationMenu from '@/components/common/navbar/navigationMenu';
 import LandingFAQ from '@/components/pages/landing/faq';
 import Footer from '@/components/pages/landing/footer';
-import ChevronDownIcon from '@/components/icons/chevron-down';
-import UserLineIcon from '@/components/icons/user/user-line';
-import LanguageEarthIcon from '@/components/icons/language/earth';
-import TransparentBellIcon from '@/components/icons/bell';
+import { LandingHeader } from '@/components/pages/landing/header/landing-header';
 import StartIcon from '@/components/icons/start-icon';
 import ArrowRight from '@/components/icons/arrow-right';
 import {
@@ -29,18 +24,6 @@ import {
 } from '@/components/images/zodiac/english';
 
 import LandingPageCSS from '../../landing-page.module.css';
-
-const topNav = [
-  { title: 'Horoscope', hasChildren: true },
-  { title: 'Zodiac Signs', active: true, hasChildren: true },
-  { title: 'Kundali', hasChildren: true },
-  { title: 'Compatibility' },
-  { title: 'Puja Bidhi', hasChildren: true },
-  { title: 'Calculator', hasChildren: true },
-  { title: 'About Us' },
-  { title: 'Blog' },
-  { title: 'Calendar' },
-];
 
 const zodiacCards = [
   { name: 'Aries', image: EnglishAriesLight },
@@ -62,28 +45,8 @@ const cardText = 'Your spark can move mountains, start bold today';
 export default function ZodiacNepaliPage() {
   return (
     <main className={clsx('min-h-screen', LandingPageCSS.background)}>
+      <LandingHeader />
       <div className="mx-auto max-w-[1240px] px-4 py-4 sm:px-6 lg:px-8">
-        <header className="flex flex-wrap items-center justify-between gap-4 py-3">
-          <AstroSewaLogo className="h-[38px] w-[132px] text-[#611508] sm:h-[46px] sm:w-[162px]" />
-
-          <div className="flex items-center gap-2">
-            <button className="inline-flex items-center gap-1 rounded-full border border-[#8f6f5d] bg-[#f9f2e8] px-2.5 py-1 text-[11px] text-[#6f2618]">
-              <LanguageEarthIcon />
-              EN
-              <ChevronDownIcon className="h-3 w-3 text-[#6f2618]" />
-            </button>
-            <button className="inline-flex items-center gap-1 rounded-full bg-[#6f2618] px-3 py-1.5 text-[11px] text-[#fff7ed]">
-              <UserLineIcon className="h-3 w-3" />
-              Sign in
-            </button>
-            <button className="rounded-full bg-[#6f2618] p-1.5 text-white">
-              <TransparentBellIcon />
-            </button>
-          </div>
-        </header>
-
-        <NavigationMenu items={topNav} className="mt-2" />
-
         <section className="mx-auto mt-6 max-w-[1180px]">
           <p className="font-mukta text-[11px] text-[#7a6658]">
             Home &gt; Zodiac Sign &gt; Zodiac Sign-Nepali

@@ -1,6 +1,7 @@
 import type { HoroscopeMessages } from './schema';
 
-export const horoscopeNe: HoroscopeMessages = {
+export default {
+  HOROSCOPE: {
   range: {
     today: {
       title: 'आजको ज्योतिषीय राशिफल',
@@ -142,4 +143,5 @@ export const horoscopeNe: HoroscopeMessages = {
       disclaimer: 'अस्वीकरण',
     },
   },
+  } satisfies HoroscopeMessages,
 };
