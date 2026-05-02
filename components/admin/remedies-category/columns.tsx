@@ -1,4 +1,4 @@
-'use client'; 
+'use client';
 
 import { type ColumnDef } from '@tanstack/react-table';
 import { Pencil, Trash2 } from 'lucide-react';
