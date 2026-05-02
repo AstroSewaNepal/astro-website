@@ -13,7 +13,7 @@ const ChevronDownIcon: React.FC<IIconsProps> = ({ className = 'w-6 h-6 text-prim
       <path
         d="M6 9L12 15L18 9"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

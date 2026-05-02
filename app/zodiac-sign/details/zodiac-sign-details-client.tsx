@@ -8,49 +8,23 @@ import { useSearchParams } from 'next/navigation';
 
 import Footer from '@/components/pages/landing/footer';
 import { LandingHeader } from '@/components/pages/landing/header/landing-header';
+import { ZodiacDetailLangSwitch } from '@/components/pages/zodiac-sign/zodiac-detail-lang-switch';
 import Services from '@/components/pages/landing/services';
 import StartIcon from '@/components/icons/start-icon';
 import ArrowRight from '@/components/icons/arrow-right';
 import { ServiceTalkToAstrologer } from '@/components/images/services';
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
-import {
-  EnglishAquariusColor,
-  EnglishAriesColor,
-  EnglishCancerColor,
-  EnglishCapricornColor,
-  EnglishGeminiColor,
-  EnglishLeoColor,
-  EnglishLibraColor,
-  EnglishPiscesColor,
-  EnglishSagittariusColor,
-  EnglishScorpioColor,
-  EnglishTaurusColor,
-  EnglishVirgoColor,
-} from '@/components/images/zodiac/english';
 import { fetchVedastroZodiacSignBySlug } from '@/lib/api/vedastro/zodiac-sign';
 import { horoscopeDetailPageHref } from '@/lib/constants/horoscope-range-nav';
 import { zodiacEnglishDetailHref } from '@/lib/constants/zodiac-sign-nav';
-import { HOROSCOPE_SIGNS, isHoroscopeSign, type HoroscopeSign } from '@/lib/types/horoscope';
+import { ENGLISH_ZODIAC_COLOR } from '@/lib/zodiac-sign/english-zodiac-color';
+import { parseZodiacSignParam } from '@/lib/zodiac-sign/parse-sign-param';
+import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 import type { VedastroZodiacSignRow } from '@/lib/types/vedastro';
 import { unwrapResult } from '@/lib/utils/vedastro-result';
 
 import LandingPageCSS from '../../landing-page.module.css';
-
-const SIGN_COLOR_IMAGE: Record<HoroscopeSign, typeof EnglishAriesColor> = {
-  aries: EnglishAriesColor,
-  taurus: EnglishTaurusColor,
-  gemini: EnglishGeminiColor,
-  cancer: EnglishCancerColor,
-  leo: EnglishLeoColor,
-  virgo: EnglishVirgoColor,
-  libra: EnglishLibraColor,
-  scorpio: EnglishScorpioColor,
-  sagittarius: EnglishSagittariusColor,
-  capricorn: EnglishCapricornColor,
-  aquarius: EnglishAquariusColor,
-  pisces: EnglishPiscesColor,
-};
 
 const cardBaseText = 'Your spark can move mountains, start bold today';
 const calloutButtons = [{ label: 'Chat Now' }, { label: 'Download app' }];
@@ -59,19 +33,10 @@ function capitalizeSign(slug: string): string {
   return slug.charAt(0).toUpperCase() + slug.slice(1);
 }
 
-function parseSignParam(raw: string | null): HoroscopeSign {
-  const s = raw?.trim().toLowerCase() ?? '';
-  if (s && isHoroscopeSign(s)) {
-    return s;
-  }
-  return 'aries';
-}
-
 export function ZodiacSignDetailsClient() {
   const searchParams = useSearchParams();
-  const slug = useMemo(() => parseSignParam(searchParams.get('sign')), [searchParams]);
+  const slug = useMemo(() => parseZodiacSignParam(searchParams.get('sign')), [searchParams]);
 
-  const [language, setLanguage] = useState<ELanguage>(ELanguage.ENGLISH);
   const [row, setRow] = useState<VedastroZodiacSignRow | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -106,8 +71,6 @@ export function ZodiacSignDetailsClient() {
     };
   }, [slug]);
 
-  const otherZodiacCards = HOROSCOPE_DATA[language];
-
   const title = row?.sign ?? displayName;
   const rangeLine = row?.date_range ?? '';
   const description = row?.intro ?? row?.card_summary ?? '';
@@ -135,6 +98,8 @@ export function ZodiacSignDetailsClient() {
       <LandingHeader />
       <div className="mx-auto max-w-[1240px] px-4 py-4 sm:px-6 lg:px-8">
         <section className="mx-auto mt-6 max-w-[1180px]">
+          <ZodiacDetailLangSwitch signSlug={slug} className="mb-4" />
+
           <div className="flex items-center gap-3 overflow-x-auto pb-3">
             {HOROSCOPE_SIGNS.map((s, i) => {
               const label = HOROSCOPE_DATA[ELanguage.ENGLISH][i]!.name;
@@ -152,7 +117,7 @@ export function ZodiacSignDetailsClient() {
                     )}
                   >
                     <Image
-                      src={SIGN_COLOR_IMAGE[s]}
+                      src={ENGLISH_ZODIAC_COLOR[s]}
                       alt={label}
                       className="h-full w-full object-contain"
                     />
@@ -183,9 +148,9 @@ export function ZodiacSignDetailsClient() {
                 )}
               </div>
 
-              <div className="mt-5 flex items-center gap-3">
+              <div className="mt-5 flex flex-wrap items-center gap-3">
                 <Link
-                  href={horoscopeDetailPageHref(slug, 'today')}
+                  href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
                   className="inline-flex items-center gap-2 rounded-full bg-[#6f2618] px-4 py-2 font-mukta text-[12px] font-semibold text-[#fff7ec] hover:bg-[#581e13]"
                 >
                   View {displayName} horoscope
@@ -225,7 +190,7 @@ export function ZodiacSignDetailsClient() {
             <div className="flex flex-col items-center lg:items-end">
               <div className="flex h-[260px] w-[260px] items-center justify-center rounded-full bg-[#1d2c7c] shadow-[0_10px_30px_rgba(29,44,124,0.18)] sm:h-[290px] sm:w-[290px]">
                 <Image
-                  src={SIGN_COLOR_IMAGE[slug]}
+                  src={ENGLISH_ZODIAC_COLOR[slug]}
                   alt={displayName}
                   className="h-[190px] w-[190px] object-contain"
                 />
@@ -242,41 +207,14 @@ export function ZodiacSignDetailsClient() {
             Read Horoscope For Other Zodiac Sign
           </h2>
 
-          <div className="mt-4 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => setLanguage(ELanguage.ENGLISH)}
-              className={clsx(
-                'rounded-full border px-4 py-2 font-mukta text-[12px] transition-colors',
-                language === ELanguage.ENGLISH
-                  ? 'border-[#6f2618] bg-[#6f2618] text-white'
-                  : 'border-[#c8af98] bg-[#fff8ef] text-[#6f2618]',
-              )}
-            >
-              English
-            </button>
-            <button
-              type="button"
-              onClick={() => setLanguage(ELanguage.NEPALI)}
-              className={clsx(
-                'rounded-full border px-4 py-2 font-mukta text-[12px] transition-colors',
-                language === ELanguage.NEPALI
-                  ? 'border-[#6f2618] bg-[#6f2618] text-white'
-                  : 'border-[#c8af98] bg-[#fff8ef] text-[#6f2618]',
-              )}
-            >
-              Nepali
-            </button>
-          </div>
-
           <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {HOROSCOPE_SIGNS.map((s, i) => {
-              const card = otherZodiacCards[i]!;
+              const card = HOROSCOPE_DATA[ELanguage.ENGLISH][i]!;
               return (
                 <Link
                   key={s}
                   href={zodiacEnglishDetailHref(s)}
-                  className="rounded-[12px] border border-[#cfb8a5] bg-[#fcf6ed] px-3 py-2 block transition-colors hover:bg-[#f8f0e4]"
+                  className="block rounded-[12px] border border-[#cfb8a5] bg-[#fcf6ed] px-3 py-2 transition-colors hover:bg-[#f8f0e4]"
                 >
                   <article>
                     <div className="flex items-center gap-2">
