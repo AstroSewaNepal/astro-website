@@ -3,7 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { createApiClient } from "@/lib/api-client";
-
 export type AdminStats = {
   posts: number;
   tags: number;
