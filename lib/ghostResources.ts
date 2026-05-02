@@ -1,6 +1,5 @@
 import GhostContentAPI from '@tryghost/content-api';
 import { ghostClient } from './ghostClient';
-
 const resources = {
   posts: ghostClient.posts,
   pages: ghostClient.pages,
