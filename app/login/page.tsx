@@ -78,7 +78,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           >
             <div className="space-y-1.5">
               <Label htmlFor="username" className="font-mukta text-neutral-700">
-                Usernames
+                Username
               </Label>
               <Input
                 id="username"
