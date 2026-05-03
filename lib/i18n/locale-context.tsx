@@ -5,8 +5,8 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { ELanguage } from '@/components/enums/language.enum';
 
-import { HOROSCOPE_DICTIONARIES, parseUiLangParam } from './index';
-import type { HoroscopeMessages } from './schema';
+import { HOROSCOPE_DICTIONARIES, parseUiLangParam } from './locale';
+import type { HoroscopeMessages } from './locales/horoscope/schema';
 
 export type HoroscopeLocaleContextValue = {
   /** Header / footer / page chrome (from `?lang=`). */

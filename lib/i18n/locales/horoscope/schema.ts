@@ -1,3 +1,4 @@
+import type { HoroscopeSign } from '@/lib/types/horoscope';
 import type { VedastroHoroscopeRangeType } from '@/lib/types/vedastro';
 
 export type HoroscopeRangeCopy = { title: string; intro: string };
@@ -47,6 +48,20 @@ export type HoroscopeMessages = {
       energy: string;
       intensity: string;
     };
+  };
+  compatibility: {
+    title: string;
+    subtitle: string;
+    intro: string;
+    outro: string;
+    cardTitle: string;
+    cardSubtitle: string;
+    yourSignLabel: string;
+    partnerSignLabel: string;
+    maleLabel: string;
+    femaleLabel: string;
+    findNow: string;
+    signLabels: Record<HoroscopeSign, string>;
   };
   header: {
     nav: {

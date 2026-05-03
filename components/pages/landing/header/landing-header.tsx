@@ -8,10 +8,17 @@ import UserLineIcon from '@/components/icons/user/user-line';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import LanguageEarthIcon from '@/components/icons/language/earth';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { ELanguage } from '@/components/enums/language.enum';
-import { horoscopeEn } from '@/lib/i18n/horoscope';
-import { useHoroscopeLocaleOptional } from '@/lib/i18n/horoscope/horoscope-locale-context';
+import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
+import {
+  HOROSCOPE_RANGE_NAV_OPTIONS,
+  horoscopeListPageHref,
+} from '@/lib/constants/horoscope-range-nav';
+import { zodiacEnglishDetailHref, zodiacNepaliDetailHref } from '@/lib/constants/zodiac-sign-nav';
+import { horoscopeEn, type HoroscopeMessages, useHoroscopeLocaleOptional } from '@/lib/i18n';
+import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 
 type NavChild = {
   title: string;
@@ -25,143 +32,80 @@ type NavItem = {
   children?: NavChild[];
 };
 
-const LANDING_NAV: NavItem[] = [
-  {
-    title: 'Horoscope',
-    children: [
-      { title: "Today's Horoscope", link: '/horoscope' },
-      { title: "Tomorrow's Horoscope", link: '/horoscope' },
-      { title: 'Weekly Horoscope', link: '/horoscope' },
-      { title: 'Monthly Horoscope', link: '/horoscope' },
-      { title: 'Love Horoscope', link: '/horoscope' },
-      { title: 'Chinese Horoscope', link: '/horoscope' },
-      { title: 'Marriage Horoscope', link: '/horoscope' },
-    ],
-  },
-  {
-    title: 'Zodiac Signs',
-    children: [
-      {
-        title: 'English Zodiac',
-        children: [
-          { title: 'Aries', link: '/zodiac-signs/english/aries' },
-          { title: 'Taurus', link: '/zodiac-signs/english/taurus' },
-          { title: 'Gemini', link: '/zodiac-signs/english/gemini' },
-          { title: 'Cancer', link: '/zodiac-signs/english/cancer' },
-          { title: 'Leo', link: '/zodiac-signs/english/leo' },
-          { title: 'Virgo', link: '/zodiac-signs/english/virgo' },
-          { title: 'Libra', link: '/zodiac-signs/english/libra' },
-          { title: 'Scorpio', link: '/zodiac-signs/english/scorpio' },
-          { title: 'Sagittarius', link: '/zodiac-signs/english/sagittarius' },
-          { title: 'Capricorn', link: '/zodiac-signs/english/capricorn' },
-          { title: 'Aquarius', link: '/zodiac-signs/english/aquarius' },
-          { title: 'Pisces', link: '/zodiac-signs/english/pisces' },
-        ],
-      },
-      {
-        title: 'Nepali Zodiac',
-        children: [
-          { title: 'Mesh Rashi', link: '/zodiac-signs/nepali/mesh' },
-          { title: 'Brish Rashi', link: '/zodiac-signs/nepali/brish' },
-          { title: 'Mithun Rashi', link: '/zodiac-signs/nepali/mithun' },
-          { title: 'Karkat Rashi', link: '/zodiac-signs/nepali/karkat' },
-          { title: 'Simha Rashi', link: '/zodiac-signs/nepali/simha' },
-          { title: 'Kanya Rashi', link: '/zodiac-signs/nepali/kanya' },
-          { title: 'Tula Rashi', link: '/zodiac-signs/nepali/tula' },
-          { title: 'Brischik Rashi', link: '/zodiac-signs/nepali/brischik' },
-          { title: 'Dhanu Rashi', link: '/zodiac-signs/nepali/dhanu' },
-          { title: 'Makar Rashi', link: '/zodiac-signs/nepali/makar' },
-          { title: 'Kumbha Rashi', link: '/zodiac-signs/nepali/kumbha' },
-          { title: 'Meen Rashi', link: '/zodiac-signs/nepali/meen' },
-        ],
-      },
-    ],
-  },
-  {
-    title: 'Kundali',
-    link: '/kundali-details',
-    children: [
-      { title: 'Free Kundali', link: '/free-kundali' },
-      { title: 'Kundali Matching', link: '/kundali-matching' },
-      { title: 'Kundali Details', link: '/kundali-details' },
-    ],
-  },
-  { title: 'Compatibility' },
-  { title: 'Puja Bidhi', children: [] },
-  { title: 'Calculator', children: [], link: '/calculators' },
-  { title: 'Blog', link: '/blogs' },
-  { title: 'Calander', link: '/calander' },
-];
+function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[] {
+  const horoscopeChildren = HOROSCOPE_RANGE_NAV_OPTIONS.map(opt => ({
+    title: uiLanguage === ELanguage.NEPALI ? opt.labelNp : opt.labelEn,
+    link: horoscopeListPageHref(opt.type, uiLanguage),
+  }));
 
-const MOBILE_NAV: NavItem[] = [
-  { title: 'Home', link: '/' },
-  { title: 'About Us', link: '/about-us' },
-  {
-    title: 'Horoscope',
-    children: [
-      { title: "Today's Horoscope", link: '/horoscope' },
-      { title: "Tomorrow's Horoscope", link: '/horoscope' },
-      { title: 'Weekly Horoscope', link: '/horoscope' },
-      { title: 'Monthly Horoscope', link: '/horoscope' },
-      { title: 'Love Horoscope', link: '/horoscope' },
-      { title: 'Chinese Horoscope', link: '/horoscope' },
-      { title: 'Marriage Horoscope', link: '/horoscope' },
-    ],
-  },
-  {
-    title: 'Zodiac Sign',
-    children: [
-      {
-        title: 'English Zodiac',
-        children: [
-          { title: 'Aries', link: '/zodiac-signs/english/aries' },
-          { title: 'Taurus', link: '/zodiac-signs/english/taurus' },
-          { title: 'Gemini', link: '/zodiac-signs/english/gemini' },
-          { title: 'Cancer', link: '/zodiac-signs/english/cancer' },
-          { title: 'Leo', link: '/zodiac-signs/english/leo' },
-          { title: 'Virgo', link: '/zodiac-signs/english/virgo' },
-          { title: 'Libra', link: '/zodiac-signs/english/libra' },
-          { title: 'Scorpio', link: '/zodiac-signs/english/scorpio' },
-          { title: 'Sagittarius', link: '/zodiac-signs/english/sagittarius' },
-          { title: 'Capricorn', link: '/zodiac-signs/english/capricorn' },
-          { title: 'Aquarius', link: '/zodiac-signs/english/aquarius' },
-          { title: 'Pisces', link: '/zodiac-signs/english/pisces' },
-        ],
-      },
-      {
-        title: 'Nepali Zodiac',
-        children: [
-          { title: 'Mesh Rashi', link: '/zodiac-signs/nepali/mesh' },
-          { title: 'Brish Rashi', link: '/zodiac-signs/nepali/brish' },
-          { title: 'Mithun Rashi', link: '/zodiac-signs/nepali/mithun' },
-          { title: 'Karkat Rashi', link: '/zodiac-signs/nepali/karkat' },
-          { title: 'Simha Rashi', link: '/zodiac-signs/nepali/simha' },
-          { title: 'Kanya Rashi', link: '/zodiac-signs/nepali/kanya' },
-          { title: 'Tula Rashi', link: '/zodiac-signs/nepali/tula' },
-          { title: 'Brischik Rashi', link: '/zodiac-signs/nepali/brischik' },
-          { title: 'Dhanu Rashi', link: '/zodiac-signs/nepali/dhanu' },
-          { title: 'Makar Rashi', link: '/zodiac-signs/nepali/makar' },
-          { title: 'Kumbha Rashi', link: '/zodiac-signs/nepali/kumbha' },
-          { title: 'Meen Rashi', link: '/zodiac-signs/nepali/meen' },
-        ],
-      },
-    ],
-  },
-  {
-    title: 'Kundali',
-    link: '/kundali-details',
-    children: [
-      { title: 'Free Kundali', link: '/free-kundali' },
-      { title: 'Kundali Matching', link: '/kundali-matching' },
-      { title: 'Kundali Details', link: '/kundali-details' },
-    ],
-  },
-  { title: 'Compatibility' },
-  { title: 'Puja Bidhi', children: [] },
-  { title: 'Calculator', children: [], link: '/calculators' },
-  { title: 'Blog', link: '/blogs' },
-  { title: 'Calander', link: '/calander' },
-];
+  const englishZodiacGroup = uiLanguage === ELanguage.NEPALI ? 'अङ्ग्रेजी राशि' : 'English Zodiac';
+  const nepaliZodiacGroup = uiLanguage === ELanguage.NEPALI ? 'नेपाली राशि' : 'Nepali Zodiac';
+
+  const englishZodiacChildren = HOROSCOPE_SIGNS.map((slug, i) => ({
+    title: HOROSCOPE_DATA[ELanguage.ENGLISH][i]!.name,
+    link: zodiacEnglishDetailHref(slug),
+  }));
+
+  const nepaliZodiacChildren = HOROSCOPE_SIGNS.map((slug, i) => ({
+    title: HOROSCOPE_DATA[ELanguage.NEPALI][i]!.name,
+    link: zodiacNepaliDetailHref(slug),
+  }));
+
+  return [
+    {
+      title: d.header.nav.horoscope,
+      link: horoscopeListPageHref('today', uiLanguage),
+      children: horoscopeChildren,
+    },
+    {
+      title: d.header.nav.zodiacSigns,
+      link: '/zodiac-sign',
+      children: [
+        { title: englishZodiacGroup, children: englishZodiacChildren },
+        { title: nepaliZodiacGroup, children: nepaliZodiacChildren },
+      ],
+    },
+    {
+      title: d.header.nav.kundali,
+      link: '/kundali-details',
+      children: [
+        { title: 'Free Kundali', link: '/free-kundali' },
+        { title: 'Kundali Matching', link: '/kundali-matching' },
+        { title: 'Kundali Details', link: '/kundali-details' },
+      ],
+    },
+    { title: d.header.nav.compatibility, link: '/compatibility' },
+    { title: d.header.nav.pujaBidhi, link: '/puja-bidhi', children: [] },
+    { title: d.header.nav.calculator, children: [], link: '/calculators' },
+    { title: d.header.nav.blog, link: '/blogs' },
+    { title: 'Calander', link: '/calander' },
+  ];
+}
+
+function buildMobileNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[] {
+  return [
+    { title: d.header.mobile.home, link: '/' },
+    { title: d.header.mobile.aboutUs, link: '/about-us' },
+    ...buildLandingNav(uiLanguage, d),
+  ];
+}
+
+function desktopNavItemActive(pathname: string, item: NavItem): boolean {
+  const path = item.link?.split('?')[0];
+  if (!path || path === '#' || path === '/') {
+    return false;
+  }
+  if (path === '/horoscope') {
+    return pathname.startsWith('/horoscope');
+  }
+  if (path === '/zodiac-sign') {
+    return pathname.startsWith('/zodiac-sign');
+  }
+  if (path === '/compatibility') {
+    return pathname.startsWith('/compatibility');
+  }
+  return pathname === path || pathname.startsWith(`${path}/`);
+}
 
 const NavIcon = ({ onClick }: { onClick: () => void }) => {
   return (
@@ -205,12 +149,16 @@ const CloseIcon = ({ onClick }: { onClick: () => void }) => {
 };
 
 function LandingHeaderClient() {
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
   const langMenuRef = useRef<HTMLDivElement>(null);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const horoscopeLocale = useHoroscopeLocaleOptional();
-  const d = horoscopeEn;
+  const d = horoscopeLocale?.dict ?? horoscopeEn;
+  const uiLanguage = horoscopeLocale?.uiLanguage ?? ELanguage.ENGLISH;
+  const landingNav = buildLandingNav(uiLanguage, d);
+  const mobileNav = buildMobileNav(uiLanguage, d);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -333,7 +281,7 @@ function LandingHeaderClient() {
               <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
               <Link href={'/login'}>
                 <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">
-                  Sign in
+                  {d.header.signIn}
                 </p>
               </Link>
             </button>
@@ -343,13 +291,19 @@ function LandingHeaderClient() {
           </div>
         </div>
         <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex relative z-40">
-          {LANDING_NAV.map(value => {
+          {landingNav.map(value => {
             const hasChildren = !!value.children?.length;
+            const navActive = desktopNavItemActive(pathname, value);
 
             return (
               <div key={value.title} className="relative group">
                 <Link href={value.link ?? '#'} className="block">
-                  <div className="text-white flex items-center justify-center py-[7px] px-[17px] rounded-xl hover:bg-hoverColor active:bg-hoverColor">
+                  <div
+                    className={clsx(
+                      'text-white flex items-center justify-center py-[7px] px-[17px] rounded-xl hover:bg-hoverColor active:bg-hoverColor',
+                      navActive && 'bg-hoverColor',
+                    )}
+                  >
                     <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
                     {hasChildren && <ChevronDownIcon className="text-white" />}
                   </div>
@@ -423,7 +377,7 @@ function LandingHeaderClient() {
             </div>
 
             <div className="flex flex-col gap-3">
-              {MOBILE_NAV.map((item, index) => {
+              {mobileNav.map((item, index) => {
                 const hasChildren = item.children && item.children.length > 0;
                 const isExpanded = openMobileDropdown === item.title;
                 const content = (
@@ -538,6 +492,7 @@ function LandingHeaderClient() {
 
 function LandingHeaderFallback() {
   const d = horoscopeEn;
+  const landingNav = buildLandingNav(ELanguage.ENGLISH, d);
   return (
     <header className="container mx-auto px-6 lg:px-0 py-10">
       <div className="flex justify-between">
@@ -567,7 +522,7 @@ function LandingHeaderFallback() {
         </div>
       </div>
       <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex">
-        {LANDING_NAV.map(value => (
+        {landingNav.map(value => (
           <Link href={value.link ?? '#'} key={value.title}>
             <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
               <p className="font-mukta font-light text-xl leading-7">{value.title}</p>

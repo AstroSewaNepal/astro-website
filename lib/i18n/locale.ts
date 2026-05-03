@@ -1,12 +1,11 @@
 import { ELanguage } from '@/components/enums/language.enum';
 
-import { horoscopeEn } from './en';
-import { horoscopeNe } from './ne';
-import type { HoroscopeMessages } from './schema';
+import horoscopeEnBundle from './locales/horoscope/en';
+import horoscopeNpBundle from './locales/horoscope/np';
+import type { HoroscopeMessages } from './locales/horoscope/schema';
 
-export type { HoroscopeMessages, HoroscopeRangeCopy } from './schema';
-export { horoscopeEn } from './en';
-export { horoscopeNe } from './ne';
+export const horoscopeEn: HoroscopeMessages = horoscopeEnBundle.HOROSCOPE;
+export const horoscopeNe: HoroscopeMessages = horoscopeNpBundle.HOROSCOPE;
 
 export const HOROSCOPE_DICTIONARIES: Record<ELanguage, HoroscopeMessages> = {
   [ELanguage.ENGLISH]: horoscopeEn,
