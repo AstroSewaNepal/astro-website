@@ -1,32 +1,29 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination } from 'swiper/modules';
-import type { Swiper as SwiperType } from 'swiper';
 
-import { ChevronLeftIcon } from '@/components/images/icons';
-import { useHoroscopeLocale } from '@/lib/i18n/horoscope/horoscope-locale-context';
-import { persistCardDisplayLanguage, readCardDisplayLanguage } from '@/lib/i18n/horoscope';
 import ArrowRight from '@/components/icons/arrow-right';
 import StartIcon from '@/components/icons/start-icon';
+import { ZodiacSignCardsGrid } from '@/components/ui/zodiac-sign-cards-grid';
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
 import Services from '@/components/pages/landing/services';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
-import Footer from '@/components/pages/landing/footer';
 import { fetchVedastroHoroscopeList } from '@/lib/api/vedastro/horoscope';
 import {
   horoscopeDetailPageHref,
   parseHoroscopeRangeFromUrl,
 } from '@/lib/constants/horoscope-range-nav';
+import {
+  persistCardDisplayLanguage,
+  readCardDisplayLanguage,
+  useHoroscopeLocale,
+} from '@/lib/i18n';
 import type { HoroscopeSummaryRow, VedastroHoroscopeRangeType } from '@/lib/types/vedastro';
-
-import LandingPageCSS from '../landing-page.module.css';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -211,8 +208,6 @@ function HoroscopePageContent() {
     };
   }, [selectedRange]);
 
-  const swiperRef = useRef<SwiperType | null>(null);
-
   const cards = useMemo((): DisplayCard[] | 'loading' => {
     const staticFallback = HOROSCOPE_DATA[signLanguage];
     if (listLoading && rows === null) {
@@ -253,9 +248,9 @@ function HoroscopePageContent() {
   }, [signLanguage, listError, listLoading, rows]);
 
   return (
-    <main className={clsx('min-h-screen overflow-hidden', LandingPageCSS.background)}>
+    <main className="min-h-screen overflow-hidden">
       <div className="relative isolate">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_120%_80%_at_50%_0%,rgba(255,255,255,0.82),rgba(255,255,255,0)_58%)] sm:h-72" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-64 sm:h-72" />
         <div className="mx-auto max-w-[1240px] px-3 pb-12 pt-2 sm:px-5 sm:pb-16 sm:pt-4 lg:px-8">
           {/* Hero: transparent panel (page bg). Mobile cards: white tiles per Figma; md+ grid: transparent tiles. */}
           <section
@@ -318,111 +313,23 @@ function HoroscopePageContent() {
               </div>
             </div>
 
-            {listError && (!rows || rows.length === 0) ? (
-              <p
-                className="mt-4 px-1 text-center font-mukta text-[12px] text-[#a94442] sm:text-[13px]"
-                role="alert"
-              >
-                {listError} {dict.list.errorFallbackSuffix}
-              </p>
-            ) : null}
-
-            {cards !== 'loading' && cards.length === 0 ? (
-              <p className="mt-6 py-6 text-center font-mukta text-[14px] text-[#6b5a4e] sm:mt-8 sm:text-[15px]">
-                {dict.list.empty}
-              </p>
-            ) : (
-              <>
-                {/* Mobile: carousel with peek, side arrows, pagination dots */}
-                <div className="horoscope-hero-swiper-mob relative mt-6 sm:mt-8 md:hidden">
-                  <button
-                    type="button"
-                    aria-label="Previous sign"
-                    onClick={() => swiperRef.current?.slidePrev()}
-                    className="absolute left-0 top-[42%] z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white"
-                  >
-                    <Image src={ChevronLeftIcon} alt="" className="h-2.5 w-2.5 opacity-75" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Next sign"
-                    onClick={() => swiperRef.current?.slideNext()}
-                    className="absolute right-0 top-[42%] z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white"
-                  >
-                    <Image
-                      src={ChevronLeftIcon}
-                      alt=""
-                      className="h-2.5 w-2.5 rotate-180 opacity-75"
-                    />
-                  </button>
-                  <Swiper
-                    key={`horoscope-mob-${selectedRange}-${signLanguage}-${cards === 'loading' ? 'loading' : cards.map(c => c.key).join(',')}`}
-                    modules={[Pagination]}
-                    slidesPerView={1.28}
-                    spaceBetween={10}
-                    centeredSlides
-                    slidesOffsetBefore={4}
-                    slidesOffsetAfter={4}
-                    breakpoints={{
-                      400: { slidesPerView: 1.38, spaceBetween: 11 },
-                      480: { slidesPerView: 1.48, spaceBetween: 12 },
-                    }}
-                    className="horoscope-cards-swiper !overflow-visible px-10 pb-9"
-                    pagination={{ clickable: true }}
-                    onSwiper={swiper => {
-                      swiperRef.current = swiper;
-                    }}
-                  >
-                    {cards === 'loading'
-                      ? Array.from({ length: 8 }).map((_, i) => (
-                          <SwiperSlide
-                            key={`horoscope-skeleton-mob-${selectedRange}-${i}`}
-                            className="!h-auto"
-                          >
-                            <div className="min-h-[140px] animate-pulse rounded-[20px] border border-[#d4d4d8] bg-neutral-100" />
-                          </SwiperSlide>
-                        ))
-                      : cards.map(card => (
-                          <SwiperSlide key={`mob-${selectedRange}-${card.key}`} className="!h-auto">
-                            <HoroscopeSignCardLink
-                              card={card}
-                              selectedRange={selectedRange}
-                              uiLanguage={uiLanguage}
-                              readMoreLabel={dict.list.readMore}
-                              layout="carousel"
-                            />
-                          </SwiperSlide>
-                        ))}
-                  </Swiper>
-                </div>
-
-                <div
-                  className={clsx(
-                    'mt-6 hidden grid-cols-1 gap-3 md:grid',
-                    'sm:mt-8 sm:grid-cols-2 sm:gap-4',
-                    'xl:grid-cols-4 xl:gap-5',
-                  )}
-                >
-                  {cards === 'loading'
-                    ? Array.from({ length: 12 }).map((_, i) => (
-                        <div
-                          key={`horoscope-skeleton-${selectedRange}-${i}`}
-                          className="min-h-[120px] animate-pulse rounded-[20px] border border-[#5c4033]/25 bg-transparent md:border-[#d4d4d8] md:bg-neutral-100 md:min-h-[120px] md:rounded-[24px] xl:rounded-[26px]"
-                        />
-                      ))
-                    : cards.map(card => (
-                        <HoroscopeSignCardLink
-                          key={`${selectedRange}-${card.key}`}
-                          card={card}
-                          selectedRange={selectedRange}
-                          uiLanguage={uiLanguage}
-                          readMoreLabel={dict.list.readMore}
-                          layout="grid"
-                        />
-                      ))}
-                </div>
-              </>
-            )}
+            <ZodiacSignCardsGrid
+              cards={cards}
+              listError={listError}
+              emptyLabel={dict.list.empty}
+              errorFallbackSuffix={dict.list.errorFallbackSuffix}
+              swiperKey={`horoscope-${selectedRange}-${signLanguage}-${cards === 'loading' ? 'loading' : cards.map(c => c.key).join(',')}`}
+              dataQaId="horoscope-sign-cards-grid"
+              renderCard={(card, layout) => (
+                <HoroscopeSignCardLink
+                  card={card}
+                  selectedRange={selectedRange}
+                  uiLanguage={uiLanguage}
+                  readMoreLabel={dict.list.readMore}
+                  layout={layout}
+                />
+              )}
+            />
           </section>
 
           <section
@@ -467,7 +374,6 @@ function HoroscopePageContent() {
           </div>
         </div>
       </div>
-      <Footer />
     </main>
   );
 }
@@ -475,11 +381,10 @@ function HoroscopePageContent() {
 function HoroscopePageFallback() {
   const { dict } = useHoroscopeLocale();
   return (
-    <main className={clsx('min-h-screen overflow-hidden', LandingPageCSS.background)}>
+    <main className="min-h-screen overflow-hidden">
       <div className="mx-auto max-w-[1240px] px-4 py-16 text-center font-mukta text-[14px] text-[#6b5a4e] sm:py-20 sm:text-[15px]">
         {dict.list.loading}
       </div>
-      <Footer />
     </main>
   );
 }

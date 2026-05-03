@@ -2,15 +2,10 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import clsx from 'clsx';
-
 import { ghostClient } from '@/lib/ghostClient';
-import Footer from '@/components/pages/landing/footer';
 import Services from '@/components/pages/landing/services';
-import LandingPageCSS from '../../landing-page.module.css';
 import BlogContent from '@/components/pages/blogs/content';
 import DownloadApp from '@/components/pages/landing/download-app';
-import { LandingHeader } from '@/components/pages/landing/header/landing-header';
 // import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 
 type BlogPostData = {
@@ -209,13 +204,12 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.astrosewa.com'
     },
   };
   return (
-    <main className={clsx('min-h-screen space-y-[100px]', LandingPageCSS.background)}>
-       <script
+    <main className="min-h-screen space-y-[100px]">
+     <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div>
-        <LandingHeader />
         <BlogContent
           title={post.title}
           html={post.html}
@@ -232,7 +226,6 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.astrosewa.com'
       {/* <TalkToOurAstrologer /> */}
       <Services />
       <DownloadApp />
-      <Footer />
     </main>
   );
 };
