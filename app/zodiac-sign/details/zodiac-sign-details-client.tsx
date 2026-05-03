@@ -143,16 +143,6 @@ export function ZodiacSignDetailsClient() {
                 )}
               </div>
 
-              <div className="mt-5 flex flex-wrap items-center gap-3">
-                <Link
-                  href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#6f2618] px-4 py-2 font-mukta text-[12px] font-semibold text-[#fff7ec] hover:bg-[#581e13]"
-                >
-                  View {displayName} horoscope
-                  <ArrowRight className="h-3 w-3 text-[#fff7ec]" />
-                </Link>
-              </div>
-
               {!loading && !loadError && traitBlocks.length > 0 ? (
                 <div className="mt-6 rounded-[16px] border border-[#ead7c7] bg-[#fffaf2] p-4 sm:p-5">
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -183,16 +173,28 @@ export function ZodiacSignDetailsClient() {
             </div>
 
             <div className="flex flex-col items-center lg:items-end">
-              <div className="flex h-[260px] w-[260px] items-center justify-center rounded-full bg-[#1d2c7c] shadow-[0_10px_30px_rgba(29,44,124,0.18)] sm:h-[290px] sm:w-[290px]">
+              <div className="flex h-[260px] w-[260px] items-center justify-center rounded-full sm:h-[290px] sm:w-[290px]">
                 <Image
                   src={ENGLISH_ZODIAC_COLOR[slug]}
                   alt={displayName}
                   className="h-[190px] w-[190px] object-contain"
                 />
               </div>
-              <p className="mt-2 font-mukta text-[12px] text-[#7a5e4f]">
-                {displayName} zodiac sign
-              </p>
+              <div className="mt-5 flex flex-wrap items-center gap-3">
+                <Link
+                  href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
+                  className="inline-flex items-center gap-2 rounded-full bg-[#6f2618] px-4 py-2 font-mukta text-[12px] font-semibold text-[#fff7ec] hover:bg-[#581e13]"
+                >
+                  Find {displayName} horoscope
+                  <ArrowRight className="h-3 w-3 text-[#fff7ec]" />
+                </Link>
+              </div>
+              <div className="px-4 py-1.5 bg-amber-950 rounded-[32px] inline-flex justify-start items-center gap-2.5">
+                <div className="justify-start text-orange-100 text-xl font-normal font-['Mukta'] leading-8">
+                  Find Cancer Horoscope
+                </div>
+                <ArrowRight className="h-6 w-6 text-orange-100" />
+              </div>
             </div>
           </div>
         </section>

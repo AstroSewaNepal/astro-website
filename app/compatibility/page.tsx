@@ -63,7 +63,7 @@ export default function CompatibilityPage() {
   }, [partnerGender, partnerSign, router, yourGender, yourSign]);
 
   return (
-    <main className="min-h-screen bg-[#f8f3df]">
+    <main className="min-h-screen">
       <div className="mx-auto max-w-[1240px] px-4 py-4 sm:px-6 lg:px-8">
         <section className="mx-auto mt-8 max-w-[1180px]">
           <h1 className="font-mukta text-[36px] font-bold leading-none text-[#6b2417] sm:text-[44px]">

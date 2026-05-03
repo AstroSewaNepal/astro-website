@@ -250,7 +250,7 @@ function HoroscopePageContent() {
   return (
     <main className="min-h-screen overflow-hidden">
       <div className="relative isolate">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_120%_80%_at_50%_0%,rgba(255,255,255,0.82),rgba(255,255,255,0)_58%)] sm:h-72" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-64 sm:h-72" />
         <div className="mx-auto max-w-[1240px] px-3 pb-12 pt-2 sm:px-5 sm:pb-16 sm:pt-4 lg:px-8">
           {/* Hero: transparent panel (page bg). Mobile cards: white tiles per Figma; md+ grid: transparent tiles. */}
           <section
