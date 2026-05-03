@@ -2,15 +2,10 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import clsx from 'clsx';
-
 import { ghostClient } from '@/lib/ghostClient';
-import Footer from '@/components/pages/landing/footer';
 import Services from '@/components/pages/landing/services';
-import LandingPageCSS from '../../landing-page.module.css';
 import BlogContent from '@/components/pages/blogs/content';
 import DownloadApp from '@/components/pages/landing/download-app';
-import { LandingHeader } from '@/components/pages/landing/header/landing-header';
 // import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 
 type BlogPostData = {
@@ -178,9 +173,8 @@ const BlogDetailPage = async (props: BlogDetailPageProps) => {
   const views = '0'; // Ghost doesn't provide views by default
 
   return (
-    <main className={clsx('min-h-screen space-y-[100px]', LandingPageCSS.background)}>
+    <main className="min-h-screen space-y-[100px]">
       <div>
-        <LandingHeader />
         <BlogContent
           title={post.title}
           html={post.html}
@@ -197,7 +191,6 @@ const BlogDetailPage = async (props: BlogDetailPageProps) => {
       {/* <TalkToOurAstrologer /> */}
       <Services />
       <DownloadApp />
-      <Footer />
     </main>
   );
 };

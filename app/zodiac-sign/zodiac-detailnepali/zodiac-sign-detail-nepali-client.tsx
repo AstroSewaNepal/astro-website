@@ -7,8 +7,6 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 import LandingFAQ from '@/components/pages/landing/faq';
-import Footer from '@/components/pages/landing/footer';
-import { LandingHeader } from '@/components/pages/landing/header/landing-header';
 import { ZodiacDetailLangSwitch } from '@/components/pages/zodiac-sign/zodiac-detail-lang-switch';
 import StartIcon from '@/components/icons/start-icon';
 import ArrowRight from '@/components/icons/arrow-right';
@@ -34,8 +32,6 @@ import { parseZodiacSignParam } from '@/lib/zodiac-sign/parse-sign-param';
 import { HOROSCOPE_SIGNS, type HoroscopeSign } from '@/lib/types/horoscope';
 import type { VedastroZodiacSignRow } from '@/lib/types/vedastro';
 import { unwrapResult } from '@/lib/utils/vedastro-result';
-
-import LandingPageCSS from '../../landing-page.module.css';
 
 const SIGN_NEPALI_LIGHT: Record<HoroscopeSign, typeof NepaliAriesLight> = {
   aries: NepaliAriesLight,
@@ -113,8 +109,7 @@ export function ZodiacSignDetailNepaliClient() {
     : [];
 
   return (
-    <main className={clsx('min-h-screen', LandingPageCSS.background)}>
-      <LandingHeader />
+    <main className="min-h-screen">
       <div className="mx-auto max-w-[1240px] px-4 py-4 sm:px-6 lg:px-8">
         <section className="mx-auto mt-6 max-w-[1180px]">
           <ZodiacDetailLangSwitch signSlug={slug} className="mb-4" />
@@ -254,8 +249,6 @@ export function ZodiacSignDetailNepaliClient() {
           </div>
         </section>
       </div>
-
-      <Footer />
     </main>
   );
 }

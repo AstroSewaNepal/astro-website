@@ -4,8 +4,6 @@ import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import Footer from '@/components/pages/landing/footer';
-import { LandingHeader } from '@/components/pages/landing/header/landing-header';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
 import LandingFAQ from '@/components/pages/landing/faq';
@@ -18,7 +16,6 @@ import { zodiacListingCopy } from '@/lib/zodiac-sign/listing-copy';
 import { englishZodiacColorOrdered } from '@/lib/zodiac-sign/english-zodiac-color';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 
-import LandingPageCSS from '@/app/landing-page.module.css';
 import { useZodiacListingLanguage } from './use-zodiac-listing-language';
 import { ZodiacLangPillToggle } from './zodiac-lang-pill-toggle';
 
@@ -36,8 +33,7 @@ export function ZodiacSignListing({ mode }: Props) {
   const colorRow = englishZodiacColorOrdered();
 
   return (
-    <main className={clsx('min-h-screen', LandingPageCSS.background)}>
-      <LandingHeader />
+    <main className="min-h-screen">
       <div className="mx-auto max-w-[1240px] px-4 py-4 sm:px-6 lg:px-8">
         <section className="mx-auto mt-8 max-w-[1180px]">
           {mode === 'hub-ne' ? (
@@ -259,8 +255,6 @@ export function ZodiacSignListing({ mode }: Props) {
           </div>
         ) : null}
       </div>
-
-      <Footer />
     </main>
   );
 }
