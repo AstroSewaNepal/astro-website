@@ -18,8 +18,10 @@ type BlogPostData = {
   title: string;
   slug: string;
   html: string;
+  excerpt?: string | null;
   feature_image: string | null;
   published_at: string | null;
+  updated_at?: string | null;
   reading_time: number | null;
   og_image?: string | null;
   og_title?: string | null;
@@ -70,6 +72,7 @@ async function getBlogPost(slug: string): Promise<BlogPostData | null> {
           'html',
           'feature_image',
           'published_at',
+          'updated_at',
           'reading_time',
           'excerpt',
           'og_image',
@@ -94,8 +97,10 @@ async function getBlogPost(slug: string): Promise<BlogPostData | null> {
       title: post.title ?? '',
       slug: post.slug ?? '',
       html: post.html ?? '',
+      excerpt: post.excerpt ?? null,
       feature_image: post.feature_image ?? null,
       published_at: post.published_at ?? null,
+      updated_at: post.updated_at ?? null,
       reading_time: post.reading_time ?? null,
       og_image: post.og_image ?? null,
       og_title: post.og_title ?? null,
@@ -176,9 +181,39 @@ const BlogDetailPage = async (props: BlogDetailPageProps) => {
       })
     : '';
   const views = '0'; // Ghost doesn't provide views by default
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.astrosewa.com';
+  const postUrl = `${BASE_URL}/blogs/${post.slug}`;
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.meta_description ?? post.og_description ?? post.excerpt ?? undefined,
+    image: post.feature_image ?? undefined,
+    url: postUrl,
+    datePublished: post.published_at ?? undefined,
+    dateModified: post.updated_at ?? post.published_at ?? undefined,
+    author: {
+      '@type': 'Person',
+      name: authorName,
+      image: authorImage,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Astro Sewa',
+      url: BASE_URL,
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': postUrl,
+    },
+  };
   return (
     <main className={clsx('min-h-screen space-y-[100px]', LandingPageCSS.background)}>
+       <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div>
         <LandingHeader />
         <BlogContent
@@ -224,6 +259,9 @@ export async function generateMetadata({
   return {
     title,
     description,
+      alternates: {
+      canonical: `/blogs/${slug}`,
+    },
     openGraph: {
       title: post.og_title ?? title,
       description: post.og_description ?? description,

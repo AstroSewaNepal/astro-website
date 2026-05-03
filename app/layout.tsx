@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'Astro Sewa Pvt. Ltd.' }],
   creator: 'Astro Sewa Pvt. Ltd.',
   publisher: 'Astro Sewa Pvt. Ltd.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://astrosewa.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.astrosewa.com'),
   openGraph: {
     type: 'website',
     locale: 'en_US',
