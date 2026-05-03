@@ -1,4 +1,18 @@
+import type { Metadata } from 'next';
 import React from 'react';
+
+export const metadata: Metadata = {
+  title: 'Legal Disclaimer',
+  description:
+    'Read the full legal disclaimer for Astro Sewa. Understand the limitations, liability, refund policy, and terms of use for our astrology platform.',
+  alternates: {
+    canonical: '/disclaimer',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 const DisclaimerPage = () => {
   return (

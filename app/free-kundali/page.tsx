@@ -10,8 +10,23 @@ export const metadata: Metadata = {
   title: 'Free Kundali',
   description:
     'Discover your detailed Janam Kundli instantly with Astro Sewa. Free online Kundli with insights on personality, career, relationships, and life path.',
+  keywords: [
+    'free kundali',
+    'janam kundli',
+    'birth chart',
+    'kundali online',
+    'free birth chart Nepal',
+    'vedic kundli',
+    'kundali reading',
+    'astrology birth chart',
+  ],
   alternates: {
     canonical: '/free-kundali',
+  },
+  openGraph: {
+    title: 'Free Kundali — Janam Birth Chart Online | Astro Sewa',
+    description:
+      'Generate your free Janam Kundli online. Get detailed Vedic astrology birth chart insights for personality, career, love, and life path.',
   },
 };
 

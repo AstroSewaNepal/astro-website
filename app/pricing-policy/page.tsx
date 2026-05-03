@@ -1,4 +1,14 @@
+import type { Metadata } from 'next';
 import React from 'react';
+
+export const metadata: Metadata = {
+  title: 'Pricing Policy',
+  description:
+    'Learn about Astro Sewa\'s transparent pricing for astrologer consultations, reports, and remedies. No hidden fees — see exact prices before you pay.',
+  alternates: {
+    canonical: '/pricing-policy',
+  },
+};
 
 const PricingPolicyPage = () => {
   return (
