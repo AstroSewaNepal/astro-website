@@ -9,8 +9,7 @@ import {
   AstroSewaTransparentLogo,
   GoogleDownloadImage,
 } from '@/components/images';
-import { horoscopeEn } from '@/lib/i18n/horoscope';
-import { useHoroscopeLocaleOptional } from '@/lib/i18n/horoscope/horoscope-locale-context';
+import { horoscopeEn, useHoroscopeLocaleOptional } from '@/lib/i18n';
 import {
   FacebookIcon,
   LinkedinIcon,

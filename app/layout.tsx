@@ -5,6 +5,8 @@ import Script from 'next/script';
 import './globals.css';
 import clsx from 'clsx';
 
+import { SiteChrome } from '@/components/layout/site-chrome';
+
 const tiroDevanagari = Tiro_Devanagari_Sanskrit({
   variable: '--font-tiro-devanagari',
   subsets: ['latin', 'devanagari'],
@@ -116,7 +118,7 @@ export default function RootLayout({
             </Script>
           </>
         )}
-        {children}
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );

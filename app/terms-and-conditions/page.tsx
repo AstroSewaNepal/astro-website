@@ -1,19 +1,8 @@
 import React from 'react';
 
-import clsx from 'clsx';
-
-import Footer from '@/components/pages/landing/footer';
-import { LandingHeader } from '@/components/pages/landing/header/landing-header';
-
-import LandingPageCSS from '../landing-page.module.css';
-
 const TermsAndConditionsPage = () => {
   return (
-    <main className={clsx('min-h-screen', LandingPageCSS.background)}>
-      <div>
-        <LandingHeader />
-      </div>
-
+    <main className="min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="bg-white rounded-lg shadow-lg p-8 md:p-12 prose prose-lg max-w-none">
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4 font-sahitya">
@@ -607,8 +596,6 @@ const TermsAndConditionsPage = () => {
           </div>
         </div>
       </div>
-
-      <Footer />
     </main>
   );
 };

@@ -15,6 +15,7 @@ import KundaliSavedSigninIllustration from './kundali-saved-signin-illustration.
 import astrology from './astrology.png';
 import AstrologyPrimaryColor from './icons/astrology-primarycolor.png';
 import SquareNumberChart from './icons/SquareNumberChart.png';
+import HeartSearch from './mdi_heart-search.svg';
 
 export {
   TeejImage,
@@ -34,4 +35,5 @@ export {
   astrology,
   AstrologyPrimaryColor,
   SquareNumberChart,
+  HeartSearch,
 };

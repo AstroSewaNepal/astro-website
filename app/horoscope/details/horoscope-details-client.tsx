@@ -6,9 +6,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-import { useHoroscopeLocale } from '@/lib/i18n/horoscope/horoscope-locale-context';
-import { interpolate, readCardDisplayLanguage } from '@/lib/i18n/horoscope';
-import Footer from '@/components/pages/landing/footer';
 import ArrowRight from '@/components/icons/arrow-right';
 import StartIcon from '@/components/icons/start-icon';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
@@ -34,11 +31,10 @@ import {
   horoscopeListPageHref,
   parseHoroscopeRangeFromUrl,
 } from '@/lib/constants/horoscope-range-nav';
+import { interpolate, readCardDisplayLanguage, useHoroscopeLocale } from '@/lib/i18n';
 import { HOROSCOPE_SIGNS, isHoroscopeSign, type HoroscopeSign } from '@/lib/types/horoscope';
 import type { HoroscopeDetailData } from '@/lib/types/vedastro';
 import type { VedastroHoroscopeRangeType } from '@/lib/types/vedastro';
-
-import LandingPageCSS from '../../landing-page.module.css';
 
 const SIGN_COLOR_IMAGE: Record<HoroscopeSign, typeof EnglishAriesColor> = {
   aries: EnglishAriesColor,
@@ -163,7 +159,7 @@ export function HoroscopeDetailsClient() {
   }, [validSign]);
 
   return (
-    <main className={clsx('min-h-screen', LandingPageCSS.background)}>
+    <main className="min-h-screen">
       <div className="mx-auto max-w-[1240px] px-4 pb-16 pt-4 sm:px-6 lg:px-8">
         {!validSign ? (
           <section className="mt-7 rounded-[20px] border border-[#dcccbc] bg-[#f9f2e8]/95 px-4 py-10 text-center sm:px-6">
@@ -476,8 +472,6 @@ export function HoroscopeDetailsClient() {
           <Services />
         </div>
       </div>
-
-      <Footer />
     </main>
   );
 }

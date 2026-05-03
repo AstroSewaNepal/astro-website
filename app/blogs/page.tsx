@@ -1,14 +1,9 @@
 import React from 'react';
 
-import clsx from 'clsx';
-
 import { ghostClient } from '@/lib/ghostClient';
-import Footer from '@/components/pages/landing/footer';
-import LandingPageCSS from '../landing-page.module.css';
 import BlogHeader from '@/components/pages/blogs/header';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
-import { LandingHeader } from '@/components/pages/landing/header/landing-header';
 
 async function getBlogTags() {
   const tags = await ghostClient.tags.browse({
@@ -61,15 +56,13 @@ async function getBlogPosts() {
 const BlogPage = async () => {
   const [tags, posts] = await Promise.all([getBlogTags(), getBlogPosts()]);
   return (
-    <main className={clsx('min-h-screen space-y-[100px]', LandingPageCSS.background)}>
+    <main className="min-h-screen space-y-[100px]">
       <div>
-        <LandingHeader />
         <BlogHeader tags={tags} posts={posts} />
       </div>
       {/* <TalkToOurAstrologer /> */}
       <Services />
       <DownloadApp />
-      <Footer />
     </main>
   );
 };
