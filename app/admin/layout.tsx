@@ -1,6 +1,11 @@
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/auth';
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 import { QueryProvider } from '@/providers/query-provider';
 import AdminSidebar from '@/components/admin/admin-sidebar';
 import AdminHeader from '@/components/admin/admin-header';

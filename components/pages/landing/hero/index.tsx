@@ -31,7 +31,7 @@ const LandingHero: React.FC = () => {
         </div>
       </div>
       <div className="flex items-end justify-end">
-        <Image src={HeroSectionImage} alt="Hero Section Image" width={516} height={515.39} />
+        <Image src={HeroSectionImage} alt="Astro Sewa — astrology made personal" width={516} height={516} priority />
       </div>
     </section>
   );

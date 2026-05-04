@@ -1,6 +1,29 @@
+import type { Metadata } from 'next';
 import React from 'react';
 
 import { ghostClient } from '@/lib/ghostClient';
+
+export const metadata: Metadata = {
+  title: 'Astrology Blog',
+  description:
+    'Explore expert astrology articles, Vedic insights, horoscope guides, and spiritual tips on the Astro Sewa blog — written by experienced astrologers in Nepal.',
+  keywords: [
+    'astrology blog',
+    'vedic astrology articles',
+    'horoscope guide',
+    'Nepal astrology blog',
+    'astrology tips',
+    'spiritual guidance',
+  ],
+  alternates: {
+    canonical: '/blogs',
+  },
+  openGraph: {
+    title: 'Astrology Blog — Vedic Insights & Horoscope Guides | Astro Sewa',
+    description:
+      'Read expert astrology articles, Vedic insights, and horoscope guides from verified astrologers on the Astro Sewa blog.',
+  },
+};
 import BlogHeader from '@/components/pages/blogs/header';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';

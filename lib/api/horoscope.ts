@@ -58,7 +58,7 @@ function mapDetailToHoroscopeRecord(
 
 /** @deprecated Prefer `getVedastroHoroscopeListUrl` from `@/lib/api/vedastro`. */
 export function getHoroscopesUrl(): string {
-  return joinUrl(getPublicBackendBaseUrl(), 'api/v1/vedastro/horoscope/list');
+  return joinUrl(getPublicBackendBaseUrl(), 'vedastro/horoscope/list');
 }
 
 /** @deprecated Prefer `getVedastroHoroscopeDetailUrl` from `@/lib/api/vedastro`. */
@@ -71,7 +71,7 @@ export function getHoroscopeBySignUrl(
 
 /** Recompute endpoint URL (Vedastro). */
 export function getHoroscopeSyncUrl(): string {
-  return joinUrl(getPublicBackendBaseUrl(), 'api/v1/vedastro/horoscope/recompute');
+  return joinUrl(getPublicBackendBaseUrl(), 'vedastro/horoscope/recompute');
 }
 
 /**
