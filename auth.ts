@@ -36,7 +36,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }),
           });
           if (!res.ok) return null;
-
           const json = await res.json();
           if (!json.success || !json.data) return null;
 
