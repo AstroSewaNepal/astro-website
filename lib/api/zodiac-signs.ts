@@ -34,7 +34,7 @@ function mapRow(row: VedastroZodiacSignRow): ZodiacSignRecord {
 
 /** @deprecated Prefer `getVedastroZodiacSignListUrl` from `@/lib/api/vedastro`. */
 export function getZodiacSignsUrl(): string {
-  return joinUrl(getPublicBackendBaseUrl(), 'api/v1/vedastro/zodiac-sign');
+  return joinUrl(getPublicBackendBaseUrl(), 'vedastro/zodiac-sign');
 }
 
 /** @deprecated Vedastro has no type filter; returns full list (client may filter). */
@@ -45,7 +45,7 @@ export function getZodiacSignsByTypeUrl(type: ZodiacType): string {
 
 /** Slug is used instead of Mongo ObjectId for Vedastro detail. */
 export function getZodiacSignByIdUrl(id: string): string {
-  return joinUrl(getPublicBackendBaseUrl(), `api/v1/vedastro/zodiac-sign/${id}`);
+  return joinUrl(getPublicBackendBaseUrl(), `vedastro/zodiac-sign/${id}`);
 }
 
 /** All zodiac rows from Vedastro / Mongo. */

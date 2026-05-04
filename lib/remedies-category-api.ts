@@ -32,7 +32,7 @@ async function backendRequest<T>(
   method = "GET",
   body?: unknown,
 ): Promise<T> {
-  const res = await fetch(`${BACKEND_URL}${path}`, {
+  const res = await fetch(`${BACKEND_URL}/${path}`, {
     method,
     headers: {
       "Content-Type": "application/json",
@@ -125,7 +125,7 @@ export async function uploadMedia(
   const formData = new FormData();
   formData.append("image", file);
 
-  const res = await fetch(`${BACKEND_URL}remedies-categories/media`, {
+  const res = await fetch(`${BACKEND_URL}/remedies-categories/media`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
     body: formData,

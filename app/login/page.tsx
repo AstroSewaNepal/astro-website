@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import PasswordInput from './PasswordInput';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
@@ -18,8 +19,7 @@ type LoginPageProps = {
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  // JWTSessionError can be thrown when a stale cookie was signed with a different
-  // AUTH_SECRET — catch it and treat as logged-out rather than crashing the page.
+
   let session = null;
   try {
     session = await auth();
@@ -100,14 +100,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               <Label htmlFor="password" className="font-mukta text-neutral-700">
                 Password
               </Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Enter password"
-                required
-                className="rounded-xl border-neutral-200 font-mukta focus-visible:ring-[#611508] focus-visible:ring-offset-0"
-              />
+              <PasswordInput />
             </div>
 
             <Button
