@@ -1,6 +1,12 @@
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { AuthError } from 'next-auth';
 import { auth, signIn } from '@/auth';
+
+export const metadata: Metadata = {
+  title: 'Sign In',
+  robots: { index: false, follow: false },
+};
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

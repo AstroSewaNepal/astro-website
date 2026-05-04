@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 import { HeroSectionImage } from '@/components/images';
 import LandingFAQ from '@/components/pages/landing/faq';
+import { FAQ_LIST } from '@/components/pages/landing/faq/faq.const';
 import Clarity from '@/components/pages/landing/clarity';
 import LandingHero from '@/components/pages/landing/hero';
 // import EventsPage from '@/components/pages/landing/events';
@@ -14,7 +15,6 @@ import DownloadApp from '@/components/pages/landing/download-app';
 import AstrologerBlogListing from '@/components/pages/landing/blog-listing';
 
 export const metadata: Metadata = {
-  title: 'Home',
   description:
     'Astro Sewa combines ancient Vedic wisdom with modern insight to help you transform uncertainty into opportunity. Get daily horoscopes, connect with verified astrologers, and access personalized astrology guidance for love, career, health, and finances.',
   keywords: [
@@ -51,13 +51,30 @@ export const metadata: Metadata = {
     images: [HeroSectionImage.src],
   },
   alternates: {
-    canonical: 'https://www.astrosewa.com',
+    canonical: '/',
   },
+};
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ_LIST.map(item => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
 };
 
 export default function Home() {
   return (
     <main className="min-h-screen space-y-[100px]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div>
         <LandingHero />
       </div>
