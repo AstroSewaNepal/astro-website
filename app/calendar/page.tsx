@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import CalanderPageContent from '@/components/pages/calander/index';
+import CalendarPageContent from '@/components/pages/calendar/index';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
@@ -31,7 +31,7 @@ export default function CalendarPage() {
   return (
     <main className="min-h-screen">
       <div className="space-y-10 md:space-y-[100px]">
-        <CalanderPageContent />
+        <CalendarPageContent />
         <Services />
         <DownloadApp />
       </div>

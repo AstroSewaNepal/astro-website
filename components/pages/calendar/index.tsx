@@ -5,7 +5,7 @@ import React from 'react';
 import PanchangTimingStrip from './panchang-timing-strip';
 import PanchangTodaySection from './panchang-today-section';
 
-const CalanderPageContent: React.FC = () => {
+const CalendarPageContent: React.FC = () => {
   return (
     <div className="min-h-screen px-4 md:px-8 pt-2 pb-10 text-[#2a1f1a]">
       {/* Title */}
@@ -42,4 +42,4 @@ const CalanderPageContent: React.FC = () => {
   );
 };
 
-export default CalanderPageContent;
+export default CalendarPageContent;
