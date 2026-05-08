@@ -22,7 +22,6 @@ const PrivacyPolicyPage = () => {
 
       <div className="max-w-4xl mx-auto px-2 sm:px-4 py-8 sm:py-16">
         <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 md:p-12 prose prose-lg max-w-none">
-
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-2 font-sahitya">
             Privacy Policy
           </h1>
@@ -31,7 +30,6 @@ const PrivacyPolicyPage = () => {
           </p>
 
           <div className="text-moonlight-800 leading-relaxed font-mukta">
-
             {/* Intro */}
             <div className="mb-6 sm:mb-8 bg-sindoor-50 border-l-4 border-sindoor-500 p-3 sm:p-4">
               <p className="font-bold text-sm sm:text-base text-sindoor-800 mb-2">
@@ -57,8 +55,8 @@ const PrivacyPolicyPage = () => {
                 AstroSewa is an astrology platform that connects clients with professional
                 astrologers. Our services include horoscope generation, kundali creation,
                 matchmaking, birth chart calculators, and one-on-one consultations via text chat,
-                audio call, and video call. We operate primarily in Nepal and India and their
-                global diaspora.
+                audio call, and video call. We operate primarily in Nepal and India and their global
+                diaspora.
               </p>
             </section>
 
@@ -80,46 +78,100 @@ const PrivacyPolicyPage = () => {
                 <table className="w-full border-collapse text-xs sm:text-sm not-prose">
                   <thead>
                     <tr>
-                      <th className="text-left px-2 sm:px-4 py-2 sm:py-2.5 bg-primary text-white font-mukta font-medium tracking-wide">Data Type</th>
-                      <th className="text-left px-2 sm:px-4 py-2 sm:py-2.5 bg-primary text-white font-mukta font-medium tracking-wide">Who It Applies To</th>
-                      <th className="text-left px-2 sm:px-4 py-2 sm:py-2.5 bg-primary text-white font-mukta font-medium tracking-wide">Why We Collect It</th>
+                      <th className="text-left px-2 sm:px-4 py-2 sm:py-2.5 bg-primary text-white font-mukta font-medium tracking-wide">
+                        Data Type
+                      </th>
+                      <th className="text-left px-2 sm:px-4 py-2 sm:py-2.5 bg-primary text-white font-mukta font-medium tracking-wide">
+                        Who It Applies To
+                      </th>
+                      <th className="text-left px-2 sm:px-4 py-2 sm:py-2.5 bg-primary text-white font-mukta font-medium tracking-wide">
+                        Why We Collect It
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top"><strong>Full Name</strong></td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">Clients &amp; Astrologers</td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">To create your profile, generate kundali/horoscope/matchmaking reports, display in astrologer listings, and facilitate consultations and chats</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        <strong>Full Name</strong>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        Clients &amp; Astrologers
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        To create your profile, generate kundali/horoscope/matchmaking reports,
+                        display in astrologer listings, and facilitate consultations and chats
+                      </td>
                     </tr>
                     <tr className="bg-moonlight-50">
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top"><strong>Date &amp; Place of Birth</strong></td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">Clients &amp; Astrologers</td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">Required to generate kundali, birth charts, and horoscope calculations</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        <strong>Date &amp; Place of Birth</strong>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        Clients &amp; Astrologers
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        Required to generate kundali, birth charts, and horoscope calculations
+                      </td>
                     </tr>
                     <tr>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top"><strong>Email Address</strong></td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">Clients &amp; Astrologers</td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">To send booking confirmations, consultation notifications, astrologer approval/rejection emails, and important account communications</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        <strong>Email Address</strong>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        Clients &amp; Astrologers
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        To send booking confirmations, consultation notifications, astrologer
+                        approval/rejection emails, and important account communications
+                      </td>
                     </tr>
                     <tr className="bg-moonlight-50">
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top"><strong>Phone Number</strong></td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">Astrologers</td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">To contact astrologers during the interview/onboarding process when email contact is not possible</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        <strong>Phone Number</strong>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        Astrologers
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        To contact astrologers during the interview/onboarding process when email
+                        contact is not possible
+                      </td>
                     </tr>
                     <tr>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top"><strong>Profile Image</strong></td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">Clients &amp; Astrologers</td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">To display your profile photo to the other party during consultations and in astrologer listings</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        <strong>Profile Image</strong>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        Clients &amp; Astrologers
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        To display your profile photo to the other party during consultations and in
+                        astrologer listings
+                      </td>
                     </tr>
                     <tr className="bg-moonlight-50">
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top"><strong>Timezone</strong></td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">Clients &amp; Astrologers</td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">To manage astrologer availability schedules and to accurately convert consultation times and pricing for users across different time zones</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        <strong>Timezone</strong>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        Clients &amp; Astrologers
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        To manage astrologer availability schedules and to accurately convert
+                        consultation times and pricing for users across different time zones
+                      </td>
                     </tr>
                     <tr>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 align-top"><strong>Google Account Data</strong></td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 align-top">Clients &amp; Astrologers</td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 align-top">We use Google Sign-In for authentication. We receive your name and email address from Google solely to create and manage your account</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 align-top">
+                        <strong>Google Account Data</strong>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 align-top">
+                        Clients &amp; Astrologers
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 align-top">
+                        We use Google Sign-In for authentication. We receive your name and email
+                        address from Google solely to create and manage your account
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -133,30 +185,57 @@ const PrivacyPolicyPage = () => {
                 <table className="w-full border-collapse text-xs sm:text-sm not-prose">
                   <thead>
                     <tr>
-                      <th className="text-left px-2 sm:px-4 py-2 sm:py-2.5 bg-primary text-white font-mukta font-medium tracking-wide">Permission</th>
-                      <th className="text-left px-2 sm:px-4 py-2 sm:py-2.5 bg-primary text-white font-mukta font-medium tracking-wide">Purpose</th>
+                      <th className="text-left px-2 sm:px-4 py-2 sm:py-2.5 bg-primary text-white font-mukta font-medium tracking-wide">
+                        Permission
+                      </th>
+                      <th className="text-left px-2 sm:px-4 py-2 sm:py-2.5 bg-primary text-white font-mukta font-medium tracking-wide">
+                        Purpose
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top"><strong>Camera</strong></td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">To enable video calls between clients and astrologers, and to allow profile photo uploads</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        <strong>Camera</strong>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        To enable video calls between clients and astrologers, and to allow profile
+                        photo uploads
+                      </td>
                     </tr>
                     <tr className="bg-moonlight-50">
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top"><strong>Microphone</strong></td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">To enable audio and video calls between clients and astrologers</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        <strong>Microphone</strong>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        To enable audio and video calls between clients and astrologers
+                      </td>
                     </tr>
                     <tr>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top"><strong>Gallery / Photo Library</strong></td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">To allow clients and astrologers to upload profile photos from their device</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        <strong>Gallery / Photo Library</strong>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        To allow clients and astrologers to upload profile photos from their device
+                      </td>
                     </tr>
                     <tr className="bg-moonlight-50">
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top"><strong>Foreground Service (Android)</strong></td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">To keep audio and video calls running in the background while using other apps on Android devices</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        <strong>Foreground Service (Android)</strong>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 border-b border-moonlight-300 align-top">
+                        To keep audio and video calls running in the background while using other
+                        apps on Android devices
+                      </td>
                     </tr>
                     <tr>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 align-top"><strong>Notifications</strong></td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 align-top">To send reminders for upcoming consultations, rescheduling alerts, call start/end alerts, and payment confirmations</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 align-top">
+                        <strong>Notifications</strong>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-2.5 align-top">
+                        To send reminders for upcoming consultations, rescheduling alerts, call
+                        start/end alerts, and payment confirmations
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -179,11 +258,18 @@ const PrivacyPolicyPage = () => {
               </p>
               <ul className="list-disc pl-4 sm:pl-6 space-y-2 sm:space-y-3 text-sm sm:text-base">
                 <li>To create and manage your user or astrologer account</li>
-                <li>To generate kundali, horoscope, matchmaking reports, and birth chart calculations</li>
-                <li>To connect clients with astrologers for consultations via chat, audio, or video</li>
+                <li>
+                  To generate kundali, horoscope, matchmaking reports, and birth chart calculations
+                </li>
+                <li>
+                  To connect clients with astrologers for consultations via chat, audio, or video
+                </li>
                 <li>To manage astrologer scheduling, availability, and time zone conversion</li>
                 <li>To process payments and display transaction history within the app</li>
-                <li>To send booking confirmations, reminders, and notifications related to your consultations</li>
+                <li>
+                  To send booking confirmations, reminders, and notifications related to your
+                  consultations
+                </li>
                 <li>To review and approve or reject astrologer applications</li>
                 <li>To improve our platform, features, and user experience</li>
                 <li>To comply with applicable laws and regulations</li>
@@ -192,9 +278,9 @@ const PrivacyPolicyPage = () => {
                 <p className="m-0 text-xs sm:text-sm">
                   <strong className="text-primary">Google User Data:</strong> Data obtained through
                   Google Sign-In (your name and email) is used solely to create and authenticate
-                  your AstroSewa account. We do not use your Google data for any purpose beyond
-                  what is necessary to operate the app, and we do not share it with any
-                  unauthorized third parties.
+                  your AstroSewa account. We do not use your Google data for any purpose beyond what
+                  is necessary to operate the app, and we do not share it with any unauthorized
+                  third parties.
                 </p>
               </div>
             </section>
@@ -210,8 +296,8 @@ const PrivacyPolicyPage = () => {
                 Data Sharing with Third Parties
               </h2>
               <p>
-                We do not sell, rent, or trade your personal information. We share your data only
-                in the limited circumstances described below:
+                We do not sell, rent, or trade your personal information. We share your data only in
+                the limited circumstances described below:
               </p>
 
               <h3 className="text-lg sm:text-xl font-bold text-primary mt-5 mb-2 font-sahitya">
@@ -229,18 +315,18 @@ const PrivacyPolicyPage = () => {
               </h3>
               <p>
                 When you make a payment, you will be redirected to a third-party payment provider
-                (such as Khalti). The payment provider will process your payment independently.
-                Any information you provide to the payment provider is governed by their own
-                privacy policy. We record the transaction result (success or failure) in our
-                system for your booking records.
+                (such as Khalti). The payment provider will process your payment independently. Any
+                information you provide to the payment provider is governed by their own privacy
+                policy. We record the transaction result (success or failure) in our system for your
+                booking records.
               </p>
 
               <h3 className="text-lg sm:text-xl font-bold text-primary mt-5 mb-2 font-sahitya">
                 Legal Requirements
               </h3>
               <p>
-                We may disclose your information if required to do so by law or in response to
-                valid legal processes such as a court order or government request.
+                We may disclose your information if required to do so by law or in response to valid
+                legal processes such as a court order or government request.
               </p>
 
               <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-moonlight-50 border border-moonlight-300 rounded">
@@ -270,10 +356,22 @@ const PrivacyPolicyPage = () => {
               </p>
               <p>We implement the following security measures to protect your data:</p>
               <ul className="list-disc pl-4 sm:pl-6 space-y-2 sm:space-y-3 text-sm sm:text-base">
-                <li><strong>Encryption in Transit:</strong> All data transmitted between your device and our servers is encrypted using industry-standard SSL/TLS protocols</li>
-                <li><strong>Encryption at Rest:</strong> Data stored in our databases is encrypted at rest</li>
-                <li><strong>Access Control:</strong> Access to user data is restricted to authorized personnel only, on a need-to-know basis</li>
-                <li><strong>Secure Infrastructure:</strong> Our servers are managed through AWS, which maintains internationally recognized security certifications and practices</li>
+                <li>
+                  <strong>Encryption in Transit:</strong> All data transmitted between your device
+                  and our servers is encrypted using industry-standard SSL/TLS protocols
+                </li>
+                <li>
+                  <strong>Encryption at Rest:</strong> Data stored in our databases is encrypted at
+                  rest
+                </li>
+                <li>
+                  <strong>Access Control:</strong> Access to user data is restricted to authorized
+                  personnel only, on a need-to-know basis
+                </li>
+                <li>
+                  <strong>Secure Infrastructure:</strong> Our servers are managed through AWS, which
+                  maintains internationally recognized security certifications and practices
+                </li>
               </ul>
               <p>
                 While we take all reasonable steps to protect your data, no system is 100% secure.
@@ -301,11 +399,14 @@ const PrivacyPolicyPage = () => {
                 Account Deletion
               </h3>
               <p>
-                You may delete your account at any time from within the AstroSewa app. Upon
-                account deletion:
+                You may delete your account at any time from within the AstroSewa app. Upon account
+                deletion:
               </p>
               <ul className="list-disc pl-6 space-y-3">
-                <li>All personally identifiable information (name, email, phone number, profile image) will be permanently deleted from our systems within <strong>30 days</strong></li>
+                <li>
+                  All personally identifiable information (name, email, phone number, profile image)
+                  will be permanently deleted from our systems within <strong>30 days</strong>
+                </li>
                 <li>Your account and login access will be immediately deactivated</li>
               </ul>
 
@@ -323,8 +424,8 @@ const PrivacyPolicyPage = () => {
               <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-moonlight-50 border border-moonlight-300 rounded">
                 <p className="m-0 text-xs sm:text-sm">
                   <strong className="text-primary">To request account deletion:</strong> Go to{' '}
-                  <strong>Profile → Settings → Delete Account</strong> within the app, or contact
-                  us at{' '}
+                  <strong>Profile → Settings → Delete Account</strong> within the app, or contact us
+                  at{' '}
                   <a href="mailto:privacy@astrosewa.com" className="text-primary hover:underline">
                     privacy@astrosewa.com
                   </a>
@@ -346,8 +447,8 @@ const PrivacyPolicyPage = () => {
               <p>
                 AstroSewa is not intended for use by children under the age of 13. We do not
                 knowingly collect personal information from children under 13. If we become aware
-                that a child under 13 has provided us with personal information, we will take
-                steps to delete such information immediately.
+                that a child under 13 has provided us with personal information, we will take steps
+                to delete such information immediately.
               </p>
             </section>
 
@@ -363,11 +464,26 @@ const PrivacyPolicyPage = () => {
               </h2>
               <p>You have the following rights regarding your personal data:</p>
               <ul className="list-disc pl-6 space-y-3">
-                <li><strong>Right to Access:</strong> You can request a copy of the personal data we hold about you</li>
-                <li><strong>Right to Correction:</strong> You can update or correct your personal information from your profile settings</li>
-                <li><strong>Right to Deletion:</strong> You can delete your account and personal data at any time</li>
-                <li><strong>Right to Withdraw Consent:</strong> You can withdraw consent for optional data uses at any time</li>
-                <li><strong>Right to Object:</strong> You can object to certain types of data processing by contacting us</li>
+                <li>
+                  <strong>Right to Access:</strong> You can request a copy of the personal data we
+                  hold about you
+                </li>
+                <li>
+                  <strong>Right to Correction:</strong> You can update or correct your personal
+                  information from your profile settings
+                </li>
+                <li>
+                  <strong>Right to Deletion:</strong> You can delete your account and personal data
+                  at any time
+                </li>
+                <li>
+                  <strong>Right to Withdraw Consent:</strong> You can withdraw consent for optional
+                  data uses at any time
+                </li>
+                <li>
+                  <strong>Right to Object:</strong> You can object to certain types of data
+                  processing by contacting us
+                </li>
               </ul>
               <p>
                 To exercise any of these rights, please contact us at{' '}
@@ -402,10 +518,19 @@ const PrivacyPolicyPage = () => {
               </p>
               <p>Specifically:</p>
               <ul className="list-disc pl-6 space-y-3">
-                <li>We only use Google user data (name and email) to provide and improve our app&apos;s features directly to the user</li>
+                <li>
+                  We only use Google user data (name and email) to provide and improve our
+                  app&apos;s features directly to the user
+                </li>
                 <li>We do not use Google user data to serve advertisements</li>
-                <li>We do not allow humans to read your Google user data unless you have given us explicit permission or it is necessary for security purposes</li>
-                <li>We do not transfer Google user data to third parties except as necessary to provide our services, as described in this policy</li>
+                <li>
+                  We do not allow humans to read your Google user data unless you have given us
+                  explicit permission or it is necessary for security purposes
+                </li>
+                <li>
+                  We do not transfer Google user data to third parties except as necessary to
+                  provide our services, as described in this policy
+                </li>
               </ul>
             </section>
 
@@ -421,9 +546,9 @@ const PrivacyPolicyPage = () => {
               </h2>
               <p>
                 We may update this Privacy Policy from time to time to reflect changes in our
-                services or legal obligations. When we make significant changes, we will notify
-                you via email or a prominent notice within the app. The &quot;Last Updated&quot;
-                date at the top of this page will always reflect the most recent version.
+                services or legal obligations. When we make significant changes, we will notify you
+                via email or a prominent notice within the app. The &quot;Last Updated&quot; date at
+                the top of this page will always reflect the most recent version.
               </p>
               <p>
                 Continued use of AstroSewa after any changes constitutes your acceptance of the
@@ -469,11 +594,9 @@ const PrivacyPolicyPage = () => {
                 </p>
               </div>
             </section>
-
           </div>
         </div>
       </div>
-    
     </main>
   );
 };
