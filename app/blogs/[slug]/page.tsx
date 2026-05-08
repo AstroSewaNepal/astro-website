@@ -6,15 +6,21 @@ import { ghostClient } from '@/lib/ghostClient';
 import Services from '@/components/pages/landing/services';
 import BlogContent from '@/components/pages/blogs/content';
 import DownloadApp from '@/components/pages/landing/download-app';
-// import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
+
+// ISR fallback: re-render at most every 24 h. Webhook-triggered revalidation takes effect sooner.
+export const revalidate = 86400;
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.astrosewa.com';
 
 type BlogPostData = {
   id: string;
   title: string;
   slug: string;
   html: string;
+  excerpt?: string | null;
   feature_image: string | null;
   published_at: string | null;
+  updated_at?: string | null;
   reading_time: number | null;
   og_image?: string | null;
   og_title?: string | null;
@@ -65,6 +71,7 @@ async function getBlogPost(slug: string): Promise<BlogPostData | null> {
           'html',
           'feature_image',
           'published_at',
+          'updated_at',
           'reading_time',
           'excerpt',
           'og_image',
@@ -89,8 +96,10 @@ async function getBlogPost(slug: string): Promise<BlogPostData | null> {
       title: post.title ?? '',
       slug: post.slug ?? '',
       html: post.html ?? '',
+      excerpt: post.excerpt ?? null,
       feature_image: post.feature_image ?? null,
       published_at: post.published_at ?? null,
+      updated_at: post.updated_at ?? null,
       reading_time: post.reading_time ?? null,
       og_image: post.og_image ?? null,
       og_title: post.og_title ?? null,
@@ -170,10 +179,45 @@ const BlogDetailPage = async (props: BlogDetailPageProps) => {
         day: 'numeric',
       })
     : '';
-  const views = '0'; // Ghost doesn't provide views by default
+  const postUrl = `${BASE_URL}/blogs/${post.slug}`;
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.meta_description ?? post.og_description ?? post.excerpt ?? undefined,
+    image: post.feature_image ?? undefined,
+    url: postUrl,
+    datePublished: post.published_at ?? undefined,
+    dateModified: post.updated_at ?? post.published_at ?? undefined,
+    keywords: post.tags?.map(t => t.name).filter(Boolean).join(', ') || undefined,
+    articleSection: post.tags?.[0]?.name ?? undefined,
+    author: {
+      '@type': 'Person',
+      name: authorName,
+      image: authorImage,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Astro Sewa',
+      url: BASE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${BASE_URL}/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': postUrl,
+    },
+  };
 
   return (
     <main className="min-h-screen space-y-[100px]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div>
         <BlogContent
           title={post.title}
@@ -184,11 +228,10 @@ const BlogDetailPage = async (props: BlogDetailPageProps) => {
           authorBio={authorBio}
           authorSocial={authorSocial}
           date={date}
-          views={views}
+          views="0"
           tags={post.tags ?? []}
         />
       </div>
-      {/* <TalkToOurAstrologer /> */}
       <Services />
       <DownloadApp />
     </main>
@@ -197,10 +240,22 @@ const BlogDetailPage = async (props: BlogDetailPageProps) => {
 
 export default BlogDetailPage;
 
+export async function generateStaticParams() {
+  try {
+    const posts = await ghostClient.posts.browse({
+      limit: 'all',
+      fields: ['slug'],
+    });
+    return posts.map(post => ({ slug: post.slug ?? '' }));
+  } catch {
+    return [];
+  }
+}
+
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPost(slug);
@@ -210,18 +265,29 @@ export async function generateMetadata({
   }
 
   const title = post.meta_title ?? post.og_title ?? post.title ?? undefined;
-  const description = post.meta_description ?? post.og_description ?? undefined;
+  const description = post.meta_description ?? post.og_description ?? post.excerpt ?? undefined;
   const ogImage = post.og_image ?? post.feature_image ?? undefined;
   const twitterImage = post.twitter_image ?? ogImage ?? undefined;
+  const tagNames = post.tags?.map(t => t.name).filter((n): n is string => Boolean(n)) ?? [];
 
   return {
     title,
     description,
+    keywords: tagNames.length ? tagNames : undefined,
+    alternates: {
+      canonical: `/blogs/${slug}`,
+    },
     openGraph: {
       title: post.og_title ?? title,
       description: post.og_description ?? description,
-      images: ogImage ? [ogImage] : undefined,
+      images: ogImage ? [{ url: ogImage, alt: title ?? '' }] : undefined,
       type: 'article',
+      publishedTime: post.published_at ?? undefined,
+      modifiedTime: post.updated_at ?? post.published_at ?? undefined,
+      authors: post.primary_author?.name
+        ? [post.primary_author.name]
+        : post.authors?.map(a => a.name ?? '').filter(Boolean),
+      tags: tagNames.length ? tagNames : undefined,
     },
     twitter: {
       card: 'summary_large_image',

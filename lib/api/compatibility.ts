@@ -43,7 +43,7 @@ function normalizeCreateMatchMakingBody(
 }
 
 export function getMatchMakingBaseUrl(): string {
-  return joinUrl(getPublicBackendBaseUrl(), 'api/v1/astrology/match-making');
+  return joinUrl(getPublicBackendBaseUrl(), 'astrology/match-making');
 }
 
 export function getMatchMakingHistoryUrl(page = 1, limit = 10): string {

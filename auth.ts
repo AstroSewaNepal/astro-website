@@ -26,7 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!backendUrl || !credentials?.username || !credentials?.password) return null;
 
         try {
-          const res = await fetch(`${backendUrl}auth/login`, {
+          const res = await fetch(`${backendUrl}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -35,9 +35,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               loginType: 'email',
             }),
           });
-
           if (!res.ok) return null;
-
           const json = await res.json();
           if (!json.success || !json.data) return null;
 
@@ -75,7 +73,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
         if (backendUrl) {
           try {
-            const res = await fetch(`${backendUrl}auth/google`, {
+            const res = await fetch(`${backendUrl}/auth/google`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ idToken: account.id_token }),

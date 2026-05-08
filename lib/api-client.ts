@@ -20,7 +20,6 @@ async function request<T>(
     },
     body: body ? JSON.stringify(body) : undefined,
   });
-
   if (res.status === 401) {
     return { data: null, error: "Unauthorized", status: 401 };
   }

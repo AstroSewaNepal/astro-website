@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/calculators',
   },
+  robots: { index: false, follow: false },
 };
 
 export default function CalculatorsPage() {

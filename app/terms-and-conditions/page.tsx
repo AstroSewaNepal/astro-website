@@ -1,4 +1,18 @@
+import type { Metadata } from 'next';
 import React from 'react';
+
+export const metadata: Metadata = {
+  title: 'Terms & Conditions',
+  description:
+    'Read the Terms and Conditions of Usage for Astro Sewa — covering user accounts, payments, cancellations, content policies, and your rights on our astrology platform.',
+  alternates: {
+    canonical: '/terms-and-conditions',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 const TermsAndConditionsPage = () => {
   return (
