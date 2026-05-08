@@ -222,7 +222,7 @@ function HoroscopePageContent() {
         key: c.name.toLowerCase(),
         name: c.name,
         imageLight: c.image,
-        imageColor: c.imageColor,
+        imageColor: c.imageColor ?? c.image,
         summary: c.detail,
         stars: c.numberOfStars,
       }));
