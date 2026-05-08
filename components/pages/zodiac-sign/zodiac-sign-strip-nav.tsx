@@ -45,7 +45,11 @@ export function ZodiacSignStripNav({
             href={hrefForSign(sign)}
             className={clsx(
               'group flex flex-col items-center gap-1 rounded-lg outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#f4a11a]/80',
-              compact ? 'min-w-[56px]' : large ? 'min-w-[84px] sm:min-w-[92px] lg:min-w-[100px]' : 'min-w-[62px]',
+              compact
+                ? 'min-w-[56px]'
+                : large
+                  ? 'min-w-[84px] sm:min-w-[92px] lg:min-w-[100px]'
+                  : 'min-w-[62px]',
             )}
           >
             <div
@@ -81,7 +85,11 @@ export function ZodiacSignStripNav({
                   />
                 </div>
               ) : (
-                <Image src={imageBySign[sign]} alt={label} className="h-full w-full object-contain" />
+                <Image
+                  src={imageBySign[sign]}
+                  alt={label}
+                  className="h-full w-full object-contain"
+                />
               )}
             </div>
             <span
