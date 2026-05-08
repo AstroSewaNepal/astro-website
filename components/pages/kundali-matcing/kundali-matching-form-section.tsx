@@ -94,7 +94,7 @@ const KundaliMatchingFormSection: React.FC = () => {
       </h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 md:gap-6 items-stretch">
-        <div className="w-full max-w-[380px] mx-auto lg:mx-0 lg:max-w-none lg:col-span-8 rounded-[32.41px] md:rounded-[32px] border-2 border-primary shadow-[0_10px_30px_rgba(97,21,8,0.08)] p-4 pb-[12.96px] md:p-6">
+        <div className="w-full max-w-[380px] mx-auto lg:mx-0 lg:max-w-none lg:col-span-8 overflow-x-clip rounded-[32.41px] md:rounded-[32px] border-2 border-primary shadow-[0_10px_30px_rgba(97,21,8,0.08)] p-4 pb-[12.96px] md:p-6">
           <div className="relative">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
               <div className="space-y-3 md:space-y-3.5">

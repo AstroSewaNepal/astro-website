@@ -10,7 +10,7 @@ const CalanderPageContent: React.FC = () => {
     <div className="min-h-screen px-4 md:px-8 pt-2 pb-10 text-[#2a1f1a]">
       {/* Title */}
       <h1 className="text-[24px] leading-[30px] md:text-[36px] md:leading-[44px] font-sahitya font-bold text-[#7b1c1c] mb-1 tracking-wide">
-        Panchangam
+        Nepali Calendar &amp; Panchang
       </h1>
 
       {/* Subtitle */}
@@ -23,7 +23,7 @@ const CalanderPageContent: React.FC = () => {
 
       {/* Section Heading */}
       <h2 className="text-[20px] leading-[30px] md:text-[28px] md:leading-[38px] font-bold font-sahitya text-[#7b1c1c] mb-3 tracking-wide">
-        What is Panchangam?
+        What is Panchang?
       </h2>
 
       {/* Body Text */}

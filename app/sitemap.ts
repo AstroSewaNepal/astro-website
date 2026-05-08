@@ -21,7 +21,7 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
     priority: 0.9,
   },
   {
-    url: `${BASE_URL}/calander`,
+    url: `${BASE_URL}/calendar`,
     lastModified: new Date(),
     changeFrequency: 'daily',
     priority: 0.8,

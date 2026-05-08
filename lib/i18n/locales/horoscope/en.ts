@@ -167,6 +167,7 @@ const horoscope = {
       },
       legal: {
         terms: 'Terms & Conditions',
+        privacy: 'Privacy Policy',
         pricing: 'Pricing Policy',
         disclaimer: 'Disclaimer',
       },

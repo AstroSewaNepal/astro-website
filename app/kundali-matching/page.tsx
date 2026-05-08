@@ -17,11 +17,13 @@ export const metadata: Metadata = {
 
 export default function KundaliMatchingPage() {
   return (
-    <main className="min-h-screen space-y-10 md:space-y-[100px]">
-      <KundaliMatching />
-      <KmatchingEducationalSection />
-      <Services />
-      <DownloadApp />
+    <main className="min-h-screen">
+      <div className="space-y-10 md:space-y-[100px]">
+        <KundaliMatching />
+        <KmatchingEducationalSection />
+        <Services />
+        <DownloadApp />
+      </div>
     </main>
   );
 }

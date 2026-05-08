@@ -156,7 +156,7 @@ const Footer: React.FC = () => {
                     {d.footer.links.zodiacSign}
                   </Link>
                   <Link
-                    href="/calander"
+                    href="/calendar"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
                     {d.footer.links.calculator}
@@ -195,10 +195,10 @@ const Footer: React.FC = () => {
               </Link>
               <div className="w-px h-6 bg-[#F8F3DF]"></div>
               <Link
-                href="/pricing-policy"
+                href="/privacy-policy"
                 className="font-mukta text-[20px] font-normal text-[#F8F3DF] hover:opacity-75 transition-opacity underline"
               >
-                {d.footer.legal.pricing}
+                {d.footer.legal.privacy}
               </Link>
               <div className="w-px h-6 bg-[#F8F3DF]"></div>
               <Link
@@ -206,6 +206,13 @@ const Footer: React.FC = () => {
                 className="font-mukta text-[20px] font-normal text-[#F8F3DF] hover:opacity-75 transition-opacity underline"
               >
                 {d.footer.legal.disclaimer}
+              </Link>
+              <div className="w-px h-6 bg-[#F8F3DF]"></div>
+              <Link
+                href="/pricing-policy"
+                className="font-mukta text-[20px] font-normal text-[#F8F3DF] hover:opacity-75 transition-opacity underline"
+              >
+                {d.footer.legal.pricing}
               </Link>
             </div>
           </div>

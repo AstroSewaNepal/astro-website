@@ -820,7 +820,7 @@ export default function CompatibilityMatchPage() {
               return (
                 <>
                   {/* Mobile: horizontal snap carousel + dots */}
-                  <div className="flex flex-col gap-6 sm:hidden">
+                  <div className="flex flex-col gap-6 overflow-x-clip sm:hidden">
                     <div
                       ref={otherSignsScrollRef}
                       onScroll={updateOtherSignsSlideFromScroll}

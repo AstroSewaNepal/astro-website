@@ -15,12 +15,12 @@ export const metadata: Metadata = {
 
 export default function CalculatorsPage() {
   return (
-    <main className="min-h-screen space-y-12">
-      <div className="-mt-6 md:-mt-10">
+    <main className="min-h-screen">
+      <div className="space-y-10 md:space-y-[100px]">
         <Calculators />
+        <Services />
+        <DownloadApp />
       </div>
-      <Services />
-      <DownloadApp />
     </main>
   );
 }
