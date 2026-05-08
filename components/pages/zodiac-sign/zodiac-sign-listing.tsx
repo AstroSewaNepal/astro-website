@@ -1,19 +1,16 @@
 'use client';
 
 import clsx from 'clsx';
-import Image from 'next/image';
-import Link from 'next/link';
 
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
 import LandingFAQ from '@/components/pages/landing/faq';
-import StartIcon from '@/components/icons/start-icon';
-import ArrowRight from '@/components/icons/arrow-right';
+import { ZodiacSignMiniCard } from '@/components/pages/zodiac-sign/zodiac-sign-mini-card';
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
 import { zodiacEnglishDetailHref, zodiacNepaliDetailHref } from '@/lib/constants/zodiac-sign-nav';
 import { zodiacListingCopy } from '@/lib/zodiac-sign/listing-copy';
-import { englishZodiacColorOrdered } from '@/lib/zodiac-sign/english-zodiac-color';
+import { englishZodiacColorOrdered } from '@/lib/zodiac-sign/english-zodiac';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 
 import { useZodiacListingLanguage } from './use-zodiac-listing-language';
@@ -89,41 +86,15 @@ export function ZodiacSignListing({ mode }: Props) {
                   {colorRow.map(({ slug, image }, i) => {
                     const name = cards[i]!.name;
                     return (
-                      <Link
+                      <ZodiacSignMiniCard
                         key={slug}
                         href={zodiacEnglishDetailHref(slug)}
-                        className="block rounded-[12px] border border-[#cfb8a5] bg-[#fcf6ed] px-3 py-2 transition-colors hover:bg-[#f8f0e4]"
-                      >
-                        <article className="flex items-center gap-2">
-                          <Image
-                            src={image}
-                            alt={name}
-                            className="h-[46px] w-[46px] object-contain"
-                          />
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1">
-                              <h3 className="truncate font-mukta text-[13px] font-bold text-[#742718]">
-                                {name}
-                              </h3>
-                              <div className="flex items-center gap-0.5 text-[#ef8a20]">
-                                {Array.from({ length: 3 }).map((_, index) => (
-                                  <StartIcon
-                                    key={`${slug}-${index}`}
-                                    className="h-3 w-3 text-[#ef8a20]"
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                            <p className="mt-0.5 font-mukta text-[10px] leading-4 text-[#7b6b61]">
-                              {t.cardBlurb}
-                            </p>
-                            <span className="mt-1 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[10px] font-semibold text-[#7b3b27]">
-                              {t.readMore}
-                              <ArrowRight className="h-2.5 w-2.5 text-[#7b3b27]" />
-                            </span>
-                          </div>
-                        </article>
-                      </Link>
+                        image={image}
+                        imageColor={cards[i]?.imageColor}
+                        name={name}
+                        blurb={t.cardBlurb}
+                        readMoreLabel={t.readMore}
+                      />
                     );
                   })}
                 </div>
@@ -138,31 +109,16 @@ export function ZodiacSignListing({ mode }: Props) {
                   {colorRow.map(({ slug, image }, i) => {
                     const name = cards[i]!.name;
                     return (
-                      <Link
+                      <ZodiacSignMiniCard
                         key={slug}
                         href={zodiacNepaliDetailHref(slug)}
-                        className="block rounded-[12px] border border-[#cfb8a5] bg-[#fcf6ed] px-3 py-2 transition-colors hover:bg-[#f8f0e4]"
-                      >
-                        <article className="flex items-center gap-2">
-                          <Image
-                            src={image}
-                            alt={name}
-                            className="h-[46px] w-[46px] object-contain"
-                          />
-                          <div className="min-w-0 flex-1">
-                            <h3 className="truncate font-mukta text-[13px] font-bold text-[#742718]">
-                              {name}
-                            </h3>
-                            <p className="mt-0.5 font-mukta text-[10px] leading-4 text-[#7b6b61]">
-                              {t.cardBlurb}
-                            </p>
-                            <span className="mt-1 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[10px] font-semibold text-[#7b3b27]">
-                              {t.readMore}
-                              <ArrowRight className="h-2.5 w-2.5 text-[#7b3b27]" />
-                            </span>
-                          </div>
-                        </article>
-                      </Link>
+                        image={image}
+                        imageColor={cards[i]?.imageColor}
+                        name={name}
+                        blurb={t.cardBlurb}
+                        readMoreLabel={t.readMore}
+                        showRating={false}
+                      />
                     );
                   })}
                 </div>
@@ -203,41 +159,15 @@ export function ZodiacSignListing({ mode }: Props) {
                 {HOROSCOPE_SIGNS.map((slug, i) => {
                   const card = cards[i]!;
                   return (
-                    <Link
+                    <ZodiacSignMiniCard
                       key={slug}
                       href={zodiacEnglishDetailHref(slug)}
-                      className="block rounded-[16px] border border-[#cfb8a5] bg-[#fcf6ed] px-3 py-2 transition-colors hover:bg-[#f8f0e4]"
-                    >
-                      <article className="flex items-center gap-2">
-                        <Image
-                          src={card.image}
-                          alt={card.name}
-                          className="h-[44px] w-[44px] object-contain"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1">
-                            <h3 className="truncate font-mukta text-[13px] font-bold text-[#742718]">
-                              {card.name}
-                            </h3>
-                            <div className="flex items-center gap-0.5">
-                              {Array.from({ length: 3 }).map((_, index) => (
-                                <StartIcon
-                                  key={`${card.name}-${index}`}
-                                  className="h-3 w-3 text-[#ef8a20]"
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <p className="mt-0.5 font-mukta text-[10px] leading-4 text-[#7b6b61]">
-                            {t.cardBlurb}
-                          </p>
-                          <span className="mt-1 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[10px] font-semibold text-[#7b3b27]">
-                            {t.readMore}
-                            <ArrowRight className="h-2.5 w-2.5 text-[#7b3b27]" />
-                          </span>
-                        </div>
-                      </article>
-                    </Link>
+                      image={card.image}
+                      imageColor={card.imageColor}
+                      name={card.name}
+                      blurb={t.cardBlurb}
+                      readMoreLabel={t.readMore}
+                    />
                   );
                 })}
               </div>
