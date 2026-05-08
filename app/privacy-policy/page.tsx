@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import clsx from 'clsx';
-import { LandingHeader } from '@/components/pages/landing/header/landing-header';
 import LandingPageCSS from '../landing-page.module.css';
 
 export const metadata: Metadata = {

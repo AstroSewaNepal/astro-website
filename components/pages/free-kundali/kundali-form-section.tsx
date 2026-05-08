@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { IoLocationOutline } from 'react-icons/io5';
 import { LuClock } from 'react-icons/lu';
@@ -18,10 +19,316 @@ const cardShell = clsx(
   'lg:px-[52px] lg:py-9',
 );
 
-const KundaliFormSection: React.FC = () => {
-  const [unknownBirthTime, setUnknownBirthTime] = useState(false);
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => e.preventDefault();
+type GeocodeResponseItem = {
+  lat: string;
+  lon: string;
+};
+
+type VedastroResult = {
+  success?: boolean;
+  data?: unknown;
+  message?: string;
+  errors?: Array<{
+    statusCode?: number;
+    message?: string;
+  }>;
+};
+
+type FieldErrors = {
+  fullName?: string;
+  dateOfBirth?: string;
+  birthPlace?: string;
+  birthTime?: string;
+  gender?: string;
+  general?: string;
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function parseBirthDate(input: string): string | null {
+  const value = input.trim();
+  if (!value) return null;
+
+  const isoMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (isoMatch) {
+    const [, yearText, monthText, dayText] = isoMatch;
+    const year = Number(yearText);
+    const month = Number(monthText);
+    const day = Number(dayText);
+    if (year < 1000 || year > 9999) return null;
+    if (month < 1 || month > 12) return null;
+    if (day < 1 || day > 31) return null;
+    return `${String(day).padStart(2, '0')}-${String(month).padStart(2, '0')}-${year}`;
+  }
+
+  const separator = value.includes('/') ? '/' : value.includes('-') ? '-' : '';
+  if (!separator) return null;
+
+  const parts = value.split(separator).map(part => part.trim());
+  if (parts.length !== 3) return null;
+
+  const [first, second, third] = parts.map(Number);
+  if ([first, second, third].some(Number.isNaN)) return null;
+
+  let day = first;
+  let month = second;
+  const year = third;
+
+  // Supports both DD/MM/YYYY and MM/DD/YYYY input.
+  if (first <= 12 && second <= 12 && third > 999) {
+    month = first;
+    day = second;
+  }
+
+  if (year < 1000 || year > 9999) return null;
+  if (month < 1 || month > 12) return null;
+  if (day < 1 || day > 31) return null;
+
+  return `${String(day).padStart(2, '0')}-${String(month).padStart(2, '0')}-${year}`;
+}
+
+function parseBirthTime(input: string): string | null {
+  const value = input.trim().toLowerCase();
+  if (!value) return null;
+
+  const ampmMatch = value.match(/^(\d{1,2})[:.:](\d{2})\s*(am|pm)$/);
+  if (ampmMatch) {
+    let hour = Number(ampmMatch[1]);
+    const minute = Number(ampmMatch[2]);
+    const suffix = ampmMatch[3];
+    if (Number.isNaN(hour) || Number.isNaN(minute) || minute > 59 || hour < 1 || hour > 12) {
+      return null;
+    }
+    if (suffix === 'pm' && hour !== 12) hour += 12;
+    if (suffix === 'am' && hour === 12) hour = 0;
+    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+  }
+
+  const regularMatch = value.match(/^(\d{1,2})[:.:](\d{2})$/);
+  if (!regularMatch) return null;
+
+  const hour = Number(regularMatch[1]);
+  const minute = Number(regularMatch[2]);
+  if (Number.isNaN(hour) || Number.isNaN(minute) || hour > 23 || minute > 59) {
+    return null;
+  }
+
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
+function getLocalOffset(dateInput: string): string {
+  const [day, month, year] = dateInput.split('-').map(Number);
+  const date = new Date(year, month - 1, day, 12, 0, 0);
+  const offsetMinutes = -date.getTimezoneOffset();
+  const sign = offsetMinutes >= 0 ? '+' : '-';
+  const abs = Math.abs(offsetMinutes);
+  const hours = Math.floor(abs / 60);
+  const minutes = abs % 60;
+  return `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
+function getCandidateBackendBases(): string[] {
+  const candidates: string[] = [];
+  const configured = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+  if (configured) {
+    candidates.push(configured.endsWith('/') ? configured : `${configured}/`);
+  } else {
+    candidates.push('http://localhost:5000/');
+  }
+
+  candidates.push('http://localhost:5000/');
+
+  return Array.from(new Set(candidates));
+}
+
+async function fetchVedastroGeneral(
+  query: URLSearchParams,
+): Promise<{ payload: VedastroResult; usedBase: string }> {
+  const attemptErrors: string[] = [];
+
+  for (const base of getCandidateBackendBases()) {
+    const url = `${base}api/v1/vedastro/proxy/general?${query.toString()}`;
+    try {
+      const response = await fetch(url);
+      const contentType = response.headers.get('content-type')?.toLowerCase() ?? '';
+
+      if (!contentType.includes('application/json')) {
+        const text = await response.text();
+        const preview = text.slice(0, 120).replace(/\s+/g, ' ').trim();
+        attemptErrors.push(
+          `Non-JSON response from ${url} (status ${response.status}). Preview: ${preview || 'empty response'}`,
+        );
+        continue;
+      }
+
+      const payload = (await response.json()) as VedastroResult;
+      if (!response.ok || payload.success === false) {
+        const backendMessage = payload.message || payload.errors?.[0]?.message;
+        attemptErrors.push(
+          backendMessage || `Request failed on ${url} (status ${response.status}).`,
+        );
+        continue;
+      }
+
+      return { payload, usedBase: base };
+    } catch (error) {
+      attemptErrors.push(
+        `Network error on ${url}: ${error instanceof Error ? error.message : 'unknown error'}`,
+      );
+    }
+  }
+
+  throw new Error(attemptErrors[attemptErrors.length - 1] ?? 'Failed to reach backend endpoint.');
+}
+
+// ─── FieldError helper ────────────────────────────────────────────────────────
+
+const FieldError = ({ message }: { message?: string }) =>
+  message ? (
+    <span className="block mt-1.5 px-1 font-mukta text-xs text-red-600 leading-tight">
+      {message}
+    </span>
+  ) : null;
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+const EMPTY_ERRORS: FieldErrors = {};
+
+const KundaliFormSection: React.FC = () => {
+  const router = useRouter();
+  const [unknownBirthTime, setUnknownBirthTime] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>(EMPTY_ERRORS);
+
+  const nameRegex = /^[A-Za-z ]+$/;
+  const placeRegex = /^[A-Za-z ]+$/;
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    const fullName = String(formData.get('fullName') ?? '').trim();
+    const dateOfBirthInput = String(formData.get('dateOfBirth') ?? '').trim();
+    const birthPlace = String(formData.get('birthPlace') ?? '').trim();
+    const birthTimeInput = String(formData.get('birthTime') ?? '').trim();
+    const gender = String(formData.get('gender') ?? '').trim();
+
+    // ── Per-field validation ──────────────────────────────────────────────────
+    const errors: FieldErrors = {};
+    let valid = true;
+
+    if (!fullName) {
+      errors.fullName = 'Full name is required.';
+      valid = false;
+    } else if (!nameRegex.test(fullName)) {
+      errors.fullName = 'Only letters and spaces are allowed.';
+      valid = false;
+    }
+
+    let parsedDate: string | null = null;
+    if (!dateOfBirthInput) {
+      errors.dateOfBirth = 'Date of birth is required.';
+      valid = false;
+    } else {
+      parsedDate = parseBirthDate(dateOfBirthInput);
+      if (!parsedDate) {
+        errors.dateOfBirth = 'Invalid date. Use MM/DD/YYYY or select from calendar.';
+        valid = false;
+      }
+    }
+
+    if (!birthPlace) {
+      errors.birthPlace = 'Birth place is required.';
+      valid = false;
+    } else if (!placeRegex.test(birthPlace) || !/[A-Za-z]/.test(birthPlace)) {
+      errors.birthPlace = 'Only letters and spaces are allowed.';
+      valid = false;
+    }
+
+    let parsedTime: string | null = null;
+    if (unknownBirthTime) {
+      parsedTime = '12:00';
+    } else if (!birthTimeInput) {
+      errors.birthTime = 'Birth time is required, or check "Don\'t know my exact birth time".';
+      valid = false;
+    } else {
+      parsedTime = parseBirthTime(birthTimeInput);
+      if (!parsedTime) {
+        errors.birthTime = 'Invalid time. Use HH:mm or hh:mm am/pm.';
+        valid = false;
+      }
+    }
+
+    if (!gender) {
+      errors.gender = 'Please select a gender.';
+      valid = false;
+    }
+
+    if (!valid) {
+      setFieldErrors(errors);
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Clear field errors on valid submission
+    setFieldErrors(EMPTY_ERRORS);
+
+    // ── Network calls ─────────────────────────────────────────────────────────
+    try {
+      const geocodeResponse = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(birthPlace)}&limit=1`,
+      );
+      if (!geocodeResponse.ok) {
+        setFieldErrors({ birthPlace: 'Failed to resolve birth place coordinates.' });
+        return;
+      }
+      const geocodeData = (await geocodeResponse.json()) as GeocodeResponseItem[];
+      const firstMatch = geocodeData[0];
+      if (!firstMatch) {
+        setFieldErrors({
+          birthPlace: 'Birth place not found. Please enter a more specific location.',
+        });
+        return;
+      }
+
+      const offset = getLocalOffset(parsedDate!);
+      const query = new URLSearchParams({
+        lat: firstMatch.lat,
+        lon: firstMatch.lon,
+        date: parsedDate!,
+        time: parsedTime!,
+        offset,
+        location: birthPlace,
+      });
+
+      const { payload } = await fetchVedastroGeneral(query);
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem(
+          'freeKundaliResult',
+          JSON.stringify({
+            fullName,
+            birthPlace,
+            dateOfBirth: parsedDate,
+            birthTime: parsedTime,
+            gender,
+            latitude: firstMatch.lat,
+            longitude: firstMatch.lon,
+            payload,
+          }),
+        );
+      }
+      router.push('/free-kundali/result');
+    } catch (submitError) {
+      setFieldErrors({
+        general: submitError instanceof Error ? submitError.message : 'Failed to generate kundali.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section className="w-full px-4 md:px-8">
@@ -75,6 +382,7 @@ const KundaliFormSection: React.FC = () => {
             {/* FORM */}
             <form
               onSubmit={onSubmit}
+              noValidate
               className={clsx(
                 'w-[398px] max-w-full h-auto box-border rounded-[40px] border border-Trinary p-2 gap-4 shadow-[0_12px_34px_rgba(74,20,15,0.12)] md:w-full md:max-w-none md:h-auto lg:px-12 lg:pt-10 lg:pb-5',
                 'flex flex-col lg:w-full',
@@ -95,16 +403,28 @@ const KundaliFormSection: React.FC = () => {
                   >
                     Enter full name
                   </label>
-                  <div className="flex items-center gap-3 rounded-full border border-Trinary px-4 py-3 focus-within:border-primary">
+                  <div
+                    className={clsx(
+                      'flex items-center gap-3 rounded-full border px-4 py-3 focus-within:border-primary transition-colors',
+                      fieldErrors.fullName ? 'border-red-500' : 'border-Trinary',
+                    )}
+                  >
                     <input
                       id="kundali-full-name"
                       name="fullName"
                       type="text"
                       placeholder="John Doe"
+                      onInput={event => {
+                        event.currentTarget.value = event.currentTarget.value.replace(
+                          /[^A-Za-z\s]/g,
+                          '',
+                        );
+                      }}
                       className="flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none"
                     />
                     <UserLineIcon className={fieldIconClass} />
                   </div>
+                  <FieldError message={fieldErrors.fullName} />
                 </div>
 
                 {/* DOB */}
@@ -115,17 +435,21 @@ const KundaliFormSection: React.FC = () => {
                   >
                     Enter date of birth
                   </label>
-                  <div className="flex items-center gap-3 rounded-full border border-Trinary px-4 py-3 focus-within:border-primary">
+                  <div
+                    className={clsx(
+                      'flex items-center rounded-full border px-4 py-3 focus-within:border-primary transition-colors',
+                      fieldErrors.dateOfBirth ? 'border-red-500' : 'border-Trinary',
+                    )}
+                  >
                     <input
                       id="kundali-dob"
                       name="dateOfBirth"
-                      type="text"
-                      placeholder="M / D / Y"
-                      inputMode="numeric"
-                      className="flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none"
+                      type="date"
+                      placeholder="Select date of birth"
+                      className="cursor-pointer flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none"
                     />
-                    <CalendarIcon className={fieldIconClass} />
                   </div>
+                  <FieldError message={fieldErrors.dateOfBirth} />
                 </div>
 
                 {/* Birth Place */}
@@ -136,16 +460,28 @@ const KundaliFormSection: React.FC = () => {
                   >
                     Enter birth place
                   </label>
-                  <div className="flex items-center gap-3 rounded-full border border-Trinary px-4 py-3 focus-within:border-primary">
+                  <div
+                    className={clsx(
+                      'flex items-center gap-3 rounded-full border px-4 py-3 focus-within:border-primary transition-colors',
+                      fieldErrors.birthPlace ? 'border-red-500' : 'border-Trinary',
+                    )}
+                  >
                     <input
                       id="kundali-birth-place"
                       name="birthPlace"
                       type="text"
-                      placeholder="Kathmandu, Nepal"
+                      placeholder="Kathmandu Nepal"
+                      onInput={event => {
+                        event.currentTarget.value = event.currentTarget.value.replace(
+                          /[^A-Za-z ]/g,
+                          '',
+                        );
+                      }}
                       className="flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none"
                     />
                     <IoLocationOutline className={fieldIconClass} aria-hidden />
                   </div>
+                  <FieldError message={fieldErrors.birthPlace} />
                 </div>
 
                 {/* Birth Time */}
@@ -158,8 +494,11 @@ const KundaliFormSection: React.FC = () => {
                   </label>
                   <div
                     className={clsx(
-                      'flex items-center gap-3 rounded-full border border-Trinary px-4 py-3 focus-within:border-primary',
+                      'flex items-center gap-3 rounded-full border px-4 py-3 focus-within:border-primary transition-colors',
                       unknownBirthTime && 'opacity-50 pointer-events-none',
+                      !unknownBirthTime && fieldErrors.birthTime
+                        ? 'border-red-500'
+                        : 'border-Trinary',
                     )}
                   >
                     <input
@@ -172,6 +511,7 @@ const KundaliFormSection: React.FC = () => {
                     />
                     <LuClock className={fieldIconClass} aria-hidden />
                   </div>
+                  {!unknownBirthTime && <FieldError message={fieldErrors.birthTime} />}
                 </div>
 
                 {/* Gender */}
@@ -182,7 +522,12 @@ const KundaliFormSection: React.FC = () => {
                   >
                     Select gender
                   </label>
-                  <div className="relative flex items-center gap-3 rounded-full border border-Trinary px-4 py-3 focus-within:border-primary">
+                  <div
+                    className={clsx(
+                      'relative flex items-center gap-3 rounded-full border px-4 py-3 focus-within:border-primary transition-colors',
+                      fieldErrors.gender ? 'border-red-500' : 'border-Trinary',
+                    )}
+                  >
                     <select
                       id="kundali-gender"
                       name="gender"
@@ -204,10 +549,11 @@ const KundaliFormSection: React.FC = () => {
                     </select>
                     <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7c221d] pointer-events-none" />
                   </div>
+                  <FieldError message={fieldErrors.gender} />
                 </div>
               </fieldset>
 
-              {/* Checkbox */}
+              {/* Unknown birth time checkbox */}
               <label className="flex items-center gap-3 cursor-pointer font-mukta text-sm text-primary mt-2 lg:mt-8 lg:mb-4">
                 <span
                   className={clsx(
@@ -218,11 +564,16 @@ const KundaliFormSection: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={unknownBirthTime}
-                    onChange={e => setUnknownBirthTime(e.target.checked)}
+                    onChange={e => {
+                      setUnknownBirthTime(e.target.checked);
+                      if (e.target.checked) {
+                        setFieldErrors(prev => ({ ...prev, birthTime: undefined }));
+                      }
+                    }}
                     className="sr-only"
                   />
                   {unknownBirthTime && (
-                    <span className="h-2 w-2 rounded-full bg-white" aria-hidden="true"></span>
+                    <span className="h-2 w-2 rounded-full bg-white" aria-hidden="true" />
                   )}
                 </span>
                 <span>Don&apos;t know my exact birth time</span>
@@ -230,10 +581,17 @@ const KundaliFormSection: React.FC = () => {
 
               <button
                 type="submit"
-                className="mt-3 md:mt-6 lg:-translate-y-3 w-full h-[60px] gap-8 rounded-full bg-[#6d1510] text-[18px] font-mukta font-semibold leading-[30px] text-secondary transition-colors hover:bg-[#8e2f27] flex items-center justify-center "
+                disabled={isSubmitting}
+                className="mt-3 md:mt-6 lg:-translate-y-3 w-full h-[60px] gap-8 rounded-full bg-[#6d1510] text-[18px] font-mukta font-semibold leading-[30px] text-secondary transition-colors hover:bg-[#8e2f27] flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Generate Now
+                {isSubmitting ? 'Generating...' : 'Generate Now'}
               </button>
+
+              {fieldErrors.general ? (
+                <p className="font-mukta text-sm text-red-600 mt-1 text-center">
+                  {fieldErrors.general}
+                </p>
+              ) : null}
             </form>
 
             {/* Right Card - Desktop Only */}

@@ -78,7 +78,20 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
     { title: d.header.nav.pujaBidhi, link: '/puja-bidhi', children: [] },
     { title: d.header.nav.calculator, children: [], link: '/calculators' },
     { title: d.header.nav.blog, link: '/blogs' },
-    { title: 'Calendar', link: '/calendar' },
+    {
+      title: uiLanguage === ELanguage.NEPALI ? 'क्यालेन्डर' : 'Calendar',
+      link: '/calendar',
+      children: [
+        {
+          title: uiLanguage === ELanguage.NEPALI ? 'नेपाली पात्रो' : 'Nepali Calendar',
+          link: '/calendar/nepali',
+        },
+        {
+          title: uiLanguage === ELanguage.NEPALI ? 'पञ्चाङ्ग पात्रो' : 'Panchang Calendar',
+          link: '/calendar/panchang',
+        },
+      ],
+    },
   ];
 }
 

@@ -1,18 +1,21 @@
 import type { Metadata } from 'next';
 
-import PanchangCalendarPageContent from '@/components/pages/calendar/panchang';
+import KundaliResultSection from '@/components/pages/free-kundali/kundali-result-section';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
-  title: 'Panchang Calendar',
-  description: 'Panchang information page',
+  title: 'Free Kundali Result',
+  description: 'View your generated free kundali result.',
+  alternates: {
+    canonical: '/free-kundali/result',
+  },
 };
 
-export default function CalendarPage() {
+export default function FreeKundaliResultPage() {
   return (
     <main className="space-y-10 md:space-y-[100px]">
-      <PanchangCalendarPageContent />
+      <KundaliResultSection />
       <Services />
       <DownloadApp />
     </main>

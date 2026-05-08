@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: 'Panchang information page',
 };
 
-export default function CalendarPage() {
+export default function PanchangCalendarPage() {
   return (
     <main className="space-y-10 md:space-y-[100px]">
       <PanchangCalendarPageContent />
