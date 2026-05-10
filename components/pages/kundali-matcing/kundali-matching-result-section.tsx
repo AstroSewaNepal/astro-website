@@ -372,10 +372,7 @@ function getNestedValue(source: unknown, keys: string[]): unknown {
   return current;
 }
 
-function getPanchangaValue(
-  source: unknown,
-  ...paths: string[][]
-): string {
+function getPanchangaValue(source: unknown, ...paths: string[][]): string {
   for (const path of paths) {
     const value = getNestedValue(source, path);
     if (value !== undefined && value !== null) {
@@ -830,8 +827,7 @@ const IndividualBasicDetails: React.FC<{
   title: string;
 }> = ({ person, payload, title }) => {
   const pData = unwrapVedastroPayload(payload);
-  const panchanga =
-    isRecord(pData) && pData['PanchangaTable'] ? pData['PanchangaTable'] : pData;
+  const panchanga = isRecord(pData) && pData['PanchangaTable'] ? pData['PanchangaTable'] : pData;
   const panchangaRecord = isRecord(panchanga) ? panchanga : undefined;
   const nakshatra = getPanchangaValue(panchangaRecord, ['Nakshatra'], ['NakshatraName']);
 
@@ -847,10 +843,7 @@ const IndividualBasicDetails: React.FC<{
   ];
   const kundaliRows: Array<[string, string]> = [
     ['Ayanamsa', getPanchangaValue(panchangaRecord, ['Ayanamsa'])],
-    [
-      'Tithi',
-      getPanchangaValue(panchangaRecord, ['Tithi', 'Name'], ['TithiName'], ['Tithi']),
-    ],
+    ['Tithi', getPanchangaValue(panchangaRecord, ['Tithi', 'Name'], ['TithiName'], ['Tithi'])],
     ['Paksha', getPanchangaValue(panchangaRecord, ['Tithi', 'Paksha'])],
     ['Lunar Month', getPanchangaValue(panchangaRecord, ['LunarMonth'])],
     ['Vara', getPanchangaValue(panchangaRecord, ['Vara'])],
@@ -909,8 +902,7 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
   title,
 }) => {
   const pData = unwrapVedastroPayload(payload);
-  const panchanga =
-    isRecord(pData) && pData['PanchangaTable'] ? pData['PanchangaTable'] : pData;
+  const panchanga = isRecord(pData) && pData['PanchangaTable'] ? pData['PanchangaTable'] : pData;
   const panchangaRecord = isRecord(panchanga) ? panchanga : undefined;
 
   const doshaCards = [
@@ -919,10 +911,7 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
     ['Disha Shool', getPanchangaValue(panchangaRecord, ['DishaShool'])],
     ['Lagna', getPanchangaValue(panchangaRecord, ['Lagna'], ['LagnaSign'])],
     ['Nakshatra', getPanchangaValue(panchangaRecord, ['Nakshatra'])],
-    [
-      'Tithi',
-      getPanchangaValue(panchangaRecord, ['Tithi', 'Name'], ['TithiName'], ['Tithi']),
-    ],
+    ['Tithi', getPanchangaValue(panchangaRecord, ['Tithi', 'Name'], ['TithiName'], ['Tithi'])],
     ['Paksha', getPanchangaValue(panchangaRecord, ['Tithi', 'Paksha'])],
     ['Ayanamsa', getPanchangaValue(panchangaRecord, ['Ayanamsa'])],
   ];
@@ -931,10 +920,7 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
     ['Hora Lord', getPanchangaValue(panchangaRecord, ['HoraLord', 'Name'], ['HoraLord'])],
     ['Sunrise', getPanchangaValue(panchangaRecord, ['Sunrise', 'StdTime'], ['Sunrise'])],
     ['Sunset', getPanchangaValue(panchangaRecord, ['Sunset', 'StdTime'], ['Sunset'])],
-    [
-      'Ishta Kaala',
-      getPanchangaValue(panchangaRecord, ['IshtaKaala', 'DegreeMinuteSecond']),
-    ],
+    ['Ishta Kaala', getPanchangaValue(panchangaRecord, ['IshtaKaala', 'DegreeMinuteSecond'])],
     ['Moon Phase', getPanchangaValue(panchangaRecord, ['MoonPhase'])],
     ['Day of Week', getPanchangaValue(panchangaRecord, ['DayOfWeek'])],
   ];
