@@ -10,15 +10,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/calculators',
   },
-  robots: { index: false, follow: false },
 };
 
 export default function CalculatorsPage() {
   return (
-    <main className="min-h-screen space-y-12">
-      <div className="-mt-6 md:-mt-10">
-        <Calculators />
-      </div>
+    <main className="space-y-12">
+      <Calculators />
       <Services />
       <DownloadApp />
     </main>

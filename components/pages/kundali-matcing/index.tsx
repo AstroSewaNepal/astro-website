@@ -5,7 +5,7 @@ const KundaliMatching: React.FC = () => {
   return (
     <section className="w-full px-8">
       <header className="max-w-4xl">
-        <h1 className="w-[209px] md:w-auto font-mukta font-semibold text-[18px] leading-[28px] md:font-sahitya md:font-bold md:text-[36px] md:leading-[48px] text-primary -mt-8 md:-mt-10 lg:-mt-25 opacity-100">
+        <h1 className="w-[209px] md:w-auto font-mukta font-semibold text-[18px] leading-[28px] md:font-sahitya md:font-bold md:text-[36px] md:leading-[48px] text-primary opacity-100">
           Free Kundali Matching
         </h1>
         <p className="font-mukta font-normal text-[12px] leading-[20px] capitalize md:font-medium md:text-[24px] md:leading-[30px] text-[#141414] mt-2 md:mt-3">
