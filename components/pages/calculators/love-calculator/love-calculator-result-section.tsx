@@ -28,11 +28,20 @@ export default function LoveCalculatorResultSection() {
   useEffect(() => {
     const raw = sessionStorage.getItem('loveCalculatorResult');
     if (raw) {
+      let cancelled = false;
       try {
-        setResult(JSON.parse(raw));
+        const parsed = JSON.parse(raw) as LoveResult;
+        queueMicrotask(() => {
+          if (!cancelled) setResult(parsed);
+        });
       } catch {
-        setResult(null);
+        queueMicrotask(() => {
+          if (!cancelled) setResult(null);
+        });
       }
+      return () => {
+        cancelled = true;
+      };
     }
   }, []);
 

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import FreeChart from '@/components/images/freechart.png';
+import { getPublicBackendBaseCandidates } from '@/lib/utils/url';
 
 type StoredKundaliResult = {
   fullName: string;
@@ -84,18 +85,7 @@ type VedastroProxyResult = {
   payload?: unknown;
 };
 
-function getCandidateBackendBases(): string[] {
-  const candidates: string[] = [];
-  const configured = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-  if (configured) {
-    candidates.push(configured.endsWith('/') ? configured : `${configured}/`);
-  } else {
-    candidates.push('http://localhost:5000/');
-  }
-
-  candidates.push('http://localhost:5000/');
-  return Array.from(new Set(candidates));
-}
+const getCandidateBackendBases = getPublicBackendBaseCandidates;
 
 function getLocalOffset(dateInput: string): string {
   const [day, month, year] = dateInput.split('-').map(Number);
@@ -128,9 +118,13 @@ async function fetchVedastroGeneral(
         continue;
       }
 
-      const payload = (await response.json()) as VedastroProxyResult;
-      if (!response.ok || (payload as any)?.success === false) {
-        const backendMessage = (payload as any)?.message || (payload as any)?.errors?.[0]?.message;
+      const payload = (await response.json()) as VedastroProxyResult & {
+        success?: boolean;
+        message?: string;
+        errors?: Array<{ message?: string }>;
+      };
+      if (!response.ok || payload.success === false) {
+        const backendMessage = payload.message || payload.errors?.[0]?.message;
         attemptErrors.push(
           backendMessage || `Request failed on ${url} (status ${response.status}).`,
         );

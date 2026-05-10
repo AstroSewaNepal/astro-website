@@ -12,6 +12,7 @@ import UserLineIcon from '@/components/icons/user/user-line';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import { ServiceReport } from '@/components/images/services';
 import GoogleGIcon from '@/components/images/icons/google_G.png';
+import { getPublicBackendBaseCandidates } from '@/lib/utils/url';
 
 const fieldIconClass = 'w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary';
 const cardShell = clsx(
@@ -129,19 +130,7 @@ function getLocalOffset(dateInput: string): string {
   return `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
-function getCandidateBackendBases(): string[] {
-  const candidates: string[] = [];
-  const configured = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-  if (configured) {
-    candidates.push(configured.endsWith('/') ? configured : `${configured}/`);
-  } else {
-    candidates.push('http://localhost:5000/');
-  }
-
-  candidates.push('http://localhost:5000/');
-
-  return Array.from(new Set(candidates));
-}
+const getCandidateBackendBases = getPublicBackendBaseCandidates;
 
 async function fetchVedastroGeneral(
   query: URLSearchParams,

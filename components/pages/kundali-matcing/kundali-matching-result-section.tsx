@@ -2,8 +2,24 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { getPublicBackendBaseCandidates } from '@/lib/utils/url';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+type KundaliMatchingTab = 'match' | 'basic' | 'dosha' | 'planets' | 'lagna';
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object';
+}
+
+function unwrapVedastroPayload(payload: unknown): unknown {
+  if (!isRecord(payload)) return payload;
+
+  const data = payload['data'];
+  if (isRecord(data) && 'payload' in data) return (data as Record<string, unknown>)['payload'];
+  if ('payload' in payload) return payload['payload'];
+  return payload;
+}
 
 type PersonInput = {
   fullName: string;
@@ -62,6 +78,28 @@ type VedastroProxyResult = {
   calculator?: string;
   payload?: unknown;
 };
+
+type TabButtonProps = {
+  id: KundaliMatchingTab;
+  label: string;
+  activeTab: KundaliMatchingTab;
+  onSelect: (tab: KundaliMatchingTab) => void;
+};
+
+function TabButton({ id, label, activeTab, onSelect }: TabButtonProps) {
+  return (
+    <button
+      onClick={() => onSelect(id)}
+      className={`h-[40px] md:h-[46px] px-6 whitespace-nowrap rounded-[32px] border border-[#A13924] font-mukta text-[16px] md:text-[18px] font-medium transition-colors duration-200 ${
+        activeTab === id
+          ? 'bg-[#7F1808] text-white'
+          : 'bg-[#ede9d9] text-[#7F1808] hover:bg-[#7F1808] hover:text-white'
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -325,17 +363,17 @@ function formatPanchangaValue(value: unknown): string {
   return '-';
 }
 
-function getNestedValue(source: Record<string, unknown> | undefined, keys: string[]): unknown {
+function getNestedValue(source: unknown, keys: string[]): unknown {
   let current: unknown = source;
   for (const key of keys) {
-    if (!current || typeof current !== 'object' || !(key in current)) return undefined;
-    current = (current as Record<string, unknown>)[key];
+    if (!isRecord(current) || !(key in current)) return undefined;
+    current = current[key];
   }
   return current;
 }
 
 function getPanchangaValue(
-  source: Record<string, unknown> | undefined,
+  source: unknown,
   ...paths: string[][]
 ): string {
   for (const path of paths) {
@@ -402,14 +440,7 @@ function planetDetailRow(planet: string, raw: Record<string, unknown>): string[]
 
 // ─── Network Helpers ──────────────────────────────────────────────────────────
 
-function getCandidateBackendBases(): string[] {
-  const candidates: string[] = [];
-  const configured = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-  if (configured) candidates.push(configured.endsWith('/') ? configured : `${configured}/`);
-  else candidates.push('http://localhost:5000/');
-  candidates.push('http://localhost:5000/');
-  return Array.from(new Set(candidates));
-}
+const getCandidateBackendBases = getPublicBackendBaseCandidates;
 
 async function fetchMatchReport(man: PersonInput, woman: PersonInput): Promise<MatchReportPayload> {
   const bride = woman.gender === 'male' ? man : woman;
@@ -486,8 +517,9 @@ async function fetchVedastroPlanetsTable(
         const url = `${base}api/v1/vedastro/proxy/planets?${q.toString()}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error();
-        const json = (await response.json()) as Record<string, unknown>;
-        const inner = (json.data as any)?.payload as Record<string, unknown>;
+        const json = (await response.json()) as unknown;
+        const data = isRecord(json) && isRecord(json['data']) ? json['data'] : undefined;
+        const inner = data && isRecord(data['payload']) ? data['payload'] : {};
         return planetDetailRow(planet, inner);
       });
       const rows = await Promise.all(tasks);
@@ -509,8 +541,9 @@ async function fetchVedastroBirthChart(
     try {
       const response = await fetch(url);
       if (!response.ok) continue;
-      const json = (await response.json()) as Record<string, unknown>;
-      const payload = (json.data as any)?.payload;
+      const json = (await response.json()) as unknown;
+      const data = isRecord(json) && isRecord(json['data']) ? json['data'] : undefined;
+      const payload = data ? data['payload'] : undefined;
       if (typeof payload === 'string' && payload.includes('<svg'))
         return { svg: payload, usedBase: base };
     } catch (e) {
@@ -796,10 +829,11 @@ const IndividualBasicDetails: React.FC<{
   payload: unknown;
   title: string;
 }> = ({ person, payload, title }) => {
-  const pData = (payload as any)?.data?.payload || (payload as any)?.payload || payload;
+  const pData = unwrapVedastroPayload(payload);
   const panchanga =
-    typeof pData === 'object' && pData?.PanchangaTable ? pData.PanchangaTable : pData;
-  const nakshatra = getPanchangaValue(panchanga, ['Nakshatra'], ['NakshatraName']);
+    isRecord(pData) && pData['PanchangaTable'] ? pData['PanchangaTable'] : pData;
+  const panchangaRecord = isRecord(panchanga) ? panchanga : undefined;
+  const nakshatra = getPanchangaValue(panchangaRecord, ['Nakshatra'], ['NakshatraName']);
 
   const basicRows: Array<[string, string]> = [
     ['Name', person.fullName || '-'],
@@ -812,14 +846,17 @@ const IndividualBasicDetails: React.FC<{
     ['Longitude', person.longitude || '-'],
   ];
   const kundaliRows: Array<[string, string]> = [
-    ['Ayanamsa', getPanchangaValue(panchanga, ['Ayanamsa'])],
-    ['Tithi', getPanchangaValue(panchanga, ['Tithi', 'Name'], ['TithiName'], ['Tithi'])],
-    ['Paksha', getPanchangaValue(panchanga, ['Tithi', 'Paksha'])],
-    ['Lunar Month', getPanchangaValue(panchanga, ['LunarMonth'])],
-    ['Vara', getPanchangaValue(panchanga, ['Vara'])],
+    ['Ayanamsa', getPanchangaValue(panchangaRecord, ['Ayanamsa'])],
+    [
+      'Tithi',
+      getPanchangaValue(panchangaRecord, ['Tithi', 'Name'], ['TithiName'], ['Tithi']),
+    ],
+    ['Paksha', getPanchangaValue(panchangaRecord, ['Tithi', 'Paksha'])],
+    ['Lunar Month', getPanchangaValue(panchangaRecord, ['LunarMonth'])],
+    ['Vara', getPanchangaValue(panchangaRecord, ['Vara'])],
     ['Nakshatra', nakshatra || '-'],
-    ['Sunrise', getPanchangaValue(panchanga, ['Sunrise', 'StdTime'], ['Sunrise'])],
-    ['Sunset', getPanchangaValue(panchanga, ['Sunset', 'StdTime'], ['Sunset'])],
+    ['Sunrise', getPanchangaValue(panchangaRecord, ['Sunrise', 'StdTime'], ['Sunrise'])],
+    ['Sunset', getPanchangaValue(panchangaRecord, ['Sunset', 'StdTime'], ['Sunset'])],
   ];
 
   return (
@@ -871,28 +908,35 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
   payload,
   title,
 }) => {
-  const pData = (payload as any)?.data?.payload || (payload as any)?.payload || payload;
+  const pData = unwrapVedastroPayload(payload);
   const panchanga =
-    typeof pData === 'object' && pData?.PanchangaTable ? pData.PanchangaTable : pData;
+    isRecord(pData) && pData['PanchangaTable'] ? pData['PanchangaTable'] : pData;
+  const panchangaRecord = isRecord(panchanga) ? panchanga : undefined;
 
   const doshaCards = [
-    ['Yoga', getPanchangaValue(panchanga, ['Yoga', 'Name'], ['YogaName'], ['Yoga'])],
-    ['Karana', getPanchangaValue(panchanga, ['Karana'], ['KaranaName'])],
-    ['Disha Shool', getPanchangaValue(panchanga, ['DishaShool'])],
-    ['Lagna', getPanchangaValue(panchanga, ['Lagna'], ['LagnaSign'])],
-    ['Nakshatra', getPanchangaValue(panchanga, ['Nakshatra'])],
-    ['Tithi', getPanchangaValue(panchanga, ['Tithi', 'Name'], ['TithiName'], ['Tithi'])],
-    ['Paksha', getPanchangaValue(panchanga, ['Tithi', 'Paksha'])],
-    ['Ayanamsa', getPanchangaValue(panchanga, ['Ayanamsa'])],
+    ['Yoga', getPanchangaValue(panchangaRecord, ['Yoga', 'Name'], ['YogaName'], ['Yoga'])],
+    ['Karana', getPanchangaValue(panchangaRecord, ['Karana'], ['KaranaName'])],
+    ['Disha Shool', getPanchangaValue(panchangaRecord, ['DishaShool'])],
+    ['Lagna', getPanchangaValue(panchangaRecord, ['Lagna'], ['LagnaSign'])],
+    ['Nakshatra', getPanchangaValue(panchangaRecord, ['Nakshatra'])],
+    [
+      'Tithi',
+      getPanchangaValue(panchangaRecord, ['Tithi', 'Name'], ['TithiName'], ['Tithi']),
+    ],
+    ['Paksha', getPanchangaValue(panchangaRecord, ['Tithi', 'Paksha'])],
+    ['Ayanamsa', getPanchangaValue(panchangaRecord, ['Ayanamsa'])],
   ];
   const tableRows = [
-    ['Yoga Description', getPanchangaValue(panchanga, ['Yoga', 'Description'])],
-    ['Hora Lord', getPanchangaValue(panchanga, ['HoraLord', 'Name'], ['HoraLord'])],
-    ['Sunrise', getPanchangaValue(panchanga, ['Sunrise', 'StdTime'], ['Sunrise'])],
-    ['Sunset', getPanchangaValue(panchanga, ['Sunset', 'StdTime'], ['Sunset'])],
-    ['Ishta Kaala', getPanchangaValue(panchanga, ['IshtaKaala', 'DegreeMinuteSecond'])],
-    ['Moon Phase', getPanchangaValue(panchanga, ['MoonPhase'])],
-    ['Day of Week', getPanchangaValue(panchanga, ['DayOfWeek'])],
+    ['Yoga Description', getPanchangaValue(panchangaRecord, ['Yoga', 'Description'])],
+    ['Hora Lord', getPanchangaValue(panchangaRecord, ['HoraLord', 'Name'], ['HoraLord'])],
+    ['Sunrise', getPanchangaValue(panchangaRecord, ['Sunrise', 'StdTime'], ['Sunrise'])],
+    ['Sunset', getPanchangaValue(panchangaRecord, ['Sunset', 'StdTime'], ['Sunset'])],
+    [
+      'Ishta Kaala',
+      getPanchangaValue(panchangaRecord, ['IshtaKaala', 'DegreeMinuteSecond']),
+    ],
+    ['Moon Phase', getPanchangaValue(panchangaRecord, ['MoonPhase'])],
+    ['Day of Week', getPanchangaValue(panchangaRecord, ['DayOfWeek'])],
   ];
 
   return (
@@ -1015,9 +1059,7 @@ const IndividualLagnaChart: React.FC<{ svg: string | undefined; title: string }>
 
 const KundaliMatchingResultSection: React.FC = () => {
   const [input, setInput] = useState<StoredMatchingInput | null>(null);
-  const [activeTab, setActiveTab] = useState<'match' | 'basic' | 'dosha' | 'planets' | 'lagna'>(
-    'match',
-  );
+  const [activeTab, setActiveTab] = useState<KundaliMatchingTab>('match');
   const [report, setReport] = useState<MatchReportPayload | null>(null);
   const [loadingMatch, setLoadingMatch] = useState(false);
   const [errorMatch, setErrorMatch] = useState<string | null>(null);
@@ -1030,11 +1072,20 @@ const KundaliMatchingResultSection: React.FC = () => {
   useEffect(() => {
     const raw = window.sessionStorage.getItem('kundaliMatchingInput');
     if (!raw) return;
+    let cancelled = false;
     try {
-      setInput(JSON.parse(raw));
+      const parsed = JSON.parse(raw) as StoredMatchingInput;
+      queueMicrotask(() => {
+        if (!cancelled) setInput(parsed);
+      });
     } catch {
-      setInput(null);
+      queueMicrotask(() => {
+        if (!cancelled) setInput(null);
+      });
     }
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Update session storage
@@ -1048,8 +1099,11 @@ const KundaliMatchingResultSection: React.FC = () => {
   useEffect(() => {
     if (!input || report || loadingMatch) return;
     let cancelled = false;
-    setLoadingMatch(true);
-    setErrorMatch(null);
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setLoadingMatch(true);
+      setErrorMatch(null);
+    });
     fetchMatchReport(input.man, input.woman)
       .then(data => {
         if (!cancelled) setReport(data);
@@ -1070,7 +1124,9 @@ const KundaliMatchingResultSection: React.FC = () => {
     if (activeTab !== 'dosha' && activeTab !== 'basic') return;
     if (!input || (input.manPayload && input.womanPayload)) return;
     let cancelled = false;
-    setIsFetchingDosha(true);
+    queueMicrotask(() => {
+      if (!cancelled) setIsFetchingDosha(true);
+    });
     Promise.all([
       input.manPayload
         ? Promise.resolve({ payload: input.manPayload })
@@ -1096,7 +1152,9 @@ const KundaliMatchingResultSection: React.FC = () => {
   useEffect(() => {
     if (activeTab !== 'planets' || !input || (input.manPlanetRows && input.womanPlanetRows)) return;
     let cancelled = false;
-    setIsFetchingPlanets(true);
+    queueMicrotask(() => {
+      if (!cancelled) setIsFetchingPlanets(true);
+    });
     Promise.all([
       input.manPlanetRows
         ? Promise.resolve({ rows: input.manPlanetRows })
@@ -1122,7 +1180,9 @@ const KundaliMatchingResultSection: React.FC = () => {
   useEffect(() => {
     if (activeTab !== 'lagna' || !input || (input.manLagnaSvg && input.womanLagnaSvg)) return;
     let cancelled = false;
-    setIsFetchingChart(true);
+    queueMicrotask(() => {
+      if (!cancelled) setIsFetchingChart(true);
+    });
     Promise.all([
       input.manLagnaSvg
         ? Promise.resolve({ svg: input.manLagnaSvg })
@@ -1163,19 +1223,6 @@ const KundaliMatchingResultSection: React.FC = () => {
   const goodCount = predictions.filter(p => p.Nature === 'Good').length;
   const badCount = predictions.filter(p => p.Nature === 'Bad').length;
 
-  const TabButton = ({ id, label }: { id: typeof activeTab; label: string }) => (
-    <button
-      onClick={() => setActiveTab(id)}
-      className={`h-[40px] md:h-[46px] px-6 whitespace-nowrap rounded-[32px] border border-[#A13924] font-mukta text-[16px] md:text-[18px] font-medium transition-colors duration-200 ${
-        activeTab === id
-          ? 'bg-[#7F1808] text-white'
-          : 'bg-[#ede9d9] text-[#7F1808] hover:bg-[#7F1808] hover:text-white'
-      }`}
-    >
-      {label}
-    </button>
-  );
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -1198,11 +1245,16 @@ const KundaliMatchingResultSection: React.FC = () => {
 
       {/* Tabs */}
       <div className="flex flex-nowrap items-center justify-start md:justify-center gap-3 overflow-x-auto pb-2">
-        <TabButton id="match" label="Match Result" />
-        <TabButton id="basic" label="Basic Details" />
-        <TabButton id="dosha" label="Dosha" />
-        <TabButton id="planets" label="Planets Detail" />
-        <TabButton id="lagna" label="Lagna Chart" />
+        <TabButton id="match" label="Match Result" activeTab={activeTab} onSelect={setActiveTab} />
+        <TabButton id="basic" label="Basic Details" activeTab={activeTab} onSelect={setActiveTab} />
+        <TabButton id="dosha" label="Dosha" activeTab={activeTab} onSelect={setActiveTab} />
+        <TabButton
+          id="planets"
+          label="Planets Detail"
+          activeTab={activeTab}
+          onSelect={setActiveTab}
+        />
+        <TabButton id="lagna" label="Lagna Chart" activeTab={activeTab} onSelect={setActiveTab} />
       </div>
 
       {/* Tab Content */}
