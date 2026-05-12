@@ -739,18 +739,16 @@ const KundaliResultSection: React.FC = () => {
         <p className="mt-2 font-mukta text-[#141414] text-sm md:text-lg">
           Discover your detailed Janam Kundli instantly
         </p>
-        {activeTab === 'basic' ? (
-          <div className={`mt-4 rotate-0 opacity-100 ${OPEN_CHART_FRAME_CLASS}`}>
-            <Image
-              src={OpenChart}
-              alt="Free kundali chart"
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 100vw, 463px"
-              priority
-            />
-          </div>
-        ) : null}
+        <div className={`mt-4 rotate-0 opacity-100 ${OPEN_CHART_FRAME_CLASS}`}>
+          <Image
+            src={OpenChart}
+            alt="Free kundali chart"
+            fill
+            className="object-contain"
+            sizes="(max-width: 768px) 100vw, 463px"
+            priority
+          />
+        </div>
         <div className="mt-6 flex flex-nowrap items-center justify-center gap-3 overflow-x-auto">
           <button
             type="button"
@@ -904,25 +902,25 @@ const KundaliResultSection: React.FC = () => {
 
             {activeTab === 'planets' && (
               <div className="mt-8 space-y-8">
-                <div className="rounded-[20px] bg-[#f9f4dd] p-5 md:p-7">
-                  <h3 className="font-sahitya text-primary text-[36px] leading-[48px] tracking-[0] font-bold">
+                <div className="rounded-[20px] bg-[#f9f4dd] p-4 sm:p-5 md:p-7">
+                  <h3 className="font-sahitya text-primary text-[26px] leading-tight sm:text-[32px] md:text-[36px] md:leading-[48px] font-bold">
                     Planet details
                   </h3>
-                  <p className="mt-2 font-mukta text-[#2d2d2d] text-base leading-relaxed">
+                  <p className="mt-2 font-mukta text-[#2d2d2d] text-sm leading-relaxed sm:text-base">
                     Sidereal positions from your birth time and place (VedAstro AllPlanetData).
                   </p>
                   {isFetchingPlanets && (
-                    <p className="mt-4 font-mukta text-base text-[#4a4a4a]">
+                    <p className="mt-4 font-mukta text-sm text-[#4a4a4a] sm:text-base">
                       Loading planet positions…
                     </p>
                   )}
                   {planetsFetchError && (
-                    <p className="mt-4 font-mukta text-base text-red-700">{planetsFetchError}</p>
+                    <p className="mt-4 font-mukta text-sm text-red-700 sm:text-base">{planetsFetchError}</p>
                   )}
-                  <div className="mt-4 overflow-x-auto">
-                    <table className="min-w-[1200px] w-full border-collapse">
+                  <div className="mt-4 overflow-x-auto rounded-xl border border-[#e5d9bc] bg-[#fffdf6] shadow-sm [-webkit-overflow-scrolling:touch]">
+                    <table className="w-full min-w-[720px] border-collapse text-left sm:min-w-[880px]">
                       <thead>
-                        <tr>
+                        <tr className="border-b border-[#e5d9bc]">
                           {[
                             'Planet',
                             'Sign (Rasi)',
@@ -933,10 +931,13 @@ const KundaliResultSection: React.FC = () => {
                             'House (by degree)',
                             'Retrograde',
                             'Nakshatra lord',
-                          ].map(header => (
+                          ].map((header, hi) => (
                             <th
                               key={`planet-header-${header}`}
-                              className="border border-[#f5e9c6] bg-[#fffdf6] px-4 py-3 text-left font-mukta text-[24px] leading-[34px] font-medium text-[#2d2d2d]"
+                              scope="col"
+                              className={`border-b border-r border-[#f0e6d0] bg-[#fff9ed] px-2 py-2.5 align-bottom font-mukta text-[10px] font-semibold uppercase leading-tight tracking-wide text-[#5c4033] last:border-r-0 sm:px-3 sm:py-3 sm:text-[11px] md:text-xs ${
+                                hi === 0 ? 'sticky left-0 z-10 min-w-[4.5rem] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.12)]' : ''
+                              }`}
                             >
                               {header}
                             </th>
@@ -949,13 +950,17 @@ const KundaliResultSection: React.FC = () => {
                             {row.map((cell, cellIdx) => (
                               <td
                                 key={`planet-cell-${rowIdx}-${cellIdx}`}
-                                className="border border-[#f5e9c6] bg-[#fffdf6] px-4 py-2 font-mukta text-[20px] md:text-[24px] leading-[34px] font-normal text-[#2d2d2d]"
+                                className={`border-b border-r border-[#f0e6d0] px-2 py-1.5 align-top font-mukta text-xs leading-snug last:border-r-0 sm:px-3 sm:py-2 sm:text-sm md:leading-normal ${
+                                  cellIdx === 0
+                                    ? `sticky left-0 z-10 min-w-[4.5rem] whitespace-nowrap font-semibold text-[#7F1808] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] ${
+                                        rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
+                                      }`
+                                    : `max-w-[8.5rem] break-words text-[#2d2d2d] sm:max-w-[11rem] md:max-w-none tabular-nums ${
+                                        rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
+                                      }`
+                                }`}
                               >
-                                {cellIdx === 0 ? (
-                                  <span className="font-medium text-[#7F1808]">{cell}</span>
-                                ) : (
-                                  cell
-                                )}
+                                {cell}
                               </td>
                             ))}
                           </tr>

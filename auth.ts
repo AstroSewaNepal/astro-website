@@ -20,6 +20,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   secret: authSecret,
   providers: [
+    /**
+     * Redirect URI sent to Google is always:
+     *   `{AUTH_URL or request origin}/api/auth/callback/google`
+     * e.g. http://localhost:3000/api/auth/callback/google
+     * That exact string must appear under Google Cloud Console → OAuth 2.0 Client →
+     * "Authorized redirect URIs" (localhost vs 127.0.0.1 are different entries).
+     * Nest’s `GOOGLE_REDIRECT_URI_WEB` (`…/api/v1/auth/google/callback`) is a separate flow.
+     */
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
