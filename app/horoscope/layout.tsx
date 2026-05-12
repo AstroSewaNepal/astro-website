@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Daily Horoscope — Vedic Predictions for All Zodiac Signs',
   description:
-    'Read today\'s daily horoscope, weekly and monthly predictions for all 12 zodiac signs. Personalized Vedic astrology insights for love, career, health, and more by Astro Sewa.',
+    "Read today's daily horoscope, weekly and monthly predictions for all 12 zodiac signs. Personalized Vedic astrology insights for love, career, health, and more by Astro Sewa.",
   keywords: [
     'daily horoscope',
     'today horoscope',

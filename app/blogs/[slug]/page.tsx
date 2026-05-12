@@ -190,7 +190,11 @@ const BlogDetailPage = async (props: BlogDetailPageProps) => {
     url: postUrl,
     datePublished: post.published_at ?? undefined,
     dateModified: post.updated_at ?? post.published_at ?? undefined,
-    keywords: post.tags?.map(t => t.name).filter(Boolean).join(', ') || undefined,
+    keywords:
+      post.tags
+        ?.map(t => t.name)
+        .filter(Boolean)
+        .join(', ') || undefined,
     articleSection: post.tags?.[0]?.name ?? undefined,
     author: {
       '@type': 'Person',

@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,7 +7,6 @@ import {
   AstroSewaTransparentLogo,
   GoogleDownloadImage,
 } from '@/components/images';
-import { horoscopeEn, useHoroscopeLocaleOptional } from '@/lib/i18n';
 import {
   FacebookIcon,
   LinkedinIcon,
@@ -19,9 +16,6 @@ import {
 } from '@/components/images/icons';
 
 const Footer: React.FC = () => {
-  const horoscopeLocale = useHoroscopeLocaleOptional();
-  const d = horoscopeLocale?.dict ?? horoscopeEn;
-
   return (
     <footer className="bg-[#5F1508] text-[#F8F3DF]">
       {/* Main Footer Content */}
@@ -36,7 +30,7 @@ const Footer: React.FC = () => {
 
             {/* Mobile Apps Section */}
             <div className="flex flex-col gap-6">
-              <h3 className="font-sahitya text-[22px] font-normal">{d.footer.appsTitle}</h3>
+              <h3 className="font-sahitya text-[22px] font-normal">Astro Sewa Mobile Apps</h3>
 
               {/* Download Buttons */}
               <div className="flex gap-4">
@@ -86,126 +80,133 @@ const Footer: React.FC = () => {
             <div className="flex flex-col lg:flex-row gap-16 lg:gap-30 flex-1">
               {/* Quick Links */}
               <div className="flex flex-col gap-3">
-                <h4 className="text-[22px] font-normal mb-3">{d.footer.quickLinks}</h4>
+                <h4 className="text-[22px] font-normal mb-3">Quick Links</h4>
                 <div className="flex flex-col gap-2">
-                  <Link
-                    href="/free-kundali"
+                  <a
+                    href="#"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    {d.footer.links.freeKundali}
-                  </Link>
-                  <Link
-                    href="/kundali-matching"
+                    Free Kundali
+                  </a>
+                  <a
+                    href="#"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    {d.footer.links.kundaliMatching}
-                  </Link>
-                  <Link
-                    href="/horoscope"
+                    Kundali Matching
+                  </a>
+                  <a
+                    href="#"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    {d.footer.links.horoscope}
-                  </Link>
-                  <Link
-                    href="/compatibility"
+                    Horoscope
+                  </a>
+                  <a
+                    href="#"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    {d.footer.links.talkToAstrologer}
-                  </Link>
+                    Talk to Astrologer
+                  </a>
                   <Link
                     href="/puja-bidhi"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    {d.footer.links.pujaBidhi}
+                    Puja Bidhi
                   </Link>
                   <Link
                     href="/blogs"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    {d.footer.links.blog}
+                    Blog
                   </Link>
                 </div>
               </div>
 
               {/* Useful Links */}
               <div className="flex flex-col gap-3">
-                <h4 className="text-[22px] font-normal mb-3">{d.footer.usefulLinks}</h4>
+                <h4 className="text-[22px] font-normal mb-3">Useful Links</h4>
                 <div className="flex flex-col gap-2">
                   <Link
                     href="/about-us"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    {d.footer.links.aboutUs}
+                    About Us
                   </Link>
                   <a
-                    href="mailto:support@astrosewa.com"
+                    href="#"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    {d.footer.links.contact}
+                    Contact Us
                   </a>
                   <a
                     href="#"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    {d.footer.links.astrologerRegistration}
+                    Astrologer Registration
                   </a>
-                  <Link
-                    href="/zodiac-sign"
+                  <a
+                    href="#"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    {d.footer.links.zodiacSign}
-                  </Link>
-                  <Link
-                    href="/calander"
+                    Zodiac Sign
+                  </a>
+                  <a
+                    href="#"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    {d.footer.links.calculator}
-                  </Link>
+                    Calculator
+                  </a>
                 </div>
               </div>
 
               {/* Contact Us */}
               <div className="flex flex-col gap-3 max-w-[243px]">
-                <h4 className="text-[22px] font-normal mb-3">{d.footer.contactUs}</h4>
+                <h4 className="text-[22px] font-normal mb-3">Contact Us</h4>
                 <div className="flex flex-col gap-6">
                   {/* Phone */}
                   <div className="flex items-center gap-3">
                     <div className="w-5 h-5 bg-gray-300 rounded"></div>
-                    <a href="tel:+9779818080676" className="font-mukta text-[18px] font-medium text-[#F8F3DF] hover:opacity-75 transition-opacity">+977 9818080676</a>
+                    <span className="font-mukta text-[18px] font-medium">+977 9818080676</span>
                   </div>
 
                   {/* Email */}
                   <div className="flex items-center gap-3">
                     <div className="w-5 h-5 bg-gray-300 rounded"></div>
-                    <a href="mailto:support@astrosewa.com" className="font-mukta text-[18px] font-medium text-[#F8F3DF] hover:opacity-75 transition-opacity">
+                    <span className="font-mukta text-[18px] font-medium">
                       support@astrosewa.com
-                    </a>
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Terms & Conditions Section */}
-            <div className="flex items-center gap-8 mt-8">
+            <div className="flex items-center gap-8 mt-8 flex-wrap">
               <Link
                 href="/terms-and-conditions"
                 className="font-mukta text-[20px] font-normal text-[#F8F3DF] hover:opacity-75 transition-opacity underline"
               >
-                {d.footer.legal.terms}
+                Terms & Conditions
               </Link>
               <div className="w-px h-6 bg-[#F8F3DF]"></div>
               <Link
-                href="/pricing-policy"
+                href="/privacy-policy"
                 className="font-mukta text-[20px] font-normal text-[#F8F3DF] hover:opacity-75 transition-opacity underline"
               >
-                {d.footer.legal.pricing}
+                Privacy Policy
               </Link>
               <div className="w-px h-6 bg-[#F8F3DF]"></div>
               <Link
                 href="/disclaimer"
                 className="font-mukta text-[20px] font-normal text-[#F8F3DF] hover:opacity-75 transition-opacity underline"
               >
-                {d.footer.legal.disclaimer}
+                Disclaimer
+              </Link>
+              <div className="w-px h-6 bg-[#F8F3DF]"></div>
+              <Link
+                href="/pricing-policy"
+                className="font-mukta text-[20px] font-normal text-[#F8F3DF] hover:opacity-75 transition-opacity underline"
+              >
+                Pricing Policy
               </Link>
             </div>
           </div>
@@ -220,8 +221,8 @@ const Footer: React.FC = () => {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           {/* Copyright */}
           <div className="flex items-center gap-1">
-            <span className="font-mukta text-[18px] font-normal">{d.footer.copyright}</span>
-            <span className="font-mukta text-[18px] font-normal">{d.footer.rights}</span>
+            <span className="font-mukta text-[18px] font-normal">Copyright © 2025 AstroSewa</span>
+            <span className="font-mukta text-[18px] font-normal">|| All Rights Reserved</span>
           </div>
         </div>
       </div>

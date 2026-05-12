@@ -2,8 +2,21 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 
+/**
+ * Auth.js requires a secret to sign cookies and JWTs.
+ * Set `AUTH_SECRET` in `.env.local` (e.g. `openssl rand -base64 32`).
+ * A dev-only fallback avoids "MissingSecret" when the var is absent locally;
+ * never rely on that in production—deploy must define AUTH_SECRET.
+ */
+const authSecret =
+  process.env.AUTH_SECRET ??
+  (process.env.NODE_ENV !== 'production'
+    ? 'local-dev-only-insecure-auth-secret'
+    : undefined);
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
+  secret: authSecret,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -73,10 +86,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
         if (backendUrl) {
           try {
-            const res = await fetch(`${backendUrl}/auth/google`, {
+            const base = backendUrl.replace(/\/$/, '');
+            const url = base.endsWith('/api/v1')
+              ? `${base}/auth/google`
+              : `${base}/api/v1/auth/google`;
+            const res = await fetch(url, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ idToken: account.id_token }),
+              body: JSON.stringify({
+                idToken: account.id_token,
+                role: 'USER',
+              }),
             });
             if (res.ok) {
               const json = await res.json();

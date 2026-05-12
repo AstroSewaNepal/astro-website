@@ -166,6 +166,7 @@ const horoscope = {
       },
       legal: {
         terms: 'नियम तथा सर्तहरू',
+        privacy: 'गोपनीयता नीति',
         pricing: 'मूल्य नीति',
         disclaimer: 'अस्वीकरण',
       },

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { auth } from '@/auth';
 import FreeKundali from '@/components/pages/free-kundali';
 import KundaliFormSection from '@/components/pages/free-kundali/kundali-form-section';
 import KundaliEducationalSection from '@/components/pages/free-kundali/kundali-educational-section';
@@ -10,36 +11,29 @@ export const metadata: Metadata = {
   title: 'Free Kundali',
   description:
     'Discover your detailed Janam Kundli instantly with Astro Sewa. Free online Kundli with insights on personality, career, relationships, and life path.',
-  keywords: [
-    'free kundali',
-    'janam kundli',
-    'birth chart',
-    'kundali online',
-    'free birth chart Nepal',
-    'vedic kundli',
-    'kundali reading',
-    'astrology birth chart',
-  ],
   alternates: {
     canonical: '/free-kundali',
   },
-  openGraph: {
-    title: 'Free Kundali — Janam Birth Chart Online | Astro Sewa',
-    description:
-      'Generate your free Janam Kundli online. Get detailed Vedic astrology birth chart insights for personality, career, love, and life path.',
-  },
 };
 
-export default function FreeKundaliPage() {
+type FreeKundaliPageProps = {
+  searchParams: Promise<{ error?: string }>;
+};
+
+export default async function FreeKundaliPage({ searchParams }: FreeKundaliPageProps) {
+  const session = await auth();
+  const params = await searchParams;
+  const oauthError = params?.error === 'OAuthError';
+
+  const defaultFullName = session?.user?.name?.trim();
+
   return (
-    <main className="min-h-screen">
-      <div className="space-y-10 md:space-y-[100px]">
-        <FreeKundali />
-        <KundaliFormSection />
-        <KundaliEducationalSection />
-        <Services />
-        <DownloadApp />
-      </div>
+    <main className="space-y-10 md:space-y-[100px]">
+      <FreeKundali />
+      <KundaliFormSection defaultFullName={defaultFullName} oauthError={oauthError} />
+      <KundaliEducationalSection />
+      <Services />
+      <DownloadApp />
     </main>
   );
 }
