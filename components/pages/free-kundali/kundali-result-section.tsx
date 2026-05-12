@@ -915,7 +915,9 @@ const KundaliResultSection: React.FC = () => {
                     </p>
                   )}
                   {planetsFetchError && (
-                    <p className="mt-4 font-mukta text-sm text-red-700 sm:text-base">{planetsFetchError}</p>
+                    <p className="mt-4 font-mukta text-sm text-red-700 sm:text-base">
+                      {planetsFetchError}
+                    </p>
                   )}
                   <div className="mt-4 overflow-x-auto rounded-xl border border-[#e5d9bc] bg-[#fffdf6] shadow-sm [-webkit-overflow-scrolling:touch]">
                     <table className="w-full min-w-[720px] border-collapse text-left sm:min-w-[880px]">
@@ -936,7 +938,9 @@ const KundaliResultSection: React.FC = () => {
                               key={`planet-header-${header}`}
                               scope="col"
                               className={`border-b border-r border-[#f0e6d0] bg-[#fff9ed] px-2 py-2.5 align-bottom font-mukta text-[10px] font-semibold uppercase leading-tight tracking-wide text-[#5c4033] last:border-r-0 sm:px-3 sm:py-3 sm:text-[11px] md:text-xs ${
-                                hi === 0 ? 'sticky left-0 z-10 min-w-[4.5rem] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.12)]' : ''
+                                hi === 0
+                                  ? 'sticky left-0 z-10 min-w-[4.5rem] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.12)]'
+                                  : ''
                               }`}
                             >
                               {header}
