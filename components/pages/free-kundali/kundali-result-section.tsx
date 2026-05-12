@@ -1,10 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import FreeChart from '@/components/images/freechart.png';
-import { getPublicBackendBaseCandidates } from '@/lib/utils/url';
+import OpenChart from '@/components/images/openchart.png';
+import {
+  NorthIndianOpenChartWithPlanets,
+  OPEN_CHART_FRAME_CLASS,
+} from '@/components/pages/free-kundali/north-indian-open-chart';
+import { getPublicBackendBaseCandidates, resolveVedastroProxyFetchUrl } from '@/lib/utils/url';
 
 type StoredKundaliResult = {
   fullName: string;
@@ -17,8 +21,6 @@ type StoredKundaliResult = {
   payload: unknown;
   /** Cached sidereal planet table rows (from VedAstro AllPlanetData). */
   planetRows?: string[][];
-  /** South / North chart SVG markup from VedAstro (used as data URL). */
-  lagnaChartSvg?: string;
 };
 
 function toTitleCase(value: string | undefined): string {
@@ -104,7 +106,7 @@ async function fetchVedastroGeneral(
   const attemptErrors: string[] = [];
 
   for (const base of getCandidateBackendBases()) {
-    const url = `${base}api/v1/vedastro/proxy/general?${query.toString()}`;
+    const url = resolveVedastroProxyFetchUrl(base, 'general', query);
     try {
       const response = await fetch(url);
       const contentType = response.headers.get('content-type')?.toLowerCase() ?? '';
@@ -169,6 +171,42 @@ const VEDASTRO_NINE_PLANETS = [
   'Ketu',
 ] as const;
 
+async function fetchPlanetRowAtBase(
+  base: string,
+  query: URLSearchParams,
+  planet: string,
+): Promise<string[]> {
+  const q = new URLSearchParams(query);
+  q.set('planet', planet);
+  const url = resolveVedastroProxyFetchUrl(base, 'planets', q);
+  const response = await fetch(url);
+  const contentType = response.headers.get('content-type')?.toLowerCase() ?? '';
+
+  if (!contentType.includes('application/json')) {
+    const text = await response.text();
+    const preview = text.slice(0, 120).replace(/\s+/g, ' ').trim();
+    throw new Error(`Non-JSON from ${url} (${response.status}): ${preview || 'empty'}`);
+  }
+
+  const json = (await response.json()) as Record<string, unknown>;
+  if (!response.ok || json.success === false) {
+    const msg =
+      (json.message as string | undefined) ||
+      (Array.isArray(json.errors) && json.errors[0] && typeof json.errors[0] === 'object'
+        ? String((json.errors[0] as Record<string, unknown>).message ?? '')
+        : '') ||
+      `Request failed (${response.status})`;
+    throw new Error(msg);
+  }
+
+  const payload = extractResultDataPayload(json);
+  if (!payload) {
+    throw new Error('Unexpected response shape from planet API');
+  }
+
+  return planetDetailRow(planet, payload);
+}
+
 function extractResultDataPayload(
   json: Record<string, unknown>,
 ): Record<string, unknown> | undefined {
@@ -219,13 +257,6 @@ function planetDetailRow(planet: string, raw: Record<string, unknown>): string[]
   return [planet, signName, degInSign, nirayana, nak, houseSign, houseLong, retro, nakLord];
 }
 
-function extractChartSvgPayload(json: Record<string, unknown>): string | undefined {
-  const data = json.data;
-  if (!data || typeof data !== 'object') return undefined;
-  const payload = (data as Record<string, unknown>).payload;
-  return typeof payload === 'string' && payload.includes('<svg') ? payload : undefined;
-}
-
 function planetHouseBullets(planetRows: string[][]): string[] {
   return planetRows.map(row => {
     const planet = row[0] ?? '—';
@@ -234,93 +265,24 @@ function planetHouseBullets(planetRows: string[][]): string[] {
   });
 }
 
-async function fetchVedastroBirthChart(
-  query: URLSearchParams,
-): Promise<{ svg: string; usedBase: string }> {
-  const attemptErrors: string[] = [];
-  const q = new URLSearchParams(query);
-  q.set('style', 'south');
-
-  for (const base of getCandidateBackendBases()) {
-    const url = `${base}api/v1/vedastro/proxy/chart?${q.toString()}`;
-    try {
-      const response = await fetch(url);
-      const contentType = response.headers.get('content-type')?.toLowerCase() ?? '';
-
-      if (!contentType.includes('application/json')) {
-        const text = await response.text();
-        const preview = text.slice(0, 120).replace(/\s+/g, ' ').trim();
-        attemptErrors.push(`Non-JSON from chart API (${response.status}): ${preview || 'empty'}`);
-        continue;
-      }
-
-      const json = (await response.json()) as Record<string, unknown>;
-      if (!response.ok || json.success === false) {
-        attemptErrors.push(
-          (typeof json.message === 'string' && json.message) ||
-            `Chart request failed (${response.status}).`,
-        );
-        continue;
-      }
-
-      const svg = extractChartSvgPayload(json);
-      if (!svg) {
-        attemptErrors.push('Chart response missing SVG.');
-        continue;
-      }
-
-      return { svg, usedBase: base };
-    } catch (error) {
-      attemptErrors.push(
-        error instanceof Error ? error.message : 'Network error while loading chart.',
-      );
-    }
-  }
-
-  throw new Error(attemptErrors[attemptErrors.length - 1] ?? 'Failed to load birth chart.');
-}
-
 async function fetchVedastroPlanetsTable(
   query: URLSearchParams,
 ): Promise<{ rows: string[][]; usedBase: string }> {
   const attemptErrors: string[] = [];
 
   for (const base of getCandidateBackendBases()) {
-    const tasks = VEDASTRO_NINE_PLANETS.map(async planet => {
-      const q = new URLSearchParams(query);
-      q.set('planet', planet);
-      const url = `${base}api/v1/vedastro/proxy/planets?${q.toString()}`;
-      const response = await fetch(url);
-      const contentType = response.headers.get('content-type')?.toLowerCase() ?? '';
-
-      if (!contentType.includes('application/json')) {
-        const text = await response.text();
-        const preview = text.slice(0, 120).replace(/\s+/g, ' ').trim();
-        throw new Error(`Non-JSON from ${url} (${response.status}): ${preview || 'empty'}`);
-      }
-
-      const json = (await response.json()) as Record<string, unknown>;
-      if (!response.ok || json.success === false) {
-        const msg =
-          (json.message as string | undefined) ||
-          (Array.isArray(json.errors) && json.errors[0] && typeof json.errors[0] === 'object'
-            ? String((json.errors[0] as Record<string, unknown>).message ?? '')
-            : '') ||
-          `Request failed (${response.status})`;
-        throw new Error(msg);
-      }
-
-      const payload = extractResultDataPayload(json);
-      if (!payload) {
-        throw new Error('Unexpected response shape from planet API');
-      }
-
-      return planetDetailRow(planet, payload);
-    });
+    const tasks = VEDASTRO_NINE_PLANETS.map(planet => fetchPlanetRowAtBase(base, query, planet));
 
     try {
       const rows = await Promise.all(tasks);
-      return { rows, usedBase: base };
+      let merged = rows;
+      try {
+        const ascRow = await fetchPlanetRowAtBase(base, query, 'Ascendant');
+        merged = [ascRow, ...rows];
+      } catch {
+        /* Ascendant optional — nine grahas still valid */
+      }
+      return { rows: merged, usedBase: base };
     } catch (error) {
       attemptErrors.push(error instanceof Error ? error.message : 'Unknown error');
     }
@@ -549,9 +511,7 @@ const KundaliResultSection: React.FC = () => {
   const [isFetchingPlanets, setIsFetchingPlanets] = useState(false);
   const [planetsFetchError, setPlanetsFetchError] = useState<string | null>(null);
   const [hasFetchedPlanets, setHasFetchedPlanets] = useState(false);
-  const [isFetchingChart, setIsFetchingChart] = useState(false);
-  const [chartFetchError, setChartFetchError] = useState<string | null>(null);
-  const [hasFetchedChart, setHasFetchedChart] = useState(false);
+  const lagnaPlanetFetchKeyRef = useRef<string | null>(null);
   const [planetBulletsLoading, setPlanetBulletsLoading] = useState(false);
 
   useEffect(() => {
@@ -608,8 +568,11 @@ const KundaliResultSection: React.FC = () => {
     }
 
     if (result.planetRows && result.planetRows.length > 0) {
-      setHasFetchedPlanets(true);
-      return;
+      const hasAscendantRow = result.planetRows.some(r => r[0] === 'Ascendant');
+      if (hasAscendantRow) {
+        setHasFetchedPlanets(true);
+        return;
+      }
     }
 
     const query = getStoredKundaliQueryParams(result);
@@ -648,68 +611,57 @@ const KundaliResultSection: React.FC = () => {
   }, [activeTab, result, hasFetchedPlanets]);
 
   useEffect(() => {
-    if (activeTab !== 'lagna' || !result || hasFetchedChart) {
+    if (activeTab !== 'lagna') {
+      lagnaPlanetFetchKeyRef.current = null;
       return;
     }
+    if (!result) return;
 
     const query = getStoredKundaliQueryParams(result);
     if (!query) {
       return;
     }
 
-    const hasSvg =
-      typeof result.lagnaChartSvg === 'string' && result.lagnaChartSvg.includes('<svg');
-    const hasRows = !!(result.planetRows && result.planetRows.length > 0);
-
-    if (hasSvg && hasRows) {
-      setHasFetchedChart(true);
+    const hasAscendantRow = !!result.planetRows?.some(r => r[0] === 'Ascendant');
+    if (result.planetRows && result.planetRows.length > 0 && hasAscendantRow) {
       return;
     }
 
-    let cancelled = false;
-    const needSvg = !hasSvg;
-    const needRows = !hasRows;
+    const fingerprint = `${result.dateOfBirth}|${result.birthTime}|${result.latitude}|${result.longitude}`;
+    if (lagnaPlanetFetchKeyRef.current === fingerprint) {
+      return;
+    }
+    lagnaPlanetFetchKeyRef.current = fingerprint;
 
-    setChartFetchError(null);
-    setIsFetchingChart(needSvg);
-    setPlanetBulletsLoading(needRows);
+    let cancelled = false;
+    setPlanetBulletsLoading(true);
 
     void (async () => {
       try {
         let next: StoredKundaliResult = { ...result };
 
-        if (needSvg) {
-          try {
-            const { svg } = await fetchVedastroBirthChart(query);
-            if (!cancelled) next = { ...next, lagnaChartSvg: svg };
-          } catch (error) {
-            if (!cancelled) {
-              setChartFetchError(
-                error instanceof Error ? error.message : 'Failed to load lagna chart.',
-              );
-            }
-          }
-        }
+        const needsPlanetFetch =
+          !next.planetRows ||
+          next.planetRows.length === 0 ||
+          !next.planetRows.some(r => r[0] === 'Ascendant');
 
-        if (!cancelled && (!next.planetRows || next.planetRows.length === 0)) {
+        if (!cancelled && needsPlanetFetch) {
           try {
             const { rows } = await fetchVedastroPlanetsTable(query);
             if (!cancelled) next = { ...next, planetRows: rows };
             setHasFetchedPlanets(true);
           } catch {
-            /* house bullets stay empty; planets tab still available */
+            /* overlay stays empty; planets tab still available */
           }
         }
 
         if (cancelled) return;
-        setHasFetchedChart(true);
         setResult(next);
         if (typeof window !== 'undefined') {
           window.sessionStorage.setItem('freeKundaliResult', JSON.stringify(next));
         }
       } finally {
         if (!cancelled) {
-          setIsFetchingChart(false);
           setPlanetBulletsLoading(false);
         }
       }
@@ -718,12 +670,7 @@ const KundaliResultSection: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [activeTab, result, hasFetchedChart]);
-
-  const lagnaChartDataUrl =
-    result?.lagnaChartSvg && result.lagnaChartSvg.includes('<svg')
-      ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(result.lagnaChartSvg)}`
-      : null;
+  }, [activeTab, result]);
 
   const planetHouseLines =
     result?.planetRows && result.planetRows.length > 0 ? planetHouseBullets(result.planetRows) : [];
@@ -793,9 +740,9 @@ const KundaliResultSection: React.FC = () => {
           Discover your detailed Janam Kundli instantly
         </p>
         {activeTab === 'basic' ? (
-          <div className="mt-4 relative w-[463.39971923828125px] h-[353.0445861816406px] rotate-0 opacity-100 max-w-full mx-auto">
+          <div className={`mt-4 rotate-0 opacity-100 ${OPEN_CHART_FRAME_CLASS}`}>
             <Image
-              src={FreeChart}
+              src={OpenChart}
               alt="Free kundali chart"
               fill
               className="object-contain"
@@ -1082,32 +1029,44 @@ const KundaliResultSection: React.FC = () => {
 
             {activeTab === 'lagna' && (
               <div className="mt-8 space-y-[28px]">
-                <div className="w-[1009px] max-w-full min-h-[440px] rounded-[4px] border border-[#ead8c7] opacity-100 rotate-0">
-                  <div className="grid min-h-[440px] grid-cols-1 items-start gap-[28px] p-5 lg:grid-cols-[minmax(280px,420px)_minmax(0,1fr)]">
-                    <div className="relative flex w-full min-h-[380px] items-center justify-center overflow-auto rounded-[4px] border border-[#ead8c7] bg-[#fffdf6] p-3">
-                      {isFetchingChart && (
-                        <p className="font-mukta text-[18px] text-[#4a4a4a]">Loading chart…</p>
-                      )}
-                      {chartFetchError && !lagnaChartDataUrl && (
-                        <p className="px-4 text-center font-mukta text-[16px] text-red-700">
-                          {chartFetchError}
+                <div className="w-[1009px] max-w-full min-h-[440px] opacity-100 rotate-0">
+                  <div className="flex min-h-[440px] flex-col gap-[28px] p-5">
+                    <div className="mx-auto w-full">
+                      <div className="flex w-full flex-col overflow-visible bg-transparent p-3 md:p-4">
+                        <p className="mb-3 text-center font-mukta text-[15px] font-semibold uppercase tracking-wide text-[#5c4033]">
+                          North Indian (D1)
                         </p>
-                      )}
-                      {lagnaChartDataUrl ? (
-                        <img
-                          src={lagnaChartDataUrl}
-                          alt="South Indian birth chart (D1) from VedAstro"
-                          className="mx-auto h-auto max-h-[720px] w-full max-w-full object-contain"
-                        />
-                      ) : null}
+                        <div className="flex justify-center overflow-auto">
+                          {planetBulletsLoading &&
+                          (!result?.planetRows || result.planetRows.length === 0) ? (
+                            <p className="font-mukta text-[18px] text-[#4a4a4a]">Loading chart…</p>
+                          ) : null}
+                          {result?.planetRows && result.planetRows.length > 0 ? (
+                            <NorthIndianOpenChartWithPlanets
+                              planetRows={result.planetRows}
+                              lagnaSignFallback={getPanchangaValue(
+                                panchanga,
+                                ['Lagna'],
+                                ['LagnaSign'],
+                              )}
+                            />
+                          ) : !planetBulletsLoading ? (
+                            <p className="px-4 text-center font-mukta text-[16px] text-[#666]">
+                              Planet positions are not available yet. Open the Planets Detail tab or
+                              try again in a moment.
+                            </p>
+                          ) : null}
+                        </div>
+                      </div>
                     </div>
-                    <div className="min-h-0 overflow-hidden">
+                    <div className="min-h-0 w-full overflow-hidden">
                       <h3 className="font-sahitya text-primary text-[36px] md:text-[48px] leading-tight md:leading-[58px] font-bold">
                         Lagna chart
                       </h3>
                       <p className="mt-3 font-mukta text-[18px] md:text-[20px] leading-[30px] text-[#2d2d2d]">
-                        South Indian style D1 chart for your saved birth date, time and place
-                        (VedAstro).
+                        North Indian D1: house numbers, whole-sign rashi (from Lagna), nine grahas +
+                        Ascendant with degree-in-sign, retrograde (®), nakshatra, and
+                        longitude-house (Lh) when it differs from sign-house — data from VedAstro.
                       </p>
                       <p className="mt-4 font-mukta text-[18px] md:text-[20px] leading-[30px] text-[#2d2d2d]">
                         Planets by house

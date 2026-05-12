@@ -327,7 +327,7 @@ function LandingHeaderClient() {
                 </Link>
 
                 {hasChildren ? (
-                  <div className="absolute left-0 top-[calc(100%+12px)] min-w-[220px] rounded-none bg-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20">
+                  <div className="absolute right-0 top-[calc(100%+12px)] min-w-max rounded-none bg-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20">
                     {value.children?.map(child => (
                       <div key={child.title} className="relative group/nested">
                         <Link

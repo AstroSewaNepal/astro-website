@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getPublicBackendBaseCandidates } from '@/lib/utils/url';
+import { getPublicBackendBaseCandidates, resolveVedastroProxyFetchUrl } from '@/lib/utils/url';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -460,7 +460,7 @@ async function fetchMatchReport(man: PersonInput, woman: PersonInput): Promise<M
 
   const attemptErrors: string[] = [];
   for (const base of getCandidateBackendBases()) {
-    const url = `${base}api/v1/vedastro/proxy/match?${params.toString()}`;
+    const url = resolveVedastroProxyFetchUrl(base, 'match', params);
     try {
       const res = await fetch(url);
       const ct = res.headers.get('content-type')?.toLowerCase() ?? '';
@@ -490,7 +490,7 @@ async function fetchVedastroGeneral(
   query: URLSearchParams,
 ): Promise<{ payload: VedastroProxyResult; usedBase: string }> {
   for (const base of getCandidateBackendBases()) {
-    const url = `${base}api/v1/vedastro/proxy/general?${query.toString()}`;
+    const url = resolveVedastroProxyFetchUrl(base, 'general', query);
     try {
       const response = await fetch(url);
       if (!response.ok) continue;
@@ -511,7 +511,7 @@ async function fetchVedastroPlanetsTable(
       const tasks = VEDASTRO_NINE_PLANETS.map(async planet => {
         const q = new URLSearchParams(query);
         q.set('planet', planet);
-        const url = `${base}api/v1/vedastro/proxy/planets?${q.toString()}`;
+        const url = resolveVedastroProxyFetchUrl(base, 'planets', q);
         const response = await fetch(url);
         if (!response.ok) throw new Error();
         const json = (await response.json()) as unknown;
@@ -534,7 +534,7 @@ async function fetchVedastroBirthChart(
   const q = new URLSearchParams(query);
   q.set('style', 'south');
   for (const base of getCandidateBackendBases()) {
-    const url = `${base}api/v1/vedastro/proxy/chart?${q.toString()}`;
+    const url = resolveVedastroProxyFetchUrl(base, 'chart', q);
     try {
       const response = await fetch(url);
       if (!response.ok) continue;

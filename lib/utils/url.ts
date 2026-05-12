@@ -42,3 +42,19 @@ export function getPublicBackendBaseCandidates(): string[] {
 
   throw new Error('NEXT_PUBLIC_BACKEND_URL is required in production.');
 }
+
+/**
+ * Full URL for Vedastro proxy routes. {@link getPublicBackendBaseCandidates} may return
+ * an origin (`http://host/`) or an API root (`http://host/api/v1/`); this avoids doubling `api/v1`.
+ */
+export function resolveVedastroProxyFetchUrl(
+  baseWithTrailingSlash: string,
+  proxyEndpoint: string,
+  query: URLSearchParams,
+): string {
+  const trimmed = normalizeBaseUrl(baseWithTrailingSlash);
+  const apiRoot = trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+  const ep = proxyEndpoint.replace(/^\/+/, '');
+  const qs = query.toString();
+  return qs ? `${apiRoot}/vedastro/proxy/${ep}?${qs}` : `${apiRoot}/vedastro/proxy/${ep}`;
+}

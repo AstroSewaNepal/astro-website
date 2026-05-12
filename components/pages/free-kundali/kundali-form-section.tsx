@@ -11,8 +11,8 @@ import CalendarIcon from '@/components/icons/calendar-icon';
 import UserLineIcon from '@/components/icons/user/user-line';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import { ServiceReport } from '@/components/images/services';
-import GoogleGIcon from '@/components/images/icons/google_G.png';
-import { getPublicBackendBaseCandidates } from '@/lib/utils/url';
+import { getPublicBackendBaseCandidates, resolveVedastroProxyFetchUrl } from '@/lib/utils/url';
+import { FreeKundaliGoogleSignIn } from '@/components/pages/free-kundali/free-kundali-google-sign-in';
 
 const fieldIconClass = 'w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary';
 const cardShell = clsx(
@@ -138,7 +138,7 @@ async function fetchVedastroGeneral(
   const attemptErrors: string[] = [];
 
   for (const base of getCandidateBackendBases()) {
-    const url = `${base}api/v1/vedastro/proxy/general?${query.toString()}`;
+    const url = resolveVedastroProxyFetchUrl(base, 'general', query);
     try {
       const response = await fetch(url);
       const contentType = response.headers.get('content-type')?.toLowerCase() ?? '';
@@ -185,7 +185,17 @@ const FieldError = ({ message }: { message?: string }) =>
 
 const EMPTY_ERRORS: FieldErrors = {};
 
-const KundaliFormSection: React.FC = () => {
+export type KundaliFormSectionProps = {
+  /** Prefilled after Google sign-in (Next Auth session name). */
+  defaultFullName?: string;
+  /** Set when redirected back from a failed OAuth attempt. */
+  oauthError?: boolean;
+};
+
+const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
+  defaultFullName,
+  oauthError = false,
+}) => {
   const router = useRouter();
   const [unknownBirthTime, setUnknownBirthTime] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -341,20 +351,9 @@ const KundaliFormSection: React.FC = () => {
               />
             </div>
             <p className="font-sahitya text-[22px] md:text-[24px] leading-snug font-bold">
-              View your saved Kundali
+              Sign in to pre-fill your name
             </p>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-secondary px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white -translate-y-2"
-            >
-              <span
-                aria-hidden
-                className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white"
-              >
-                <Image src={GoogleGIcon} alt="" width={24} height={24} />
-              </span>
-              Continue with Google
-            </button>
+            <FreeKundaliGoogleSignIn buttonClassName="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-secondary px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white -translate-y-2 disabled:cursor-not-allowed disabled:opacity-60" />
           </div>
 
           {/* Mobile Title */}
@@ -377,6 +376,14 @@ const KundaliFormSection: React.FC = () => {
                 'flex flex-col lg:w-full',
               )}
             >
+              {oauthError ? (
+                <p
+                  className="-mt-2 mb-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-center font-mukta text-sm text-red-700"
+                  role="alert"
+                >
+                  Google sign-in did not finish. Please try again.
+                </p>
+              ) : null}
               <div className="text-center border-b border-Trinary pb-1 md:pb-2 lg:pb-2 mb-5 md:mb-4 lg:mb-6 gap-10">
                 <h3 className="font-sahitya text-primary text-[22px] leading-[32px] md:text-[28px] md:leading-[38px] font-bold tracking-[0]">
                   Generate Your Kundali
@@ -402,6 +409,7 @@ const KundaliFormSection: React.FC = () => {
                       id="kundali-full-name"
                       name="fullName"
                       type="text"
+                      defaultValue={defaultFullName}
                       placeholder="John Doe"
                       onInput={event => {
                         event.currentTarget.value = event.currentTarget.value.replace(
@@ -601,20 +609,9 @@ const KundaliFormSection: React.FC = () => {
                 />
               </div>
               <p className="font-sahitya text-[28px] md:text-[26px] leading-snug font-bold">
-                View your saved Kundali
+                Sign in to pre-fill your name
               </p>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-[#f8f1e7] px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white lg:rotate-0 lg:opacity-100"
-              >
-                <span
-                  aria-hidden
-                  className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white"
-                >
-                  <Image src={GoogleGIcon} alt="" width={24} height={24} />
-                </span>
-                Continue with Google
-              </button>
+              <FreeKundaliGoogleSignIn buttonClassName="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-[#f8f1e7] px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white lg:rotate-0 lg:opacity-100 disabled:cursor-not-allowed disabled:opacity-60" />
             </div>
           </div>
         </div>
