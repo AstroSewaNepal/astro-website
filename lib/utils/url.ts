@@ -3,6 +3,22 @@ export function normalizeBaseUrl(url: string): string {
   return url.replace(/\/+$/, '');
 }
 
+/**
+ * Nest uses global prefix `api/v1`. Accepts either `http://host:port` or
+ * `http://host:port/api/v1` in `NEXT_PUBLIC_BACKEND_URL` so all callers match.
+ */
+export function ensureNestApiRoot(base: string): string {
+  const b = normalizeBaseUrl(base.trim());
+  return b.endsWith('/api/v1') ? b : `${b}/api/v1`;
+}
+
+/** API root including `/api/v1`, or `null` when unset. */
+export function tryGetPublicBackendBaseUrl(): string | null {
+  const raw = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+  if (!raw) return null;
+  return ensureNestApiRoot(raw);
+}
+
 export function joinUrl(base: string, path: string): string {
   const b = normalizeBaseUrl(base);
   const p = path.startsWith('/') ? path : `/${path}`;
@@ -17,13 +33,13 @@ function withTrailingSlash(url: string): string {
  * Client-safe backend origin from env (browser / server with NEXT_PUBLIC_*).
  */
 export function getPublicBackendBaseUrl(): string {
-  const base = process.env.NEXT_PUBLIC_BACKEND_URL ?? '';
+  const base = tryGetPublicBackendBaseUrl();
   if (!base) {
     throw new Error(
       'NEXT_PUBLIC_BACKEND_URL is not set; required for Astro Sewa API calls',
     );
   }
-  return normalizeBaseUrl(base);
+  return base;
 }
 
 /**
@@ -33,11 +49,12 @@ export function getPublicBackendBaseUrl(): string {
 export function getPublicBackendBaseCandidates(): string[] {
   const configured = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
   if (configured) {
-    return [withTrailingSlash(configured)];
+    return [withTrailingSlash(ensureNestApiRoot(configured))];
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    return ['http://localhost:3000/', 'http://localhost:5000/'];
+    // Prefer Nest default host first (Next does not serve `/api/v1/vedastro/*`).
+    return ['http://localhost:5000/', 'http://localhost:3000/'];
   }
 
   throw new Error('NEXT_PUBLIC_BACKEND_URL is required in production.');

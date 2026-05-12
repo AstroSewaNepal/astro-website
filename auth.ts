@@ -2,6 +2,8 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 
+import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
+
 /**
  * Auth.js requires a secret to sign cookies and JWTs.
  * Set `AUTH_SECRET` in `.env.local` (e.g. `openssl rand -base64 32`).
@@ -35,11 +37,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-        if (!backendUrl || !credentials?.username || !credentials?.password) return null;
+        const apiRoot = tryGetPublicBackendBaseUrl();
+        if (!apiRoot || !credentials?.username || !credentials?.password) return null;
 
         try {
-          const res = await fetch(`${backendUrl}/auth/login`, {
+          const res = await fetch(`${apiRoot}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -83,14 +85,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === 'google' && account.id_token) {
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-        if (backendUrl) {
+        const apiRoot = tryGetPublicBackendBaseUrl();
+        if (apiRoot) {
           try {
-            const base = backendUrl.replace(/\/$/, '');
-            const url = base.endsWith('/api/v1')
-              ? `${base}/auth/google`
-              : `${base}/api/v1/auth/google`;
-            const res = await fetch(url, {
+            const res = await fetch(`${apiRoot}/auth/google`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

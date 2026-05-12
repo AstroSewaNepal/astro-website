@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
+import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
 
 export interface RemediesCategoryImage {
   mediaId: string;
@@ -32,7 +32,11 @@ async function backendRequest<T>(
   method = "GET",
   body?: unknown,
 ): Promise<T> {
-  const res = await fetch(`${BACKEND_URL}/${path}`, {
+  const base = tryGetPublicBackendBaseUrl();
+  if (!base) {
+    throw new Error('NEXT_PUBLIC_BACKEND_URL is not set');
+  }
+  const res = await fetch(`${base}/${path}`, {
     method,
     headers: {
       "Content-Type": "application/json",
