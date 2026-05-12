@@ -1,26 +1,29 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 import { ZodiacDetailLangSwitch } from '@/components/pages/zodiac-sign/zodiac-detail-lang-switch';
+import { ZodiacSignMiniCard } from '@/components/pages/zodiac-sign/zodiac-sign-mini-card';
+import { ZodiacSignStripNav } from '@/components/pages/zodiac-sign/zodiac-sign-strip-nav';
+import { useZodiacSignDetails } from '@/components/pages/zodiac-sign/use-zodiac-sign-details';
 import Services from '@/components/pages/landing/services';
-import StartIcon from '@/components/icons/start-icon';
+import { CompatibilitySignsGrid } from '@/components/ui/compatibility-signs-grid';
 import ArrowRight from '@/components/icons/arrow-right';
 import { ServiceTalkToAstrologer } from '@/components/images/services';
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
-import { fetchVedastroZodiacSignBySlug } from '@/lib/api/vedastro/zodiac-sign';
 import { horoscopeDetailPageHref } from '@/lib/constants/horoscope-range-nav';
-import { zodiacEnglishDetailHref } from '@/lib/constants/zodiac-sign-nav';
-import { ENGLISH_ZODIAC_COLOR } from '@/lib/zodiac-sign/english-zodiac-color';
+import { compatibilityMatchHref } from '@/lib/constants/compatibility-nav';
+import { parseUiLangParam } from '@/lib/i18n';
+import { zodiacDetailHref } from '@/lib/constants/zodiac-sign-nav';
+import { ENGLISH_ZODIAC_COLOR, ENGLISH_ZODIAC_LIGHT } from '@/lib/zodiac-sign/english-zodiac';
+import { NEPALI_ZODIAC_COLOR, NEPALI_ZODIAC_LIGHT } from '@/lib/zodiac-sign/nepali-zodiac';
 import { parseZodiacSignParam } from '@/lib/zodiac-sign/parse-sign-param';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
-import type { VedastroZodiacSignRow } from '@/lib/types/vedastro';
-import { unwrapResult } from '@/lib/utils/vedastro-result';
 
 const cardBaseText = 'Your spark can move mountains, start bold today';
 const calloutButtons = [{ label: 'Chat Now' }, { label: 'Download app' }];
@@ -29,54 +32,64 @@ function capitalizeSign(slug: string): string {
   return slug.charAt(0).toUpperCase() + slug.slice(1);
 }
 
+function highlightFirstMatch(text: string, needle: string): ReactNode {
+  if (!text || !needle) {
+    return text;
+  }
+  const lowerText = text.toLowerCase();
+  const lowerNeedle = needle.toLowerCase();
+  const index = lowerText.indexOf(lowerNeedle);
+  if (index < 0) {
+    return text;
+  }
+  const before = text.slice(0, index);
+  const match = text.slice(index, index + needle.length);
+  const after = text.slice(index + needle.length);
+  return (
+    <>
+      {before}
+      <span className="font-medium text-[#611508] underline">{match}</span>
+      {after}
+    </>
+  );
+}
+
 export function ZodiacSignDetailsClient() {
   const searchParams = useSearchParams();
   const slug = useMemo(() => parseZodiacSignParam(searchParams.get('sign')), [searchParams]);
-
-  const [row, setRow] = useState<VedastroZodiacSignRow | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const contentLanguage = useMemo(
+    () => parseUiLangParam(searchParams.get('content_lang')) ?? ELanguage.ENGLISH,
+    [searchParams],
+  );
+  const headerLanguage = useMemo(
+    () => parseUiLangParam(searchParams.get('lang')) ?? ELanguage.ENGLISH,
+    [searchParams],
+  );
+  const { row, loadError, loading } = useZodiacSignDetails(slug);
+  const isNepali = contentLanguage === ELanguage.NEPALI;
 
   const signIndex = HOROSCOPE_SIGNS.indexOf(slug);
-  const displayName = HOROSCOPE_DATA[ELanguage.ENGLISH][signIndex]?.name ?? capitalizeSign(slug);
+  const displayName = HOROSCOPE_DATA[contentLanguage][signIndex]?.name ?? capitalizeSign(slug);
+  const signColorMap = isNepali ? NEPALI_ZODIAC_COLOR : ENGLISH_ZODIAC_COLOR;
+  const signLightMap = isNepali ? NEPALI_ZODIAC_LIGHT : ENGLISH_ZODIAC_LIGHT;
+  const hrefForSign = (sign: (typeof HOROSCOPE_SIGNS)[number]) =>
+    zodiacDetailHref(sign, contentLanguage, headerLanguage);
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setLoadError(null);
-    (async () => {
-      try {
-        const envelope = await fetchVedastroZodiacSignBySlug(slug);
-        const data = unwrapResult(envelope);
-        if (!cancelled) {
-          setRow(data);
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setRow(null);
-          setLoadError(e instanceof Error ? e.message : 'Could not load zodiac sign.');
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [slug]);
-
-  const title = row?.sign ?? displayName;
+  const title = isNepali ? displayName : (row?.sign ?? displayName);
   const rangeLine = row?.date_range ?? '';
   const description = row?.intro ?? row?.card_summary ?? '';
   const compatChips = row?.compatibility?.length ? row.compatibility.join(', ') : '—';
 
-  const traitBlocks = row
+  const summaryTraits = row
     ? [
-        { label: 'Element', chips: [row.element] },
-        { label: 'Ruling Planet', chips: [row.ruling_planet] },
-        { label: 'Compatibility', chips: [compatChips] },
+        { label: 'Element', value: row.element },
+        { label: 'Ruling Planet', value: row.ruling_planet },
+        { label: 'Compatibility', value: compatChips },
+      ]
+    : [];
+
+  const detailTraits = row
+    ? [
         {
           label: 'Strengths',
           value: row.strengths?.length ? row.strengths.join(', ') : '—',
@@ -89,114 +102,131 @@ export function ZodiacSignDetailsClient() {
       ]
     : [];
 
+  const compatibilityItems = useMemo(
+    () =>
+      HOROSCOPE_SIGNS.map(sign => ({
+        slug: sign,
+        name:
+          HOROSCOPE_DATA[contentLanguage][HOROSCOPE_SIGNS.indexOf(sign)]?.name ??
+          capitalizeSign(sign),
+        image: signColorMap[sign],
+        href: compatibilityMatchHref(slug, sign),
+      })),
+    [contentLanguage, signColorMap, slug],
+  );
+
   return (
     <main className="min-h-screen">
       <div className="mx-auto max-w-[1240px] px-4 py-4 sm:px-6 lg:px-8">
         <section className="mx-auto mt-6 max-w-[1180px]">
           <ZodiacDetailLangSwitch signSlug={slug} className="mb-4" />
 
-          <div className="flex items-center gap-3 overflow-x-auto pb-3">
-            {HOROSCOPE_SIGNS.map((s, i) => {
-              const label = HOROSCOPE_DATA[ELanguage.ENGLISH][i]!.name;
-              const active = s === slug;
-              return (
-                <Link
-                  key={s}
-                  href={zodiacEnglishDetailHref(s)}
-                  className="flex min-w-[62px] flex-col items-center gap-1"
-                >
-                  <div
-                    className={clsx(
-                      'flex h-[52px] w-[52px] items-center justify-center rounded-full border bg-[#fcf7ef] p-1.5',
-                      active ? 'border-[#f2b400] ring-2 ring-[#f2b400]/20' : 'border-[#d7c4b0]',
-                    )}
+          <ZodiacSignStripNav
+            activeSign={slug}
+            language={contentLanguage}
+            imageBySign={signColorMap}
+            lightImageBySign={signLightMap}
+            hrefForSign={hrefForSign}
+            showActiveDot
+          />
+
+          <div className="mt-4 border-y border-[#e4d4c6] py-8">
+            <div className="grid gap-8 lg:grid-cols-[1fr_308px] lg:items-center lg:gap-8">
+              <div>
+                <h1 className="font-sahitya text-[34px] font-bold leading-none text-[#611508] sm:text-[36px] sm:leading-[48px]">
+                  {title}
+                </h1>
+                <p className="mt-1 font-mukta text-[16px] text-[#101010] sm:text-[18px] sm:leading-[30px]">
+                  {rangeLine ? `(${rangeLine})` : null}
+                </p>
+                <p className="font-mukta text-[20px] font-medium text-[#be7b71] sm:text-[24px] sm:leading-[30px]">
+                  Astronomy and Astrology
+                </p>
+
+                <div className="mt-4 max-w-[1120px]">
+                  {loading ? (
+                    <p className="font-mukta text-[16px] leading-8 text-[#383838] sm:text-[18px] sm:leading-[30px] lg:text-[24px] lg:leading-[34px]">
+                      Loading…
+                    </p>
+                  ) : loadError ? (
+                    <p className="font-mukta text-[16px] leading-8 text-[#b42318] sm:text-[18px] sm:leading-[30px] lg:text-[24px] lg:leading-[34px]">
+                      {loadError}
+                    </p>
+                  ) : (
+                    <p className="font-mukta text-[16px] leading-8 text-[#383838] sm:text-[18px] sm:leading-[30px] lg:text-[24px] lg:leading-[34px]">
+                      {highlightFirstMatch(description, displayName)}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center lg:items-end">
+                <div className="flex h-[260px] w-[260px] items-center justify-center rounded-full sm:h-[290px] sm:w-[290px] lg:h-[297px] lg:w-[308px]">
+                  <Image
+                    src={signColorMap[slug]}
+                    alt={displayName}
+                    className="h-[190px] w-[190px] object-contain sm:h-[220px] sm:w-[220px] lg:h-[297px] lg:w-[308px]"
+                  />
+                </div>
+                <div className="mt-5 flex flex-wrap items-center gap-3">
+                  <Link
+                    href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
+                    className="inline-flex items-center gap-2 rounded-[32px] bg-[#611508] px-4 py-1.5 font-mukta text-[16px] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[20px] sm:leading-8 lg:text-[22px] lg:leading-8"
                   >
-                    <Image
-                      src={ENGLISH_ZODIAC_COLOR[s]}
-                      alt={label}
-                      className="h-full w-full object-contain"
-                    />
-                  </div>
-                  <span className="font-mukta text-[10px] text-[#8a7463]">{label}</span>
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
-            <div>
-              <h1 className="font-sahitya text-[34px] font-bold leading-none text-[#6b2417] sm:text-[42px]">
-                {title}
-              </h1>
-              <p className="mt-1 font-mukta text-[14px] text-[#8a7463]">
-                {rangeLine ? `${rangeLine} | ` : null}
-                Astronomy and Astrology
-              </p>
-
-              <div className="mt-4 max-w-[560px]">
-                {loading ? (
-                  <p className="font-mukta text-[14px] leading-8 text-[#4f463f]">Loading…</p>
-                ) : loadError ? (
-                  <p className="font-mukta text-[14px] leading-8 text-[#b42318]">{loadError}</p>
-                ) : (
-                  <p className="font-mukta text-[14px] leading-8 text-[#4f463f]">{description}</p>
-                )}
-              </div>
-
-              {!loading && !loadError && traitBlocks.length > 0 ? (
-                <div className="mt-6 rounded-[16px] border border-[#ead7c7] bg-[#fffaf2] p-4 sm:p-5">
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {traitBlocks.map(card => (
-                      <div key={card.label}>
-                        <p className="font-mukta text-[12px] text-[#9a7d66]">{card.label}</p>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {'chips' in card && card.chips ? (
-                            card.chips.map(chip => (
-                              <span
-                                key={chip}
-                                className="rounded-full border border-[#e3c49c] bg-[#f7efd9] px-3 py-1 font-mukta text-[12px] text-[#6f2618]"
-                              >
-                                {chip}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="font-mukta text-[13px] leading-6 text-[#4f463f]">
-                              {'value' in card ? card.value : null}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                    Find {displayName} horoscope
+                    <ArrowRight className="h-6 w-6 text-[#f8f3df]" />
+                  </Link>
                 </div>
-              ) : null}
-            </div>
-
-            <div className="flex flex-col items-center lg:items-end">
-              <div className="flex h-[260px] w-[260px] items-center justify-center rounded-full sm:h-[290px] sm:w-[290px]">
-                <Image
-                  src={ENGLISH_ZODIAC_COLOR[slug]}
-                  alt={displayName}
-                  className="h-[190px] w-[190px] object-contain"
-                />
-              </div>
-              <div className="mt-5 flex flex-wrap items-center gap-3">
-                <Link
-                  href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#6f2618] px-4 py-2 font-mukta text-[12px] font-semibold text-[#fff7ec] hover:bg-[#581e13]"
-                >
-                  Find {displayName} horoscope
-                  <ArrowRight className="h-3 w-3 text-[#fff7ec]" />
-                </Link>
-              </div>
-              <div className="px-4 py-1.5 bg-amber-950 rounded-[32px] inline-flex justify-start items-center gap-2.5">
-                <div className="justify-start text-orange-100 text-xl font-normal font-['Mukta'] leading-8">
-                  Find Cancer Horoscope
-                </div>
-                <ArrowRight className="h-6 w-6 text-orange-100" />
               </div>
             </div>
           </div>
+
+          {!loading && !loadError && (summaryTraits.length > 0 || detailTraits.length > 0) ? (
+            <section className="mt-8 rounded-[20px] border-y border-[#e4d4c6] py-8">
+              <div className="grid gap-8 md:grid-cols-3 md:gap-10 lg:w-[659px] lg:gap-0 lg:justify-between">
+                {summaryTraits.map(item => (
+                  <div key={item.label}>
+                    <h3 className="font-sahitya text-[22px] font-bold leading-8 text-[#611508]">
+                      {item.label}
+                    </h3>
+                    <p className="mt-2 border-l-[3px] border-[#be7b71] pl-4 font-mukta text-[20px] font-semibold leading-7 text-[#383838]">
+                      {item.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-8 space-y-8">
+                {detailTraits.map(item => (
+                  <div key={item.label}>
+                    <h3 className="font-sahitya text-[22px] font-bold leading-8 text-[#611508]">
+                      {item.label}
+                    </h3>
+                    {item.label === 'Personality Traits' ? (
+                      <p className="mt-2 w-full border-l-[3px] border-[#be7b71] pl-4 font-mukta text-[22px] font-semibold leading-8 text-[#383838]">
+                        {item.value}
+                      </p>
+                    ) : (
+                      <p className="mt-2 border-l-[3px] border-[#be7b71] pl-4 font-mukta text-[20px] font-semibold leading-7 text-[#383838]">
+                        {item.value}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <CompatibilitySignsGrid
+                className="mt-10"
+                title={
+                  isNepali ? `${displayName} राशि अनुकूलता` : `${displayName} Sign Compatibility`
+                }
+                currentSignLabel={displayName}
+                currentSignImage={signColorMap[slug]}
+                items={compatibilityItems}
+                variant="figma"
+              />
+            </section>
+          ) : null}
         </section>
 
         <section className="mx-auto mt-10 max-w-[1180px]">
@@ -206,45 +236,18 @@ export function ZodiacSignDetailsClient() {
 
           <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {HOROSCOPE_SIGNS.map((s, i) => {
-              const card = HOROSCOPE_DATA[ELanguage.ENGLISH][i]!;
+              const card = HOROSCOPE_DATA[contentLanguage][i]!;
               return (
-                <Link
+                <ZodiacSignMiniCard
                   key={s}
-                  href={zodiacEnglishDetailHref(s)}
-                  className="block rounded-[12px] border border-[#cfb8a5] bg-[#fcf6ed] px-3 py-2 transition-colors hover:bg-[#f8f0e4]"
-                >
-                  <article>
-                    <div className="flex items-center gap-2">
-                      <Image
-                        src={card.image}
-                        alt={card.name}
-                        className="h-[46px] w-[46px] object-contain"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1">
-                          <h3 className="truncate font-mukta text-[13px] font-bold text-[#742718]">
-                            {card.name}
-                          </h3>
-                          <div className="flex items-center gap-0.5 text-[#ef8a20]">
-                            {Array.from({ length: 3 }).map((_, index) => (
-                              <StartIcon
-                                key={`${card.name}-${index}`}
-                                className="h-3 w-3 text-[#ef8a20]"
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="mt-0.5 font-mukta text-[10px] leading-4 text-[#7b6b61]">
-                          {cardBaseText}
-                        </p>
-                        <span className="mt-1 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[10px] font-semibold text-[#7b3b27]">
-                          Read More
-                          <ArrowRight className="h-2.5 w-2.5 text-[#7b3b27]" />
-                        </span>
-                      </div>
-                    </div>
-                  </article>
-                </Link>
+                  href={zodiacDetailHref(s, contentLanguage, headerLanguage)}
+                  image={card.image}
+                  imageColor={card.imageColor}
+                  name={card.name}
+                  blurb={card.detail || cardBaseText}
+                  readMoreLabel={isNepali ? 'थप पढ्नुहोस्' : 'Read More'}
+                  active={s === slug}
+                />
               );
             })}
           </div>

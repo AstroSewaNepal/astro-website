@@ -1,92 +1,30 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import clsx from 'clsx';
+import { useMemo } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 import LandingFAQ from '@/components/pages/landing/faq';
-import { ZodiacDetailLangSwitch } from '@/components/pages/zodiac-sign/zodiac-detail-lang-switch';
-import StartIcon from '@/components/icons/start-icon';
-import ArrowRight from '@/components/icons/arrow-right';
+import { ZodiacSignMiniCard } from '@/components/pages/zodiac-sign/zodiac-sign-mini-card';
+import { ZodiacSignStripNav } from '@/components/pages/zodiac-sign/zodiac-sign-strip-nav';
+import { useZodiacSignDetails } from '@/components/pages/zodiac-sign/use-zodiac-sign-details';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
-import {
-  NepaliAquariusLight,
-  NepaliAriesLight,
-  NepaliCancerLight,
-  NepaliCapricornLight,
-  NepaliGeminiLight,
-  NepaliLeoLight,
-  NepaliLibraLight,
-  NepaliPiscesLight,
-  NepaliSagittariusLight,
-  NepaliScorpioLight,
-  NepaliTaurusLight,
-  NepaliVirgoLight,
-} from '@/components/images/zodiac/nepali';
 import { ELanguage } from '@/components/enums/language.enum';
-import { fetchVedastroZodiacSignBySlug } from '@/lib/api/vedastro/zodiac-sign';
 import { zodiacNepaliDetailHref } from '@/lib/constants/zodiac-sign-nav';
+import { NEPALI_ZODIAC_LIGHT } from '@/lib/zodiac-sign/nepali-zodiac';
+import { NEPALI_ZODIAC_COLOR } from '@/lib/zodiac-sign/nepali-zodiac';
 import { parseZodiacSignParam } from '@/lib/zodiac-sign/parse-sign-param';
-import { HOROSCOPE_SIGNS, type HoroscopeSign } from '@/lib/types/horoscope';
-import type { VedastroZodiacSignRow } from '@/lib/types/vedastro';
-import { unwrapResult } from '@/lib/utils/vedastro-result';
-
-const SIGN_NEPALI_LIGHT: Record<HoroscopeSign, typeof NepaliAriesLight> = {
-  aries: NepaliAriesLight,
-  taurus: NepaliTaurusLight,
-  gemini: NepaliGeminiLight,
-  cancer: NepaliCancerLight,
-  leo: NepaliLeoLight,
-  virgo: NepaliVirgoLight,
-  libra: NepaliLibraLight,
-  scorpio: NepaliScorpioLight,
-  sagittarius: NepaliSagittariusLight,
-  capricorn: NepaliCapricornLight,
-  aquarius: NepaliAquariusLight,
-  pisces: NepaliPiscesLight,
-};
+import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 
 const cardTextNp = 'तपाईंको चिंगारीले पहाडहरू सार्न सक्छ, आज साहसी सुरु गर्नुहोस्';
 
 export function ZodiacSignDetailNepaliClient() {
   const searchParams = useSearchParams();
   const slug = useMemo(() => parseZodiacSignParam(searchParams.get('sign')), [searchParams]);
-
-  const [row, setRow] = useState<VedastroZodiacSignRow | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { row, loadError, loading } = useZodiacSignDetails(slug);
 
   const signIndex = HOROSCOPE_SIGNS.indexOf(slug);
   const nepaliName = HOROSCOPE_DATA[ELanguage.NEPALI][signIndex]?.name ?? slug;
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setLoadError(null);
-    (async () => {
-      try {
-        const envelope = await fetchVedastroZodiacSignBySlug(slug);
-        const data = unwrapResult(envelope);
-        if (!cancelled) {
-          setRow(data);
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setRow(null);
-          setLoadError(e instanceof Error ? e.message : 'Could not load zodiac sign.');
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [slug]);
 
   const traits = row
     ? [
@@ -112,41 +50,15 @@ export function ZodiacSignDetailNepaliClient() {
     <main className="min-h-screen">
       <div className="mx-auto max-w-[1240px] px-4 py-4 sm:px-6 lg:px-8">
         <section className="mx-auto mt-6 max-w-[1180px]">
-          <ZodiacDetailLangSwitch signSlug={slug} className="mb-4" />
-
-          <p className="font-mukta text-[11px] text-[#7a6658]">
-            Home &gt; Zodiac Sign - Nepali &gt; Zodiac Sign Detail
-          </p>
-
-          <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
-            {HOROSCOPE_SIGNS.map((s, i) => {
-              const nepaliLabel = HOROSCOPE_DATA[ELanguage.NEPALI][i]!.name;
-              const active = s === slug;
-              return (
-                <Link
-                  key={s}
-                  href={zodiacNepaliDetailHref(s)}
-                  className="flex min-w-[56px] flex-col items-center gap-1"
-                >
-                  <div
-                    className={clsx(
-                      'flex h-[48px] w-[48px] items-center justify-center rounded-full border bg-[#fcf7ef] p-1',
-                      active ? 'border-[#f2b400] ring-2 ring-[#f2b400]/20' : 'border-[#d7c4b0]',
-                    )}
-                  >
-                    <Image
-                      src={SIGN_NEPALI_LIGHT[s]}
-                      alt={nepaliLabel}
-                      className="h-full w-full object-contain"
-                    />
-                  </div>
-                  <span className="max-w-[56px] truncate text-center font-mukta text-[9px] text-[#8a7463]">
-                    {nepaliLabel}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
+          <ZodiacSignStripNav
+            activeSign={slug}
+            language={ELanguage.NEPALI}
+            imageBySign={NEPALI_ZODIAC_COLOR}
+            lightImageBySign={NEPALI_ZODIAC_LIGHT}
+            hrefForSign={zodiacNepaliDetailHref}
+            showActiveDot
+            className="mt-4"
+          />
 
           <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_220px] lg:items-start">
             <div>
@@ -173,7 +85,7 @@ export function ZodiacSignDetailNepaliClient() {
 
             <div className="rounded-[10px] bg-[#f4ead2] p-5">
               <Image
-                src={SIGN_NEPALI_LIGHT[slug]}
+                src={NEPALI_ZODIAC_COLOR[slug]}
                 alt={nepaliName}
                 className="mx-auto h-[80px] w-[80px] object-contain"
               />
@@ -203,43 +115,15 @@ export function ZodiacSignDetailNepaliClient() {
             {HOROSCOPE_SIGNS.map((s, i) => {
               const card = HOROSCOPE_DATA[ELanguage.NEPALI][i]!;
               return (
-                <Link
+                <ZodiacSignMiniCard
                   key={s}
                   href={zodiacNepaliDetailHref(s)}
-                  className="block rounded-[12px] border border-[#cfb8a5] bg-[#fcf6ed] px-3 py-2 transition-colors hover:bg-[#f8f0e4]"
-                >
-                  <article>
-                    <div className="flex items-center gap-2">
-                      <Image
-                        src={card.image}
-                        alt={card.name}
-                        className="h-[46px] w-[46px] object-contain"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1">
-                          <h3 className="truncate font-mukta text-[13px] font-bold text-[#742718]">
-                            {card.name}
-                          </h3>
-                          <div className="flex items-center gap-0.5 text-[#ef8a20]">
-                            {Array.from({ length: 3 }).map((_, index) => (
-                              <StartIcon
-                                key={`${card.name}-${index}`}
-                                className="h-3 w-3 text-[#ef8a20]"
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="mt-0.5 font-mukta text-[10px] leading-4 text-[#7b6b61]">
-                          {cardTextNp}
-                        </p>
-                        <span className="mt-1 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[10px] font-semibold text-[#7b3b27]">
-                          थप पढ्नुहोस्
-                          <ArrowRight className="h-2.5 w-2.5 text-[#7b3b27]" />
-                        </span>
-                      </div>
-                    </div>
-                  </article>
-                </Link>
+                  image={card.image}
+                  imageColor={card.imageColor}
+                  name={card.name}
+                  blurb={cardTextNp}
+                  readMoreLabel="थप पढ्नुहोस्"
+                />
               );
             })}
           </div>

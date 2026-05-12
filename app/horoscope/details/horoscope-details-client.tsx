@@ -11,21 +11,10 @@ import StartIcon from '@/components/icons/start-icon';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
-import {
-  EnglishAquariusColor,
-  EnglishAriesColor,
-  EnglishCancerColor,
-  EnglishCapricornColor,
-  EnglishGeminiColor,
-  EnglishLeoColor,
-  EnglishLibraColor,
-  EnglishPiscesColor,
-  EnglishSagittariusColor,
-  EnglishScorpioColor,
-  EnglishTaurusColor,
-  EnglishVirgoColor,
-} from '@/components/images/zodiac/english';
+import { CompatibilitySignsGrid } from '@/components/ui/compatibility-signs-grid';
+import * as EnglishZodiacImage from '@/components/images/zodiac/english';
 import { fetchVedastroHoroscopeDetail } from '@/lib/api/vedastro/horoscope';
+import { compatibilityMatchHref } from '@/lib/constants/compatibility-nav';
 import {
   horoscopeDetailPageHref,
   horoscopeListPageHref,
@@ -36,19 +25,33 @@ import { HOROSCOPE_SIGNS, isHoroscopeSign, type HoroscopeSign } from '@/lib/type
 import type { HoroscopeDetailData } from '@/lib/types/vedastro';
 import type { VedastroHoroscopeRangeType } from '@/lib/types/vedastro';
 
-const SIGN_COLOR_IMAGE: Record<HoroscopeSign, typeof EnglishAriesColor> = {
-  aries: EnglishAriesColor,
-  taurus: EnglishTaurusColor,
-  gemini: EnglishGeminiColor,
-  cancer: EnglishCancerColor,
-  leo: EnglishLeoColor,
-  virgo: EnglishVirgoColor,
-  libra: EnglishLibraColor,
-  scorpio: EnglishScorpioColor,
-  sagittarius: EnglishSagittariusColor,
-  capricorn: EnglishCapricornColor,
-  aquarius: EnglishAquariusColor,
-  pisces: EnglishPiscesColor,
+const SIGN_COLOR_IMAGE: Record<HoroscopeSign, typeof EnglishZodiacImage.EnglishAriesColor> = {
+  aries: EnglishZodiacImage.EnglishAriesColor,
+  taurus: EnglishZodiacImage.EnglishTaurusColor,
+  gemini: EnglishZodiacImage.EnglishGeminiColor,
+  cancer: EnglishZodiacImage.EnglishCancerColor,
+  leo: EnglishZodiacImage.EnglishLeoColor,
+  virgo: EnglishZodiacImage.EnglishVirgoColor,
+  libra: EnglishZodiacImage.EnglishLibraColor,
+  scorpio: EnglishZodiacImage.EnglishScorpioColor,
+  sagittarius: EnglishZodiacImage.EnglishSagittariusColor,
+  capricorn: EnglishZodiacImage.EnglishCapricornColor,
+  aquarius: EnglishZodiacImage.EnglishAquariusColor,
+  pisces: EnglishZodiacImage.EnglishPiscesColor,
+};
+const SIGN_LIGHT_IMAGE: Record<HoroscopeSign, typeof EnglishZodiacImage.EnglishAriesLight> = {
+  aries: EnglishZodiacImage.EnglishAriesLight,
+  taurus: EnglishZodiacImage.EnglishTaurusLight,
+  gemini: EnglishZodiacImage.EnglishGeminiLight,
+  cancer: EnglishZodiacImage.EnglishCancerLight,
+  leo: EnglishZodiacImage.EnglishLeoLight,
+  virgo: EnglishZodiacImage.EnglishVirgoLight,
+  libra: EnglishZodiacImage.EnglishLibraLight,
+  scorpio: EnglishZodiacImage.EnglishScorpioLight,
+  sagittarius: EnglishZodiacImage.EnglishSagittariusLight,
+  capricorn: EnglishZodiacImage.EnglishCapricornLight,
+  aquarius: EnglishZodiacImage.EnglishAquariusLight,
+  pisces: EnglishZodiacImage.EnglishPiscesLight,
 };
 
 const RANGE_TAB_TYPES = [
@@ -151,7 +154,7 @@ export function HoroscopeDetailsClient() {
     if (!validSign) {
       return [];
     }
-    return HOROSCOPE_SIGNS.filter(s => s !== validSign).map(s => ({
+    return HOROSCOPE_SIGNS.map(s => ({
       slug: s,
       name: capitalizeSign(s),
       image: SIGN_COLOR_IMAGE[s],
@@ -162,7 +165,7 @@ export function HoroscopeDetailsClient() {
     <main className="min-h-screen">
       <div className="mx-auto max-w-[1240px] px-4 pb-16 pt-4 sm:px-6 lg:px-8">
         {!validSign ? (
-          <section className="mt-7 rounded-[20px] border border-[#dcccbc] bg-[#f9f2e8]/95 px-4 py-10 text-center sm:px-6">
+          <section className="mt-7 rounded-[20px] border border-[#dcccbc]  px-4 py-10 text-center sm:px-6">
             <h1 className="font-sahitya text-[28px] text-[#6f2618]">
               {signInvalid ? dict.details.unknownSign : dict.details.chooseSign}
             </h1>
@@ -197,7 +200,7 @@ export function HoroscopeDetailsClient() {
             </div>
           </section>
         ) : (
-          <section className="mt-7 rounded-[20px] border border-[#dcccbc] bg-[#f9f2e8]/95 px-4 py-5 sm:px-6 lg:px-8">
+          <section className="mt-7 rounded-[20px] border border-[#dcccbc] px-4 py-5 sm:px-6 lg:px-8">
             <h1 className="font-sahitya text-[30px] leading-none text-[#6f2618] sm:text-[44px]">
               {dict.details.rangeHeading[rangeType]}
             </h1>
@@ -228,17 +231,27 @@ export function HoroscopeDetailsClient() {
                           : 'border-[#d5d3d0] bg-[#f2f0ee] group-hover:border-[#c9a88a] group-hover:bg-[#faf8f6] group-hover:shadow-sm',
                       )}
                     >
-                      <Image
-                        src={SIGN_COLOR_IMAGE[slug]}
-                        alt={capitalizeSign(slug)}
-                        className={clsx(
-                          'h-full w-full object-contain transition-[filter,opacity,transform] duration-200 ease-out',
-                          selected
-                            ? 'grayscale-0 contrast-100 brightness-100 scale-[1.02]'
-                            : 'grayscale contrast-[0.95] brightness-[0.98] opacity-[0.92] group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-100 group-hover:opacity-100 group-hover:scale-[1.03] group-focus-visible:grayscale-0 group-focus-visible:opacity-100',
-                        )}
-                      />
+                      <div className="relative h-full w-full">
+                        <Image
+                          src={SIGN_LIGHT_IMAGE[slug]}
+                          alt={capitalizeSign(slug)}
+                          className={clsx(
+                            'absolute inset-0 h-full w-full object-contain transition-opacity duration-200',
+                            selected ? 'opacity-0' : 'opacity-100 group-hover:opacity-0',
+                          )}
+                        />
+
+                        <Image
+                          src={SIGN_COLOR_IMAGE[slug]}
+                          alt={capitalizeSign(slug)}
+                          className={clsx(
+                            'absolute inset-0 h-full w-full object-contain transition-opacity duration-200',
+                            selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+                          )}
+                        />
+                      </div>
                     </div>
+
                     <span
                       className={clsx(
                         'text-center font-tiro-devanagari text-[11px] font-normal leading-tight transition-colors duration-200 sm:text-[12px]',
@@ -339,40 +352,19 @@ export function HoroscopeDetailsClient() {
                   </p>
                 </div>
 
-                <div className="mt-8">
-                  <h3 className="font-mukta text-[18px] font-semibold text-[#6f2618]">
-                    {interpolate(dict.details.compatibility, { sign: capitalizeSign(validSign) })}
-                  </h3>
-                  <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-                    {compatibilitySigns.map(item => (
-                      <Link
-                        key={item.slug}
-                        href={horoscopeDetailPageHref(item.slug, rangeType, uiLanguage)}
-                        className="rounded-[10px] border border-[#d7c3b1] bg-[#fdf8f1] px-2 py-2 transition-colors hover:border-[#f4a11a]/80"
-                      >
-                        <div className="flex items-center justify-center gap-1">
-                          <Image
-                            src={SIGN_COLOR_IMAGE[validSign]}
-                            alt={capitalizeSign(validSign)}
-                            className="h-[42px] w-[42px] object-contain"
-                          />
-                          <span className="text-[14px] text-[#ff1a78]">❤</span>
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            className="h-[42px] w-[42px] object-contain"
-                          />
-                        </div>
-                        <div className="mt-1 flex items-center justify-between px-1">
-                          <span className="font-mukta text-[10px] text-[#846e5f]">
-                            {capitalizeSign(validSign)}
-                          </span>
-                          <span className="font-mukta text-[10px] text-[#846e5f]">{item.name}</span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+                <CompatibilitySignsGrid
+                  className="mt-8"
+                  title={interpolate(dict.details.compatibility, {
+                    sign: capitalizeSign(validSign),
+                  })}
+                  currentSignLabel={capitalizeSign(validSign)}
+                  currentSignImage={SIGN_COLOR_IMAGE[validSign]}
+                  variant="figma"
+                  items={compatibilitySigns.map(item => ({
+                    ...item,
+                    href: compatibilityMatchHref(validSign, item.slug),
+                  }))}
+                />
 
                 <div className="mt-9">
                   <h3 className="font-mukta text-[18px] font-semibold text-[#6f2618]">
@@ -380,20 +372,41 @@ export function HoroscopeDetailsClient() {
                   </h3>
 
                   <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    {bottomCards.map(card => {
-                      const slug = card.name.toLowerCase();
+                    {bottomCards.map((card, idx) => {
+                      const slug = HOROSCOPE_SIGNS[idx] ?? card.name.toLowerCase();
+                      const selected = slug === validSign;
                       return (
                         <Link
                           key={card.name}
                           href={horoscopeDetailPageHref(slug, rangeType, uiLanguage)}
-                          className="block rounded-[16px] border border-[#cfb8a5] bg-[#fcf6ed] px-3 py-2 transition-transform hover:-translate-y-0.5"
+                          className={clsx(
+                            'group block rounded-[16px] border px-3 py-2 transition-transform hover:-translate-y-0.5',
+                            selected
+                              ? 'border-[#c9a063] ring-2 ring-[#e8c47a]/35'
+                              : 'border-[#cfb8a5]',
+                          )}
                         >
                           <div className="flex items-center gap-2">
-                            <Image
-                              src={card.image}
-                              alt={card.name}
-                              className="h-[44px] w-[44px] object-contain"
-                            />
+                            <div className="relative h-[44px] w-[44px] shrink-0">
+                              <Image
+                                src={card.image}
+                                alt={card.name}
+                                className={clsx(
+                                  'h-[44px] w-[44px] object-contain transition-opacity duration-300',
+                                  selected ? 'opacity-0' : 'opacity-100 group-hover:opacity-0',
+                                )}
+                              />
+                              <Image
+                                src={card.imageColor ?? card.image}
+                                alt={card.name}
+                                className={clsx(
+                                  'absolute inset-0 h-[44px] w-[44px] object-contain transition-opacity duration-300',
+                                  selected
+                                    ? 'opacity-100'
+                                    : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100',
+                                )}
+                              />
+                            </div>
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-1">
                                 <h4 className="truncate font-mukta text-[13px] font-bold text-[#742718]">
