@@ -52,6 +52,7 @@ const Calculators: React.FC = () => {
             title="Numerology Calculator"
             description="Discover your life path number and explore numerology insights."
             mobileHorizontal
+            calculateHref="/calculators/numerology-calculator"
             icon={
               <Image
                 src={NumerologyCalculatorImage}
@@ -67,6 +68,7 @@ const Calculators: React.FC = () => {
             title="Sun Sign Calculator"
             description="Discover your zodiac sign based on birth date and astrology insights."
             mobileHorizontal
+            calculateHref="/calculators/sun-sign-calculator"
             icon={
               <Image
                 src={SunSignCalculatorImage}
@@ -82,6 +84,7 @@ const Calculators: React.FC = () => {
             title="Mangal Dosha Calculator"
             description="Check Mangal dosha and marriage effects in your birth chart."
             mobileHorizontal
+            calculateHref="/calculators/mangal-dosha-calculator"
             icon={
               <Image
                 src={MangalDoshaImage}
@@ -98,6 +101,7 @@ const Calculators: React.FC = () => {
               title="Dasha Calculator"
               description="Calculate planetary dasha periods and analyze timing of life events in Vedic astrology."
               mobileHorizontal
+              calculateHref="/calculators/dasha-calculator"
               icon={
                 <Image
                   src={DashaImage}
@@ -115,6 +119,7 @@ const Calculators: React.FC = () => {
               title="Moon Phase Calculator"
               description="Track and explore current moon phases and lunar cycle changes over time."
               mobileHorizontal
+              calculateHref="/calculators/moon-phase-calculator"
               icon={
                 <Image
                   src={MoonPhaseImage}
@@ -132,6 +137,7 @@ const Calculators: React.FC = () => {
               title="Rashi Calculator"
               description="Discover your moon sign and understand your Vedic astrology birth chart insights."
               mobileHorizontal
+              calculateHref="/calculators/rashi-calculator"
               icon={
                 <Image
                   src={RashiCalculatorImage}
@@ -153,6 +159,7 @@ const Calculators: React.FC = () => {
           titleClassName="md:text-[22px] md:leading-[32px] text-center"
           descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
           description="Calculate planetary dasha periods and analyze timing of life events in Vedic astrology."
+          calculateHref="/calculators/dasha-calculator"
           icon={
             <Image
               src={DashaImage}
@@ -169,6 +176,7 @@ const Calculators: React.FC = () => {
           titleClassName="md:text-[22px] md:leading-[32px] text-center"
           descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
           description="Track and explore current moon phases and lunar cycle changes over time."
+          calculateHref="/calculators/moon-phase-calculator"
           icon={
             <Image
               src={MoonPhaseImage}
@@ -185,6 +193,7 @@ const Calculators: React.FC = () => {
           titleClassName="md:text-[22px] md:leading-[32px] text-center"
           descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
           description="Discover your moon sign and understand your Vedic astrology birth chart insights."
+          calculateHref="/calculators/rashi-calculator"
           icon={
             <Image
               src={RashiCalculatorImage}
