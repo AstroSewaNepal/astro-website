@@ -4,7 +4,7 @@ import { ELanguage } from '@/components/enums/language.enum';
 export const zodiacListingCopy = {
   [ELanguage.ENGLISH]: {
     heroTitle: 'Zodiac Sign',
-    heroSub: 'Find your Zodiac Sign',
+    heroSub: 'Find Your Zodiac Sign',
     insightAside: 'Zodiac Insight',
     whatIsTitle: 'What is Zodiac Sign?',
     whatIsLead:
