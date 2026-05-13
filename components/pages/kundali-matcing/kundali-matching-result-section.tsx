@@ -600,8 +600,12 @@ const KutaTable: React.FC<{
                       {name}
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 text-center border-r border-[#f5e9c6]">{natureBadge(row.Nature)}</td>
-                  <td className={`px-3 py-2.5 text-center text-xs border-r border-[#f5e9c6] ${natureColor(row.Nature)}`}>
+                  <td className="px-3 py-2.5 text-center border-r border-[#f5e9c6]">
+                    {natureBadge(row.Nature)}
+                  </td>
+                  <td
+                    className={`px-3 py-2.5 text-center text-xs border-r border-[#f5e9c6] ${natureColor(row.Nature)}`}
+                  >
                     {row.MaleInfo?.trim() || (row.Nature ?? '-')}
                   </td>
                   <td className={`px-3 py-2.5 text-center text-xs ${natureColor(row.Nature)}`}>
@@ -1004,230 +1008,238 @@ const KundaliMatchingResultSection: React.FC = () => {
   return (
     <section className="w-full px-4 md:px-8 py-8 md:py-12">
       <div className="mx-auto w-full max-w-[1453px] space-y-8">
-      <section className="w-full pt-0 md:pt-2 pb-6">
-        <div className="max-w-4xl">
-          <h1 className="font-sahitya font-bold text-[20px] leading-[100%] md:text-[36px] md:leading-[48px] text-primary mb-1">
-            Kundali Matching Result
-          </h1>
-          <p className="font-mukta font-medium text-[16px] leading-[30px] md:text-[24px] text-[#141414] mb-3">
-            {resultSubtitle}
-          </p>
-          <p className="font-mukta font-normal text-[16px] leading-6 tracking-[0] md:text-[24px] md:leading-[34px] text-[#464646] text-justify">
-            View the compatibility analysis for both people, including Kuta Score, Guna Milan, Dosha findings, planetary details, and lagna chart insights.
-          </p>
-        </div>
-      </section>
-
-      <div className="mx-auto w-full max-w-4xl">
-        <div className="mx-auto grid w-full max-w-[900px] grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-6 md:gap-8">
-          <div className="flex min-w-0 flex-col items-stretch">
-            <figure className="flex flex-col items-center gap-2">
-              <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
-                <Image
-                  src={OpenChart}
-                  alt="Man Kundali chart"
-                  fill
-                  className="object-contain object-center"
-                  sizes="(max-width: 768px) 100vw, 420px"
-                  priority
-                />
-              </div>
-              <figcaption className="font-sahitya text-center text-sm font-bold text-primary sm:text-base md:text-xl">
-                Man Kundali Chart
-              </figcaption>
-            </figure>
+        <section className="w-full pt-0 md:pt-2 pb-6">
+          <div className="max-w-4xl">
+            <h1 className="font-sahitya font-bold text-[20px] leading-[100%] md:text-[36px] md:leading-[48px] text-primary mb-1">
+              Kundali Matching Result
+            </h1>
+            <p className="font-mukta font-medium text-[16px] leading-[30px] md:text-[24px] text-[#141414] mb-3">
+              {resultSubtitle}
+            </p>
+            <p className="font-mukta font-normal text-[16px] leading-6 tracking-[0] md:text-[24px] md:leading-[34px] text-[#464646] text-justify">
+              View the compatibility analysis for both people, including Kuta Score, Guna Milan,
+              Dosha findings, planetary details, and lagna chart insights.
+            </p>
           </div>
-          <div className="flex min-w-0 flex-col items-stretch">
-            <figure className="flex flex-col items-center gap-2">
-              <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
-                <Image
-                  src={OpenChart}
-                  alt="Woman Kundali chart"
-                  fill
-                  className="object-contain object-center"
-                  sizes="(max-width: 768px) 100vw, 420px"
-                />
-              </div>
-              <figcaption className="font-sahitya text-center text-sm font-bold text-primary sm:text-base md:text-xl">
-                Woman Kundali Chart
-              </figcaption>
-            </figure>
-          </div>
-        </div>
-      </div>
+        </section>
 
-      {/* Tabs — markup matches Free Kundali: flex row, fixed-width pills, max-w-[1453px] parent */}
-      <div className="mt-6 flex flex-nowrap items-center justify-center gap-3 overflow-x-auto">
-        <TabButton id="basic" label="Basic Details" activeTab={activeTab} onSelect={setActiveTab} />
-        <TabButton id="dosha" label="Dosha" activeTab={activeTab} onSelect={setActiveTab} />
-        <TabButton
-          id="planets"
-          label="Planets Detail"
-          activeTab={activeTab}
-          onSelect={setActiveTab}
-        />
-        <TabButton id="lagna" label="Lagna Chart" activeTab={activeTab} onSelect={setActiveTab} />
-      </div>
-
-      {/* Tab Content */}
-      <div className="mt-6">
-        {/* Match Result Tab */}
-        {activeTab === 'match' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <PersonCard person={input.man} role="Man" symbol="♂" />
-              <PersonCard person={input.woman} role="Woman" symbol="♀" />
-            </div>
-            {loadingMatch ? (
-              <div className="rounded-3xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
-                <Skeleton className="w-36 h-36 rounded-full" />
-                <div className="flex-1 space-y-4 w-full">
-                  {[1, 2, 3, 4].map(i => (
-                    <div key={i}>
-                      <Skeleton className="h-4 w-32 mb-1" />
-                      <Skeleton className="h-2 w-full" />
-                    </div>
-                  ))}
+        <div className="mx-auto w-full max-w-4xl">
+          <div className="mx-auto grid w-full max-w-[900px] grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-6 md:gap-8">
+            <div className="flex min-w-0 flex-col items-stretch">
+              <figure className="flex flex-col items-center gap-2">
+                <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
+                  <Image
+                    src={OpenChart}
+                    alt="Man Kundali chart"
+                    fill
+                    className="object-contain object-center"
+                    sizes="(max-width: 768px) 100vw, 420px"
+                    priority
+                  />
                 </div>
+                <figcaption className="font-sahitya text-center text-sm font-bold text-primary sm:text-base md:text-xl">
+                  Man Kundali Chart
+                </figcaption>
+              </figure>
+            </div>
+            <div className="flex min-w-0 flex-col items-stretch">
+              <figure className="flex flex-col items-center gap-2">
+                <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
+                  <Image
+                    src={OpenChart}
+                    alt="Woman Kundali chart"
+                    fill
+                    className="object-contain object-center"
+                    sizes="(max-width: 768px) 100vw, 420px"
+                  />
+                </div>
+                <figcaption className="font-sahitya text-center text-sm font-bold text-primary sm:text-base md:text-xl">
+                  Woman Kundali Chart
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs — markup matches Free Kundali: flex row, fixed-width pills, max-w-[1453px] parent */}
+        <div className="mt-6 flex flex-nowrap items-center justify-center gap-3 overflow-x-auto">
+          <TabButton
+            id="basic"
+            label="Basic Details"
+            activeTab={activeTab}
+            onSelect={setActiveTab}
+          />
+          <TabButton id="dosha" label="Dosha" activeTab={activeTab} onSelect={setActiveTab} />
+          <TabButton
+            id="planets"
+            label="Planets Detail"
+            activeTab={activeTab}
+            onSelect={setActiveTab}
+          />
+          <TabButton id="lagna" label="Lagna Chart" activeTab={activeTab} onSelect={setActiveTab} />
+        </div>
+
+        {/* Tab Content */}
+        <div className="mt-6">
+          {/* Match Result Tab */}
+          {activeTab === 'match' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <PersonCard person={input.man} role="Man" symbol="♂" />
+                <PersonCard person={input.woman} role="Woman" symbol="♀" />
               </div>
-            ) : errorMatch ? (
-              <div className="rounded-2xl border border-[#f5e9c6] bg-[#fff9f4] p-5 text-center">
-                <p className="font-mukta text-sm font-semibold text-[#7F1808]">{errorMatch}</p>
-              </div>
-            ) : report ? (
-              <>
-                <div className="rounded-3xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow p-6 md:p-8">
-                  <div className="flex flex-col md:flex-row items-center gap-8">
-                    <div className="shrink-0">
-                      <ScoreRing score={kutaScore} />
-                      <div className="mt-3 flex justify-center gap-4 text-xs font-mukta">
-                        <span className="text-green-600 font-semibold">✓ {goodCount} Good</span>
-                        <span className="text-red-500 font-semibold">✗ {badCount} Challenging</span>
+              {loadingMatch ? (
+                <div className="rounded-3xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
+                  <Skeleton className="w-36 h-36 rounded-full" />
+                  <div className="flex-1 space-y-4 w-full">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i}>
+                        <Skeleton className="h-4 w-32 mb-1" />
+                        <Skeleton className="h-2 w-full" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : errorMatch ? (
+                <div className="rounded-2xl border border-[#f5e9c6] bg-[#fff9f4] p-5 text-center">
+                  <p className="font-mukta text-sm font-semibold text-[#7F1808]">{errorMatch}</p>
+                </div>
+              ) : report ? (
+                <>
+                  <div className="rounded-3xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow p-6 md:p-8">
+                    <div className="flex flex-col md:flex-row items-center gap-8">
+                      <div className="shrink-0">
+                        <ScoreRing score={kutaScore} />
+                        <div className="mt-3 flex justify-center gap-4 text-xs font-mukta">
+                          <span className="text-green-600 font-semibold">✓ {goodCount} Good</span>
+                          <span className="text-red-500 font-semibold">
+                            ✗ {badCount} Challenging
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex-1 w-full space-y-4">
+                        {CATEGORIES.map(cat => (
+                          <CategoryBar
+                            key={cat.label}
+                            label={cat.label}
+                            icon={cat.icon}
+                            percent={categoryPercent(cat.names, predictions)}
+                          />
+                        ))}
                       </div>
                     </div>
-                    <div className="flex-1 w-full space-y-4">
-                      {CATEGORIES.map(cat => (
-                        <CategoryBar
-                          key={cat.label}
-                          label={cat.label}
-                          icon={cat.icon}
-                          percent={categoryPercent(cat.names, predictions)}
-                        />
-                      ))}
-                    </div>
+                    {report.Summary?.ScoreSummary && (
+                      <div className="mt-6 rounded-xl bg-[#fffdf6] border border-[#f5e9c6] px-5 py-4">
+                        <p className="font-mukta text-sm text-[#5a2a20] leading-relaxed">
+                          <span className="font-semibold text-primary">Astro Summary: </span>
+                          {report.Summary.ScoreSummary}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  {report.Summary?.ScoreSummary && (
-                    <div className="mt-6 rounded-xl bg-[#fffdf6] border border-[#f5e9c6] px-5 py-4">
-                      <p className="font-mukta text-sm text-[#5a2a20] leading-relaxed">
-                        <span className="font-semibold text-primary">Astro Summary: </span>
-                        {report.Summary.ScoreSummary}
-                      </p>
+                  {predictions.length > 0 && (
+                    <div className="space-y-3">
+                      <h2 className="font-sahitya font-bold text-xl text-primary">
+                        Guna Milan — Detailed Kuta Analysis
+                      </h2>
+                      <KutaTable predictions={predictions} man={input.man} woman={input.woman} />
                     </div>
                   )}
+                </>
+              ) : null}
+            </div>
+          )}
+
+          {/* Basic Details Tab */}
+          {activeTab === 'basic' && (
+            <div>
+              {isFetchingDosha ? (
+                <p className="font-mukta text-center py-10">Loading detailed info...</p>
+              ) : (
+                <div className="flex flex-col md:flex-row gap-6">
+                  <IndividualBasicDetails
+                    person={input.man}
+                    payload={input.manPayload}
+                    title={`${input.man.fullName}'s Details (Man)`}
+                  />
+                  <IndividualBasicDetails
+                    person={input.woman}
+                    payload={input.womanPayload}
+                    title={`${input.woman.fullName}'s Details (Woman)`}
+                  />
                 </div>
-                {predictions.length > 0 && (
-                  <div className="space-y-3">
-                    <h2 className="font-sahitya font-bold text-xl text-primary">
-                      Guna Milan — Detailed Kuta Analysis
-                    </h2>
-                    <KutaTable predictions={predictions} man={input.man} woman={input.woman} />
-                  </div>
-                )}
-              </>
-            ) : null}
-          </div>
-        )}
+              )}
+            </div>
+          )}
 
-        {/* Basic Details Tab */}
-        {activeTab === 'basic' && (
-          <div>
-            {isFetchingDosha ? (
-              <p className="font-mukta text-center py-10">Loading detailed info...</p>
-            ) : (
-              <div className="flex flex-col md:flex-row gap-6">
-                <IndividualBasicDetails
-                  person={input.man}
-                  payload={input.manPayload}
-                  title={`${input.man.fullName}'s Details (Man)`}
-                />
-                <IndividualBasicDetails
-                  person={input.woman}
-                  payload={input.womanPayload}
-                  title={`${input.woman.fullName}'s Details (Woman)`}
-                />
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Dosha Tab */}
-        {activeTab === 'dosha' && (
-          <div>
-            {isFetchingDosha ? (
-              <p className="font-mukta text-center py-10">Loading Dosha info...</p>
-            ) : (
-              <div className="flex flex-col md:flex-row gap-6">
-                <IndividualDoshaDetails
-                  payload={input.manPayload}
-                  title={`${input.man.fullName}'s Dosha (Man)`}
-                />
-                <IndividualDoshaDetails
-                  payload={input.womanPayload}
-                  title={`${input.woman.fullName}'s Dosha (Woman)`}
-                />
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Planets Tab */}
-        {activeTab === 'planets' && (
-          <div>
-            {isFetchingPlanets ? (
-              <p className="font-mukta text-center py-10">Loading Planet tables...</p>
-            ) : (
-              <div className="flex flex-col gap-8">
-                {input.manPlanetRows && (
-                  <IndividualPlanetsTable
-                    rows={input.manPlanetRows}
-                    title={`${input.man.fullName}'s Planets (Man)`}
+          {/* Dosha Tab */}
+          {activeTab === 'dosha' && (
+            <div>
+              {isFetchingDosha ? (
+                <p className="font-mukta text-center py-10">Loading Dosha info...</p>
+              ) : (
+                <div className="flex flex-col md:flex-row gap-6">
+                  <IndividualDoshaDetails
+                    payload={input.manPayload}
+                    title={`${input.man.fullName}'s Dosha (Man)`}
                   />
-                )}
-                {input.womanPlanetRows && (
-                  <IndividualPlanetsTable
-                    rows={input.womanPlanetRows}
-                    title={`${input.woman.fullName}'s Planets (Woman)`}
+                  <IndividualDoshaDetails
+                    payload={input.womanPayload}
+                    title={`${input.woman.fullName}'s Dosha (Woman)`}
                   />
-                )}
-              </div>
-            )}
-          </div>
-        )}
+                </div>
+              )}
+            </div>
+          )}
 
-        {/* Lagna Chart Tab */}
-        {activeTab === 'lagna' && (
-          <div>
-            {isFetchingChart ? (
-              <p className="font-mukta text-center py-10">Loading Lagna Charts...</p>
-            ) : (
-              <div className="flex flex-col md:flex-row gap-6">
-                <IndividualLagnaChart
-                  svg={input.manLagnaSvg}
-                  title={`${input.man.fullName}'s Chart (Man)`}
-                />
-                <IndividualLagnaChart
-                  svg={input.womanLagnaSvg}
-                  title={`${input.woman.fullName}'s Chart (Woman)`}
-                />
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+          {/* Planets Tab */}
+          {activeTab === 'planets' && (
+            <div>
+              {isFetchingPlanets ? (
+                <p className="font-mukta text-center py-10">Loading Planet tables...</p>
+              ) : (
+                <div className="flex flex-col gap-8">
+                  {input.manPlanetRows && (
+                    <IndividualPlanetsTable
+                      rows={input.manPlanetRows}
+                      title={`${input.man.fullName}'s Planets (Man)`}
+                    />
+                  )}
+                  {input.womanPlanetRows && (
+                    <IndividualPlanetsTable
+                      rows={input.womanPlanetRows}
+                      title={`${input.woman.fullName}'s Planets (Woman)`}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
-      <p className="font-mukta text-xs text-center text-gray-400 pb-4 mt-12">
-        Results are powered by VedAstro. Information is for reference only.
-      </p>
+          {/* Lagna Chart Tab */}
+          {activeTab === 'lagna' && (
+            <div>
+              {isFetchingChart ? (
+                <p className="font-mukta text-center py-10">Loading Lagna Charts...</p>
+              ) : (
+                <div className="flex flex-col md:flex-row gap-6">
+                  <IndividualLagnaChart
+                    svg={input.manLagnaSvg}
+                    title={`${input.man.fullName}'s Chart (Man)`}
+                  />
+                  <IndividualLagnaChart
+                    svg={input.womanLagnaSvg}
+                    title={`${input.woman.fullName}'s Chart (Woman)`}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <p className="font-mukta text-xs text-center text-gray-400 pb-4 mt-12">
+          Results are powered by VedAstro. Information is for reference only.
+        </p>
       </div>
     </section>
   );
