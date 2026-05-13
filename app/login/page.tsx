@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { AuthError } from 'next-auth';
 import { auth, signIn } from '@/auth';
+import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
 
 export const metadata: Metadata = {
   title: 'Login',
@@ -122,14 +123,15 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <form
             action={async () => {
               'use server';
-              try {
-                await signIn('google', { redirectTo: '/admin/dashboard' });
-              } catch (e) {
-                if (e instanceof AuthError) {
-                  redirect('/login?error=OAuthError');
-                }
-                throw e;
-              }
+              const apiRoot = tryGetPublicBackendBaseUrl();
+              const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+              // This redirect URI must be added exactly in Google Cloud Console.
+              const redirectUri = `${siteUrl}/api/auth/callback/google`;
+              redirect(
+                `${apiRoot}/auth/google/url?redirectUri=${encodeURIComponent(
+                  redirectUri,
+                )}&deviceType=WEB&state=REQUEST`,
+              );
             }}
           >
             <Button

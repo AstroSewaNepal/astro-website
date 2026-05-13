@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
+import OpenChart from '@/components/images/openchart.png';
 import { getPublicBackendBaseCandidates, resolveVedastroProxyFetchUrl } from '@/lib/utils/url';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -86,15 +88,19 @@ type TabButtonProps = {
   onSelect: (tab: KundaliMatchingTab) => void;
 };
 
+/** Same pill classes as `free-kundali/kundali-result-section.tsx` tab buttons. */
+function freeKundaliTabButtonClass(active: boolean): string {
+  return `h-[46px] w-[334.25px] max-w-full rounded-[32px] border border-[#A13924] p-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 ${
+    active ? 'bg-[#7F1808] text-white' : 'bg-[#ede9d9] text-[#7F1808]'
+  } hover:bg-[#7F1808] hover:text-white`;
+}
+
 function TabButton({ id, label, activeTab, onSelect }: TabButtonProps) {
   return (
     <button
+      type="button"
       onClick={() => onSelect(id)}
-      className={`h-[40px] md:h-[46px] px-6 whitespace-nowrap rounded-[32px] border border-[#A13924] font-mukta text-[16px] md:text-[18px] font-medium transition-colors duration-200 ${
-        activeTab === id
-          ? 'bg-[#7F1808] text-white'
-          : 'bg-[#ede9d9] text-[#7F1808] hover:bg-[#7F1808] hover:text-white'
-      }`}
+      className={freeKundaliTabButtonClass(activeTab === id)}
     >
       {label}
     </button>
@@ -115,184 +121,6 @@ const VEDASTRO_NINE_PLANETS = [
   'Ketu',
 ] as const;
 
-type RashiLabel = { hindi: string; english: string };
-const NAKSHATRA_PADA_TO_RASHI: Record<string, Record<number, RashiLabel>> = {
-  ashwini: {
-    1: { hindi: 'Mesh', english: 'Aries' },
-    2: { hindi: 'Mesh', english: 'Aries' },
-    3: { hindi: 'Mesh', english: 'Aries' },
-    4: { hindi: 'Mesh', english: 'Aries' },
-  },
-  bharani: {
-    1: { hindi: 'Mesh', english: 'Aries' },
-    2: { hindi: 'Mesh', english: 'Aries' },
-    3: { hindi: 'Mesh', english: 'Aries' },
-    4: { hindi: 'Mesh', english: 'Aries' },
-  },
-  krittika: {
-    1: { hindi: 'Mesh', english: 'Aries' },
-    2: { hindi: 'Vrishabh', english: 'Taurus' },
-    3: { hindi: 'Vrishabh', english: 'Taurus' },
-    4: { hindi: 'Vrishabh', english: 'Taurus' },
-  },
-  rohini: {
-    1: { hindi: 'Vrishabh', english: 'Taurus' },
-    2: { hindi: 'Vrishabh', english: 'Taurus' },
-    3: { hindi: 'Vrishabh', english: 'Taurus' },
-    4: { hindi: 'Vrishabh', english: 'Taurus' },
-  },
-  mrigashira: {
-    1: { hindi: 'Vrishabh', english: 'Taurus' },
-    2: { hindi: 'Vrishabh', english: 'Taurus' },
-    3: { hindi: 'Mithun', english: 'Gemini' },
-    4: { hindi: 'Mithun', english: 'Gemini' },
-  },
-  mrigasira: {
-    1: { hindi: 'Vrishabh', english: 'Taurus' },
-    2: { hindi: 'Vrishabh', english: 'Taurus' },
-    3: { hindi: 'Mithun', english: 'Gemini' },
-    4: { hindi: 'Mithun', english: 'Gemini' },
-  },
-  ardra: {
-    1: { hindi: 'Mithun', english: 'Gemini' },
-    2: { hindi: 'Mithun', english: 'Gemini' },
-    3: { hindi: 'Mithun', english: 'Gemini' },
-    4: { hindi: 'Mithun', english: 'Gemini' },
-  },
-  aridra: {
-    1: { hindi: 'Mithun', english: 'Gemini' },
-    2: { hindi: 'Mithun', english: 'Gemini' },
-    3: { hindi: 'Mithun', english: 'Gemini' },
-    4: { hindi: 'Mithun', english: 'Gemini' },
-  },
-  punarvasu: {
-    1: { hindi: 'Mithun', english: 'Gemini' },
-    2: { hindi: 'Mithun', english: 'Gemini' },
-    3: { hindi: 'Mithun', english: 'Gemini' },
-    4: { hindi: 'Kark', english: 'Cancer' },
-  },
-  pushya: {
-    1: { hindi: 'Kark', english: 'Cancer' },
-    2: { hindi: 'Kark', english: 'Cancer' },
-    3: { hindi: 'Kark', english: 'Cancer' },
-    4: { hindi: 'Kark', english: 'Cancer' },
-  },
-  ashlesha: {
-    1: { hindi: 'Kark', english: 'Cancer' },
-    2: { hindi: 'Kark', english: 'Cancer' },
-    3: { hindi: 'Kark', english: 'Cancer' },
-    4: { hindi: 'Kark', english: 'Cancer' },
-  },
-  magha: {
-    1: { hindi: 'Singh', english: 'Leo' },
-    2: { hindi: 'Singh', english: 'Leo' },
-    3: { hindi: 'Singh', english: 'Leo' },
-    4: { hindi: 'Singh', english: 'Leo' },
-  },
-  purvaphalguni: {
-    1: { hindi: 'Singh', english: 'Leo' },
-    2: { hindi: 'Singh', english: 'Leo' },
-    3: { hindi: 'Singh', english: 'Leo' },
-    4: { hindi: 'Singh', english: 'Leo' },
-  },
-  uttaraphalguni: {
-    1: { hindi: 'Singh', english: 'Leo' },
-    2: { hindi: 'Kanya', english: 'Virgo' },
-    3: { hindi: 'Kanya', english: 'Virgo' },
-    4: { hindi: 'Kanya', english: 'Virgo' },
-  },
-  hasta: {
-    1: { hindi: 'Kanya', english: 'Virgo' },
-    2: { hindi: 'Kanya', english: 'Virgo' },
-    3: { hindi: 'Kanya', english: 'Virgo' },
-    4: { hindi: 'Kanya', english: 'Virgo' },
-  },
-  chitra: {
-    1: { hindi: 'Kanya', english: 'Virgo' },
-    2: { hindi: 'Kanya', english: 'Virgo' },
-    3: { hindi: 'Tula', english: 'Libra' },
-    4: { hindi: 'Tula', english: 'Libra' },
-  },
-  swati: {
-    1: { hindi: 'Tula', english: 'Libra' },
-    2: { hindi: 'Tula', english: 'Libra' },
-    3: { hindi: 'Tula', english: 'Libra' },
-    4: { hindi: 'Tula', english: 'Libra' },
-  },
-  vishakha: {
-    1: { hindi: 'Tula', english: 'Libra' },
-    2: { hindi: 'Tula', english: 'Libra' },
-    3: { hindi: 'Tula', english: 'Libra' },
-    4: { hindi: 'Vrischik', english: 'Scorpio' },
-  },
-  anuradha: {
-    1: { hindi: 'Vrischik', english: 'Scorpio' },
-    2: { hindi: 'Vrischik', english: 'Scorpio' },
-    3: { hindi: 'Vrischik', english: 'Scorpio' },
-    4: { hindi: 'Vrischik', english: 'Scorpio' },
-  },
-  jyeshtha: {
-    1: { hindi: 'Vrischik', english: 'Scorpio' },
-    2: { hindi: 'Vrischik', english: 'Scorpio' },
-    3: { hindi: 'Vrischik', english: 'Scorpio' },
-    4: { hindi: 'Vrischik', english: 'Scorpio' },
-  },
-  mula: {
-    1: { hindi: 'Dhanu', english: 'Sagittarius' },
-    2: { hindi: 'Dhanu', english: 'Sagittarius' },
-    3: { hindi: 'Dhanu', english: 'Sagittarius' },
-    4: { hindi: 'Dhanu', english: 'Sagittarius' },
-  },
-  purvashada: {
-    1: { hindi: 'Dhanu', english: 'Sagittarius' },
-    2: { hindi: 'Dhanu', english: 'Sagittarius' },
-    3: { hindi: 'Dhanu', english: 'Sagittarius' },
-    4: { hindi: 'Dhanu', english: 'Sagittarius' },
-  },
-  uttarashada: {
-    1: { hindi: 'Dhanu', english: 'Sagittarius' },
-    2: { hindi: 'Makar', english: 'Capricorn' },
-    3: { hindi: 'Makar', english: 'Capricorn' },
-    4: { hindi: 'Makar', english: 'Capricorn' },
-  },
-  shravana: {
-    1: { hindi: 'Makar', english: 'Capricorn' },
-    2: { hindi: 'Makar', english: 'Capricorn' },
-    3: { hindi: 'Makar', english: 'Capricorn' },
-    4: { hindi: 'Makar', english: 'Capricorn' },
-  },
-  dhanishta: {
-    1: { hindi: 'Makar', english: 'Capricorn' },
-    2: { hindi: 'Makar', english: 'Capricorn' },
-    3: { hindi: 'Kumbh', english: 'Aquarius' },
-    4: { hindi: 'Kumbh', english: 'Aquarius' },
-  },
-  shatabhisha: {
-    1: { hindi: 'Kumbh', english: 'Aquarius' },
-    2: { hindi: 'Kumbh', english: 'Aquarius' },
-    3: { hindi: 'Kumbh', english: 'Aquarius' },
-    4: { hindi: 'Kumbh', english: 'Aquarius' },
-  },
-  purvabhadrapada: {
-    1: { hindi: 'Kumbh', english: 'Aquarius' },
-    2: { hindi: 'Kumbh', english: 'Aquarius' },
-    3: { hindi: 'Meen', english: 'Pisces' },
-    4: { hindi: 'Meen', english: 'Pisces' },
-  },
-  uttarabhadrapada: {
-    1: { hindi: 'Meen', english: 'Pisces' },
-    2: { hindi: 'Meen', english: 'Pisces' },
-    3: { hindi: 'Meen', english: 'Pisces' },
-    4: { hindi: 'Meen', english: 'Pisces' },
-  },
-  revati: {
-    1: { hindi: 'Meen', english: 'Pisces' },
-    2: { hindi: 'Meen', english: 'Pisces' },
-    3: { hindi: 'Meen', english: 'Pisces' },
-    4: { hindi: 'Meen', english: 'Pisces' },
-  },
-};
-
 // ─── Formatting Helpers ───────────────────────────────────────────────────────
 
 function toTitleCase(value: string | undefined): string {
@@ -309,22 +137,6 @@ function getLocalOffset(dateInput: string): string {
   const hours = Math.floor(abs / 60);
   const minutes = abs % 60;
   return `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-}
-
-function normalizeNakshatraName(name: string): string {
-  return name.toLowerCase().replace(/[^a-z]/g, '');
-}
-
-function formatRashiFromNakshatra(nakshatraWithPada: string | undefined): string {
-  if (!nakshatraWithPada) return '-';
-  const match = nakshatraWithPada.match(/^\s*([^()-]+?)\s*-\s*(\d)\s*$/);
-  if (!match) return nakshatraWithPada;
-  const nakshatraName = match[1].trim();
-  const pada = Number(match[2]);
-  const key = normalizeNakshatraName(nakshatraName);
-  const rashi = NAKSHATRA_PADA_TO_RASHI[key]?.[pada];
-  if (!rashi) return `${nakshatraName} - ${pada}`;
-  return `${nakshatraName} - ${pada} (${rashi.hindi} / ${rashi.english})`;
 }
 
 function formatPanchangaValue(value: unknown): string {
@@ -724,7 +536,7 @@ const PersonCard: React.FC<{ person: PersonInput; role: string; symbol: string }
   role,
   symbol,
 }) => (
-  <div className="rounded-2xl border-2 border-primary/20 bg-white/80 shadow-sm p-4 md:p-5 flex flex-col gap-2">
+  <div className="rounded-2xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow-sm p-4 md:p-5 flex flex-col gap-2">
     <div className="flex items-center gap-2 mb-1">
       <span className="text-2xl">{symbol}</span>
       <div>
@@ -755,10 +567,10 @@ const KutaTable: React.FC<{
 }> = ({ predictions, man, woman }) => {
   const [expanded, setExpanded] = useState<string | null>(null);
   return (
-    <div className="overflow-x-auto rounded-2xl border border-primary/20 shadow-sm">
+    <div className="overflow-x-auto rounded-2xl border border-[#f5e9c6] shadow-sm">
       <table className="w-full min-w-[500px] text-sm font-mukta">
         <thead>
-          <tr className="bg-primary text-secondary">
+          <tr className="bg-[#fffdf6] text-[#2d2d2d]">
             <th className="px-4 py-3 text-left font-semibold">Kuta / Factor</th>
             <th className="px-3 py-3 text-center font-semibold">Nature</th>
             <th className="px-3 py-3 text-center font-semibold">
@@ -777,10 +589,10 @@ const KutaTable: React.FC<{
             return (
               <React.Fragment key={name}>
                 <tr
-                  className={`border-t border-primary/10 cursor-pointer transition-colors ${i % 2 === 0 ? 'bg-[#fdf8f3]' : 'bg-white'} hover:bg-[#f9ece0]`}
+                  className={`border-t border-[#f5e9c6] cursor-pointer transition-colors ${i % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#faf8f5]'} hover:bg-[#f9ece0]`}
                   onClick={() => setExpanded(isOpen ? null : name)}
                 >
-                  <td className="px-4 py-2.5 font-medium text-[#3d1a14]">
+                  <td className="px-4 py-2.5 font-medium text-[#3d1a14] border-r border-[#f5e9c6]">
                     <span className="flex items-center gap-1.5">
                       {info && (
                         <span className="text-primary/50 text-xs">{isOpen ? '▾' : '▸'}</span>
@@ -788,8 +600,8 @@ const KutaTable: React.FC<{
                       {name}
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 text-center">{natureBadge(row.Nature)}</td>
-                  <td className={`px-3 py-2.5 text-center text-xs ${natureColor(row.Nature)}`}>
+                  <td className="px-3 py-2.5 text-center border-r border-[#f5e9c6]">{natureBadge(row.Nature)}</td>
+                  <td className={`px-3 py-2.5 text-center text-xs border-r border-[#f5e9c6] ${natureColor(row.Nature)}`}>
                     {row.MaleInfo?.trim() || (row.Nature ?? '-')}
                   </td>
                   <td className={`px-3 py-2.5 text-center text-xs ${natureColor(row.Nature)}`}>
@@ -797,10 +609,10 @@ const KutaTable: React.FC<{
                   </td>
                 </tr>
                 {isOpen && info && (
-                  <tr className="border-t border-primary/5">
+                  <tr className="border-t border-[#f5e9c6]">
                     <td
                       colSpan={4}
-                      className="px-4 py-3 bg-[#fff9f4] text-xs text-[#5a2a20] leading-relaxed italic"
+                      className="px-4 py-3 bg-[#fffdf6] text-xs text-[#5a2a20] leading-relaxed italic"
                     >
                       {info}
                     </td>
@@ -816,7 +628,7 @@ const KutaTable: React.FC<{
 };
 
 const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`animate-pulse rounded-lg bg-primary/10 ${className}`} />
+  <div className={`animate-pulse rounded-lg bg-[#e8dcc8] ${className}`} />
 );
 
 // ─── Individual Tabs Renderers ────────────────────────────────────────────────
@@ -825,22 +637,12 @@ const IndividualBasicDetails: React.FC<{
   person: PersonInput;
   payload: unknown;
   title: string;
-}> = ({ person, payload, title }) => {
+}> = ({ person: _person, payload, title }) => {
   const pData = unwrapVedastroPayload(payload);
   const panchanga = isRecord(pData) && pData['PanchangaTable'] ? pData['PanchangaTable'] : pData;
   const panchangaRecord = isRecord(panchanga) ? panchanga : undefined;
   const nakshatra = getPanchangaValue(panchangaRecord, ['Nakshatra'], ['NakshatraName']);
 
-  const basicRows: Array<[string, string]> = [
-    ['Name', person.fullName || '-'],
-    ['Birth Date', person.dateOfBirth || '-'],
-    ['Birth Time', person.birthTime || '-'],
-    ['Birth Place', person.birthPlace || '-'],
-    ['Gender', toTitleCase(person.gender)],
-    ['Rashi', formatRashiFromNakshatra(nakshatra)],
-    ['Latitude', person.latitude || '-'],
-    ['Longitude', person.longitude || '-'],
-  ];
   const kundaliRows: Array<[string, string]> = [
     ['Ayanamsa', getPanchangaValue(panchangaRecord, ['Ayanamsa'])],
     ['Tithi', getPanchangaValue(panchangaRecord, ['Tithi', 'Name'], ['TithiName'], ['Tithi'])],
@@ -854,42 +656,23 @@ const IndividualBasicDetails: React.FC<{
 
   return (
     <div className="flex-1 min-w-[300px]">
-      <div className="rounded-[20px] bg-white p-5 border-2 border-primary/20 shadow-sm mb-6">
-        <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold border-b border-primary/10 pb-2 mb-4">
+      <div className="rounded-[20px] bg-[#f9f4dd] p-5 border-2 border-[#f5e9c6] shadow-sm mb-6">
+        <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold border-b border-[#f5e9c6] pb-2 mb-4">
           {title}
         </h3>
-        <div className="grid grid-cols-1 gap-6">
-          <div>
-            <h4 className="font-sahitya text-primary text-[22px] font-bold mb-2">Basic Details</h4>
-            <div className="border-t border-l border-primary/20">
-              {basicRows.map(([lbl, val]) => (
-                <div key={lbl} className="grid grid-cols-2 border-b border-r border-primary/20">
-                  <div className="px-3 py-1.5 font-mukta text-[15px] font-medium text-[#3a3a3a] bg-primary/5">
-                    {lbl}
-                  </div>
-                  <div className="px-3 py-1.5 font-mukta text-[15px] text-[#4a4a4a] bg-white">
-                    {val}
-                  </div>
+        <div>
+          <h4 className="font-sahitya text-primary text-[22px] font-bold mb-2">Kundali Details</h4>
+          <div className="border-t border-l border-[#f5e9c6]">
+            {kundaliRows.map(([lbl, val]) => (
+              <div key={lbl} className="grid grid-cols-2 border-b border-r border-[#f5e9c6]">
+                <div className="px-3 py-1.5 font-mukta text-[15px] font-medium text-[#3a3a3a] bg-[#fffdf6]">
+                  {lbl}
                 </div>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h4 className="font-sahitya text-primary text-[22px] font-bold mb-2">
-              Kundali Details
-            </h4>
-            <div className="border-t border-l border-primary/20">
-              {kundaliRows.map(([lbl, val]) => (
-                <div key={lbl} className="grid grid-cols-2 border-b border-r border-primary/20">
-                  <div className="px-3 py-1.5 font-mukta text-[15px] font-medium text-[#3a3a3a] bg-primary/5">
-                    {lbl}
-                  </div>
-                  <div className="px-3 py-1.5 font-mukta text-[15px] text-[#4a4a4a] bg-white">
-                    {val}
-                  </div>
+                <div className="px-3 py-1.5 font-mukta text-[15px] text-[#4a4a4a] bg-[#faf8f5]">
+                  {val}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -928,14 +711,14 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
   return (
     <div className="flex-1 min-w-[300px]">
       <div className="rounded-[20px] bg-[#f9f4dd] p-5 shadow-sm h-full">
-        <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold border-b border-primary/10 pb-2 mb-4">
+        <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold border-b border-[#f5e9c6] pb-2 mb-4">
           {title}
         </h3>
         <div className="grid grid-cols-2 gap-3 mb-6">
           {doshaCards.map(([lbl, val]) => (
             <div
               key={lbl}
-              className="rounded-lg bg-white p-3 text-center shadow-sm border border-[#f5e9c6]"
+              className="rounded-lg bg-[#fffdf6] p-3 text-center shadow-sm border border-[#f5e9c6]"
             >
               <p className="font-sahitya text-primary text-[16px] font-bold">{lbl}</p>
               <p className="font-mukta text-[14px] text-[#2d2d2d] truncate" title={val}>
@@ -948,7 +731,7 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
           <table className="w-full text-sm font-mukta">
             <tbody>
               {tableRows.map(([lbl, val]) => (
-                <tr key={lbl} className="border-b border-[#f5e9c6] last:border-0 bg-white">
+                <tr key={lbl} className="border-b border-[#f5e9c6] last:border-0 bg-[#faf8f5]">
                   <td className="px-3 py-2 font-medium text-[#2d2d2d] bg-[#fffdf6] border-r border-[#f5e9c6]">
                     {lbl}
                   </td>
@@ -965,7 +748,7 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
 
 const IndividualPlanetsTable: React.FC<{ rows: string[][]; title: string }> = ({ rows, title }) => (
   <div className="mt-8 rounded-[20px] bg-[#f9f4dd] p-5 md:p-7 w-full shadow-sm">
-    <h3 className="font-sahitya text-primary text-[28px] font-bold mb-4 border-b border-primary/10 pb-2">
+    <h3 className="font-sahitya text-primary text-[28px] font-bold mb-4 border-b border-[#f5e9c6] pb-2">
       {title}
     </h3>
     <div className="overflow-x-auto rounded-lg border border-[#f5e9c6]">
@@ -1021,8 +804,8 @@ const IndividualLagnaChart: React.FC<{ svg: string | undefined; title: string }>
       : null;
   return (
     <div className="flex-1 min-w-[300px]">
-      <div className="rounded-[20px] bg-white p-5 border-2 border-primary/20 shadow-sm h-full flex flex-col items-center">
-        <h3 className="font-sahitya text-primary text-[28px] font-bold mb-4 border-b border-primary/10 pb-2 w-full text-center">
+      <div className="rounded-[20px] bg-[#f9f4dd] p-5 border-2 border-[#f5e9c6] shadow-sm h-full flex flex-col items-center">
+        <h3 className="font-sahitya text-primary text-[28px] font-bold mb-4 border-b border-[#f5e9c6] pb-2 w-full text-center">
           {title}
         </h3>
         {dataUrl ? (
@@ -1045,7 +828,7 @@ const IndividualLagnaChart: React.FC<{ svg: string | undefined; title: string }>
 
 const KundaliMatchingResultSection: React.FC = () => {
   const [input, setInput] = useState<StoredMatchingInput | null>(null);
-  const [activeTab, setActiveTab] = useState<KundaliMatchingTab>('match');
+  const [activeTab, setActiveTab] = useState<KundaliMatchingTab>('basic');
   const [report, setReport] = useState<MatchReportPayload | null>(null);
   const [loadingMatch, setLoadingMatch] = useState(false);
   const [errorMatch, setErrorMatch] = useState<string | null>(null);
@@ -1105,9 +888,8 @@ const KundaliMatchingResultSection: React.FC = () => {
     };
   }, [input, report]);
 
-  // Fetch Dosha (General)
+  // Fetch Vedastro general payload for both people (dosha/basic tabs)
   useEffect(() => {
-    if (activeTab !== 'dosha' && activeTab !== 'basic') return;
     if (!input || (input.manPayload && input.womanPayload)) return;
     let cancelled = false;
     queueMicrotask(() => {
@@ -1132,7 +914,7 @@ const KundaliMatchingResultSection: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [activeTab, input]);
+  }, [input]);
 
   // Fetch Planets
   useEffect(() => {
@@ -1192,15 +974,17 @@ const KundaliMatchingResultSection: React.FC = () => {
 
   if (!input) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
-        <p className="font-sahitya text-2xl font-bold text-primary">No Kundali data found.</p>
-        <Link
-          href="/kundali-matching"
-          className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-mukta text-sm font-semibold text-secondary hover:bg-[#8e2f27] transition-colors"
-        >
-          ← Back to Form
-        </Link>
-      </div>
+      <section className="w-full px-4 md:px-8 py-8 md:py-12">
+        <div className="mx-auto flex max-w-[1453px] flex-col items-center justify-center gap-4 py-24 text-center">
+          <p className="font-sahitya text-2xl font-bold text-primary">No Kundali data found.</p>
+          <Link
+            href="/kundali-matching"
+            className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-mukta text-sm font-semibold text-secondary hover:bg-[#8e2f27] transition-colors"
+          >
+            ← Back to Form
+          </Link>
+        </div>
+      </section>
     );
   }
 
@@ -1208,30 +992,72 @@ const KundaliMatchingResultSection: React.FC = () => {
   const predictions = report?.PredictionList ?? [];
   const goodCount = predictions.filter(p => p.Nature === 'Good').length;
   const badCount = predictions.filter(p => p.Nature === 'Bad').length;
+  const manName = input.man.fullName?.trim();
+  const womanName = input.woman.fullName?.trim();
+  const resultSubtitle =
+    manName && womanName
+      ? `Matching result for ${manName} and ${womanName}`
+      : manName || womanName
+        ? `Matching result for ${manName || womanName}`
+        : 'Your Kundali Matching Result';
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="font-sahitya font-bold text-2xl md:text-[40px] text-primary leading-tight">
+    <section className="w-full px-4 md:px-8 py-8 md:py-12">
+      <div className="mx-auto w-full max-w-[1453px] space-y-8">
+      <section className="w-full pt-0 md:pt-2 pb-6">
+        <div className="max-w-4xl">
+          <h1 className="font-sahitya font-bold text-[20px] leading-[100%] md:text-[36px] md:leading-[48px] text-primary mb-1">
             Kundali Matching Result
           </h1>
-          <p className="font-mukta text-[#141414] text-sm md:text-lg mt-1">
-            {input.man.fullName} &amp; {input.woman.fullName}
+          <p className="font-mukta font-medium text-[16px] leading-[30px] md:text-[24px] text-[#141414] mb-3">
+            {resultSubtitle}
+          </p>
+          <p className="font-mukta font-normal text-[16px] leading-6 tracking-[0] md:text-[24px] md:leading-[34px] text-[#464646] text-justify">
+            View the compatibility analysis for both people, including Kuta Score, Guna Milan, Dosha findings, planetary details, and lagna chart insights.
           </p>
         </div>
-        <Link
-          href="/kundali-matching"
-          className="inline-flex items-center gap-2 rounded-full border-2 border-primary px-4 py-2 font-mukta text-sm font-semibold text-primary hover:bg-primary hover:text-secondary transition-colors"
-        >
-          ← Match Again
-        </Link>
+      </section>
+
+      <div className="mx-auto w-full max-w-4xl">
+        <div className="mx-auto grid w-full max-w-[900px] grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-6 md:gap-8">
+          <div className="flex min-w-0 flex-col items-stretch">
+            <figure className="flex flex-col items-center gap-2">
+              <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
+                <Image
+                  src={OpenChart}
+                  alt="Man Kundali chart"
+                  fill
+                  className="object-contain object-center"
+                  sizes="(max-width: 768px) 100vw, 420px"
+                  priority
+                />
+              </div>
+              <figcaption className="font-sahitya text-center text-sm font-bold text-primary sm:text-base md:text-xl">
+                Man Kundali Chart
+              </figcaption>
+            </figure>
+          </div>
+          <div className="flex min-w-0 flex-col items-stretch">
+            <figure className="flex flex-col items-center gap-2">
+              <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
+                <Image
+                  src={OpenChart}
+                  alt="Woman Kundali chart"
+                  fill
+                  className="object-contain object-center"
+                  sizes="(max-width: 768px) 100vw, 420px"
+                />
+              </div>
+              <figcaption className="font-sahitya text-center text-sm font-bold text-primary sm:text-base md:text-xl">
+                Woman Kundali Chart
+              </figcaption>
+            </figure>
+          </div>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex flex-nowrap items-center justify-start md:justify-center gap-3 overflow-x-auto pb-2">
-        <TabButton id="match" label="Match Result" activeTab={activeTab} onSelect={setActiveTab} />
+      {/* Tabs — markup matches Free Kundali: flex row, fixed-width pills, max-w-[1453px] parent */}
+      <div className="mt-6 flex flex-nowrap items-center justify-center gap-3 overflow-x-auto">
         <TabButton id="basic" label="Basic Details" activeTab={activeTab} onSelect={setActiveTab} />
         <TabButton id="dosha" label="Dosha" activeTab={activeTab} onSelect={setActiveTab} />
         <TabButton
@@ -1253,7 +1079,7 @@ const KundaliMatchingResultSection: React.FC = () => {
               <PersonCard person={input.woman} role="Woman" symbol="♀" />
             </div>
             {loadingMatch ? (
-              <div className="rounded-3xl border-2 border-primary/20 bg-white/70 shadow p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
+              <div className="rounded-3xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
                 <Skeleton className="w-36 h-36 rounded-full" />
                 <div className="flex-1 space-y-4 w-full">
                   {[1, 2, 3, 4].map(i => (
@@ -1265,12 +1091,12 @@ const KundaliMatchingResultSection: React.FC = () => {
                 </div>
               </div>
             ) : errorMatch ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-center">
-                <p className="font-mukta text-sm font-semibold text-red-700">{errorMatch}</p>
+              <div className="rounded-2xl border border-[#f5e9c6] bg-[#fff9f4] p-5 text-center">
+                <p className="font-mukta text-sm font-semibold text-[#7F1808]">{errorMatch}</p>
               </div>
             ) : report ? (
               <>
-                <div className="rounded-3xl border-2 border-primary/20 bg-white/80 shadow p-6 md:p-8">
+                <div className="rounded-3xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow p-6 md:p-8">
                   <div className="flex flex-col md:flex-row items-center gap-8">
                     <div className="shrink-0">
                       <ScoreRing score={kutaScore} />
@@ -1291,7 +1117,7 @@ const KundaliMatchingResultSection: React.FC = () => {
                     </div>
                   </div>
                   {report.Summary?.ScoreSummary && (
-                    <div className="mt-6 rounded-xl bg-[#fdf8f3] border border-primary/15 px-5 py-4">
+                    <div className="mt-6 rounded-xl bg-[#fffdf6] border border-[#f5e9c6] px-5 py-4">
                       <p className="font-mukta text-sm text-[#5a2a20] leading-relaxed">
                         <span className="font-semibold text-primary">Astro Summary: </span>
                         {report.Summary.ScoreSummary}
@@ -1402,7 +1228,8 @@ const KundaliMatchingResultSection: React.FC = () => {
       <p className="font-mukta text-xs text-center text-gray-400 pb-4 mt-12">
         Results are powered by VedAstro. Information is for reference only.
       </p>
-    </div>
+      </div>
+    </section>
   );
 };
 

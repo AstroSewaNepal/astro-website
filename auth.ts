@@ -16,18 +16,10 @@ const authSecret =
     ? 'local-dev-only-insecure-auth-secret'
     : undefined);
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  trustHost: true,
-  secret: authSecret,
-  providers: [
-    /**
-     * Redirect URI sent to Google is always:
-     *   `{AUTH_URL or request origin}/api/auth/callback/google`
-     * e.g. http://localhost:3000/api/auth/callback/google
-     * That exact string must appear under Google Cloud Console → OAuth 2.0 Client →
-     * "Authorized redirect URIs" (localhost vs 127.0.0.1 are different entries).
-     * Nest’s `GOOGLE_REDIRECT_URI_WEB` (`…/api/v1/auth/google/callback`) is a separate flow.
-     */
+const providers = [];
+
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  providers.push(
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -35,11 +27,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         params: {
           prompt: "consent",
           access_type: "offline",
-          response_type: "code"
-        }
-      }
-     }),
-    Credentials({
+          response_type: "code",
+        },
+      },
+    }),
+  );
+}
+
+providers.push(
+  Credentials({
       credentials: {
         username: { label: 'Username', type: 'text' },
         password: { label: 'Password', type: 'password' },
@@ -86,7 +82,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       },
     }),
-  ],
+);
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
+  secret: authSecret,
+  providers,
   pages: {
     signIn: '/login',
   },
