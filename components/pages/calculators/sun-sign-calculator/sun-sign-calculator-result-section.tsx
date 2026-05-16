@@ -5,21 +5,14 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
 import {
   getReportDisplayName,
   getSunSignMeta,
   type SunSignMeta,
 } from '@/lib/calculators/sun-sign-metadata';
 
-export type SunSignCalculatorResult = {
-  fullName: string;
-  gender: string;
-  birthDate: string;
-  birthPlace: string;
-  birthTimeHH: string;
-  birthTimeMM: string;
-  birthTimeAMPM: string;
-  dontKnowTime: boolean;
+export type SunSignCalculatorResult = CalculatorFormValues & {
   sunSign: string;
 };
 

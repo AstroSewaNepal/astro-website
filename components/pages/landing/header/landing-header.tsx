@@ -76,7 +76,19 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
     },
     { title: d.header.nav.compatibility, link: '/compatibility' },
     { title: d.header.nav.pujaBidhi, link: '/puja-bidhi', children: [] },
-    { title: d.header.nav.calculator, children: [], link: '/calculators' },
+    {
+      title: d.header.nav.calculator,
+      link: '/calculators',
+      children: [
+        { title: 'Love Calculator', link: '/calculators/love-calculator' },
+        { title: 'Numerology Calculator', link: '/calculators/numerology-calculator' },
+        { title: 'Sun Sign Calculator', link: '/calculators/sun-sign-calculator' },
+        { title: 'Mangal Dosha Calculator', link: '/calculators/mangal-dosha-calculator' },
+        { title: 'Dasha Calculator', link: '/calculators/dasha-calculator' },
+        { title: 'Moon Phase Calculator', link: '/calculators/moon-phase-calculator' },
+        { title: 'Rashi Calculator', link: '/calculators/rashi-calculator' },
+      ],
+    },
     { title: d.header.nav.blog, link: '/blogs' },
     {
       title: uiLanguage === ELanguage.NEPALI ? 'क्यालेन्डर' : 'Calendar',

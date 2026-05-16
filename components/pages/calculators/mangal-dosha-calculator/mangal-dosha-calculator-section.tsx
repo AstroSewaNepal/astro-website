@@ -1,34 +1,37 @@
 'use client';
 
-import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
-import CalculatorSection from '@/components/pages/calculators/calculator-section';
+import { useRouter } from 'next/navigation';
 
-const doshaResult = (birthDate: string) => {
-  const day = Number(birthDate.split('-')[2] || 0);
-  if (day % 3 === 0)
-    return 'Mangal Dosha is present and can influence your marriage life. Consider consulting an astrologer for guidance.';
-  if (day % 3 === 1)
-    return 'Mangal Dosha is mild and may not create major issues. A balanced approach can help reduce tension.';
-  return 'No major Mangal Dosha is indicated. Your marriage prospects appear stable from the birth date pattern.';
-};
+import CalculatorBirthDetailsForm from '@/components/pages/calculators/shared/calculator-birth-details-form';
+import CalculatorPageIntro from '@/components/pages/calculators/shared/calculator-page-intro';
+import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
+import { determineMangalDosha } from '@/lib/calculators/determine-mangal-dosha';
+
+const STORAGE_KEY = 'mangalDoshaCalculatorResult';
 
 export default function MangalDoshaCalculatorSection() {
+  const router = useRouter();
+
+  const handleSubmit = (form: CalculatorFormValues) => {
+    const level = determineMangalDosha(form.birthDate);
+
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        ...form,
+        level,
+      }),
+    );
+
+    router.push('/calculators/mangal-dosha-calculator/result');
+  };
+
   return (
-    <CalculatorSection
+    <CalculatorPageIntro
       title="Mangal Dosha Calculator"
-      description="Check whether Mangal Dosha appears in your birth chart and understand how it may impact marital harmony."
-      image={MangalDoshaImage}
-      imageAlt="Mangal Dosha illustration"
-      fields={[
-        {
-          id: 'birthDate',
-          label: 'Enter your date of birth',
-          type: 'date',
-        },
-      ]}
-      buttonLabel="Check Dosha"
-      resultTitle="Mangal Dosha Result"
-      resultMessage={values => doshaResult(values.birthDate)}
-    />
+      shortDescription="Check whether Mangal Dosha appears in your birth chart and understand how it may impact marital harmony."
+    >
+      <CalculatorBirthDetailsForm submitLabel="Check Mangal Dosha" onSubmit={handleSubmit} />
+    </CalculatorPageIntro>
   );
 }

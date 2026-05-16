@@ -5,7 +5,13 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { IoLocationOutline } from 'react-icons/io5';
-import { LuClock } from 'react-icons/lu';
+import {
+  BirthTimeFields,
+  EMPTY_BIRTH_TIME,
+  UnknownBirthTimeCheckbox,
+  birthTimePartsToInput,
+  type BirthTimeParts,
+} from '@/components/shared/birth-time-fields';
 
 import CalendarIcon from '@/components/icons/calendar-icon';
 import UserLineIcon from '@/components/icons/user/user-line';
@@ -212,6 +218,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
 }) => {
   const router = useRouter();
   const [unknownBirthTime, setUnknownBirthTime] = useState(false);
+  const [birthTimeParts, setBirthTimeParts] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>(EMPTY_ERRORS);
 
@@ -226,7 +233,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
     const fullName = String(formData.get('fullName') ?? '').trim();
     const dateOfBirthInput = String(formData.get('dateOfBirth') ?? '').trim();
     const birthPlace = String(formData.get('birthPlace') ?? '').trim();
-    const birthTimeInput = String(formData.get('birthTime') ?? '').trim();
+    const birthTimeInput = birthTimePartsToInput(birthTimeParts).trim();
     const gender = String(formData.get('gender') ?? '').trim();
 
     // ── Per-field validation ──────────────────────────────────────────────────
@@ -495,35 +502,14 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                   <FieldError message={fieldErrors.birthPlace} />
                 </div>
 
-                {/* Birth Time */}
-                <div>
-                  <label
-                    htmlFor="kundali-birth-time"
-                    className="block font-mukta text-sm text-Trinary mb-2"
-                  >
-                    Enter birth time
-                  </label>
-                  <div
-                    className={clsx(
-                      'flex items-center gap-3 rounded-full border px-4 py-3 focus-within:border-primary transition-colors',
-                      unknownBirthTime && 'opacity-50 pointer-events-none',
-                      !unknownBirthTime && fieldErrors.birthTime
-                        ? 'border-red-500'
-                        : 'border-Trinary',
-                    )}
-                  >
-                    <input
-                      id="kundali-birth-time"
-                      name="birthTime"
-                      type="text"
-                      disabled={unknownBirthTime}
-                      placeholder="hh / mm / am"
-                      className="flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none disabled:cursor-not-allowed"
-                    />
-                    <LuClock className={fieldIconClass} aria-hidden />
-                  </div>
-                  {!unknownBirthTime && <FieldError message={fieldErrors.birthTime} />}
-                </div>
+                <BirthTimeFields
+                  id="kundali-birth-time"
+                  variant="kundali"
+                  value={birthTimeParts}
+                  onChange={setBirthTimeParts}
+                  disabled={unknownBirthTime}
+                  error={unknownBirthTime ? undefined : fieldErrors.birthTime}
+                />
 
                 {/* Gender */}
                 <div>
@@ -564,31 +550,17 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                 </div>
               </fieldset>
 
-              {/* Unknown birth time checkbox */}
-              <label className="flex items-center gap-3 cursor-pointer font-mukta text-sm text-primary mt-2 lg:mt-8 lg:mb-4">
-                <span
-                  className={clsx(
-                    'flex h-5 w-5 items-center justify-center rounded-full border border-primary',
-                    unknownBirthTime ? 'bg-primary' : 'bg-transparent',
-                  )}
-                >
-                  <input
-                    type="checkbox"
-                    checked={unknownBirthTime}
-                    onChange={e => {
-                      setUnknownBirthTime(e.target.checked);
-                      if (e.target.checked) {
-                        setFieldErrors(prev => ({ ...prev, birthTime: undefined }));
-                      }
-                    }}
-                    className="sr-only"
-                  />
-                  {unknownBirthTime && (
-                    <span className="h-2 w-2 rounded-full bg-white" aria-hidden="true" />
-                  )}
-                </span>
-                <span>Don&apos;t know my exact birth time</span>
-              </label>
+              <UnknownBirthTimeCheckbox
+                variant="kundali"
+                checked={unknownBirthTime}
+                onChange={checked => {
+                  setUnknownBirthTime(checked);
+                  if (checked) {
+                    setBirthTimeParts(EMPTY_BIRTH_TIME);
+                    setFieldErrors(prev => ({ ...prev, birthTime: undefined }));
+                  }
+                }}
+              />
 
               <button
                 type="submit"

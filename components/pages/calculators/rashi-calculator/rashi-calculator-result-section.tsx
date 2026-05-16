@@ -5,17 +5,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
 import { getRashiMeta, getReportDisplayName } from '@/lib/calculators/rashi-metadata';
-
-export type RashiCalculatorResult = {
-  fullName: string;
-  gender: string;
-  birthDate: string;
-  birthPlace: string;
-  birthTimeHH: string;
-  birthTimeMM: string;
-  birthTimeAMPM: string;
-  dontKnowTime: boolean;
+export type RashiCalculatorResult = CalculatorFormValues & {
   rashi: string;
 };
 
