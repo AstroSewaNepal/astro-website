@@ -5,13 +5,20 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { IoLocationOutline } from 'react-icons/io5';
-import { LuClock } from 'react-icons/lu';
+import {
+  BirthTimeFields,
+  EMPTY_BIRTH_TIME,
+  UnknownBirthTimeCheckbox,
+  birthTimePartsToInput,
+  type BirthTimeParts,
+} from '@/components/shared/birth-time-fields';
 
 import CalendarIcon from '@/components/icons/calendar-icon';
 import UserLineIcon from '@/components/icons/user/user-line';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import { ServiceReport } from '@/components/images/services';
-import GoogleGIcon from '@/components/images/icons/google_G.png';
+import { getPublicBackendBaseCandidates, resolveVedastroProxyFetchUrl } from '@/lib/utils/url';
+import { FreeKundaliGoogleSignIn } from '@/components/pages/free-kundali/free-kundali-google-sign-in';
 
 const fieldIconClass = 'w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary';
 const cardShell = clsx(
@@ -129,19 +136,21 @@ function getLocalOffset(dateInput: string): string {
   return `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
-function getCandidateBackendBases(): string[] {
-  const candidates: string[] = [];
-  const configured = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-  if (configured) {
-    candidates.push(configured.endsWith('/') ? configured : `${configured}/`);
-  } else {
-    candidates.push('http://localhost:5000/');
+// Simple timezone lookup based on coordinates (you can expand this)
+function getTimezoneFromCoords(lat: number, lon: number): string {
+  // Nepal coordinates roughly
+  if (lat >= 26.0 && lat <= 30.5 && lon >= 80.0 && lon <= 88.2) {
+    return 'Asia/Kathmandu';
   }
-
-  candidates.push('http://localhost:5000/');
-
-  return Array.from(new Set(candidates));
+  // India coordinates roughly
+  if (lat >= 8.0 && lat <= 37.0 && lon >= 68.0 && lon <= 97.0) {
+    return 'Asia/Kolkata';
+  }
+  // Default fallback
+  return 'UTC';
 }
+
+const getCandidateBackendBases = getPublicBackendBaseCandidates;
 
 async function fetchVedastroGeneral(
   query: URLSearchParams,
@@ -149,7 +158,7 @@ async function fetchVedastroGeneral(
   const attemptErrors: string[] = [];
 
   for (const base of getCandidateBackendBases()) {
-    const url = `${base}api/v1/vedastro/proxy/general?${query.toString()}`;
+    const url = resolveVedastroProxyFetchUrl(base, 'general', query);
     try {
       const response = await fetch(url);
       const contentType = response.headers.get('content-type')?.toLowerCase() ?? '';
@@ -196,9 +205,20 @@ const FieldError = ({ message }: { message?: string }) =>
 
 const EMPTY_ERRORS: FieldErrors = {};
 
-const KundaliFormSection: React.FC = () => {
+export type KundaliFormSectionProps = {
+  /** Prefilled after Google sign-in (Next Auth session name). */
+  defaultFullName?: string;
+  /** Set when redirected back from a failed OAuth attempt. */
+  oauthError?: boolean;
+};
+
+const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
+  defaultFullName,
+  oauthError = false,
+}) => {
   const router = useRouter();
   const [unknownBirthTime, setUnknownBirthTime] = useState(false);
+  const [birthTimeParts, setBirthTimeParts] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>(EMPTY_ERRORS);
 
@@ -213,7 +233,7 @@ const KundaliFormSection: React.FC = () => {
     const fullName = String(formData.get('fullName') ?? '').trim();
     const dateOfBirthInput = String(formData.get('dateOfBirth') ?? '').trim();
     const birthPlace = String(formData.get('birthPlace') ?? '').trim();
-    const birthTimeInput = String(formData.get('birthTime') ?? '').trim();
+    const birthTimeInput = birthTimePartsToInput(birthTimeParts).trim();
     const gender = String(formData.get('gender') ?? '').trim();
 
     // ── Per-field validation ──────────────────────────────────────────────────
@@ -352,20 +372,9 @@ const KundaliFormSection: React.FC = () => {
               />
             </div>
             <p className="font-sahitya text-[22px] md:text-[24px] leading-snug font-bold">
-              View your saved Kundali
+              Sign in to pre-fill your name
             </p>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-secondary px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white -translate-y-2"
-            >
-              <span
-                aria-hidden
-                className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white"
-              >
-                <Image src={GoogleGIcon} alt="" width={24} height={24} />
-              </span>
-              Continue with Google
-            </button>
+            <FreeKundaliGoogleSignIn buttonClassName="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-secondary px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white -translate-y-2 disabled:cursor-not-allowed disabled:opacity-60" />
           </div>
 
           {/* Mobile Title */}
@@ -388,6 +397,14 @@ const KundaliFormSection: React.FC = () => {
                 'flex flex-col lg:w-full',
               )}
             >
+              {oauthError ? (
+                <p
+                  className="-mt-2 mb-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-center font-mukta text-sm text-red-700"
+                  role="alert"
+                >
+                  Google sign-in did not finish. Please try again.
+                </p>
+              ) : null}
               <div className="text-center border-b border-Trinary pb-1 md:pb-2 lg:pb-2 mb-5 md:mb-4 lg:mb-6 gap-10">
                 <h3 className="font-sahitya text-primary text-[22px] leading-[32px] md:text-[28px] md:leading-[38px] font-bold tracking-[0]">
                   Generate Your Kundali
@@ -413,6 +430,7 @@ const KundaliFormSection: React.FC = () => {
                       id="kundali-full-name"
                       name="fullName"
                       type="text"
+                      defaultValue={defaultFullName}
                       placeholder="John Doe"
                       onInput={event => {
                         event.currentTarget.value = event.currentTarget.value.replace(
@@ -484,35 +502,14 @@ const KundaliFormSection: React.FC = () => {
                   <FieldError message={fieldErrors.birthPlace} />
                 </div>
 
-                {/* Birth Time */}
-                <div>
-                  <label
-                    htmlFor="kundali-birth-time"
-                    className="block font-mukta text-sm text-Trinary mb-2"
-                  >
-                    Enter birth time
-                  </label>
-                  <div
-                    className={clsx(
-                      'flex items-center gap-3 rounded-full border px-4 py-3 focus-within:border-primary transition-colors',
-                      unknownBirthTime && 'opacity-50 pointer-events-none',
-                      !unknownBirthTime && fieldErrors.birthTime
-                        ? 'border-red-500'
-                        : 'border-Trinary',
-                    )}
-                  >
-                    <input
-                      id="kundali-birth-time"
-                      name="birthTime"
-                      type="text"
-                      disabled={unknownBirthTime}
-                      placeholder="hh / mm / am"
-                      className="flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none disabled:cursor-not-allowed"
-                    />
-                    <LuClock className={fieldIconClass} aria-hidden />
-                  </div>
-                  {!unknownBirthTime && <FieldError message={fieldErrors.birthTime} />}
-                </div>
+                <BirthTimeFields
+                  id="kundali-birth-time"
+                  variant="kundali"
+                  value={birthTimeParts}
+                  onChange={setBirthTimeParts}
+                  disabled={unknownBirthTime}
+                  error={unknownBirthTime ? undefined : fieldErrors.birthTime}
+                />
 
                 {/* Gender */}
                 <div>
@@ -553,31 +550,17 @@ const KundaliFormSection: React.FC = () => {
                 </div>
               </fieldset>
 
-              {/* Unknown birth time checkbox */}
-              <label className="flex items-center gap-3 cursor-pointer font-mukta text-sm text-primary mt-2 lg:mt-8 lg:mb-4">
-                <span
-                  className={clsx(
-                    'flex h-5 w-5 items-center justify-center rounded-full border border-primary',
-                    unknownBirthTime ? 'bg-primary' : 'bg-transparent',
-                  )}
-                >
-                  <input
-                    type="checkbox"
-                    checked={unknownBirthTime}
-                    onChange={e => {
-                      setUnknownBirthTime(e.target.checked);
-                      if (e.target.checked) {
-                        setFieldErrors(prev => ({ ...prev, birthTime: undefined }));
-                      }
-                    }}
-                    className="sr-only"
-                  />
-                  {unknownBirthTime && (
-                    <span className="h-2 w-2 rounded-full bg-white" aria-hidden="true" />
-                  )}
-                </span>
-                <span>Don&apos;t know my exact birth time</span>
-              </label>
+              <UnknownBirthTimeCheckbox
+                variant="kundali"
+                checked={unknownBirthTime}
+                onChange={checked => {
+                  setUnknownBirthTime(checked);
+                  if (checked) {
+                    setBirthTimeParts(EMPTY_BIRTH_TIME);
+                    setFieldErrors(prev => ({ ...prev, birthTime: undefined }));
+                  }
+                }}
+              />
 
               <button
                 type="submit"
@@ -612,20 +595,9 @@ const KundaliFormSection: React.FC = () => {
                 />
               </div>
               <p className="font-sahitya text-[28px] md:text-[26px] leading-snug font-bold">
-                View your saved Kundali
+                Sign in to pre-fill your name
               </p>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-[#f8f1e7] px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white lg:rotate-0 lg:opacity-100"
-              >
-                <span
-                  aria-hidden
-                  className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white"
-                >
-                  <Image src={GoogleGIcon} alt="" width={24} height={24} />
-                </span>
-                Continue with Google
-              </button>
+              <FreeKundaliGoogleSignIn buttonClassName="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-[#f8f1e7] px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white lg:rotate-0 lg:opacity-100 disabled:cursor-not-allowed disabled:opacity-60" />
             </div>
           </div>
         </div>

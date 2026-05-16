@@ -5,6 +5,13 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ServiceReport } from '@/components/images/services';
 import GoogleGIcon from '@/components/images/icons/google_G.png';
+import {
+  BirthTimeFields,
+  EMPTY_BIRTH_TIME,
+  UnknownBirthTimeCheckbox,
+  birthTimePartsToInput,
+  type BirthTimeParts,
+} from '@/components/shared/birth-time-fields';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -358,6 +365,8 @@ type PersonSectionProps = {
   prefix: 'man' | 'woman';
   label: string;
   symbol: string;
+  birthTimeParts: BirthTimeParts;
+  onBirthTimeChange: (value: BirthTimeParts) => void;
   unknownBirthTime: boolean;
   onToggleUnknownTime: (v: boolean) => void;
   errors: PersonErrors;
@@ -367,6 +376,8 @@ const PersonSection = ({
   prefix,
   label,
   symbol,
+  birthTimeParts,
+  onBirthTimeChange,
   unknownBirthTime,
   onToggleUnknownTime,
   errors,
@@ -426,18 +437,16 @@ const PersonSection = ({
     </div>
 
     <div className="grid grid-cols-2 gap-3 md:gap-4">
-      {/* Birth time */}
-      <InputPill
+      <BirthTimeFields
         id={`${prefix}-birth-time`}
         label="Birth time"
-        name={`${prefix}BirthTime`}
-        placeholder="hh / mm / am"
+        variant="matching"
+        value={birthTimeParts}
+        onChange={onBirthTimeChange}
         disabled={unknownBirthTime}
-        rightIcon={<ClockIcon />}
         error={unknownBirthTime ? undefined : errors.birthTime}
       />
 
-      {/* Gender */}
       <SelectPill
         id={`${prefix}-gender`}
         label="Select gender"
@@ -446,17 +455,11 @@ const PersonSection = ({
       />
     </div>
 
-    {/* Unknown time checkbox */}
-    <label className="flex items-center gap-2 font-mukta text-[12px] md:text-[13px] text-Trinary mt-1 cursor-pointer select-none">
-      <input
-        type="checkbox"
-        checked={unknownBirthTime}
-        onChange={e => onToggleUnknownTime(e.target.checked)}
-        className="h-4 w-4 rounded border-primary/40 focus:ring-primary/20"
-        style={{ accentColor: 'var(--primary)' }}
-      />
-      Don&apos;t know my exact birth time
-    </label>
+    <UnknownBirthTimeCheckbox
+      variant="matching"
+      checked={unknownBirthTime}
+      onChange={onToggleUnknownTime}
+    />
   </div>
 );
 
@@ -469,6 +472,8 @@ const KundaliMatchingFormSection: React.FC = () => {
 
   const [manUnknownTime, setManUnknownTime] = useState(false);
   const [womanUnknownTime, setWomanUnknownTime] = useState(false);
+  const [manBirthTime, setManBirthTime] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
+  const [womanBirthTime, setWomanBirthTime] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors>(EMPTY_ERRORS);
 
@@ -479,6 +484,7 @@ const KundaliMatchingFormSection: React.FC = () => {
   const validatePerson = (
     prefix: 'man' | 'woman',
     formData: FormData,
+    birthTimeParts: BirthTimeParts,
     unknownTime: boolean,
     errorsOut: PersonErrors,
   ): {
@@ -490,7 +496,7 @@ const KundaliMatchingFormSection: React.FC = () => {
   } | null => {
     const fullName = String(formData.get(`${prefix}FullName`) ?? '').trim();
     const dateOfBirthInput = String(formData.get(`${prefix}DateOfBirth`) ?? '').trim();
-    const birthTimeInput = String(formData.get(`${prefix}BirthTime`) ?? '').trim();
+    const birthTimeInput = birthTimePartsToInput(birthTimeParts).trim();
     const birthPlace = String(formData.get(`${prefix}BirthPlace`) ?? '').trim();
     const gender = String(formData.get(`${prefix}Gender`) ?? '').trim();
 
@@ -568,8 +574,8 @@ const KundaliMatchingFormSection: React.FC = () => {
     const newErrors: FormErrors = { man: {}, woman: {} };
     const formData = new FormData(e.currentTarget);
 
-    const man = validatePerson('man', formData, manUnknownTime, newErrors.man);
-    const woman = validatePerson('woman', formData, womanUnknownTime, newErrors.woman);
+    const man = validatePerson('man', formData, manBirthTime, manUnknownTime, newErrors.man);
+    const woman = validatePerson('woman', formData, womanBirthTime, womanUnknownTime, newErrors.woman);
 
     // If any field has errors, show them and stop
     if (!man || !woman) {
@@ -647,14 +653,18 @@ const KundaliMatchingFormSection: React.FC = () => {
                 prefix="man"
                 label="Man"
                 symbol="♂"
+                birthTimeParts={manBirthTime}
+                onBirthTimeChange={setManBirthTime}
                 unknownBirthTime={manUnknownTime}
                 onToggleUnknownTime={v => {
                   setManUnknownTime(v);
-                  if (v)
+                  if (v) {
+                    setManBirthTime(EMPTY_BIRTH_TIME);
                     setFormErrors(prev => ({
                       ...prev,
                       man: { ...prev.man, birthTime: undefined },
                     }));
+                  }
                 }}
                 errors={formErrors.man}
               />
@@ -675,14 +685,18 @@ const KundaliMatchingFormSection: React.FC = () => {
                 prefix="woman"
                 label="Woman"
                 symbol="♀"
+                birthTimeParts={womanBirthTime}
+                onBirthTimeChange={setWomanBirthTime}
                 unknownBirthTime={womanUnknownTime}
                 onToggleUnknownTime={v => {
                   setWomanUnknownTime(v);
-                  if (v)
+                  if (v) {
+                    setWomanBirthTime(EMPTY_BIRTH_TIME);
                     setFormErrors(prev => ({
                       ...prev,
                       woman: { ...prev.woman, birthTime: undefined },
                     }));
+                  }
                 }}
                 errors={formErrors.woman}
               />

@@ -55,7 +55,8 @@ function starCountFromRating(rating: number): number {
 type DisplayCard = {
   key: string;
   name: string;
-  image: (typeof HOROSCOPE_DATA)[ELanguage.ENGLISH][number]['image'];
+  imageLight: (typeof HOROSCOPE_DATA)[ELanguage.ENGLISH][number]['image'];
+  imageColor: (typeof HOROSCOPE_DATA)[ELanguage.ENGLISH][number]['image'];
   summary: string;
   stars: number;
 };
@@ -70,8 +71,6 @@ function HoroscopeSignCardLink(props: {
   layout: SignCardLayout;
 }) {
   const { card, selectedRange, uiLanguage, readMoreLabel, layout } = props;
-  /** Mobile carousel mock shows three stars; grid keeps API rating. */
-  const starCount = layout === 'carousel' ? 3 : card.stars;
   const innerFlex =
     layout === 'grid'
       ? 'flex flex-col items-center gap-3 text-center md:flex-row md:items-center md:gap-4 md:text-left'
@@ -81,33 +80,38 @@ function HoroscopeSignCardLink(props: {
     <Link
       href={horoscopeDetailPageHref(card.key, selectedRange, uiLanguage)}
       className={clsx(
-        'group block h-full rounded-[20px] border px-4 py-4 transition-[transform,box-shadow,colors] duration-200 active:scale-[0.99] sm:px-4 sm:py-3 md:rounded-[24px] xl:rounded-[26px]',
+        'group block h-full rounded-[33px] border border-[#5B5B5B] px-[14px] py-3 transition-[transform,box-shadow,colors] duration-200 active:scale-[0.99] sm:px-4 sm:py-3 md:rounded-[24px] xl:rounded-[26px]',
         layout === 'carousel' &&
           clsx(
-            'snap-start border-[#d4d4d8] bg-white py-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)] hover:border-[#c4c4c9] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] sm:py-6',
+            'snap-start border-[#d4d4d8] py-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)] hover:border-[#c4c4c9] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] sm:py-6',
             'min-[380px]:px-5',
           ),
         layout === 'grid' &&
           clsx(
-            'border-[#5c4033]/25 bg-transparent hover:-translate-y-0.5 hover:border-[#5c4033]/45 hover:bg-white/20 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)]',
+            'border-[#5c4033]/25 bg-transparent hover:-translate-y-0.5 hover:border-[#5c4033]/45 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)]',
             /* Desktop grid (Figma): light cards with neutral border */
-            'md:border-[#d4d4d8] md:bg-white md:shadow-[0_2px_12px_rgba(0,0,0,0.05)] md:hover:border-[#c4c4c9] md:hover:bg-white',
+            'md:border-[#d4d4d8] md:shadow-[0_2px_12px_rgba(0,0,0,0.05)] md:hover:border-[#c4c4c9]',
           ),
       )}
     >
       <div className={innerFlex}>
         <div
           className={clsx(
-            'flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[18px] border border-transparent bg-transparent',
+            'relative flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[18px] border border-transparent bg-transparent',
             'sm:h-[76px] sm:w-[76px] sm:rounded-[20px]',
             'md:h-[78px] md:w-[78px] md:rounded-[22px]',
-            layout === 'grid' && 'md:border-[#dfcebc]/40 md:bg-[#f4eadf]/40',
+            layout === 'grid' && 'md:border-[#dfcebc]/40',
           )}
         >
           <Image
-            src={card.image}
+            src={card.imageLight}
             alt={card.name}
-            className="h-[54px] w-[54px] object-contain sm:h-[58px] sm:w-[58px] md:h-[60px] md:w-[60px]"
+            className="h-[54px] w-[54px] object-contain opacity-100 transition-opacity duration-300 group-hover:opacity-0 sm:h-[58px] sm:w-[58px] md:h-[60px] md:w-[60px]"
+          />
+          <Image
+            src={card.imageColor}
+            alt={card.name}
+            className="absolute h-[54px] w-[54px] object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:h-[58px] sm:w-[58px] md:h-[60px] md:w-[60px]"
           />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -121,7 +125,7 @@ function HoroscopeSignCardLink(props: {
               {card.name}
             </p>
             <div className="flex items-center gap-0.5 text-[#ef8a20]">
-              {Array.from({ length: starCount }).map((_, starIndex) => (
+              {Array.from({ length: card.stars }).map((_, starIndex) => (
                 <StartIcon
                   key={`${card.key}-star-${starIndex}`}
                   className="h-3 w-3 text-[#ef8a20] sm:h-3.5 sm:w-3.5"
@@ -217,7 +221,8 @@ function HoroscopePageContent() {
       return staticFallback.map(c => ({
         key: c.name.toLowerCase(),
         name: c.name,
-        image: c.image,
+        imageLight: c.image,
+        imageColor: c.imageColor ?? c.image,
         summary: c.detail,
         stars: c.numberOfStars,
       }));
@@ -231,16 +236,23 @@ function HoroscopePageContent() {
       const fallbackImage = staticFallback[0]!.image;
       const name =
         meta == null ? row.sign : signLanguage === ELanguage.ENGLISH ? meta.en.name : meta.np.name;
-      const image =
+      const imageLight =
         meta == null
           ? fallbackImage
           : signLanguage === ELanguage.ENGLISH
             ? meta.en.image
             : meta.np.image;
+      const imageColor =
+        meta == null
+          ? fallbackImage
+          : signLanguage === ELanguage.ENGLISH
+            ? (meta.en.imageColor ?? meta.en.image)
+            : (meta.np.imageColor ?? meta.np.image);
       return {
         key: slug,
         name,
-        image,
+        imageLight,
+        imageColor: imageColor,
         summary: row.summary,
         stars: starCountFromRating(row.rating),
       };
@@ -285,7 +297,7 @@ function HoroscopePageContent() {
                 {copy.intro}
               </p>
 
-              <div className="mx-auto mt-5 flex w-full max-w-sm flex-col gap-2 sm:mt-6 sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center sm:gap-3">
+              <div className="mx-auto mt-5 flex w-full max-w-sm gap-2 sm:mt-6 sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setSignLanguage(ELanguage.ENGLISH)}
@@ -305,7 +317,7 @@ function HoroscopePageContent() {
                     'min-h-[44px] w-full rounded-full border px-5 py-2.5 font-mukta text-[15px] transition-colors sm:w-auto sm:min-h-0 sm:px-6',
                     signLanguage === ELanguage.NEPALI
                       ? 'border-[#6f2618] bg-[#6f2618] text-white shadow-sm'
-                      : 'border-[#6f2618] bg-white text-[#6f2618] hover:bg-white/90',
+                      : 'border-[#6f2618] text-[#6f2618] hover:bg-white/90',
                   )}
                 >
                   Nepali

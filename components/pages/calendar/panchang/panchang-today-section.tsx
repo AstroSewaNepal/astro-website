@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
+import { resolveVedastroProxyFetchUrl } from '@/lib/utils/url';
 import PanchangCircleImage from '@/components/images/panchang_circle.png';
 import ArrowLeft from '@/components/icons/arrow-left';
 import ArrowRight from '@/components/icons/arrow-right';
@@ -39,7 +40,7 @@ async function fetchPanchangaForDate(
   });
 
   for (const base of getCandidateBackendBases()) {
-    const url = `${base}api/v1/vedastro/proxy/panchanga?${params.toString()}`;
+    const url = resolveVedastroProxyFetchUrl(base, 'panchanga', params);
     try {
       const response = await fetch(url);
       const contentType = response.headers.get('content-type')?.toLowerCase() ?? '';

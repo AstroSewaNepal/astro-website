@@ -1,0 +1,58 @@
+import {
+  NepaliAquariusLight,
+  NepaliAriesLight,
+  NepaliCancerLight,
+  NepaliCapricornLight,
+  NepaliGeminiLight,
+  NepaliLeoLight,
+  NepaliLibraLight,
+  NepaliPiscesLight,
+  NepaliSagittariusLight,
+  NepaliScorpioLight,
+  NepaliTaurusLight,
+  NepaliVirgoLight,
+} from '@/components/images/zodiac/nepali';
+import {
+  NepaliAriesColor,
+  NepaliTaurusColor,
+  NepaliGeminiColor,
+  NepaliCancerColor,
+  NepaliLeoColor,
+  NepaliVirgoColor,
+  NepaliLibraColor,
+  NepaliScorpioColor,
+  NepaliSagittariusColor,
+  NepaliCapricornColor,
+  NepaliAquariusColor,
+  NepaliPiscesColor,
+} from '@/components/images/zodiac/nepali';
+import type { HoroscopeSign } from '@/lib/types/horoscope';
+export const NEPALI_ZODIAC_COLOR: Record<HoroscopeSign, typeof NepaliAriesColor> = {
+  aries: NepaliAriesColor,
+  taurus: NepaliTaurusColor,
+  gemini: NepaliGeminiColor,
+  cancer: NepaliCancerColor,
+  leo: NepaliLeoColor,
+  virgo: NepaliVirgoColor,
+  libra: NepaliLibraColor,
+  scorpio: NepaliScorpioColor,
+  sagittarius: NepaliSagittariusColor,
+  capricorn: NepaliCapricornColor,
+  aquarius: NepaliAquariusColor,
+  pisces: NepaliPiscesColor,
+};
+
+export const NEPALI_ZODIAC_LIGHT: Record<HoroscopeSign, typeof NepaliAriesLight> = {
+  aries: NepaliAriesLight,
+  taurus: NepaliTaurusLight,
+  gemini: NepaliGeminiLight,
+  cancer: NepaliCancerLight,
+  leo: NepaliLeoLight,
+  virgo: NepaliVirgoLight,
+  libra: NepaliLibraLight,
+  scorpio: NepaliScorpioLight,
+  sagittarius: NepaliSagittariusLight,
+  capricorn: NepaliCapricornLight,
+  aquarius: NepaliAquariusLight,
+  pisces: NepaliPiscesLight,
+};

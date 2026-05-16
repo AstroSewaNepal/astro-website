@@ -56,6 +56,7 @@ export function ZodiacSignCardsGrid<T>({
 }: ZodiacSignCardsGridProps<T>) {
   const swiperRef = useRef<SwiperType | null>(null);
   const isEmpty = cards !== 'loading' && cards.length === 0;
+  const showCarouselNav = cards !== 'loading' && cards.length > 1;
   const showError = Boolean(listError);
   const carouselHideUp = useSmUpGrid ? 'sm:hidden' : 'md:hidden';
   const gridShowFrom = useSmUpGrid ? 'sm:grid' : 'md:grid';
@@ -70,7 +71,6 @@ export function ZodiacSignCardsGrid<T>({
           {listError} {errorFallbackSuffix}
         </p>
       ) : null}
-
       {isEmpty ? (
         <p className="mt-6 py-6 text-center font-mukta text-[14px] text-[#6b5a4e] sm:mt-8 sm:text-[15px]">
           {emptyLabel}
@@ -85,28 +85,36 @@ export function ZodiacSignCardsGrid<T>({
               carouselHideUp,
             )}
           >
-            <button
-              type="button"
-              aria-label="Previous sign"
-              onClick={() => swiperRef.current?.slidePrev()}
-              className={clsx(
-                'absolute top-[42%] z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white',
-                compact ? 'left-0.5 h-8 w-8 sm:left-0 sm:h-9 sm:w-9' : 'left-0 h-9 w-9',
-              )}
-            >
-              <Image src={ChevronLeftIcon} alt="" className="h-2.5 w-2.5 opacity-75" />
-            </button>
-            <button
-              type="button"
-              aria-label="Next sign"
-              onClick={() => swiperRef.current?.slideNext()}
-              className={clsx(
-                'absolute top-[42%] z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white',
-                compact ? 'right-0.5 h-8 w-8 sm:right-0 sm:h-9 sm:w-9' : 'right-0 h-9 w-9',
-              )}
-            >
-              <Image src={ChevronLeftIcon} alt="" className="h-2.5 w-2.5 rotate-180 opacity-75" />
-            </button>
+            {showCarouselNav ? (
+              <>
+                <button
+                  type="button"
+                  aria-label="Previous sign"
+                  onClick={() => swiperRef.current?.slidePrev()}
+                  className={clsx(
+                    'absolute top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white',
+                    compact ? 'left-0.5 h-8 w-8 sm:left-0 sm:h-9 sm:w-9' : 'left-0 h-9 w-9',
+                  )}
+                >
+                  <Image src={ChevronLeftIcon} alt="" className="h-2.5 w-2.5 opacity-75" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next sign"
+                  onClick={() => swiperRef.current?.slideNext()}
+                  className={clsx(
+                    'absolute top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white',
+                    compact ? 'right-0.5 h-8 w-8 sm:right-0 sm:h-9 sm:w-9' : 'right-0 h-9 w-9',
+                  )}
+                >
+                  <Image
+                    src={ChevronLeftIcon}
+                    alt=""
+                    className="h-2.5 w-2.5 rotate-180 opacity-75"
+                  />
+                </button>
+              </>
+            ) : null}
             <Swiper
               key={swiperKey}
               modules={[Pagination]}

@@ -1,15 +1,7 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import NepaliDate from 'nepali-date-converter';
-import {
-  PANCHANG_DEFAULT_GEO,
-  extractPanchangaResult,
-  formatDdMmYyyy,
-  getCandidateBackendBases,
-  nestedString,
-  utcOffsetHmFromLocalDate,
-} from '../panchang/panchang-utils';
 
 type CalendarCell = {
   key: string;
@@ -32,12 +24,6 @@ const weekDays = [
   { np: 'शनिबार', en: 'Saturday' },
 ];
 
-type SelectedPanchangaData = {
-  tithi: string;
-  festival: string;
-  paksha: string;
-};
-
 const getMonthTotalDays = (year: number, monthIndex: number) => {
   let date = 1;
   while (true) {
@@ -51,31 +37,18 @@ const getMonthTotalDays = (year: number, monthIndex: number) => {
 
 const getCellDate = (year: number, month: number, monthOffset: -1 | 0 | 1, day: number) => {
   const dateRef = new NepaliDate(year, month, 1);
-  if (monthOffset !== 0) dateRef.setMonth(monthOffset);
+  if (monthOffset !== 0) dateRef.setMonth(month + monthOffset);
   dateRef.setDate(day);
   return dateRef;
 };
 
-const tithiNames = [
-  'Pratipada',
-  'Dwitiya',
-  'Tritiya',
-  'Chaturthi',
-  'Panchami',
-  'Shashthi',
-  'Saptami',
-  'Ashtami',
-  'Navami',
-  'Dashami',
-  'Ekadashi',
-  'Dwadashi',
-  'Trayodashi',
-  'Chaturdashi',
-  'Purnima / Aunsi',
-];
+const getAdjacentNepaliMonth = (year: number, month: number, offset: number) => {
+  const dateRef = new NepaliDate(year, month, 1);
+  dateRef.setMonth(month + offset);
+  return { year: dateRef.getYear(), month: dateRef.getMonth() };
+};
 
-const getTithiAndFestival = (cell: CalendarCell) => {
-  const tithi = tithiNames[(cell.day - 1) % tithiNames.length];
+const getFestivalLabel = (cell: CalendarCell) => {
   const weekdayFestivalMap: Record<number, string> = {
     0: 'Surya Aradhana',
     1: 'Shiv Puja',
@@ -85,79 +58,13 @@ const getTithiAndFestival = (cell: CalendarCell) => {
     5: 'Laxmi Puja',
     6: 'Shani Aradhana',
   };
-
-  return {
-    tithi,
-    festival: weekdayFestivalMap[cell.weekDay] ?? 'Auspicious Day',
-  };
+  return weekdayFestivalMap[cell.weekDay] ?? 'Auspicious Day';
 };
 
 const getCellDisplayDay = (cell: CalendarCell) => {
   const dateRef = new NepaliDate(cell.year, cell.month, cell.day);
   return dateRef.format('DD', 'np');
 };
-
-const buildFestivalLabelFromTable = (table: Record<string, unknown>) => {
-  const preferredKeys = ['Festival', 'Festivals', 'Vrat', 'Parva', 'Speciality'];
-  for (const key of preferredKeys) {
-    const value = nestedString(table, key);
-    if (value.trim()) return value;
-  }
-  return '—';
-};
-
-async function fetchPanchangaForADDate(calendarDay: Date): Promise<SelectedPanchangaData> {
-  const params = new URLSearchParams({
-    lat: String(PANCHANG_DEFAULT_GEO.lat),
-    lon: String(PANCHANG_DEFAULT_GEO.lon),
-    date: formatDdMmYyyy(calendarDay),
-    time: '12:00',
-    offset: utcOffsetHmFromLocalDate(calendarDay),
-    location: PANCHANG_DEFAULT_GEO.label,
-  });
-
-  const attemptErrors: string[] = [];
-
-  for (const base of getCandidateBackendBases()) {
-    const url = `${base}api/v1/vedastro/proxy/panchanga?${params.toString()}`;
-    try {
-      const response = await fetch(url);
-      const contentType = response.headers.get('content-type')?.toLowerCase() ?? '';
-      if (!contentType.includes('application/json')) {
-        attemptErrors.push(`Non-JSON (${response.status})`);
-        continue;
-      }
-      const json = (await response.json()) as Record<string, unknown>;
-      if (!response.ok || json.success === false) {
-        attemptErrors.push(
-          (typeof json.message === 'string' && json.message) ||
-            `Request failed (${response.status}).`,
-        );
-        continue;
-      }
-
-      const parsed = extractPanchangaResult(json);
-      if (!parsed) {
-        attemptErrors.push('Unexpected response shape.');
-        continue;
-      }
-
-      const tithiObj = parsed.table.Tithi as Record<string, unknown> | undefined;
-      const tithiName = nestedString(tithiObj, 'Name') || nestedString(tithiObj, 'name') || '—';
-      const paksha = nestedString(tithiObj, 'Paksha') || nestedString(tithiObj, 'paksha') || '—';
-
-      return {
-        tithi: tithiName,
-        paksha,
-        festival: buildFestivalLabelFromTable(parsed.table),
-      };
-    } catch (error) {
-      attemptErrors.push(error instanceof Error ? error.message : 'Network error');
-    }
-  }
-
-  throw new Error(attemptErrors[attemptErrors.length - 1] ?? 'Failed to load panchanga.');
-}
 
 const NepaliCalendarPageContent: React.FC = () => {
   const [visibleMonth, setVisibleMonth] = useState(() => {
@@ -175,7 +82,7 @@ const NepaliCalendarPageContent: React.FC = () => {
     const totalDays = getMonthTotalDays(visibleMonth.year, visibleMonth.month);
 
     const prevMonthRef = new NepaliDate(visibleMonth.year, visibleMonth.month, 1);
-    prevMonthRef.setMonth(-1);
+    prevMonthRef.setMonth(visibleMonth.month - 1);
     const prevMonthTotalDays = getMonthTotalDays(prevMonthRef.getYear(), prevMonthRef.getMonth());
 
     const prevCells: CalendarCell[] = Array.from({ length: firstWeekDay }, (_, idx) => {
@@ -250,15 +157,15 @@ const NepaliCalendarPageContent: React.FC = () => {
   }, [today, visibleMonth.month, visibleMonth.year]);
 
   const handlePrevMonth = () => {
-    const target = new NepaliDate(visibleMonth.year, visibleMonth.month, 1);
-    target.setMonth(-1);
-    setVisibleMonth({ year: target.getYear(), month: target.getMonth() });
+    setVisibleMonth(prev => getAdjacentNepaliMonth(prev.year, prev.month, -1));
+    setSelectedKey(null);
+    setIsDialogOpen(false);
   };
 
   const handleNextMonth = () => {
-    const target = new NepaliDate(visibleMonth.year, visibleMonth.month, 1);
-    target.setMonth(1);
-    setVisibleMonth({ year: target.getYear(), month: target.getMonth() });
+    setVisibleMonth(prev => getAdjacentNepaliMonth(prev.year, prev.month, 1));
+    setSelectedKey(null);
+    setIsDialogOpen(false);
   };
 
   const handleGoToToday = () => {
@@ -268,38 +175,6 @@ const NepaliCalendarPageContent: React.FC = () => {
   };
 
   const selectedCell = selectedKey ? (cells.find(cell => cell.key === selectedKey) ?? null) : null;
-  const [selectedPanchanga, setSelectedPanchanga] = useState<SelectedPanchangaData | null>(null);
-  const [loadingPanchanga, setLoadingPanchanga] = useState(false);
-  const [panchangaError, setPanchangaError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!selectedCell) return;
-    let isCancelled = false;
-
-    const loadSelectedPanchanga = async () => {
-      setLoadingPanchanga(true);
-      setPanchangaError(null);
-      try {
-        const data = await fetchPanchangaForADDate(selectedCell.adDate);
-        if (!isCancelled) setSelectedPanchanga(data);
-      } catch (error) {
-        if (!isCancelled) {
-          setSelectedPanchanga(null);
-          setPanchangaError(error instanceof Error ? error.message : 'Failed to load panchanga');
-        }
-      } finally {
-        if (!isCancelled) setLoadingPanchanga(false);
-      }
-    };
-
-    void loadSelectedPanchanga();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [selectedCell]);
-
-  const fallbackMeta = selectedCell ? getTithiAndFestival(selectedCell) : null;
 
   const closeDialog = () => {
     setIsDialogOpen(false);
@@ -404,7 +279,7 @@ const NepaliCalendarPageContent: React.FC = () => {
             >
               <span
                 className={`font-mukta text-[32px] md:text-[46px] leading-none font-bold ${
-                  date.weekDay === 6
+                  date.monthOffset === 0 && date.weekDay === 6
                     ? 'text-[#d91515]'
                     : date.monthOffset === 0
                       ? 'text-[#101010]'
@@ -415,9 +290,6 @@ const NepaliCalendarPageContent: React.FC = () => {
               </span>
               <span className="font-mukta text-[10px] md:text-[12px] text-[#444]">
                 AD {date.adDate.getDate()}
-              </span>
-              <span className="font-mukta text-[10px] md:text-[12px] text-[#7f2d2d] truncate">
-                {getTithiAndFestival(date).tithi}
               </span>
             </button>
           ))}
@@ -444,9 +316,10 @@ const NepaliCalendarPageContent: React.FC = () => {
               <button
                 type="button"
                 onClick={closeDialog}
-                className="h-8 w-8 rounded-full border border-[#c0785a] text-[#7b1c1c] hover:bg-[#ffe8cc]"
+                aria-label="Close dialog"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-[#c0785a] bg-white text-[#7b1c1c] shadow-sm transition-colors hover:bg-[#ffe8cc] focus:outline-none focus:ring-2 focus:ring-[#c0785a]/50"
               >
-                x
+                ×
               </button>
             </div>
             <p className="font-mukta text-[14px] md:text-[16px] text-[#5b463f]">
@@ -469,32 +342,10 @@ const NepaliCalendarPageContent: React.FC = () => {
                 })}
               </span>
             </p>
-            {loadingPanchanga ? (
-              <p className="font-mukta text-[14px] md:text-[16px] text-[#5b463f] mt-1">
-                Loading panchanga details...
-              </p>
-            ) : null}
-            {panchangaError ? (
-              <p className="font-mukta text-[14px] md:text-[16px] text-[#b42318] mt-1">
-                {panchangaError}
-              </p>
-            ) : null}
-            <p className="font-mukta text-[14px] md:text-[16px] text-[#5b463f] mt-1">
-              Tithi:{' '}
-              <span className="font-semibold text-[#7b1c1c]">
-                {selectedPanchanga?.tithi ?? fallbackMeta?.tithi ?? '—'}
-              </span>
-            </p>
-            <p className="font-mukta text-[14px] md:text-[16px] text-[#5b463f] mt-1">
-              Paksha:{' '}
-              <span className="font-semibold text-[#7b1c1c]">
-                {selectedPanchanga?.paksha ?? '—'}
-              </span>
-            </p>
             <p className="font-mukta text-[14px] md:text-[16px] text-[#5b463f] mt-1">
               Festival / Observance:{' '}
               <span className="font-semibold text-[#7b1c1c]">
-                {selectedPanchanga?.festival ?? fallbackMeta?.festival ?? '—'}
+                {selectedCell ? getFestivalLabel(selectedCell) : '—'}
               </span>
             </p>
           </div>

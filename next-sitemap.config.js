@@ -4,8 +4,8 @@ const GhostContentAPI = require('@tryghost/content-api');
  * This keeps your keys hidden from the public.
  */
 const api = new GhostContentAPI({
-  url: process.env.GHOST_URL || 'https://blog.dev.astrosewa.com',
-  key: process.env.GHOST_CONTENT_KEY,
+  url: process.env.GHOST_CONTENT_API_URL || process.env.BLOG_API || 'https://blog.dev.astrosewa.com',
+  key: process.env.GHOST_CONTENT_API_KEY || process.env.CONTENT_API_KEY,
   version: "v5.0"
 });
 
@@ -18,8 +18,8 @@ module.exports = {
   // Fetching Ghost Blogs (Optimized & Secure)
   additionalPaths: async () => {
     // If the API Key is missing (e.g., local dev), skip this step to avoid errors
-    if (!process.env.GHOST_CONTENT_KEY) {
-      console.warn("Sitemap: GHOST_CONTENT_KEY is missing. Skipping blog fetch.");
+    if (!process.env.GHOST_CONTENT_API_KEY && !process.env.CONTENT_API_KEY) {
+      console.warn("Sitemap: GHOST_CONTENT_API_KEY is missing. Skipping blog fetch.");
       return [];
     }
 

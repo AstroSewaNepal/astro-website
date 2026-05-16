@@ -2,9 +2,24 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  trustHost: true,
-  providers: [
+import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
+
+/**
+ * Auth.js requires a secret to sign cookies and JWTs.
+ * Set `AUTH_SECRET` in `.env.local` (e.g. `openssl rand -base64 32`).
+ * A dev-only fallback avoids "MissingSecret" when the var is absent locally;
+ * never rely on that in production—deploy must define AUTH_SECRET.
+ */
+const authSecret =
+  process.env.AUTH_SECRET ??
+  (process.env.NODE_ENV !== 'production'
+    ? 'local-dev-only-insecure-auth-secret'
+    : undefined);
+
+const providers = [];
+
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  providers.push(
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -12,21 +27,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         params: {
           prompt: "consent",
           access_type: "offline",
-          response_type: "code"
-        }
-      }
-     }),
-    Credentials({
+          response_type: "code",
+        },
+      },
+    }),
+  );
+}
+
+providers.push(
+  Credentials({
       credentials: {
         username: { label: 'Username', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-        if (!backendUrl || !credentials?.username || !credentials?.password) return null;
+        const apiRoot = tryGetPublicBackendBaseUrl();
+        if (!apiRoot || !credentials?.username || !credentials?.password) return null;
 
         try {
-          const res = await fetch(`${backendUrl}/auth/login`, {
+          const res = await fetch(`${apiRoot}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -63,20 +82,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       },
     }),
-  ],
+);
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
+  secret: authSecret,
+  providers,
   pages: {
     signIn: '/login',
   },
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === 'google' && account.id_token) {
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-        if (backendUrl) {
+        const apiRoot = tryGetPublicBackendBaseUrl();
+        if (apiRoot) {
           try {
-            const res = await fetch(`${backendUrl}/auth/google`, {
+            const res = await fetch(`${apiRoot}/auth/google`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ idToken: account.id_token }),
+              body: JSON.stringify({
+                idToken: account.id_token,
+                role: 'USER',
+              }),
             });
             if (res.ok) {
               const json = await res.json();

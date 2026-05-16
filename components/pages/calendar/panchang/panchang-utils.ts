@@ -1,3 +1,5 @@
+import { getPublicBackendBaseCandidates } from '@/lib/utils/url';
+
 /** Default place for Panchanga when UI only supplies a readable city label. */
 export const PANCHANG_DEFAULT_GEO = {
   lat: 27.7172,
@@ -112,13 +114,5 @@ export function buildPanchangaTitleLine(table: Record<string, unknown>): string 
 }
 
 export function getCandidateBackendBases(): string[] {
-  const candidates: string[] = [];
-  const configured = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-  if (configured) {
-    candidates.push(configured.endsWith('/') ? configured : `${configured}/`);
-  } else {
-    candidates.push('http://localhost:5000/');
-  }
-  candidates.push('http://localhost:5000/');
-  return Array.from(new Set(candidates));
+  return getPublicBackendBaseCandidates();
 }

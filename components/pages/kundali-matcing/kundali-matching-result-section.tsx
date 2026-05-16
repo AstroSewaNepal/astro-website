@@ -1,9 +1,27 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
+import OpenChart from '@/components/images/openchart.png';
+import { getPublicBackendBaseCandidates, resolveVedastroProxyFetchUrl } from '@/lib/utils/url';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+type KundaliMatchingTab = 'match' | 'basic' | 'dosha' | 'planets' | 'lagna';
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object';
+}
+
+function unwrapVedastroPayload(payload: unknown): unknown {
+  if (!isRecord(payload)) return payload;
+
+  const data = payload['data'];
+  if (isRecord(data) && 'payload' in data) return (data as Record<string, unknown>)['payload'];
+  if ('payload' in payload) return payload['payload'];
+  return payload;
+}
 
 type PersonInput = {
   fullName: string;
@@ -63,6 +81,32 @@ type VedastroProxyResult = {
   payload?: unknown;
 };
 
+type TabButtonProps = {
+  id: KundaliMatchingTab;
+  label: string;
+  activeTab: KundaliMatchingTab;
+  onSelect: (tab: KundaliMatchingTab) => void;
+};
+
+/** Same pill classes as `free-kundali/kundali-result-section.tsx` tab buttons. */
+function freeKundaliTabButtonClass(active: boolean): string {
+  return `h-[46px] w-[334.25px] max-w-full rounded-[32px] border border-[#A13924] p-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 ${
+    active ? 'bg-[#7F1808] text-white' : 'bg-[#ede9d9] text-[#7F1808]'
+  } hover:bg-[#7F1808] hover:text-white`;
+}
+
+function TabButton({ id, label, activeTab, onSelect }: TabButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(id)}
+      className={freeKundaliTabButtonClass(activeTab === id)}
+    >
+      {label}
+    </button>
+  );
+}
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const VEDASTRO_NINE_PLANETS = [
@@ -76,184 +120,6 @@ const VEDASTRO_NINE_PLANETS = [
   'Rahu',
   'Ketu',
 ] as const;
-
-type RashiLabel = { hindi: string; english: string };
-const NAKSHATRA_PADA_TO_RASHI: Record<string, Record<number, RashiLabel>> = {
-  ashwini: {
-    1: { hindi: 'Mesh', english: 'Aries' },
-    2: { hindi: 'Mesh', english: 'Aries' },
-    3: { hindi: 'Mesh', english: 'Aries' },
-    4: { hindi: 'Mesh', english: 'Aries' },
-  },
-  bharani: {
-    1: { hindi: 'Mesh', english: 'Aries' },
-    2: { hindi: 'Mesh', english: 'Aries' },
-    3: { hindi: 'Mesh', english: 'Aries' },
-    4: { hindi: 'Mesh', english: 'Aries' },
-  },
-  krittika: {
-    1: { hindi: 'Mesh', english: 'Aries' },
-    2: { hindi: 'Vrishabh', english: 'Taurus' },
-    3: { hindi: 'Vrishabh', english: 'Taurus' },
-    4: { hindi: 'Vrishabh', english: 'Taurus' },
-  },
-  rohini: {
-    1: { hindi: 'Vrishabh', english: 'Taurus' },
-    2: { hindi: 'Vrishabh', english: 'Taurus' },
-    3: { hindi: 'Vrishabh', english: 'Taurus' },
-    4: { hindi: 'Vrishabh', english: 'Taurus' },
-  },
-  mrigashira: {
-    1: { hindi: 'Vrishabh', english: 'Taurus' },
-    2: { hindi: 'Vrishabh', english: 'Taurus' },
-    3: { hindi: 'Mithun', english: 'Gemini' },
-    4: { hindi: 'Mithun', english: 'Gemini' },
-  },
-  mrigasira: {
-    1: { hindi: 'Vrishabh', english: 'Taurus' },
-    2: { hindi: 'Vrishabh', english: 'Taurus' },
-    3: { hindi: 'Mithun', english: 'Gemini' },
-    4: { hindi: 'Mithun', english: 'Gemini' },
-  },
-  ardra: {
-    1: { hindi: 'Mithun', english: 'Gemini' },
-    2: { hindi: 'Mithun', english: 'Gemini' },
-    3: { hindi: 'Mithun', english: 'Gemini' },
-    4: { hindi: 'Mithun', english: 'Gemini' },
-  },
-  aridra: {
-    1: { hindi: 'Mithun', english: 'Gemini' },
-    2: { hindi: 'Mithun', english: 'Gemini' },
-    3: { hindi: 'Mithun', english: 'Gemini' },
-    4: { hindi: 'Mithun', english: 'Gemini' },
-  },
-  punarvasu: {
-    1: { hindi: 'Mithun', english: 'Gemini' },
-    2: { hindi: 'Mithun', english: 'Gemini' },
-    3: { hindi: 'Mithun', english: 'Gemini' },
-    4: { hindi: 'Kark', english: 'Cancer' },
-  },
-  pushya: {
-    1: { hindi: 'Kark', english: 'Cancer' },
-    2: { hindi: 'Kark', english: 'Cancer' },
-    3: { hindi: 'Kark', english: 'Cancer' },
-    4: { hindi: 'Kark', english: 'Cancer' },
-  },
-  ashlesha: {
-    1: { hindi: 'Kark', english: 'Cancer' },
-    2: { hindi: 'Kark', english: 'Cancer' },
-    3: { hindi: 'Kark', english: 'Cancer' },
-    4: { hindi: 'Kark', english: 'Cancer' },
-  },
-  magha: {
-    1: { hindi: 'Singh', english: 'Leo' },
-    2: { hindi: 'Singh', english: 'Leo' },
-    3: { hindi: 'Singh', english: 'Leo' },
-    4: { hindi: 'Singh', english: 'Leo' },
-  },
-  purvaphalguni: {
-    1: { hindi: 'Singh', english: 'Leo' },
-    2: { hindi: 'Singh', english: 'Leo' },
-    3: { hindi: 'Singh', english: 'Leo' },
-    4: { hindi: 'Singh', english: 'Leo' },
-  },
-  uttaraphalguni: {
-    1: { hindi: 'Singh', english: 'Leo' },
-    2: { hindi: 'Kanya', english: 'Virgo' },
-    3: { hindi: 'Kanya', english: 'Virgo' },
-    4: { hindi: 'Kanya', english: 'Virgo' },
-  },
-  hasta: {
-    1: { hindi: 'Kanya', english: 'Virgo' },
-    2: { hindi: 'Kanya', english: 'Virgo' },
-    3: { hindi: 'Kanya', english: 'Virgo' },
-    4: { hindi: 'Kanya', english: 'Virgo' },
-  },
-  chitra: {
-    1: { hindi: 'Kanya', english: 'Virgo' },
-    2: { hindi: 'Kanya', english: 'Virgo' },
-    3: { hindi: 'Tula', english: 'Libra' },
-    4: { hindi: 'Tula', english: 'Libra' },
-  },
-  swati: {
-    1: { hindi: 'Tula', english: 'Libra' },
-    2: { hindi: 'Tula', english: 'Libra' },
-    3: { hindi: 'Tula', english: 'Libra' },
-    4: { hindi: 'Tula', english: 'Libra' },
-  },
-  vishakha: {
-    1: { hindi: 'Tula', english: 'Libra' },
-    2: { hindi: 'Tula', english: 'Libra' },
-    3: { hindi: 'Tula', english: 'Libra' },
-    4: { hindi: 'Vrischik', english: 'Scorpio' },
-  },
-  anuradha: {
-    1: { hindi: 'Vrischik', english: 'Scorpio' },
-    2: { hindi: 'Vrischik', english: 'Scorpio' },
-    3: { hindi: 'Vrischik', english: 'Scorpio' },
-    4: { hindi: 'Vrischik', english: 'Scorpio' },
-  },
-  jyeshtha: {
-    1: { hindi: 'Vrischik', english: 'Scorpio' },
-    2: { hindi: 'Vrischik', english: 'Scorpio' },
-    3: { hindi: 'Vrischik', english: 'Scorpio' },
-    4: { hindi: 'Vrischik', english: 'Scorpio' },
-  },
-  mula: {
-    1: { hindi: 'Dhanu', english: 'Sagittarius' },
-    2: { hindi: 'Dhanu', english: 'Sagittarius' },
-    3: { hindi: 'Dhanu', english: 'Sagittarius' },
-    4: { hindi: 'Dhanu', english: 'Sagittarius' },
-  },
-  purvashada: {
-    1: { hindi: 'Dhanu', english: 'Sagittarius' },
-    2: { hindi: 'Dhanu', english: 'Sagittarius' },
-    3: { hindi: 'Dhanu', english: 'Sagittarius' },
-    4: { hindi: 'Dhanu', english: 'Sagittarius' },
-  },
-  uttarashada: {
-    1: { hindi: 'Dhanu', english: 'Sagittarius' },
-    2: { hindi: 'Makar', english: 'Capricorn' },
-    3: { hindi: 'Makar', english: 'Capricorn' },
-    4: { hindi: 'Makar', english: 'Capricorn' },
-  },
-  shravana: {
-    1: { hindi: 'Makar', english: 'Capricorn' },
-    2: { hindi: 'Makar', english: 'Capricorn' },
-    3: { hindi: 'Makar', english: 'Capricorn' },
-    4: { hindi: 'Makar', english: 'Capricorn' },
-  },
-  dhanishta: {
-    1: { hindi: 'Makar', english: 'Capricorn' },
-    2: { hindi: 'Makar', english: 'Capricorn' },
-    3: { hindi: 'Kumbh', english: 'Aquarius' },
-    4: { hindi: 'Kumbh', english: 'Aquarius' },
-  },
-  shatabhisha: {
-    1: { hindi: 'Kumbh', english: 'Aquarius' },
-    2: { hindi: 'Kumbh', english: 'Aquarius' },
-    3: { hindi: 'Kumbh', english: 'Aquarius' },
-    4: { hindi: 'Kumbh', english: 'Aquarius' },
-  },
-  purvabhadrapada: {
-    1: { hindi: 'Kumbh', english: 'Aquarius' },
-    2: { hindi: 'Kumbh', english: 'Aquarius' },
-    3: { hindi: 'Meen', english: 'Pisces' },
-    4: { hindi: 'Meen', english: 'Pisces' },
-  },
-  uttarabhadrapada: {
-    1: { hindi: 'Meen', english: 'Pisces' },
-    2: { hindi: 'Meen', english: 'Pisces' },
-    3: { hindi: 'Meen', english: 'Pisces' },
-    4: { hindi: 'Meen', english: 'Pisces' },
-  },
-  revati: {
-    1: { hindi: 'Meen', english: 'Pisces' },
-    2: { hindi: 'Meen', english: 'Pisces' },
-    3: { hindi: 'Meen', english: 'Pisces' },
-    4: { hindi: 'Meen', english: 'Pisces' },
-  },
-};
 
 // ─── Formatting Helpers ───────────────────────────────────────────────────────
 
@@ -271,22 +137,6 @@ function getLocalOffset(dateInput: string): string {
   const hours = Math.floor(abs / 60);
   const minutes = abs % 60;
   return `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-}
-
-function normalizeNakshatraName(name: string): string {
-  return name.toLowerCase().replace(/[^a-z]/g, '');
-}
-
-function formatRashiFromNakshatra(nakshatraWithPada: string | undefined): string {
-  if (!nakshatraWithPada) return '-';
-  const match = nakshatraWithPada.match(/^\s*([^()-]+?)\s*-\s*(\d)\s*$/);
-  if (!match) return nakshatraWithPada;
-  const nakshatraName = match[1].trim();
-  const pada = Number(match[2]);
-  const key = normalizeNakshatraName(nakshatraName);
-  const rashi = NAKSHATRA_PADA_TO_RASHI[key]?.[pada];
-  if (!rashi) return `${nakshatraName} - ${pada}`;
-  return `${nakshatraName} - ${pada} (${rashi.hindi} / ${rashi.english})`;
 }
 
 function formatPanchangaValue(value: unknown): string {
@@ -325,19 +175,16 @@ function formatPanchangaValue(value: unknown): string {
   return '-';
 }
 
-function getNestedValue(source: Record<string, unknown> | undefined, keys: string[]): unknown {
+function getNestedValue(source: unknown, keys: string[]): unknown {
   let current: unknown = source;
   for (const key of keys) {
-    if (!current || typeof current !== 'object' || !(key in current)) return undefined;
-    current = (current as Record<string, unknown>)[key];
+    if (!isRecord(current) || !(key in current)) return undefined;
+    current = current[key];
   }
   return current;
 }
 
-function getPanchangaValue(
-  source: Record<string, unknown> | undefined,
-  ...paths: string[][]
-): string {
+function getPanchangaValue(source: unknown, ...paths: string[][]): string {
   for (const path of paths) {
     const value = getNestedValue(source, path);
     if (value !== undefined && value !== null) {
@@ -402,14 +249,7 @@ function planetDetailRow(planet: string, raw: Record<string, unknown>): string[]
 
 // ─── Network Helpers ──────────────────────────────────────────────────────────
 
-function getCandidateBackendBases(): string[] {
-  const candidates: string[] = [];
-  const configured = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-  if (configured) candidates.push(configured.endsWith('/') ? configured : `${configured}/`);
-  else candidates.push('http://localhost:5000/');
-  candidates.push('http://localhost:5000/');
-  return Array.from(new Set(candidates));
-}
+const getCandidateBackendBases = getPublicBackendBaseCandidates;
 
 async function fetchMatchReport(man: PersonInput, woman: PersonInput): Promise<MatchReportPayload> {
   const bride = woman.gender === 'male' ? man : woman;
@@ -432,7 +272,7 @@ async function fetchMatchReport(man: PersonInput, woman: PersonInput): Promise<M
 
   const attemptErrors: string[] = [];
   for (const base of getCandidateBackendBases()) {
-    const url = `${base}api/v1/vedastro/proxy/match?${params.toString()}`;
+    const url = resolveVedastroProxyFetchUrl(base, 'match', params);
     try {
       const res = await fetch(url);
       const ct = res.headers.get('content-type')?.toLowerCase() ?? '';
@@ -462,7 +302,7 @@ async function fetchVedastroGeneral(
   query: URLSearchParams,
 ): Promise<{ payload: VedastroProxyResult; usedBase: string }> {
   for (const base of getCandidateBackendBases()) {
-    const url = `${base}api/v1/vedastro/proxy/general?${query.toString()}`;
+    const url = resolveVedastroProxyFetchUrl(base, 'general', query);
     try {
       const response = await fetch(url);
       if (!response.ok) continue;
@@ -478,25 +318,40 @@ async function fetchVedastroGeneral(
 async function fetchVedastroPlanetsTable(
   query: URLSearchParams,
 ): Promise<{ rows: string[][]; usedBase: string }> {
+  const attemptErrors: string[] = [];
+
   for (const base of getCandidateBackendBases()) {
     try {
       const tasks = VEDASTRO_NINE_PLANETS.map(async planet => {
         const q = new URLSearchParams(query);
         q.set('planet', planet);
-        const url = `${base}api/v1/vedastro/proxy/planets?${q.toString()}`;
+        const url = resolveVedastroProxyFetchUrl(base, 'planets', q);
         const response = await fetch(url);
-        if (!response.ok) throw new Error();
-        const json = (await response.json()) as Record<string, unknown>;
-        const inner = (json.data as any)?.payload as Record<string, unknown>;
+        if (!response.ok) {
+          const body = await response.text();
+          throw new Error(
+            `Planet ${planet} request failed: ${response.status} ${response.statusText} - ${body.slice(
+              0,
+              200,
+            )}`,
+          );
+        }
+        const json = (await response.json()) as unknown;
+        if (!isRecord(json)) {
+          throw new Error(`Invalid JSON response for planet ${planet}`);
+        }
+        const data = isRecord(json['data']) ? json['data'] : undefined;
+        const inner = data && isRecord(data['payload']) ? data['payload'] : {};
         return planetDetailRow(planet, inner);
       });
       const rows = await Promise.all(tasks);
       return { rows, usedBase: base };
-    } catch (e) {
-      /* empty */
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown planet fetch error';
+      attemptErrors.push(`${base}: ${message}`);
     }
   }
-  throw new Error('Failed to load planet details.');
+  throw new Error(`Failed to load planet details. ${attemptErrors.join(' | ')}`);
 }
 
 async function fetchVedastroBirthChart(
@@ -505,12 +360,13 @@ async function fetchVedastroBirthChart(
   const q = new URLSearchParams(query);
   q.set('style', 'south');
   for (const base of getCandidateBackendBases()) {
-    const url = `${base}api/v1/vedastro/proxy/chart?${q.toString()}`;
+    const url = resolveVedastroProxyFetchUrl(base, 'chart', q);
     try {
       const response = await fetch(url);
       if (!response.ok) continue;
-      const json = (await response.json()) as Record<string, unknown>;
-      const payload = (json.data as any)?.payload;
+      const json = (await response.json()) as unknown;
+      const data = isRecord(json) && isRecord(json['data']) ? json['data'] : undefined;
+      const payload = data ? data['payload'] : undefined;
       if (typeof payload === 'string' && payload.includes('<svg'))
         return { svg: payload, usedBase: base };
     } catch (e) {
@@ -694,7 +550,7 @@ const PersonCard: React.FC<{ person: PersonInput; role: string; symbol: string }
   role,
   symbol,
 }) => (
-  <div className="rounded-2xl border-2 border-primary/20 bg-white/80 shadow-sm p-4 md:p-5 flex flex-col gap-2">
+  <div className="rounded-2xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow-sm p-4 md:p-5 flex flex-col gap-2">
     <div className="flex items-center gap-2 mb-1">
       <span className="text-2xl">{symbol}</span>
       <div>
@@ -725,10 +581,10 @@ const KutaTable: React.FC<{
 }> = ({ predictions, man, woman }) => {
   const [expanded, setExpanded] = useState<string | null>(null);
   return (
-    <div className="overflow-x-auto rounded-2xl border border-primary/20 shadow-sm">
+    <div className="overflow-x-auto rounded-2xl border border-[#f5e9c6] shadow-sm">
       <table className="w-full min-w-[500px] text-sm font-mukta">
         <thead>
-          <tr className="bg-primary text-secondary">
+          <tr className="bg-[#fffdf6] text-[#2d2d2d]">
             <th className="px-4 py-3 text-left font-semibold">Kuta / Factor</th>
             <th className="px-3 py-3 text-center font-semibold">Nature</th>
             <th className="px-3 py-3 text-center font-semibold">
@@ -747,10 +603,10 @@ const KutaTable: React.FC<{
             return (
               <React.Fragment key={name}>
                 <tr
-                  className={`border-t border-primary/10 cursor-pointer transition-colors ${i % 2 === 0 ? 'bg-[#fdf8f3]' : 'bg-white'} hover:bg-[#f9ece0]`}
+                  className={`border-t border-[#f5e9c6] cursor-pointer transition-colors ${i % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#faf8f5]'} hover:bg-[#f9ece0]`}
                   onClick={() => setExpanded(isOpen ? null : name)}
                 >
-                  <td className="px-4 py-2.5 font-medium text-[#3d1a14]">
+                  <td className="px-4 py-2.5 font-medium text-[#3d1a14] border-r border-[#f5e9c6]">
                     <span className="flex items-center gap-1.5">
                       {info && (
                         <span className="text-primary/50 text-xs">{isOpen ? '▾' : '▸'}</span>
@@ -758,8 +614,12 @@ const KutaTable: React.FC<{
                       {name}
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 text-center">{natureBadge(row.Nature)}</td>
-                  <td className={`px-3 py-2.5 text-center text-xs ${natureColor(row.Nature)}`}>
+                  <td className="px-3 py-2.5 text-center border-r border-[#f5e9c6]">
+                    {natureBadge(row.Nature)}
+                  </td>
+                  <td
+                    className={`px-3 py-2.5 text-center text-xs border-r border-[#f5e9c6] ${natureColor(row.Nature)}`}
+                  >
                     {row.MaleInfo?.trim() || (row.Nature ?? '-')}
                   </td>
                   <td className={`px-3 py-2.5 text-center text-xs ${natureColor(row.Nature)}`}>
@@ -767,10 +627,10 @@ const KutaTable: React.FC<{
                   </td>
                 </tr>
                 {isOpen && info && (
-                  <tr className="border-t border-primary/5">
+                  <tr className="border-t border-[#f5e9c6]">
                     <td
                       colSpan={4}
-                      className="px-4 py-3 bg-[#fff9f4] text-xs text-[#5a2a20] leading-relaxed italic"
+                      className="px-4 py-3 bg-[#fffdf6] text-xs text-[#5a2a20] leading-relaxed italic"
                     >
                       {info}
                     </td>
@@ -786,7 +646,7 @@ const KutaTable: React.FC<{
 };
 
 const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`animate-pulse rounded-lg bg-primary/10 ${className}`} />
+  <div className={`animate-pulse rounded-lg bg-[#e8dcc8] ${className}`} />
 );
 
 // ─── Individual Tabs Renderers ────────────────────────────────────────────────
@@ -795,67 +655,70 @@ const IndividualBasicDetails: React.FC<{
   person: PersonInput;
   payload: unknown;
   title: string;
-}> = ({ person, payload, title }) => {
-  const pData = (payload as any)?.data?.payload || (payload as any)?.payload || payload;
-  const panchanga =
-    typeof pData === 'object' && pData?.PanchangaTable ? pData.PanchangaTable : pData;
-  const nakshatra = getPanchangaValue(panchanga, ['Nakshatra'], ['NakshatraName']);
+}> = ({ person: _person, payload, title }) => {
+  const pData = unwrapVedastroPayload(payload);
+  const panchanga = isRecord(pData) && pData['PanchangaTable'] ? pData['PanchangaTable'] : pData;
+  const panchangaRecord = isRecord(panchanga) ? panchanga : undefined;
+  const nakshatra = getPanchangaValue(panchangaRecord, ['Nakshatra'], ['NakshatraName']);
 
   const basicRows: Array<[string, string]> = [
-    ['Name', person.fullName || '-'],
-    ['Birth Date', person.dateOfBirth || '-'],
-    ['Birth Time', person.birthTime || '-'],
-    ['Birth Place', person.birthPlace || '-'],
-    ['Gender', toTitleCase(person.gender)],
-    ['Rashi', formatRashiFromNakshatra(nakshatra)],
-    ['Latitude', person.latitude || '-'],
-    ['Longitude', person.longitude || '-'],
+    ['Name', _person.fullName],
+    ['Birth Date', _person.dateOfBirth],
+    ['Birth Time', _person.birthTime],
+    ['Birth Place', _person.birthPlace || '-'],
+    ['Gender', toTitleCase(_person.gender)],
+    ['Latitude', _person.latitude || '-'],
+    ['Longitude', _person.longitude || '-'],
   ];
+
   const kundaliRows: Array<[string, string]> = [
-    ['Ayanamsa', getPanchangaValue(panchanga, ['Ayanamsa'])],
-    ['Tithi', getPanchangaValue(panchanga, ['Tithi', 'Name'], ['TithiName'], ['Tithi'])],
-    ['Paksha', getPanchangaValue(panchanga, ['Tithi', 'Paksha'])],
-    ['Lunar Month', getPanchangaValue(panchanga, ['LunarMonth'])],
-    ['Vara', getPanchangaValue(panchanga, ['Vara'])],
+    ['Ayanamsa', getPanchangaValue(panchangaRecord, ['Ayanamsa'])],
+    ['Tithi', getPanchangaValue(panchangaRecord, ['Tithi', 'Name'], ['TithiName'], ['Tithi'])],
+    ['Paksha', getPanchangaValue(panchangaRecord, ['Tithi', 'Paksha'])],
+    ['Lunar Month', getPanchangaValue(panchangaRecord, ['LunarMonth'])],
+    ['Vara', getPanchangaValue(panchangaRecord, ['Vara'])],
     ['Nakshatra', nakshatra || '-'],
-    ['Sunrise', getPanchangaValue(panchanga, ['Sunrise', 'StdTime'], ['Sunrise'])],
-    ['Sunset', getPanchangaValue(panchanga, ['Sunset', 'StdTime'], ['Sunset'])],
+    ['Sunrise', getPanchangaValue(panchangaRecord, ['Sunrise', 'StdTime'], ['Sunrise'])],
+    ['Sunset', getPanchangaValue(panchangaRecord, ['Sunset', 'StdTime'], ['Sunset'])],
   ];
 
   return (
     <div className="flex-1 min-w-[300px]">
-      <div className="rounded-[20px] bg-white p-5 border-2 border-primary/20 shadow-sm mb-6">
-        <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold border-b border-primary/10 pb-2 mb-4">
+      <div className="rounded-[20px] p-5 shadow-sm h-full">
+        <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold border-b border-[#f5e9c6] pb-2 mb-4">
           {title}
         </h3>
-        <div className="grid grid-cols-1 gap-6">
+        <div className="mt-2 grid grid-cols-1 gap-8">
           <div>
-            <h4 className="font-sahitya text-primary text-[22px] font-bold mb-2">Basic Details</h4>
-            <div className="border-t border-l border-primary/20">
-              {basicRows.map(([lbl, val]) => (
-                <div key={lbl} className="grid grid-cols-2 border-b border-r border-primary/20">
-                  <div className="px-3 py-1.5 font-mukta text-[15px] font-medium text-[#3a3a3a] bg-primary/5">
-                    {lbl}
+            <h3 className="font-sahitya text-primary text-[34px] leading-[44px] font-bold">
+              Basic Details
+            </h3>
+            <div className="mt-2">
+              {basicRows.map(([label, value]) => (
+                <div key={`basic-${label}`} className="grid grid-cols-2">
+                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-medium text-[#3a3a3a]">
+                    {label}
                   </div>
-                  <div className="px-3 py-1.5 font-mukta text-[15px] text-[#4a4a4a] bg-white">
-                    {val}
+                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-normal text-[#4a4a4a]">
+                    {value}
                   </div>
                 </div>
               ))}
             </div>
           </div>
+
           <div>
-            <h4 className="font-sahitya text-primary text-[22px] font-bold mb-2">
+            <h3 className="font-sahitya text-primary text-[34px] leading-[44px] font-bold">
               Kundali Details
-            </h4>
-            <div className="border-t border-l border-primary/20">
-              {kundaliRows.map(([lbl, val]) => (
-                <div key={lbl} className="grid grid-cols-2 border-b border-r border-primary/20">
-                  <div className="px-3 py-1.5 font-mukta text-[15px] font-medium text-[#3a3a3a] bg-primary/5">
-                    {lbl}
+            </h3>
+            <div className="mt-2">
+              {kundaliRows.map(([label, value]) => (
+                <div key={`kundali-${label}`} className="grid grid-cols-2">
+                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-medium text-[#3a3a3a]">
+                    {label}
                   </div>
-                  <div className="px-3 py-1.5 font-mukta text-[15px] text-[#4a4a4a] bg-white">
-                    {val}
+                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-normal text-[#4a4a4a]">
+                    {value}
                   </div>
                 </div>
               ))}
@@ -871,41 +734,41 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
   payload,
   title,
 }) => {
-  const pData = (payload as any)?.data?.payload || (payload as any)?.payload || payload;
-  const panchanga =
-    typeof pData === 'object' && pData?.PanchangaTable ? pData.PanchangaTable : pData;
+  const pData = unwrapVedastroPayload(payload);
+  const panchanga = isRecord(pData) && pData['PanchangaTable'] ? pData['PanchangaTable'] : pData;
+  const panchangaRecord = isRecord(panchanga) ? panchanga : undefined;
 
   const doshaCards = [
-    ['Yoga', getPanchangaValue(panchanga, ['Yoga', 'Name'], ['YogaName'], ['Yoga'])],
-    ['Karana', getPanchangaValue(panchanga, ['Karana'], ['KaranaName'])],
-    ['Disha Shool', getPanchangaValue(panchanga, ['DishaShool'])],
-    ['Lagna', getPanchangaValue(panchanga, ['Lagna'], ['LagnaSign'])],
-    ['Nakshatra', getPanchangaValue(panchanga, ['Nakshatra'])],
-    ['Tithi', getPanchangaValue(panchanga, ['Tithi', 'Name'], ['TithiName'], ['Tithi'])],
-    ['Paksha', getPanchangaValue(panchanga, ['Tithi', 'Paksha'])],
-    ['Ayanamsa', getPanchangaValue(panchanga, ['Ayanamsa'])],
+    ['Yoga', getPanchangaValue(panchangaRecord, ['Yoga', 'Name'], ['YogaName'], ['Yoga'])],
+    ['Karana', getPanchangaValue(panchangaRecord, ['Karana'], ['KaranaName'])],
+    ['Disha Shool', getPanchangaValue(panchangaRecord, ['DishaShool'])],
+    ['Lagna', getPanchangaValue(panchangaRecord, ['Lagna'], ['LagnaSign'])],
+    ['Nakshatra', getPanchangaValue(panchangaRecord, ['Nakshatra'])],
+    ['Tithi', getPanchangaValue(panchangaRecord, ['Tithi', 'Name'], ['TithiName'], ['Tithi'])],
+    ['Paksha', getPanchangaValue(panchangaRecord, ['Tithi', 'Paksha'])],
+    ['Ayanamsa', getPanchangaValue(panchangaRecord, ['Ayanamsa'])],
   ];
   const tableRows = [
-    ['Yoga Description', getPanchangaValue(panchanga, ['Yoga', 'Description'])],
-    ['Hora Lord', getPanchangaValue(panchanga, ['HoraLord', 'Name'], ['HoraLord'])],
-    ['Sunrise', getPanchangaValue(panchanga, ['Sunrise', 'StdTime'], ['Sunrise'])],
-    ['Sunset', getPanchangaValue(panchanga, ['Sunset', 'StdTime'], ['Sunset'])],
-    ['Ishta Kaala', getPanchangaValue(panchanga, ['IshtaKaala', 'DegreeMinuteSecond'])],
-    ['Moon Phase', getPanchangaValue(panchanga, ['MoonPhase'])],
-    ['Day of Week', getPanchangaValue(panchanga, ['DayOfWeek'])],
+    ['Yoga Description', getPanchangaValue(panchangaRecord, ['Yoga', 'Description'])],
+    ['Hora Lord', getPanchangaValue(panchangaRecord, ['HoraLord', 'Name'], ['HoraLord'])],
+    ['Sunrise', getPanchangaValue(panchangaRecord, ['Sunrise', 'StdTime'], ['Sunrise'])],
+    ['Sunset', getPanchangaValue(panchangaRecord, ['Sunset', 'StdTime'], ['Sunset'])],
+    ['Ishta Kaala', getPanchangaValue(panchangaRecord, ['IshtaKaala', 'DegreeMinuteSecond'])],
+    ['Moon Phase', getPanchangaValue(panchangaRecord, ['MoonPhase'])],
+    ['Day of Week', getPanchangaValue(panchangaRecord, ['DayOfWeek'])],
   ];
 
   return (
     <div className="flex-1 min-w-[300px]">
       <div className="rounded-[20px] bg-[#f9f4dd] p-5 shadow-sm h-full">
-        <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold border-b border-primary/10 pb-2 mb-4">
+        <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold border-b border-[#f5e9c6] pb-2 mb-4">
           {title}
         </h3>
         <div className="grid grid-cols-2 gap-3 mb-6">
           {doshaCards.map(([lbl, val]) => (
             <div
               key={lbl}
-              className="rounded-lg bg-white p-3 text-center shadow-sm border border-[#f5e9c6]"
+              className="rounded-lg bg-[#fffdf6] p-3 text-center shadow-sm border border-[#f5e9c6]"
             >
               <p className="font-sahitya text-primary text-[16px] font-bold">{lbl}</p>
               <p className="font-mukta text-[14px] text-[#2d2d2d] truncate" title={val}>
@@ -918,7 +781,7 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
           <table className="w-full text-sm font-mukta">
             <tbody>
               {tableRows.map(([lbl, val]) => (
-                <tr key={lbl} className="border-b border-[#f5e9c6] last:border-0 bg-white">
+                <tr key={lbl} className="border-b border-[#f5e9c6] last:border-0 bg-[#faf8f5]">
                   <td className="px-3 py-2 font-medium text-[#2d2d2d] bg-[#fffdf6] border-r border-[#f5e9c6]">
                     {lbl}
                   </td>
@@ -933,44 +796,125 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
   );
 };
 
+const DoshaSummary: React.FC<{ report: MatchReportPayload | null; loading: boolean }> = ({
+  report,
+  loading,
+}) => {
+  const scoreText = report?.KutaScore != null ? `${Math.round((Math.max(0, Math.min(100, report.KutaScore)) * 36) / 100 * 10) / 10}/36` : '-';
+  const yesNo = report ? 'Yes' : '-';
+  const cards: Array<[string, string]> = [
+    ['Ashtakoot', scoreText],
+    ['Ashtakoot', yesNo],
+    ['Vedha Dosha', yesNo],
+    ['Manglik Match', yesNo],
+  ];
+
+  if (loading) {
+    return <p className="font-mukta text-center py-10">Loading Dosha info...</p>;
+  }
+
+  return (
+    <div className="space-y-10">
+      <div>
+        <h2 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold mb-3">
+          What Is Dosha?
+        </h2>
+        <p className="font-mukta text-[#464646] text-[16px] leading-[28px] tracking-[0] text-justify">
+          In Vedic astrology, a Dosha means an imbalance or flaw in a person&apos;s horoscope caused by
+          the placement of certain planets in specific houses. These planetary positions are believed
+          to create challenges or obstacles in areas like marriage, health, career, or relationships.
+        </p>
+      </div>
+
+      <div>
+        <h2 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold mb-3">
+          What Is Ashtakoot Points?
+        </h2>
+        <p className="font-mukta text-[#464646] text-[16px] leading-[28px] tracking-[0] text-justify">
+          Ashtakoot Points, also known as Guna Milan, are used in Vedic astrology to check marriage
+          compatibility between two individuals. The word “Ashta” means eight and “Koot” means
+          categories, so Ashtakoot refers to eight aspects of life that are compared in the horoscopes
+          of the bride and groom. These eight aspects are Varna (temperament), Vashya (attraction),
+          Tara (luck), Yoni (nature and intimacy), Graha Maitri (planetary friendship), Gana
+          (behavior), Bhakoot (family life), and Nadi (health and progeny). Each aspect carries certain
+          points, making a total of 36 points. A higher score indicates better compatibility — 28 or
+          more points is considered excellent, 23 to 27 good, 18 to 22 average, and less than 18 not
+          recommended for marriage. In simple terms, Ashtakoot Points help determine harmony in love,
+          health, family, and overall married life.
+        </p>
+      </div>
+
+      <div>
+        <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold mb-6">
+          Match Ashtakoot Points
+        </h3>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {cards.map(([label, value]) => (
+            <div
+              key={label + value}
+              className="rounded-[18px] bg-[#f7f1dd] p-6 text-center shadow-sm border border-[#f5e9c6]"
+            >
+              <p className="font-sahitya text-primary text-[18px] font-bold mb-3">{label}</p>
+              <p className="font-mukta text-[20px] font-semibold text-[#7F1808]">{value}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const IndividualPlanetsTable: React.FC<{ rows: string[][]; title: string }> = ({ rows, title }) => (
   <div className="mt-8 rounded-[20px] bg-[#f9f4dd] p-5 md:p-7 w-full shadow-sm">
-    <h3 className="font-sahitya text-primary text-[28px] font-bold mb-4 border-b border-primary/10 pb-2">
+    <h3 className="font-sahitya text-primary text-[28px] font-bold mb-4 border-b border-[#f5e9c6] pb-2">
       {title}
     </h3>
-    <div className="overflow-x-auto rounded-lg border border-[#f5e9c6]">
-      <table className="min-w-[900px] w-full text-sm font-mukta bg-white">
+    <div className="mt-4 overflow-x-auto rounded-xl border border-[#e5d9bc] bg-[#fffdf6] shadow-sm [-webkit-overflow-scrolling:touch]">
+      <table className="w-full min-w-[720px] border-collapse text-left sm:min-w-[880px]">
         <thead>
-          <tr className="bg-[#fffdf6] border-b border-[#f5e9c6]">
+          <tr className="border-b border-[#e5d9bc]">
             {[
               'Planet',
               'Sign (Rasi)',
               '° in sign',
-              'Nirayana',
+              'Nirayana longitude',
               'Nakshatra',
-              'House (sign)',
-              'House (°)',
-              'Retro',
-              'Nak. lord',
-            ].map(h => (
+              'House (by sign)',
+              'House (by degree)',
+              'Retrograde',
+              'Nakshatra lord',
+            ].map((header, hi) => (
               <th
-                key={h}
-                className="px-3 py-2.5 text-left font-medium text-[#2d2d2d] border-r border-[#f5e9c6] last:border-0"
+                key={`planet-header-${header}`}
+                scope="col"
+                className={`border-b border-r border-[#f0e6d0] bg-[#fff9ed] px-2 py-2.5 align-bottom font-mukta text-[10px] font-semibold uppercase leading-tight tracking-wide text-[#5c4033] last:border-r-0 sm:px-3 sm:py-3 sm:text-[11px] md:text-xs ${
+                  hi === 0
+                    ? 'sticky left-0 z-10 min-w-[4.5rem] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.12)]'
+                    : ''
+                }`}
               >
-                {h}
+                {header}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, i) => (
-            <tr key={i} className="border-b border-[#f5e9c6] last:border-0 hover:bg-[#fffdf6]">
-              {row.map((cell, j) => (
+          {rows.map((row, rowIdx) => (
+            <tr key={`planet-row-${rowIdx}`}>
+              {row.map((cell, cellIdx) => (
                 <td
-                  key={j}
-                  className="px-3 py-2 text-[#2d2d2d] border-r border-[#f5e9c6] last:border-0"
+                  key={`planet-cell-${rowIdx}-${cellIdx}`}
+                  className={`border-b border-r border-[#f0e6d0] px-2 py-1.5 align-top font-mukta text-xs leading-snug last:border-r-0 sm:px-3 sm:py-2 sm:text-sm md:leading-normal ${
+                    cellIdx === 0
+                      ? `sticky left-0 z-10 min-w-[4.5rem] whitespace-nowrap font-semibold text-[#7F1808] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] ${
+                          rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
+                        }`
+                      : `max-w-[8.5rem] break-words text-[#2d2d2d] sm:max-w-[11rem] md:max-w-none tabular-nums ${
+                          rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
+                        }`
+                  }`}
                 >
-                  {j === 0 ? <span className="font-medium text-[#7F1808]">{cell}</span> : cell}
+                  {cell}
                 </td>
               ))}
             </tr>
@@ -991,8 +935,8 @@ const IndividualLagnaChart: React.FC<{ svg: string | undefined; title: string }>
       : null;
   return (
     <div className="flex-1 min-w-[300px]">
-      <div className="rounded-[20px] bg-white p-5 border-2 border-primary/20 shadow-sm h-full flex flex-col items-center">
-        <h3 className="font-sahitya text-primary text-[28px] font-bold mb-4 border-b border-primary/10 pb-2 w-full text-center">
+      <div className="rounded-[20px] bg-[#f9f4dd] p-5 border-2 border-[#f5e9c6] shadow-sm h-full flex flex-col items-center">
+        <h3 className="font-sahitya text-primary text-[28px] font-bold mb-4 border-b border-[#f5e9c6] pb-2 w-full text-center">
           {title}
         </h3>
         {dataUrl ? (
@@ -1015,9 +959,7 @@ const IndividualLagnaChart: React.FC<{ svg: string | undefined; title: string }>
 
 const KundaliMatchingResultSection: React.FC = () => {
   const [input, setInput] = useState<StoredMatchingInput | null>(null);
-  const [activeTab, setActiveTab] = useState<'match' | 'basic' | 'dosha' | 'planets' | 'lagna'>(
-    'match',
-  );
+  const [activeTab, setActiveTab] = useState<KundaliMatchingTab>('basic');
   const [report, setReport] = useState<MatchReportPayload | null>(null);
   const [loadingMatch, setLoadingMatch] = useState(false);
   const [errorMatch, setErrorMatch] = useState<string | null>(null);
@@ -1026,15 +968,25 @@ const KundaliMatchingResultSection: React.FC = () => {
   const [isFetchingDosha, setIsFetchingDosha] = useState(false);
   const [isFetchingPlanets, setIsFetchingPlanets] = useState(false);
   const [isFetchingChart, setIsFetchingChart] = useState(false);
+  const [planetsFetchError, setPlanetsFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     const raw = window.sessionStorage.getItem('kundaliMatchingInput');
     if (!raw) return;
+    let cancelled = false;
     try {
-      setInput(JSON.parse(raw));
+      const parsed = JSON.parse(raw) as StoredMatchingInput;
+      queueMicrotask(() => {
+        if (!cancelled) setInput(parsed);
+      });
     } catch {
-      setInput(null);
+      queueMicrotask(() => {
+        if (!cancelled) setInput(null);
+      });
     }
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Update session storage
@@ -1048,8 +1000,11 @@ const KundaliMatchingResultSection: React.FC = () => {
   useEffect(() => {
     if (!input || report || loadingMatch) return;
     let cancelled = false;
-    setLoadingMatch(true);
-    setErrorMatch(null);
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setLoadingMatch(true);
+      setErrorMatch(null);
+    });
     fetchMatchReport(input.man, input.woman)
       .then(data => {
         if (!cancelled) setReport(data);
@@ -1065,12 +1020,13 @@ const KundaliMatchingResultSection: React.FC = () => {
     };
   }, [input, report]);
 
-  // Fetch Dosha (General)
+  // Fetch Vedastro general payload for both people (dosha/basic tabs)
   useEffect(() => {
-    if (activeTab !== 'dosha' && activeTab !== 'basic') return;
     if (!input || (input.manPayload && input.womanPayload)) return;
     let cancelled = false;
-    setIsFetchingDosha(true);
+    queueMicrotask(() => {
+      if (!cancelled) setIsFetchingDosha(true);
+    });
     Promise.all([
       input.manPayload
         ? Promise.resolve({ payload: input.manPayload })
@@ -1090,26 +1046,40 @@ const KundaliMatchingResultSection: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [activeTab, input]);
+  }, [input]);
 
   // Fetch Planets
   useEffect(() => {
     if (activeTab !== 'planets' || !input || (input.manPlanetRows && input.womanPlanetRows)) return;
     let cancelled = false;
-    setIsFetchingPlanets(true);
+    setPlanetsFetchError(null);
+    const manQuery = getStoredKundaliQueryParams(input.man);
+    const womanQuery = getStoredKundaliQueryParams(input.woman);
+    if (!manQuery || !womanQuery) {
+      setPlanetsFetchError('Unable to build planet query parameters.');
+      return;
+    }
+    queueMicrotask(() => {
+      if (!cancelled) setIsFetchingPlanets(true);
+    });
     Promise.all([
       input.manPlanetRows
         ? Promise.resolve({ rows: input.manPlanetRows })
-        : fetchVedastroPlanetsTable(getStoredKundaliQueryParams(input.man)!),
+        : fetchVedastroPlanetsTable(manQuery),
       input.womanPlanetRows
         ? Promise.resolve({ rows: input.womanPlanetRows })
-        : fetchVedastroPlanetsTable(getStoredKundaliQueryParams(input.woman)!),
+        : fetchVedastroPlanetsTable(womanQuery),
     ])
       .then(([manRes, womanRes]) => {
         if (cancelled) return;
         updateInput({ ...input, manPlanetRows: manRes.rows, womanPlanetRows: womanRes.rows });
       })
-      .catch(() => {})
+      .catch(err => {
+        if (cancelled) return;
+        setPlanetsFetchError(
+          err instanceof Error ? err.message : 'Failed to load planet details.',
+        );
+      })
       .finally(() => {
         if (!cancelled) setIsFetchingPlanets(false);
       });
@@ -1122,7 +1092,9 @@ const KundaliMatchingResultSection: React.FC = () => {
   useEffect(() => {
     if (activeTab !== 'lagna' || !input || (input.manLagnaSvg && input.womanLagnaSvg)) return;
     let cancelled = false;
-    setIsFetchingChart(true);
+    queueMicrotask(() => {
+      if (!cancelled) setIsFetchingChart(true);
+    });
     Promise.all([
       input.manLagnaSvg
         ? Promise.resolve({ svg: input.manLagnaSvg })
@@ -1146,15 +1118,17 @@ const KundaliMatchingResultSection: React.FC = () => {
 
   if (!input) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
-        <p className="font-sahitya text-2xl font-bold text-primary">No Kundali data found.</p>
-        <Link
-          href="/kundali-matching"
-          className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-mukta text-sm font-semibold text-secondary hover:bg-[#8e2f27] transition-colors"
-        >
-          ← Back to Form
-        </Link>
-      </div>
+      <section className="w-full px-4 md:px-8 py-8 md:py-12">
+        <div className="mx-auto flex max-w-[1453px] flex-col items-center justify-center gap-4 py-24 text-center">
+          <p className="font-sahitya text-2xl font-bold text-primary">No Kundali data found.</p>
+          <Link
+            href="/kundali-matching"
+            className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-mukta text-sm font-semibold text-secondary hover:bg-[#8e2f27] transition-colors"
+          >
+            ← Back to Form
+          </Link>
+        </div>
+      </section>
     );
   }
 
@@ -1162,209 +1136,249 @@ const KundaliMatchingResultSection: React.FC = () => {
   const predictions = report?.PredictionList ?? [];
   const goodCount = predictions.filter(p => p.Nature === 'Good').length;
   const badCount = predictions.filter(p => p.Nature === 'Bad').length;
-
-  const TabButton = ({ id, label }: { id: typeof activeTab; label: string }) => (
-    <button
-      onClick={() => setActiveTab(id)}
-      className={`h-[40px] md:h-[46px] px-6 whitespace-nowrap rounded-[32px] border border-[#A13924] font-mukta text-[16px] md:text-[18px] font-medium transition-colors duration-200 ${
-        activeTab === id
-          ? 'bg-[#7F1808] text-white'
-          : 'bg-[#ede9d9] text-[#7F1808] hover:bg-[#7F1808] hover:text-white'
-      }`}
-    >
-      {label}
-    </button>
-  );
+  const manName = input.man.fullName?.trim();
+  const womanName = input.woman.fullName?.trim();
+  const resultSubtitle =
+    manName && womanName
+      ? `Matching result for ${manName} and ${womanName}`
+      : manName || womanName
+        ? `Matching result for ${manName || womanName}`
+        : 'Your Kundali Matching Result';
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="font-sahitya font-bold text-2xl md:text-[40px] text-primary leading-tight">
-            Kundali Matching Result
-          </h1>
-          <p className="font-mukta text-[#141414] text-sm md:text-lg mt-1">
-            {input.man.fullName} &amp; {input.woman.fullName}
-          </p>
-        </div>
-        <Link
-          href="/kundali-matching"
-          className="inline-flex items-center gap-2 rounded-full border-2 border-primary px-4 py-2 font-mukta text-sm font-semibold text-primary hover:bg-primary hover:text-secondary transition-colors"
-        >
-          ← Match Again
-        </Link>
-      </div>
+    <section className="w-full px-4 md:px-8 py-8 md:py-12">
+      <div className="mx-auto w-full max-w-[1453px] space-y-8">
+        <section className="w-full pt-0 md:pt-2 pb-6">
+          <div className="max-w-4xl">
+            <h1 className="font-sahitya font-bold text-[20px] leading-[100%] md:text-[36px] md:leading-[48px] text-primary mb-1">
+              Kundali Matching Result
+            </h1>
+            <p className="font-mukta font-medium text-[16px] leading-[30px] md:text-[24px] text-[#141414] mb-3">
+              {resultSubtitle}
+            </p>
+            <p className="font-mukta font-normal text-[16px] leading-6 tracking-[0] md:text-[24px] md:leading-[34px] text-[#464646] text-justify">
+              View the compatibility analysis for both people, including Kuta Score, Guna Milan,
+              Dosha findings, planetary details, and lagna chart insights.
+            </p>
+          </div>
+        </section>
 
-      {/* Tabs */}
-      <div className="flex flex-nowrap items-center justify-start md:justify-center gap-3 overflow-x-auto pb-2">
-        <TabButton id="match" label="Match Result" />
-        <TabButton id="basic" label="Basic Details" />
-        <TabButton id="dosha" label="Dosha" />
-        <TabButton id="planets" label="Planets Detail" />
-        <TabButton id="lagna" label="Lagna Chart" />
-      </div>
-
-      {/* Tab Content */}
-      <div className="mt-6">
-        {/* Match Result Tab */}
-        {activeTab === 'match' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <PersonCard person={input.man} role="Man" symbol="♂" />
-              <PersonCard person={input.woman} role="Woman" symbol="♀" />
-            </div>
-            {loadingMatch ? (
-              <div className="rounded-3xl border-2 border-primary/20 bg-white/70 shadow p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
-                <Skeleton className="w-36 h-36 rounded-full" />
-                <div className="flex-1 space-y-4 w-full">
-                  {[1, 2, 3, 4].map(i => (
-                    <div key={i}>
-                      <Skeleton className="h-4 w-32 mb-1" />
-                      <Skeleton className="h-2 w-full" />
-                    </div>
-                  ))}
+        <div className="mx-auto w-full max-w-4xl">
+          <div className="mx-auto grid w-full max-w-[900px] grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-6 md:gap-8">
+            <div className="flex min-w-0 flex-col items-stretch">
+              <figure className="flex flex-col items-center gap-2">
+                <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
+                  <Image
+                    src={OpenChart}
+                    alt="Man Kundali chart"
+                    fill
+                    className="object-contain object-center"
+                    sizes="(max-width: 768px) 100vw, 420px"
+                    priority
+                  />
                 </div>
+                <figcaption className="font-sahitya text-center text-sm font-bold text-primary sm:text-base md:text-xl">
+                  Man Kundali Chart
+                </figcaption>
+              </figure>
+            </div>
+            <div className="flex min-w-0 flex-col items-stretch">
+              <figure className="flex flex-col items-center gap-2">
+                <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
+                  <Image
+                    src={OpenChart}
+                    alt="Woman Kundali chart"
+                    fill
+                    className="object-contain object-center"
+                    sizes="(max-width: 768px) 100vw, 420px"
+                  />
+                </div>
+                <figcaption className="font-sahitya text-center text-sm font-bold text-primary sm:text-base md:text-xl">
+                  Woman Kundali Chart
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs — markup matches Free Kundali: flex row, fixed-width pills, max-w-[1453px] parent */}
+        <div className="mt-6 flex flex-nowrap items-center justify-center gap-3 overflow-x-auto">
+          <TabButton
+            id="basic"
+            label="Basic Details"
+            activeTab={activeTab}
+            onSelect={setActiveTab}
+          />
+          <TabButton id="dosha" label="Dosha" activeTab={activeTab} onSelect={setActiveTab} />
+          <TabButton
+            id="planets"
+            label="Planets Detail"
+            activeTab={activeTab}
+            onSelect={setActiveTab}
+          />
+          <TabButton id="lagna" label="Lagna Chart" activeTab={activeTab} onSelect={setActiveTab} />
+        </div>
+
+        {/* Tab Content */}
+        <div className="mt-6">
+          {/* Match Result Tab */}
+          {activeTab === 'match' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <PersonCard person={input.man} role="Man" symbol="♂" />
+                <PersonCard person={input.woman} role="Woman" symbol="♀" />
               </div>
-            ) : errorMatch ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-center">
-                <p className="font-mukta text-sm font-semibold text-red-700">{errorMatch}</p>
-              </div>
-            ) : report ? (
-              <>
-                <div className="rounded-3xl border-2 border-primary/20 bg-white/80 shadow p-6 md:p-8">
-                  <div className="flex flex-col md:flex-row items-center gap-8">
-                    <div className="shrink-0">
-                      <ScoreRing score={kutaScore} />
-                      <div className="mt-3 flex justify-center gap-4 text-xs font-mukta">
-                        <span className="text-green-600 font-semibold">✓ {goodCount} Good</span>
-                        <span className="text-red-500 font-semibold">✗ {badCount} Challenging</span>
+              {loadingMatch ? (
+                <div className="rounded-3xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
+                  <Skeleton className="w-36 h-36 rounded-full" />
+                  <div className="flex-1 space-y-4 w-full">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i}>
+                        <Skeleton className="h-4 w-32 mb-1" />
+                        <Skeleton className="h-2 w-full" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : errorMatch ? (
+                <div className="rounded-2xl border border-[#f5e9c6] bg-[#fff9f4] p-5 text-center">
+                  <p className="font-mukta text-sm font-semibold text-[#7F1808]">{errorMatch}</p>
+                </div>
+              ) : report ? (
+                <>
+                  <div className="rounded-3xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow p-6 md:p-8">
+                    <div className="flex flex-col md:flex-row items-center gap-8">
+                      <div className="shrink-0">
+                        <ScoreRing score={kutaScore} />
+                        <div className="mt-3 flex justify-center gap-4 text-xs font-mukta">
+                          <span className="text-green-600 font-semibold">✓ {goodCount} Good</span>
+                          <span className="text-red-500 font-semibold">
+                            ✗ {badCount} Challenging
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex-1 w-full space-y-4">
+                        {CATEGORIES.map(cat => (
+                          <CategoryBar
+                            key={cat.label}
+                            label={cat.label}
+                            icon={cat.icon}
+                            percent={categoryPercent(cat.names, predictions)}
+                          />
+                        ))}
                       </div>
                     </div>
-                    <div className="flex-1 w-full space-y-4">
-                      {CATEGORIES.map(cat => (
-                        <CategoryBar
-                          key={cat.label}
-                          label={cat.label}
-                          icon={cat.icon}
-                          percent={categoryPercent(cat.names, predictions)}
-                        />
-                      ))}
-                    </div>
+                    {report.Summary?.ScoreSummary && (
+                      <div className="mt-6 rounded-xl bg-[#fffdf6] border border-[#f5e9c6] px-5 py-4">
+                        <p className="font-mukta text-sm text-[#5a2a20] leading-relaxed">
+                          <span className="font-semibold text-primary">Astro Summary: </span>
+                          {report.Summary.ScoreSummary}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  {report.Summary?.ScoreSummary && (
-                    <div className="mt-6 rounded-xl bg-[#fdf8f3] border border-primary/15 px-5 py-4">
-                      <p className="font-mukta text-sm text-[#5a2a20] leading-relaxed">
-                        <span className="font-semibold text-primary">Astro Summary: </span>
-                        {report.Summary.ScoreSummary}
-                      </p>
+                  {predictions.length > 0 && (
+                    <div className="space-y-3">
+                      <h2 className="font-sahitya font-bold text-xl text-primary">
+                        Guna Milan — Detailed Kuta Analysis
+                      </h2>
+                      <KutaTable predictions={predictions} man={input.man} woman={input.woman} />
                     </div>
                   )}
+                </>
+              ) : null}
+            </div>
+          )}
+
+          {/* Basic Details Tab */}
+          {activeTab === 'basic' && (
+            <div>
+              {isFetchingDosha ? (
+                <p className="font-mukta text-center py-10">Loading detailed info...</p>
+              ) : (
+                <div className="flex flex-col md:flex-row gap-6">
+                  <IndividualBasicDetails
+                    person={input.man}
+                    payload={input.manPayload}
+                    title={`${input.man.fullName}'s Details (Man)`}
+                  />
+                  <IndividualBasicDetails
+                    person={input.woman}
+                    payload={input.womanPayload}
+                    title={`${input.woman.fullName}'s Details (Woman)`}
+                  />
                 </div>
-                {predictions.length > 0 && (
-                  <div className="space-y-3">
-                    <h2 className="font-sahitya font-bold text-xl text-primary">
-                      Guna Milan — Detailed Kuta Analysis
-                    </h2>
-                    <KutaTable predictions={predictions} man={input.man} woman={input.woman} />
-                  </div>
-                )}
-              </>
-            ) : null}
-          </div>
-        )}
+              )}
+            </div>
+          )}
 
-        {/* Basic Details Tab */}
-        {activeTab === 'basic' && (
-          <div>
-            {isFetchingDosha ? (
-              <p className="font-mukta text-center py-10">Loading detailed info...</p>
-            ) : (
-              <div className="flex flex-col md:flex-row gap-6">
-                <IndividualBasicDetails
-                  person={input.man}
-                  payload={input.manPayload}
-                  title={`${input.man.fullName}'s Details (Man)`}
-                />
-                <IndividualBasicDetails
-                  person={input.woman}
-                  payload={input.womanPayload}
-                  title={`${input.woman.fullName}'s Details (Woman)`}
-                />
-              </div>
-            )}
-          </div>
-        )}
+          {/* Dosha Tab */}
+          {activeTab === 'dosha' && (
+            <div>
+              <DoshaSummary report={report} loading={isFetchingDosha} />
+            </div>
+          )}
 
-        {/* Dosha Tab */}
-        {activeTab === 'dosha' && (
-          <div>
-            {isFetchingDosha ? (
-              <p className="font-mukta text-center py-10">Loading Dosha info...</p>
-            ) : (
-              <div className="flex flex-col md:flex-row gap-6">
-                <IndividualDoshaDetails
-                  payload={input.manPayload}
-                  title={`${input.man.fullName}'s Dosha (Man)`}
-                />
-                <IndividualDoshaDetails
-                  payload={input.womanPayload}
-                  title={`${input.woman.fullName}'s Dosha (Woman)`}
-                />
-              </div>
-            )}
-          </div>
-        )}
+          {/* Planets Tab */}
+          {activeTab === 'planets' && (
+            <div>
+              {isFetchingPlanets ? (
+                <p className="font-mukta text-center py-10">Loading Planet tables...</p>
+              ) : planetsFetchError ? (
+                <div className="rounded-2xl border border-[#f5e9c6] bg-[#fff9f4] p-5 text-center">
+                  <p className="font-mukta text-sm font-semibold text-[#7F1808]">
+                    {planetsFetchError}
+                  </p>
+                </div>
+              ) : input.manPlanetRows || input.womanPlanetRows ? (
+                <div className="flex flex-col gap-8">
+                  {input.manPlanetRows && (
+                    <IndividualPlanetsTable
+                      rows={input.manPlanetRows}
+                      title={`${input.man.fullName}'s Planets (Man)`}
+                    />
+                  )}
+                  {input.womanPlanetRows && (
+                    <IndividualPlanetsTable
+                      rows={input.womanPlanetRows}
+                      title={`${input.woman.fullName}'s Planets (Woman)`}
+                    />
+                  )}
+                </div>
+              ) : (
+                <p className="font-mukta text-center py-10 text-[#666]">
+                  Planet details are unavailable. Please try again or refresh the page.
+                </p>
+              )}
+            </div>
+          )}
 
-        {/* Planets Tab */}
-        {activeTab === 'planets' && (
-          <div>
-            {isFetchingPlanets ? (
-              <p className="font-mukta text-center py-10">Loading Planet tables...</p>
-            ) : (
-              <div className="flex flex-col gap-8">
-                {input.manPlanetRows && (
-                  <IndividualPlanetsTable
-                    rows={input.manPlanetRows}
-                    title={`${input.man.fullName}'s Planets (Man)`}
+          {/* Lagna Chart Tab */}
+          {activeTab === 'lagna' && (
+            <div>
+              {isFetchingChart ? (
+                <p className="font-mukta text-center py-10">Loading Lagna Charts...</p>
+              ) : (
+                <div className="flex flex-col md:flex-row gap-6">
+                  <IndividualLagnaChart
+                    svg={input.manLagnaSvg}
+                    title={`${input.man.fullName}'s Chart (Man)`}
                   />
-                )}
-                {input.womanPlanetRows && (
-                  <IndividualPlanetsTable
-                    rows={input.womanPlanetRows}
-                    title={`${input.woman.fullName}'s Planets (Woman)`}
+                  <IndividualLagnaChart
+                    svg={input.womanLagnaSvg}
+                    title={`${input.woman.fullName}'s Chart (Woman)`}
                   />
-                )}
-              </div>
-            )}
-          </div>
-        )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
-        {/* Lagna Chart Tab */}
-        {activeTab === 'lagna' && (
-          <div>
-            {isFetchingChart ? (
-              <p className="font-mukta text-center py-10">Loading Lagna Charts...</p>
-            ) : (
-              <div className="flex flex-col md:flex-row gap-6">
-                <IndividualLagnaChart
-                  svg={input.manLagnaSvg}
-                  title={`${input.man.fullName}'s Chart (Man)`}
-                />
-                <IndividualLagnaChart
-                  svg={input.womanLagnaSvg}
-                  title={`${input.woman.fullName}'s Chart (Woman)`}
-                />
-              </div>
-            )}
-          </div>
-        )}
+        <p className="font-mukta text-xs text-center text-gray-400 pb-4 mt-12">
+          Results are powered by VedAstro. Information is for reference only.
+        </p>
       </div>
-
-      <p className="font-mukta text-xs text-center text-gray-400 pb-4 mt-12">
-        Results are powered by VedAstro. Information is for reference only.
-      </p>
-    </div>
+    </section>
   );
 };
 
