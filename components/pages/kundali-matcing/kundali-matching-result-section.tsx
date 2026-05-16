@@ -318,6 +318,8 @@ async function fetchVedastroGeneral(
 async function fetchVedastroPlanetsTable(
   query: URLSearchParams,
 ): Promise<{ rows: string[][]; usedBase: string }> {
+  const attemptErrors: string[] = [];
+
   for (const base of getCandidateBackendBases()) {
     try {
       const tasks = VEDASTRO_NINE_PLANETS.map(async planet => {
@@ -325,19 +327,31 @@ async function fetchVedastroPlanetsTable(
         q.set('planet', planet);
         const url = resolveVedastroProxyFetchUrl(base, 'planets', q);
         const response = await fetch(url);
-        if (!response.ok) throw new Error();
+        if (!response.ok) {
+          const body = await response.text();
+          throw new Error(
+            `Planet ${planet} request failed: ${response.status} ${response.statusText} - ${body.slice(
+              0,
+              200,
+            )}`,
+          );
+        }
         const json = (await response.json()) as unknown;
-        const data = isRecord(json) && isRecord(json['data']) ? json['data'] : undefined;
+        if (!isRecord(json)) {
+          throw new Error(`Invalid JSON response for planet ${planet}`);
+        }
+        const data = isRecord(json['data']) ? json['data'] : undefined;
         const inner = data && isRecord(data['payload']) ? data['payload'] : {};
         return planetDetailRow(planet, inner);
       });
       const rows = await Promise.all(tasks);
       return { rows, usedBase: base };
-    } catch (e) {
-      /* empty */
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown planet fetch error';
+      attemptErrors.push(`${base}: ${message}`);
     }
   }
-  throw new Error('Failed to load planet details.');
+  throw new Error(`Failed to load planet details. ${attemptErrors.join(' | ')}`);
 }
 
 async function fetchVedastroBirthChart(
@@ -647,6 +661,16 @@ const IndividualBasicDetails: React.FC<{
   const panchangaRecord = isRecord(panchanga) ? panchanga : undefined;
   const nakshatra = getPanchangaValue(panchangaRecord, ['Nakshatra'], ['NakshatraName']);
 
+  const basicRows: Array<[string, string]> = [
+    ['Name', _person.fullName],
+    ['Birth Date', _person.dateOfBirth],
+    ['Birth Time', _person.birthTime],
+    ['Birth Place', _person.birthPlace || '-'],
+    ['Gender', toTitleCase(_person.gender)],
+    ['Latitude', _person.latitude || '-'],
+    ['Longitude', _person.longitude || '-'],
+  ];
+
   const kundaliRows: Array<[string, string]> = [
     ['Ayanamsa', getPanchangaValue(panchangaRecord, ['Ayanamsa'])],
     ['Tithi', getPanchangaValue(panchangaRecord, ['Tithi', 'Name'], ['TithiName'], ['Tithi'])],
@@ -660,23 +684,45 @@ const IndividualBasicDetails: React.FC<{
 
   return (
     <div className="flex-1 min-w-[300px]">
-      <div className="rounded-[20px] bg-[#f9f4dd] p-5 border-2 border-[#f5e9c6] shadow-sm mb-6">
+      <div className="rounded-[20px] p-5 shadow-sm h-full">
         <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold border-b border-[#f5e9c6] pb-2 mb-4">
           {title}
         </h3>
-        <div>
-          <h4 className="font-sahitya text-primary text-[22px] font-bold mb-2">Kundali Details</h4>
-          <div className="border-t border-l border-[#f5e9c6]">
-            {kundaliRows.map(([lbl, val]) => (
-              <div key={lbl} className="grid grid-cols-2 border-b border-r border-[#f5e9c6]">
-                <div className="px-3 py-1.5 font-mukta text-[15px] font-medium text-[#3a3a3a] bg-[#fffdf6]">
-                  {lbl}
+        <div className="mt-2 grid grid-cols-1 gap-8">
+          <div>
+            <h3 className="font-sahitya text-primary text-[34px] leading-[44px] font-bold">
+              Basic Details
+            </h3>
+            <div className="mt-2">
+              {basicRows.map(([label, value]) => (
+                <div key={`basic-${label}`} className="grid grid-cols-2">
+                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-medium text-[#3a3a3a]">
+                    {label}
+                  </div>
+                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-normal text-[#4a4a4a]">
+                    {value}
+                  </div>
                 </div>
-                <div className="px-3 py-1.5 font-mukta text-[15px] text-[#4a4a4a] bg-[#faf8f5]">
-                  {val}
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-sahitya text-primary text-[34px] leading-[44px] font-bold">
+              Kundali Details
+            </h3>
+            <div className="mt-2">
+              {kundaliRows.map(([label, value]) => (
+                <div key={`kundali-${label}`} className="grid grid-cols-2">
+                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-medium text-[#3a3a3a]">
+                    {label}
+                  </div>
+                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-normal text-[#4a4a4a]">
+                    {value}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -750,44 +796,125 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
   );
 };
 
+const DoshaSummary: React.FC<{ report: MatchReportPayload | null; loading: boolean }> = ({
+  report,
+  loading,
+}) => {
+  const scoreText = report?.KutaScore != null ? `${Math.round((Math.max(0, Math.min(100, report.KutaScore)) * 36) / 100 * 10) / 10}/36` : '-';
+  const yesNo = report ? 'Yes' : '-';
+  const cards: Array<[string, string]> = [
+    ['Ashtakoot', scoreText],
+    ['Ashtakoot', yesNo],
+    ['Vedha Dosha', yesNo],
+    ['Manglik Match', yesNo],
+  ];
+
+  if (loading) {
+    return <p className="font-mukta text-center py-10">Loading Dosha info...</p>;
+  }
+
+  return (
+    <div className="space-y-10">
+      <div>
+        <h2 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold mb-3">
+          What Is Dosha?
+        </h2>
+        <p className="font-mukta text-[#464646] text-[16px] leading-[28px] tracking-[0] text-justify">
+          In Vedic astrology, a Dosha means an imbalance or flaw in a person&apos;s horoscope caused by
+          the placement of certain planets in specific houses. These planetary positions are believed
+          to create challenges or obstacles in areas like marriage, health, career, or relationships.
+        </p>
+      </div>
+
+      <div>
+        <h2 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold mb-3">
+          What Is Ashtakoot Points?
+        </h2>
+        <p className="font-mukta text-[#464646] text-[16px] leading-[28px] tracking-[0] text-justify">
+          Ashtakoot Points, also known as Guna Milan, are used in Vedic astrology to check marriage
+          compatibility between two individuals. The word “Ashta” means eight and “Koot” means
+          categories, so Ashtakoot refers to eight aspects of life that are compared in the horoscopes
+          of the bride and groom. These eight aspects are Varna (temperament), Vashya (attraction),
+          Tara (luck), Yoni (nature and intimacy), Graha Maitri (planetary friendship), Gana
+          (behavior), Bhakoot (family life), and Nadi (health and progeny). Each aspect carries certain
+          points, making a total of 36 points. A higher score indicates better compatibility — 28 or
+          more points is considered excellent, 23 to 27 good, 18 to 22 average, and less than 18 not
+          recommended for marriage. In simple terms, Ashtakoot Points help determine harmony in love,
+          health, family, and overall married life.
+        </p>
+      </div>
+
+      <div>
+        <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold mb-6">
+          Match Ashtakoot Points
+        </h3>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {cards.map(([label, value]) => (
+            <div
+              key={label + value}
+              className="rounded-[18px] bg-[#f7f1dd] p-6 text-center shadow-sm border border-[#f5e9c6]"
+            >
+              <p className="font-sahitya text-primary text-[18px] font-bold mb-3">{label}</p>
+              <p className="font-mukta text-[20px] font-semibold text-[#7F1808]">{value}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const IndividualPlanetsTable: React.FC<{ rows: string[][]; title: string }> = ({ rows, title }) => (
   <div className="mt-8 rounded-[20px] bg-[#f9f4dd] p-5 md:p-7 w-full shadow-sm">
     <h3 className="font-sahitya text-primary text-[28px] font-bold mb-4 border-b border-[#f5e9c6] pb-2">
       {title}
     </h3>
-    <div className="overflow-x-auto rounded-lg border border-[#f5e9c6]">
-      <table className="min-w-[900px] w-full text-sm font-mukta bg-white">
+    <div className="mt-4 overflow-x-auto rounded-xl border border-[#e5d9bc] bg-[#fffdf6] shadow-sm [-webkit-overflow-scrolling:touch]">
+      <table className="w-full min-w-[720px] border-collapse text-left sm:min-w-[880px]">
         <thead>
-          <tr className="bg-[#fffdf6] border-b border-[#f5e9c6]">
+          <tr className="border-b border-[#e5d9bc]">
             {[
               'Planet',
               'Sign (Rasi)',
               '° in sign',
-              'Nirayana',
+              'Nirayana longitude',
               'Nakshatra',
-              'House (sign)',
-              'House (°)',
-              'Retro',
-              'Nak. lord',
-            ].map(h => (
+              'House (by sign)',
+              'House (by degree)',
+              'Retrograde',
+              'Nakshatra lord',
+            ].map((header, hi) => (
               <th
-                key={h}
-                className="px-3 py-2.5 text-left font-medium text-[#2d2d2d] border-r border-[#f5e9c6] last:border-0"
+                key={`planet-header-${header}`}
+                scope="col"
+                className={`border-b border-r border-[#f0e6d0] bg-[#fff9ed] px-2 py-2.5 align-bottom font-mukta text-[10px] font-semibold uppercase leading-tight tracking-wide text-[#5c4033] last:border-r-0 sm:px-3 sm:py-3 sm:text-[11px] md:text-xs ${
+                  hi === 0
+                    ? 'sticky left-0 z-10 min-w-[4.5rem] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.12)]'
+                    : ''
+                }`}
               >
-                {h}
+                {header}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, i) => (
-            <tr key={i} className="border-b border-[#f5e9c6] last:border-0 hover:bg-[#fffdf6]">
-              {row.map((cell, j) => (
+          {rows.map((row, rowIdx) => (
+            <tr key={`planet-row-${rowIdx}`}>
+              {row.map((cell, cellIdx) => (
                 <td
-                  key={j}
-                  className="px-3 py-2 text-[#2d2d2d] border-r border-[#f5e9c6] last:border-0"
+                  key={`planet-cell-${rowIdx}-${cellIdx}`}
+                  className={`border-b border-r border-[#f0e6d0] px-2 py-1.5 align-top font-mukta text-xs leading-snug last:border-r-0 sm:px-3 sm:py-2 sm:text-sm md:leading-normal ${
+                    cellIdx === 0
+                      ? `sticky left-0 z-10 min-w-[4.5rem] whitespace-nowrap font-semibold text-[#7F1808] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] ${
+                          rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
+                        }`
+                      : `max-w-[8.5rem] break-words text-[#2d2d2d] sm:max-w-[11rem] md:max-w-none tabular-nums ${
+                          rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
+                        }`
+                  }`}
                 >
-                  {j === 0 ? <span className="font-medium text-[#7F1808]">{cell}</span> : cell}
+                  {cell}
                 </td>
               ))}
             </tr>
@@ -841,6 +968,7 @@ const KundaliMatchingResultSection: React.FC = () => {
   const [isFetchingDosha, setIsFetchingDosha] = useState(false);
   const [isFetchingPlanets, setIsFetchingPlanets] = useState(false);
   const [isFetchingChart, setIsFetchingChart] = useState(false);
+  const [planetsFetchError, setPlanetsFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     const raw = window.sessionStorage.getItem('kundaliMatchingInput');
@@ -924,22 +1052,34 @@ const KundaliMatchingResultSection: React.FC = () => {
   useEffect(() => {
     if (activeTab !== 'planets' || !input || (input.manPlanetRows && input.womanPlanetRows)) return;
     let cancelled = false;
+    setPlanetsFetchError(null);
+    const manQuery = getStoredKundaliQueryParams(input.man);
+    const womanQuery = getStoredKundaliQueryParams(input.woman);
+    if (!manQuery || !womanQuery) {
+      setPlanetsFetchError('Unable to build planet query parameters.');
+      return;
+    }
     queueMicrotask(() => {
       if (!cancelled) setIsFetchingPlanets(true);
     });
     Promise.all([
       input.manPlanetRows
         ? Promise.resolve({ rows: input.manPlanetRows })
-        : fetchVedastroPlanetsTable(getStoredKundaliQueryParams(input.man)!),
+        : fetchVedastroPlanetsTable(manQuery),
       input.womanPlanetRows
         ? Promise.resolve({ rows: input.womanPlanetRows })
-        : fetchVedastroPlanetsTable(getStoredKundaliQueryParams(input.woman)!),
+        : fetchVedastroPlanetsTable(womanQuery),
     ])
       .then(([manRes, womanRes]) => {
         if (cancelled) return;
         updateInput({ ...input, manPlanetRows: manRes.rows, womanPlanetRows: womanRes.rows });
       })
-      .catch(() => {})
+      .catch(err => {
+        if (cancelled) return;
+        setPlanetsFetchError(
+          err instanceof Error ? err.message : 'Failed to load planet details.',
+        );
+      })
       .finally(() => {
         if (!cancelled) setIsFetchingPlanets(false);
       });
@@ -1175,20 +1315,7 @@ const KundaliMatchingResultSection: React.FC = () => {
           {/* Dosha Tab */}
           {activeTab === 'dosha' && (
             <div>
-              {isFetchingDosha ? (
-                <p className="font-mukta text-center py-10">Loading Dosha info...</p>
-              ) : (
-                <div className="flex flex-col md:flex-row gap-6">
-                  <IndividualDoshaDetails
-                    payload={input.manPayload}
-                    title={`${input.man.fullName}'s Dosha (Man)`}
-                  />
-                  <IndividualDoshaDetails
-                    payload={input.womanPayload}
-                    title={`${input.woman.fullName}'s Dosha (Woman)`}
-                  />
-                </div>
-              )}
+              <DoshaSummary report={report} loading={isFetchingDosha} />
             </div>
           )}
 
@@ -1197,7 +1324,13 @@ const KundaliMatchingResultSection: React.FC = () => {
             <div>
               {isFetchingPlanets ? (
                 <p className="font-mukta text-center py-10">Loading Planet tables...</p>
-              ) : (
+              ) : planetsFetchError ? (
+                <div className="rounded-2xl border border-[#f5e9c6] bg-[#fff9f4] p-5 text-center">
+                  <p className="font-mukta text-sm font-semibold text-[#7F1808]">
+                    {planetsFetchError}
+                  </p>
+                </div>
+              ) : input.manPlanetRows || input.womanPlanetRows ? (
                 <div className="flex flex-col gap-8">
                   {input.manPlanetRows && (
                     <IndividualPlanetsTable
@@ -1212,6 +1345,10 @@ const KundaliMatchingResultSection: React.FC = () => {
                     />
                   )}
                 </div>
+              ) : (
+                <p className="font-mukta text-center py-10 text-[#666]">
+                  Planet details are unavailable. Please try again or refresh the page.
+                </p>
               )}
             </div>
           )}

@@ -9,11 +9,15 @@ import { FiRefreshCcw } from 'react-icons/fi';
 
 import UploadPhotoImg from '@/components/images/uploadyourphoto.png';
 import LoveMatchIcon from '@/components/images/icons/lovematch.png';
+import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
 import CalculatorCard from '@/components/pages/calculators/calculator-card';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
 import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
 import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
 import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
+import DashaImage from '@/components/images/calculator/dasha.png';
+import MoonPhaseImage from '@/components/images/calculator/moonphase.png';
+import RashiCalculatorImage from '@/components/images/calculator/rashicalculator.png';
 
 type LoveResult = {
   yourName: string;
@@ -72,10 +76,10 @@ export default function LoveCalculatorResultSection() {
       <div className="mx-auto max-w-[1454px]">
         {/* Header */}
         <div className="mb-4">
-          <h1 className="font-sahitya text-[28px] md:text-[36px] font-bold leading-tight text-[#471207] italic">
+          <h1 className="font-sahitya font-bold text-[22px] md:text-[48px] leading-[32px] md:leading-[48px] tracking-[0%] text-[#471207]">
             Lovers Report
           </h1>
-          <p className="font-mukta text-[#4a4a4a] text-[13px] md:text-[15px] mt-0.5">
+          <p className="font-mukta font-medium text-[14px] md:text-[24px] leading-[30px] tracking-[0%] text-[#4a4a4a] mt-0.5">
             This calculation may or may not be true but you can analyze it.
           </p>
         </div>
@@ -83,47 +87,83 @@ export default function LoveCalculatorResultSection() {
         {/* Result Card */}
         <div className="rounded-[16px] border border-[#d4c4b8] p-4 md:p-6 flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-8">
           {/* Photo */}
-          <div
-            className="shrink-0 relative rounded-[12px] overflow-hidden"
-            style={{ width: 200, height: 210 }}
-          >
-            <Image src={UploadPhotoImg} alt="Couple photo" fill className="object-cover" priority />
+          <div className="shrink-0 relative rounded-[19px] overflow-hidden w-full max-w-[320px] h-[332px] md:w-[318px] md:h-[333px]">
+            <Image src={UploadPhotoImg} alt="Couple photo" className="w-full h-full object-cover" width={318} height={333} priority />
           </div>
 
           {/* Names + Heart */}
-          <div className="flex flex-col items-center justify-center shrink-0 gap-1 py-2">
-            <h2 className="font-sahitya font-bold text-[22px] md:text-[26px] uppercase text-[#471207] text-center tracking-wide leading-none">
-              {result.yourName}
-            </h2>
+          {/* Mobile: names left/right with heart centered */}
+          <div className="w-full md:hidden flex items-center justify-between px-0">
+            <div className="w-[20%] text-left">
+              <h3 className="font-mukta font-semibold text-[20px] leading-[38px] uppercase text-[#471207]">
+                {result.yourName}
+              </h3>
+            </div>
 
-            <div
-              className="relative flex items-center justify-center"
-              style={{ width: 130, height: 120 }}
-            >
-              <Image src={LoveMatchIcon} alt="Heart" fill className="object-contain" />
-              <div className="relative z-10 flex flex-col items-center">
-                <span className="font-sahitya font-normal text-white text-[40px] leading-[38px] tracking-normal text-center drop-shadow-md">
+            <div className="flex-shrink-0 mx-0 relative flex items-center justify-center w-[60%]">
+              <div className="relative flex items-center justify-center w-[87.11408996582031px] h-[79.92717742919922px]">
+              <Image
+                src={LoveMatchIcon}
+                alt="Heart"
+                width={205}
+                height={188}
+                className="object-contain w-[87.11408996582031px] h-[79.92717742919922px]"
+              />
+              </div>
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
+                <span className="font-sahitya font-normal text-white text-[18px] leading-none tracking-[0%] text-center drop-shadow-md">
                   {result.score}%
                 </span>
-                <span className="font-mukta font-normal text-white text-[16px] leading-[20px] tracking-normal text-center">
+                <span className="font-mukta font-normal text-white text-[10px] leading-none tracking-[0%] text-center">
                   Matched
                 </span>
               </div>
             </div>
 
-            <h2 className="font-sahitya font-bold text-[22px] md:text-[26px] uppercase text-[#471207] text-center tracking-wide leading-none">
+            <div className="w-[20%] text-right">
+              <h3 className="font-mukta font-semibold text-[20px] leading-[38px] uppercase text-[#471207]">
+                {result.partnerName}
+              </h3>
+            </div>
+          </div>
+
+          {/* Desktop / tablet: stacked names with heart between */}
+          <div className="hidden md:flex flex-col items-center justify-center shrink-0 gap-4 -ml-0 md:-ml-8 self-center md:self-auto w-full md:w-[426px]">
+            <h2 className="font-mukta font-semibold text-[20px] md:text-[36px] uppercase text-[#471207] text-center tracking-[0%] leading-[38px] md:leading-[38px]">
+              {result.yourName}
+            </h2>
+
+            <div className="relative flex items-center justify-center w-[205px] h-[188px]">
+              <Image
+                src={LoveMatchIcon}
+                alt="Heart"
+                width={205}
+                height={188}
+                className="object-contain w-[205px] h-[188px]"
+              />
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
+                <span className="font-sahitya font-normal text-white text-[64px] leading-none tracking-[0%] text-center drop-shadow-md">
+                  {result.score}%
+                </span>
+                <span className="font-mukta font-normal text-white text-[24px] leading-none tracking-[0%] text-center">
+                  Matched
+                </span>
+              </div>
+            </div>
+
+            <h2 className="font-mukta font-semibold text-[20px] md:text-[36px] uppercase text-[#471207] text-center tracking-[0%] leading-[38px] md:leading-[38px]">
               {result.partnerName}
             </h2>
           </div>
 
           {/* Narrative + Buttons */}
-          <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left pt-2 md:pt-4">
-            <p className="font-mukta text-[#2d2d2d] text-[14px] md:text-[16px] leading-[1.7] max-w-[420px]">
+          <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left pt-6 md:pt-20 ml-0 md:-ml-12">
+            <p className="font-mukta font-normal text-[#2d2d2d] text-[16px] md:text-[24px] leading-[30px] md:leading-[34px] tracking-[0%] max-w-full text-justify px-2 md:px-0">
               Like a love meteorite, your connection will leave a profound impact on the world,
               inspiring others to seek their own cosmic love.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-3 mt-5">
+            <div className="flex w-full flex-col sm:flex-row items-center gap-3 mt-5 px-2 sm:px-0">
               <button
                 onClick={() => {
                   if (navigator.share) {
@@ -136,7 +176,7 @@ export default function LoveCalculatorResultSection() {
                       .catch(console.error);
                   }
                 }}
-                className="flex items-center justify-center gap-2 rounded-full bg-[#471207] px-5 py-2.5 font-mukta text-[14px] font-semibold text-white transition-colors hover:bg-[#5D1409]"
+                className="flex items-center justify-center gap-[10px] rounded-[40px] w-full sm:w-[204px] h-[50px] p-[12px] bg-[#471207] font-mukta font-semibold text-[18px] leading-[30px] tracking-[0%] text-white transition-colors hover:bg-[#5D1409]"
               >
                 <IoShareOutline className="text-lg" />
                 Share your match
@@ -144,7 +184,7 @@ export default function LoveCalculatorResultSection() {
 
               <button
                 onClick={handleCalculateAnother}
-                className="flex items-center justify-center gap-2 rounded-full border border-[#471207] bg-transparent px-5 py-2.5 font-mukta text-[14px] font-semibold text-[#471207] transition-colors hover:bg-[#471207] hover:text-white"
+                className="flex items-center justify-center gap-[10px] rounded-[32px] border-[2px] border-[#471207] bg-transparent px-[24px] py-[12px] w-full sm:w-[240px] h-[50px] font-mukta font-semibold text-[18px] leading-[30px] tracking-[0%] text-[#471207] transition-colors hover:bg-[#471207] hover:text-white"
               >
                 <FiRefreshCcw className="text-base" />
                 Calculate Another
@@ -167,7 +207,7 @@ export default function LoveCalculatorResultSection() {
               calculateHref="/calculators/love-calculator"
               icon={
                 <Image
-                  src={LoveHeroImage}
+                  src={LoveCalculatorIcon}
                   alt="Love calculator"
                   width={84}
                   height={84}

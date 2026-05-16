@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 
 import CalculatorCard from './calculator-card';
-import LoveCalculatorImage from '@/components/images/lovecalculator.png';
+import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
 import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
 import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
 import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
@@ -39,7 +39,7 @@ const Calculators: React.FC = () => {
             calculateHref="/calculators/love-calculator"
             icon={
               <Image
-                src={LoveCalculatorImage}
+                src={LoveCalculatorIcon}
                 alt="Love calculator"
                 width={84}
                 height={84}

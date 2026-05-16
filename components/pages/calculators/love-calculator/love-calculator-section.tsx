@@ -5,8 +5,9 @@ import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IoHeart } from 'react-icons/io5';
 
-import CalculatorCard from './calculator-card';
+import CalculatorCard from '../calculator-card';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
+import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
 import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
 import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
 import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
@@ -53,17 +54,31 @@ export default function LoveCalculatorSection() {
     <section className="w-full px-3 md:px-8 pb-12">
       <div className="mx-auto grid max-w-[1454px] items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,480px)] lg:gap-14 xl:gap-20">
         <div>
-          <h1 className="font-sahitya text-[32px] font-bold leading-[1.1] text-primary md:text-[40px] lg:text-[44px]">
+          <h1 className="font-sahitya text-[22px] leading-[32px] tracking-[0%] font-bold text-primary md:text-[40px] md:leading-[1.1] lg:text-[44px]">
             Love Calculator
           </h1>
-          <p className="mt-3 font-mukta text-[17px] text-[#2f2f2f] md:text-[18px]">
+          <p className="mt-3 font-mukta font-medium text-[14px] leading-[30px] tracking-[0%] text-[#2f2f2f] md:text-[18px]">
             Ever wondered if you and your crush are truly compatible?
           </p>
-          <p className="mt-4 max-w-[640px] font-mukta text-[14px] leading-[1.75] text-Paragraph md:text-[16px]">
+
+          <div className="relative mx-auto my-6 block w-[235px] h-[340px] lg:hidden mix-blend-darken">
+            <div className="relative w-full h-full overflow-hidden rounded-[20px]">
+              <Image
+                src={LoveHeroImage}
+                alt="Illustration of a couple embracing"
+                fill
+                className="object-cover object-center"
+                sizes="235px"
+                priority
+              />
+            </div>
+          </div>
+
+          <p className="mt-4 max-w-[640px] font-mukta font-normal text-[16px] leading-[100%] tracking-[0%] text-center text-Paragraph md:text-[16px] md:leading-[1.75] md:text-left">
             A love calculator is a fun, easy way to discover your “love score” and see how well you
             connect. Simply enter your names and let the results surprise you!
           </p>
-          <p className="mt-3 max-w-[640px] font-mukta text-[14px] leading-[1.75] text-Paragraph md:text-[16px]">
+          <p className="mt-3 max-w-[640px] font-mukta font-normal text-[16px] leading-[100%] tracking-[0%] text-center text-Paragraph md:text-[16px] md:leading-[1.75] md:text-left">
             Finding love can be challenging, but tools like the love calculator add excitement to
             the journey. They give you a playful peek into your feelings and compatibility before
             taking the next step. Many people use it just for fun, while others explore it to
@@ -75,15 +90,15 @@ export default function LoveCalculatorSection() {
             onSubmit={onSubmit}
             className="mt-8 flex w-full max-w-[632px] flex-col gap-4 rounded-[16px] border border-Trinary bg-transparent p-4"
           >
-            <h2 className="text-left font-mukta text-[28px] font-bold leading-[38px] tracking-normal text-[#5D1409]">
+            <h2 className="text-center font-mukta text-[20px] md:text-[28px] font-bold leading-[30px] md:leading-[38px] tracking-[0%] text-[#5D1409]">
               Find Your Love % Between You And Your Partner.
             </h2>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
               <div>
                 <label
                   htmlFor="love-your-name"
-                  className="mb-2 block font-mukta text-[18px] font-medium leading-[28px] tracking-normal text-primary"
+                  className="mb-2 block font-mukta text-[14px] md:text-[18px] font-medium leading-[28px] tracking-normal text-[#141414]"
                 >
                   Your Name
                 </label>
@@ -96,7 +111,7 @@ export default function LoveCalculatorSection() {
                     onChange={e => setYourName(e.target.value)}
                     autoComplete="name"
                   />
-                  <span className="shrink-0 self-center pr-3 font-mukta text-[14px] font-medium leading-[28px] tracking-[0] text-saffron-500">
+                  <span className="shrink-0 self-center pr-3 font-mukta text-[14px] font-medium leading-[28px] tracking-[0] text-primary">
                     Man
                   </span>
                 </div>
@@ -104,7 +119,7 @@ export default function LoveCalculatorSection() {
               <div>
                 <label
                   htmlFor="love-partner-name"
-                  className="mb-2 block font-mukta text-[18px] font-medium leading-[28px] tracking-normal text-primary"
+                  className="mb-2 block font-mukta text-[14px] md:text-[18px] font-medium leading-[28px] tracking-normal text-[#141414]"
                 >
                   Partner&apos;s Name
                 </label>
@@ -117,7 +132,7 @@ export default function LoveCalculatorSection() {
                     onChange={e => setPartnerName(e.target.value)}
                     autoComplete="off"
                   />
-                  <span className="shrink-0 self-center pr-3 font-mukta text-[14px] font-medium leading-[28px] tracking-[0] text-saffron-500">
+                  <span className="shrink-0 self-center pr-3 font-mukta text-[14px] font-medium leading-[28px] tracking-[0] text-primary">
                     Woman
                   </span>
                 </div>
@@ -134,7 +149,7 @@ export default function LoveCalculatorSection() {
           </form>
         </div>
 
-        <div className="relative mx-auto w-full max-w-[480px] lg:mx-0 lg:max-w-none">
+        <div className="relative mx-auto hidden w-full max-w-[480px] lg:block lg:mx-0 lg:max-w-none">
           <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[20px]">
             <Image
               src={LoveHeroImage}
@@ -161,7 +176,7 @@ export default function LoveCalculatorSection() {
             calculateHref="/calculators/love-calculator"
             icon={
               <Image
-                src={LoveHeroImage}
+                src={LoveCalculatorIcon}
                 alt="Love calculator"
                 width={84}
                 height={84}
