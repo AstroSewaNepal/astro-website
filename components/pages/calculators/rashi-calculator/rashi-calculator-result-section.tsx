@@ -90,7 +90,11 @@ export default function RashiCalculatorResultSection() {
 
   const meta = getRashiMeta(data.rashi);
   const displayName = getReportDisplayName(data.fullName);
-  const signLabel = meta?.englishName ?? data.rashi;
+  const signLabel = meta?.englishName ??
+    data.rashi
+      .split(/\s+/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   const dateRange = meta?.dateRange ?? '';
   const description =
     meta?.description ??

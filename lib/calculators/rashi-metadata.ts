@@ -136,10 +136,16 @@ export const RASHI_METADATA: RashiMeta[] = [
   },
 ];
 
-const RASHI_BY_VEDIC = new Map(RASHI_METADATA.map(meta => [meta.vedicName, meta]));
+const RASHI_META_MAP = new Map<string, RashiMeta>();
+RASHI_METADATA.forEach(meta => {
+  RASHI_META_MAP.set(meta.vedicName.toLowerCase(), meta);
+  RASHI_META_MAP.set(meta.englishName.toLowerCase(), meta);
+  RASHI_META_MAP.set(meta.slug.toLowerCase(), meta);
+});
 
 export function getRashiMeta(vedicName: string): RashiMeta | undefined {
-  return RASHI_BY_VEDIC.get(vedicName);
+  if (!vedicName) return undefined;
+  return RASHI_META_MAP.get(vedicName.trim().toLowerCase());
 }
 
 export function getReportDisplayName(fullName: string) {
