@@ -3,6 +3,9 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { isoDateToVedastroDate } from '@/lib/calculators/birth-query';
+import { fetchVedastroCalculator } from '@/lib/vedastro/fetch-calculator';
+
 const CALCULATOR_TYPES = [
   { value: 'life-path', label: 'Life Path Number' },
   { value: 'expression', label: 'Expression Number' },
@@ -37,7 +40,7 @@ const FORM_HEADING_CLASS =
 const INFO_BODY_CLASS = `mt-3 max-w-none text-left ${MUKTA_BODY_TEXT_CLASS}`;
 
 const CALCULATE_BUTTON_CLASS =
-  'box-border flex h-[60px] w-[250px] items-center justify-center gap-[10px] rounded-[32px] bg-[#5d1409] py-4 px-[10px] font-mukta text-[17px] font-bold text-white transition hover:opacity-95';
+  'box-border flex h-[60px] w-[250px] items-center justify-center gap-[10px] rounded-[32px] bg-[#5d1409] py-4 px-[10px] font-mukta text-[17px] font-bold text-white transition hover:opacity-95 disabled:opacity-60';
 
 const RESET_BUTTON_CLASS =
   'box-border flex h-[60px] w-[250px] items-center justify-center gap-[10px] rounded-[32px] border-2 border-[#5d1409] bg-[#fff5e3] py-4 px-[10px] font-mukta text-[17px] font-bold text-[#5d1409] transition hover:bg-[#f7e7d2]';
@@ -45,52 +48,13 @@ const RESET_BUTTON_CLASS =
 const INFO_SECTIONS = [
   {
     title: 'What Is a Numerology Calculator?',
-    body: 'A numerology calculator helps you discover the hidden meanings within your name and birth date. It converts letters and dates into numbers, then reveals personality insights, strengths, and destiny patterns.',
+    body: 'Discover meanings in your name and birth date using Pythagorean numerology (life path, expression, and soul urge numbers).',
   },
   {
     title: 'How Does a Numerology Calculator Work?',
-    body: 'You enter your full name and date of birth, and the calculator maps each letter to a number using a standard numerology chart. Those values are reduced to single digits (or master numbers) to produce your life path, expression, and soul urge results.',
-  },
-  {
-    title: 'What Is a Life Path Number?',
-    body: 'Your life path number is derived from your birth date and reflects your core purpose, natural talents, and the lessons you are meant to learn in this lifetime. It is one of the most important numbers in numerology for understanding your overall direction.',
-  },
-  {
-    title: 'What Are Expression and Soul Urge Numbers?',
-    body: 'The expression number comes from your full birth name and shows how you present yourself and what you are capable of achieving. The soul urge number, based on the vowels in your name, reveals your inner desires, motivations, and what truly fulfills you.',
-  },
-  {
-    title: 'Why Use a Numerology Calculator?',
-    body: 'A numerology calculator offers quick, clear insights without needing to study charts or do manual calculations. Whether you are exploring self-growth, relationships, or life decisions, it helps you see patterns in your numbers and reflect on your strengths and challenges.',
+    body: 'Enter your full name and date of birth. Letters and dates are converted to numbers and reduced to a single digit (or master number).',
   },
 ];
-
-function reduceToOneDigit(value: string) {
-  let sum = 0;
-  for (const char of value) {
-    const digit = Number(char);
-    if (!Number.isNaN(digit)) {
-      sum += digit;
-    }
-  }
-
-  while (sum > 9) {
-    let next = 0;
-    for (const char of String(sum)) {
-      next += Number(char);
-    }
-    sum = next;
-  }
-
-  return sum;
-}
-
-function getLifePathNumber(dateValue: string) {
-  if (!dateValue) return null;
-  const digits = dateValue.replace(/-/g, '');
-  if (!/^[0-9]{8}$/.test(digits)) return null;
-  return reduceToOneDigit(digits);
-}
 
 export default function NumerologyCalculatorSection() {
   const router = useRouter();
@@ -98,6 +62,7 @@ export default function NumerologyCalculatorSection() {
   const [birthDate, setBirthDate] = useState('');
   const [calculatorType, setCalculatorType] = useState(CALCULATOR_TYPES[0].value);
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const resultLabel = useMemo(() => {
     if (calculatorType === 'expression') return 'Expression Number';
@@ -105,7 +70,7 @@ export default function NumerologyCalculatorSection() {
     return 'Life Path Number';
   }, [calculatorType]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!fullName.trim() || !birthDate) {
       setError('Please enter your full name and birth date.');
@@ -113,21 +78,51 @@ export default function NumerologyCalculatorSection() {
     }
 
     setError('');
-    const lifePathNumber = getLifePathNumber(birthDate);
-    const finalResult = lifePathNumber || 0;
+    setSubmitting(true);
 
-    sessionStorage.setItem(
-      'numerologyCalculatorResult',
-      JSON.stringify({
-        fullName,
-        birthDate,
-        calculatorType,
-        result: finalResult,
-        resultLabel,
-      }),
-    );
+    try {
+      const vedastroDate = isoDateToVedastroDate(birthDate);
+      if (!vedastroDate) {
+        setError('Invalid date of birth.');
+        return;
+      }
 
-    router.push('/calculators/numerology-calculator/result');
+      const params = new URLSearchParams({
+        name: fullName.trim(),
+        date: vedastroDate,
+        focus: calculatorType,
+      });
+
+      const api = await fetchVedastroCalculator<{
+        rows: Array<{ label: string; value: string }>;
+        source: string;
+        result: number;
+        resultLabel: string;
+        note?: string;
+      }>('numerology', params);
+
+      sessionStorage.setItem(
+        'numerologyCalculatorResult',
+        JSON.stringify({
+          fullName,
+          birthDate,
+          calculatorType,
+          resultLabel: api.resultLabel ?? resultLabel,
+          result: api.result,
+          rows: api.rows,
+          source: api.source,
+          note: api.note,
+        }),
+      );
+
+      router.push('/calculators/numerology-calculator/result');
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error ? submitError.message : 'Numerology calculation failed.',
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -145,10 +140,10 @@ export default function NumerologyCalculatorSection() {
             Numerology Calculator
           </h1>
           <p className={`mt-3 w-full text-left ${HERO_TAGLINE_CLASS}`}>
-            Ever wondered what your name and birth date reveal about you?
+            Pythagorean numerology from your name and birth date.
           </p>
           <p className={`mt-4 mb-8 w-full text-left ${HERO_DESCRIPTION_CLASS}`}>
-            Discover your life path and numerology insights from your name and date of birth. This calculator helps you explore your strengths, purpose, and personality through the power of numbers, revealing patterns linked to your character, talents, relationships, and long-term direction. Enter your details below to understand yourself more deeply and see what your numbers say about you.
+            Enter your full name and date of birth — birth place is not required.
           </p>
         </div>
 
@@ -158,88 +153,69 @@ export default function NumerologyCalculatorSection() {
           </div>
 
           <form onSubmit={handleSubmit} className={FORM_OUTLINE_CLASS}>
-              <div>
-                <label htmlFor="numerology-fullname" className={FIELD_LABEL_CLASS}>
-                  Enter full name
-                </label>
-                <div className="flex h-[56px] items-center gap-2 rounded-[32px] border-2 border-[#aa4c44] px-5 py-4 text-[#4a2c28] shadow-sm transition duration-200 focus-within:border-[#8a372f]">
-                  <input
-                    id="numerology-fullname"
-                    className="min-w-0 flex-1 border-none bg-transparent text-[15px] font-mukta text-[#34211d] outline-none placeholder:text-[#b18576]"
-                    placeholder="John Doe"
-                    value={fullName}
-                    onChange={e => setFullName(e.target.value)}
-                  />
-                  <span className="text-[#9d675e]">
-                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                  </span>
-                </div>
+            <div>
+              <label htmlFor="numerology-fullname" className={FIELD_LABEL_CLASS}>
+                Enter full name
+              </label>
+              <div className="flex h-[56px] items-center gap-2 rounded-[32px] border-2 border-[#aa4c44] px-5 py-4">
+                <input
+                  id="numerology-fullname"
+                  className="min-w-0 flex-1 border-none bg-transparent text-[15px] font-mukta text-[#34211d] outline-none"
+                  placeholder="John Doe"
+                  value={fullName}
+                  onChange={e => setFullName(e.target.value)}
+                />
               </div>
+            </div>
 
-              <div>
-                <label htmlFor="numerology-dob" className={FIELD_LABEL_CLASS}>
-                  Enter date of birth
-                </label>
-                <div className="flex h-[56px] items-center gap-2 rounded-[32px] border-2 border-[#aa4c44] px-5 py-4 text-[#4a2c28] shadow-sm transition duration-200 focus-within:border-[#8a372f]">
-                  <input
-                    id="numerology-dob"
-                    type="date"
-                    className="min-w-0 flex-1 border-none bg-transparent text-[15px] font-mukta text-[#34211d] outline-none placeholder:text-[#b18576]"
-                    value={birthDate}
-                    onChange={e => setBirthDate(e.target.value)}
-                  />
-                  <span className="text-[#9d675e]">
-                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                      <line x1="16" y1="2" x2="16" y2="6"></line>
-                      <line x1="8" y1="2" x2="8" y2="6"></line>
-                      <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                  </span>
-                </div>
+            <div>
+              <label htmlFor="numerology-dob" className={FIELD_LABEL_CLASS}>
+                Enter date of birth
+              </label>
+              <div className="flex h-[56px] items-center gap-2 rounded-[32px] border-2 border-[#aa4c44] px-5 py-4">
+                <input
+                  id="numerology-dob"
+                  type="date"
+                  className="min-w-0 flex-1 border-none bg-transparent text-[15px] font-mukta text-[#34211d] outline-none"
+                  value={birthDate}
+                  onChange={e => setBirthDate(e.target.value)}
+                />
               </div>
+            </div>
 
-              <div>
-                <label htmlFor="numerology-type" className={FIELD_LABEL_CLASS}>
-                  Type
-                </label>
-                <div className="relative flex h-[56px] items-center rounded-[32px] border-2 border-[#aa4c44] px-5 py-4 text-[#4a2c28] shadow-sm transition duration-200 focus-within:border-[#8a372f]">
-                  <select
-                    id="numerology-type"
-                    className="min-w-0 flex-1 appearance-none border-none bg-transparent text-[15px] font-mukta text-[#34211d] outline-none"
-                    value={calculatorType}
-                    onChange={e => setCalculatorType(e.target.value)}
-                  >
-                    {CALCULATOR_TYPES.map(item => (
-                      <option key={item.value} value={item.value}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="pointer-events-none text-[#9d675e]">
-                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                  </span>
-                </div>
+            <div>
+              <label htmlFor="numerology-type" className={FIELD_LABEL_CLASS}>
+                Report focus
+              </label>
+              <div className="relative flex h-[56px] items-center rounded-[32px] border-2 border-[#aa4c44] px-5 py-4">
+                <select
+                  id="numerology-type"
+                  className="min-w-0 flex-1 appearance-none border-none bg-transparent text-[15px] font-mukta text-[#34211d] outline-none"
+                  value={calculatorType}
+                  onChange={e => setCalculatorType(e.target.value)}
+                >
+                  {CALCULATOR_TYPES.map(item => (
+                    <option key={item.value} value={item.value}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
               </div>
+            </div>
 
-              <div className={FORM_FOOTER_CLASS}>
-                <p className={ERROR_SLOT_CLASS} role="alert" aria-live="polite">
-                  {error || '\u00a0'}
-                </p>
-                <div className="flex flex-col gap-[10px] sm:flex-row sm:items-center sm:justify-between">
-                  <button type="submit" className={CALCULATE_BUTTON_CLASS}>
-                    Calculate
-                  </button>
-                  <button type="button" onClick={handleReset} className={RESET_BUTTON_CLASS}>
-                    Reset
-                  </button>
-                </div>
+            <div className={FORM_FOOTER_CLASS}>
+              <p className={ERROR_SLOT_CLASS} role="alert">
+                {error || '\u00a0'}
+              </p>
+              <div className="flex flex-col gap-[10px] sm:flex-row sm:items-center sm:justify-between">
+                <button type="submit" disabled={submitting} className={CALCULATE_BUTTON_CLASS}>
+                  {submitting ? 'Calculating…' : 'Calculate'}
+                </button>
+                <button type="button" onClick={handleReset} className={RESET_BUTTON_CLASS}>
+                  Reset
+                </button>
               </div>
+            </div>
           </form>
         </div>
 

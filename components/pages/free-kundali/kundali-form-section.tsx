@@ -17,7 +17,7 @@ import CalendarIcon from '@/components/icons/calendar-icon';
 import UserLineIcon from '@/components/icons/user/user-line';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import { ServiceReport } from '@/components/images/services';
-import { getPublicBackendBaseCandidates, resolveVedastroProxyFetchUrl } from '@/lib/utils/url';
+import { fetchFreeKundaliBundle } from '@/lib/vedastro/fetch-free-kundali-bundle';
 import { FreeKundaliGoogleSignIn } from '@/components/pages/free-kundali/free-kundali-google-sign-in';
 
 const fieldIconClass = 'w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary';
@@ -31,16 +31,6 @@ const cardShell = clsx(
 type GeocodeResponseItem = {
   lat: string;
   lon: string;
-};
-
-type VedastroResult = {
-  success?: boolean;
-  data?: unknown;
-  message?: string;
-  errors?: Array<{
-    statusCode?: number;
-    message?: string;
-  }>;
 };
 
 type FieldErrors = {
@@ -148,48 +138,6 @@ function getTimezoneFromCoords(lat: number, lon: number): string {
   }
   // Default fallback
   return 'UTC';
-}
-
-const getCandidateBackendBases = getPublicBackendBaseCandidates;
-
-async function fetchVedastroGeneral(
-  query: URLSearchParams,
-): Promise<{ payload: VedastroResult; usedBase: string }> {
-  const attemptErrors: string[] = [];
-
-  for (const base of getCandidateBackendBases()) {
-    const url = resolveVedastroProxyFetchUrl(base, 'general', query);
-    try {
-      const response = await fetch(url);
-      const contentType = response.headers.get('content-type')?.toLowerCase() ?? '';
-
-      if (!contentType.includes('application/json')) {
-        const text = await response.text();
-        const preview = text.slice(0, 120).replace(/\s+/g, ' ').trim();
-        attemptErrors.push(
-          `Non-JSON response from ${url} (status ${response.status}). Preview: ${preview || 'empty response'}`,
-        );
-        continue;
-      }
-
-      const payload = (await response.json()) as VedastroResult;
-      if (!response.ok || payload.success === false) {
-        const backendMessage = payload.message || payload.errors?.[0]?.message;
-        attemptErrors.push(
-          backendMessage || `Request failed on ${url} (status ${response.status}).`,
-        );
-        continue;
-      }
-
-      return { payload, usedBase: base };
-    } catch (error) {
-      attemptErrors.push(
-        `Network error on ${url}: ${error instanceof Error ? error.message : 'unknown error'}`,
-      );
-    }
-  }
-
-  throw new Error(attemptErrors[attemptErrors.length - 1] ?? 'Failed to reach backend endpoint.');
 }
 
 // ─── FieldError helper ────────────────────────────────────────────────────────
@@ -324,7 +272,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
         location: birthPlace,
       });
 
-      const { payload } = await fetchVedastroGeneral(query);
+      const bundle = await fetchFreeKundaliBundle(query);
       if (typeof window !== 'undefined') {
         window.sessionStorage.setItem(
           'freeKundaliResult',
@@ -336,7 +284,9 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
             gender,
             latitude: firstMatch.lat,
             longitude: firstMatch.lon,
-            payload,
+            payload: { calculator: 'AllTimeData', payload: bundle.panchanga },
+            planetRows: bundle.planetRows,
+            doshas: bundle.doshas,
           }),
         );
       }
@@ -567,7 +517,9 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                 disabled={isSubmitting}
                 className="mt-3 md:mt-6 lg:-translate-y-3 w-full h-[60px] gap-8 rounded-full bg-[#6d1510] text-[18px] font-mukta font-semibold leading-[30px] text-secondary transition-colors hover:bg-[#8e2f27] flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Generating...' : 'Generate Now'}
+                {isSubmitting
+                  ? 'Generating kundali (planets, doshas, panchanga)…'
+                  : 'Generate Now'}
               </button>
 
               {fieldErrors.general ? (

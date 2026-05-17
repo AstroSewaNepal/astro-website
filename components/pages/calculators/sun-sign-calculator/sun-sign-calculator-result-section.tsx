@@ -52,10 +52,10 @@ function SunSignReportCard({ meta, mirrored = false }: SunSignReportCardProps) {
   const signDetails = (
     <div className="flex w-full flex-col justify-center px-4 py-4 sm:w-[58%] sm:px-6">
       <h3 className="font-sahitya text-[22px] font-bold text-[#5D1409] md:text-[26px]">
-        Western Astrology
+        Vedic Sun Sign
       </h3>
       <p className="mt-1 font-mukta text-[12px] font-normal text-[#141414] md:text-[14px]">
-        Based on the Tropical Zodiac
+        Sidereal chart from VedAstro at your birth time
       </p>
       <p className="mt-5 font-mukta text-[14px] font-normal text-[#141414] md:text-[16px]">
         Element:{' '}

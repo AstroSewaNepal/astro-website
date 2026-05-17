@@ -5,6 +5,10 @@ import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IoHeart } from 'react-icons/io5';
 
+import { buildBirthVedastroQuery } from '@/lib/calculators/birth-query';
+import { fetchVedastroCalculator } from '@/lib/vedastro/fetch-calculator';
+import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
+
 import CalculatorCard from '../calculator-card';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
 import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
@@ -15,39 +19,115 @@ import DashaImage from '@/components/images/calculator/dasha.png';
 import MoonPhaseImage from '@/components/images/calculator/moonphase.png';
 import RashiCalculatorImage from '@/components/images/calculator/rashicalculator.png';
 
-function computeLovePercent(your: string, partner: string): number {
-  const [a, b] = [your.trim().toLowerCase(), partner.trim().toLowerCase()].sort();
-  const s = `${a}|${b}`;
-  let h = 5381;
-  for (let i = 0; i < s.length; i++) {
-    h = Math.imul(h, 33) ^ s.charCodeAt(i);
-  }
-  return 45 + (Math.abs(h) % 56);
-}
-
 export default function LoveCalculatorSection() {
   const router = useRouter();
   const [yourName, setYourName] = useState('');
   const [partnerName, setPartnerName] = useState('');
+  const [yourBirthDate, setYourBirthDate] = useState('');
+  const [yourBirthPlace, setYourBirthPlace] = useState('');
+  const [partnerBirthDate, setPartnerBirthDate] = useState('');
+  const [partnerBirthPlace, setPartnerBirthPlace] = useState('');
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = useCallback(
-    (e: React.FormEvent) => {
+    async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!yourName.trim() || !partnerName.trim()) return;
-      const score = computeLovePercent(yourName, partnerName);
+      if (!yourName.trim() || !partnerName.trim()) {
+        setError('Please enter both names.');
+        return;
+      }
+      if (!yourBirthDate || !yourBirthPlace.trim() || !partnerBirthDate || !partnerBirthPlace.trim()) {
+        setError('Please enter birth date and place for both people (used for VedAstro MatchReport).');
+        return;
+      }
 
-      sessionStorage.setItem(
-        'loveCalculatorResult',
-        JSON.stringify({
-          yourName,
-          partnerName,
-          score,
-        }),
-      );
+      setError('');
+      setSubmitting(true);
+      try {
+        const yourForm: CalculatorFormValues = {
+          fullName: yourName,
+          gender: 'male',
+          birthDate: yourBirthDate,
+          birthPlace: yourBirthPlace,
+          birthTimeHH: '',
+          birthTimeMM: '',
+          birthTimeAMPM: 'am',
+          dontKnowTime: true,
+        };
+        const partnerForm: CalculatorFormValues = {
+          fullName: partnerName,
+          gender: 'female',
+          birthDate: partnerBirthDate,
+          birthPlace: partnerBirthPlace,
+          birthTimeHH: '',
+          birthTimeMM: '',
+          birthTimeAMPM: 'am',
+          dontKnowTime: true,
+        };
 
-      router.push('/calculators/love-calculator/result');
+        const [yourQ, partnerQ] = await Promise.all([
+          buildBirthVedastroQuery(yourForm),
+          buildBirthVedastroQuery(partnerForm),
+        ]);
+
+        // UI labels: you = Man (groom), partner = Woman (bride) for VedAstro MatchReport.
+        const params = new URLSearchParams({
+          groomName: yourName.trim(),
+          brideName: partnerName.trim(),
+          groomLat: yourQ.lat,
+          groomLon: yourQ.lon,
+          groomDate: yourQ.date,
+          groomTime: yourQ.time,
+          groomOffset: yourQ.offset,
+          brideLat: partnerQ.lat,
+          brideLon: partnerQ.lon,
+          brideDate: partnerQ.date,
+          brideTime: partnerQ.time,
+          brideOffset: partnerQ.offset,
+        });
+
+        const api = await fetchVedastroCalculator<{
+          score: number | null;
+          source: string;
+        }>('love-match', params);
+
+        const score =
+          api.score ??
+          Math.min(
+            100,
+            Math.max(40, Math.round(((yourName.length + partnerName.length) * 7) % 55) + 45),
+          );
+
+        sessionStorage.setItem(
+          'loveCalculatorResult',
+          JSON.stringify({
+            yourName,
+            partnerName,
+            score,
+            source: api.source,
+            fromVedastro: api.score !== null,
+          }),
+        );
+
+        router.push('/calculators/love-calculator/result');
+      } catch (submitError) {
+        setError(
+          submitError instanceof Error ? submitError.message : 'Could not calculate compatibility.',
+        );
+      } finally {
+        setSubmitting(false);
+      }
     },
-    [yourName, partnerName, router],
+    [
+      yourName,
+      partnerName,
+      yourBirthDate,
+      yourBirthPlace,
+      partnerBirthDate,
+      partnerBirthPlace,
+      router,
+    ],
   );
 
   return (
@@ -75,8 +155,8 @@ export default function LoveCalculatorSection() {
           </div>
 
           <p className="mt-4 max-w-[640px] font-mukta font-normal text-[16px] leading-[100%] tracking-[0%] text-center text-Paragraph md:text-[16px] md:leading-[1.75] md:text-left">
-            A love calculator is a fun, easy way to discover your “love score” and see how well you
-            connect. Simply enter your names and let the results surprise you!
+            Compatibility score from VedAstro MatchReport (Kuta / Guna-style matching). Enter names
+            and birth date + place for both people.
           </p>
           <p className="mt-3 max-w-[640px] font-mukta font-normal text-[16px] leading-[100%] tracking-[0%] text-center text-Paragraph md:text-[16px] md:leading-[1.75] md:text-left">
             Finding love can be challenging, but tools like the love calculator add excitement to
@@ -139,12 +219,60 @@ export default function LoveCalculatorSection() {
               </div>
             </div>
 
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">Your birth date</label>
+                <input
+                  type="date"
+                  value={yourBirthDate}
+                  onChange={e => setYourBirthDate(e.target.value)}
+                  className="w-full rounded-full border border-Trinary px-4 py-2.5 font-mukta text-[15px]"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">Partner birth date</label>
+                <input
+                  type="date"
+                  value={partnerBirthDate}
+                  onChange={e => setPartnerBirthDate(e.target.value)}
+                  className="w-full rounded-full border border-Trinary px-4 py-2.5 font-mukta text-[15px]"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">Your birth place</label>
+                <input
+                  type="text"
+                  placeholder="Kathmandu, Nepal"
+                  value={yourBirthPlace}
+                  onChange={e => setYourBirthPlace(e.target.value)}
+                  className="w-full rounded-full border border-Trinary px-4 py-2.5 font-mukta text-[15px]"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">Partner birth place</label>
+                <input
+                  type="text"
+                  placeholder="Pokhara, Nepal"
+                  value={partnerBirthPlace}
+                  onChange={e => setPartnerBirthPlace(e.target.value)}
+                  className="w-full rounded-full border border-Trinary px-4 py-2.5 font-mukta text-[15px]"
+                />
+              </div>
+            </div>
+
+            {error ? (
+              <p className="font-mukta text-sm text-[#8d1f1f]" role="alert">
+                {error}
+              </p>
+            ) : null}
+
             <button
               type="submit"
-              className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#5D1409] px-6 py-3.5 font-mukta text-[17px] font-bold text-white transition-opacity hover:opacity-95"
+              disabled={submitting}
+              className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#5D1409] px-6 py-3.5 font-mukta text-[17px] font-bold text-white transition-opacity hover:opacity-95 disabled:opacity-60"
             >
               <IoHeart className="text-xl text-white" aria-hidden />
-              Calculate Love %
+              {submitting ? 'Calculating…' : 'Calculate Love %'}
             </button>
           </form>
         </div>

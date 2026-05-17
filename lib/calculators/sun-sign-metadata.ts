@@ -16,6 +16,8 @@ import {
 } from '@/components/images/zodiac/english';
 import type { HoroscopeSign } from '@/lib/types/horoscope';
 
+import { RASHI_METADATA } from '@/lib/calculators/rashi-metadata';
+
 export type SunSignMeta = {
   englishName: string;
   slug: HoroscopeSign;
@@ -124,10 +126,21 @@ export const SUN_SIGN_METADATA: SunSignMeta[] = [
   },
 ];
 
-const SUN_SIGN_BY_NAME = new Map(SUN_SIGN_METADATA.map(meta => [meta.englishName, meta]));
+const SUN_SIGN_BY_ENGLISH = new Map(
+  SUN_SIGN_METADATA.map(meta => [meta.englishName.toLowerCase(), meta]),
+);
 
-export function getSunSignMeta(englishName: string): SunSignMeta | undefined {
-  return SUN_SIGN_BY_NAME.get(englishName);
+const SUN_SIGN_BY_VEDIC = new Map(
+  RASHI_METADATA.map(rashi => {
+    const meta = SUN_SIGN_BY_ENGLISH.get(rashi.englishName.toLowerCase());
+    return meta ? ([rashi.vedicName.toLowerCase(), meta] as const) : null;
+  }).filter((entry): entry is readonly [string, SunSignMeta] => entry !== null),
+);
+
+export function getSunSignMeta(signName: string): SunSignMeta | undefined {
+  const key = signName.trim().toLowerCase();
+  if (!key) return undefined;
+  return SUN_SIGN_BY_ENGLISH.get(key) ?? SUN_SIGN_BY_VEDIC.get(key);
 }
 
 export function getReportDisplayName(fullName: string) {

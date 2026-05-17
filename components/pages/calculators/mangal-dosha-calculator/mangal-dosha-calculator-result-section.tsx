@@ -7,6 +7,12 @@ import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-typ
 
 export type MangalDoshaCalculatorResult = CalculatorFormValues & {
   level: MangalDoshaLevel;
+  manglik?: {
+    present: boolean;
+    strength: string;
+    reasons: string[];
+  };
+  source?: string;
 };
 
 const STORAGE_KEY = 'mangalDoshaCalculatorResult';
@@ -22,16 +28,30 @@ export default function MangalDoshaCalculatorResultSection() {
       reportSuffix="Mangal Dosha Report"
       getReportDisplay={data => {
         const meta = getMangalDoshaMeta(data.level);
+        const reasons = data.manglik?.reasons?.filter(Boolean) ?? [];
+        const reasonText =
+          reasons.length > 0
+            ? ` Chart factors: ${reasons.join('; ')}.`
+            : '';
         return {
           title: meta?.title ?? data.level,
           subtitle: meta?.subtitle,
           description:
-            meta?.description ??
-            'Your Mangal Dosha result is based on your birth date pattern in Vedic astrology.',
+            (meta?.description ??
+              'Your Mangal Dosha result is calculated from VedAstro planet positions and AstroSewa rules.') +
+            reasonText,
           image: meta?.image,
           imageAlt: 'Mangal Dosha',
         };
       }}
+      extraPersonalRows={data =>
+        data.manglik
+          ? [
+              { label: 'Present', value: data.manglik.present ? 'Yes' : 'No' },
+              { label: 'Strength', value: data.manglik.strength },
+            ]
+          : []
+      }
     />
   );
 }

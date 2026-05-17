@@ -5,22 +5,28 @@ import { useRouter } from 'next/navigation';
 import CalculatorBirthDetailsForm from '@/components/pages/calculators/shared/calculator-birth-details-form';
 import CalculatorPageIntro from '@/components/pages/calculators/shared/calculator-page-intro';
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
-import { determineRashi } from '@/lib/calculators/determine-rashi';
+import { runVedastroBirthCalculator } from '@/lib/calculators/run-vedastro-birth-calculator';
 
 const STORAGE_KEY = 'rashiCalculatorResult';
+
+type MoonSignApiResponse = {
+  moonSign: string;
+  source: string;
+};
 
 export default function RashiCalculatorSection() {
   const router = useRouter();
 
-  const handleSubmit = (form: CalculatorFormValues) => {
-    const [, month, day] = form.birthDate.split('-').map(Number);
-    const rashi = determineRashi(month, day);
+  const handleSubmit = async (form: CalculatorFormValues) => {
+    const api = await runVedastroBirthCalculator<MoonSignApiResponse>('moon-sign', form);
 
     sessionStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
         ...form,
-        rashi,
+        rashi: api.moonSign,
+        moonSign: api.moonSign,
+        source: api.source,
       }),
     );
 
@@ -30,7 +36,7 @@ export default function RashiCalculatorSection() {
   return (
     <CalculatorPageIntro
       title="Rashi/Moon Sign Calculator"
-      shortDescription="Discover your Rashi (moon sign) from your birth date and explore what it reveals about your emotional nature in Vedic astrology."
+      shortDescription="Your Vedic moon sign (Rashi) from VedAstro Panchanga — based on real birth time and location, not a date table."
     >
       <CalculatorBirthDetailsForm submitLabel="Find Your Rashi" onSubmit={handleSubmit} />
     </CalculatorPageIntro>

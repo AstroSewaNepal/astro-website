@@ -14,7 +14,7 @@ import {
 
 type CalculatorBirthDetailsFormProps = {
   submitLabel: string;
-  onSubmit: (values: CalculatorFormValues) => void;
+  onSubmit: (values: CalculatorFormValues) => void | Promise<void>;
 };
 
 export default function CalculatorBirthDetailsForm({
@@ -23,6 +23,7 @@ export default function CalculatorBirthDetailsForm({
 }: CalculatorBirthDetailsFormProps) {
   const [form, setForm] = useState<CalculatorFormValues>(EMPTY_CALCULATOR_FORM);
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (field: keyof CalculatorFormValues, value: string | boolean) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -51,14 +52,27 @@ export default function CalculatorBirthDetailsForm({
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.birthDate) {
       setError('Please enter your date of birth.');
       return;
     }
+    if (!form.birthPlace.trim()) {
+      setError('Please enter your birth place.');
+      return;
+    }
 
     setError('');
-    onSubmit(form);
+    setSubmitting(true);
+    try {
+      await onSubmit(form);
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error ? submitError.message : 'Calculation failed. Please try again.',
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -189,9 +203,10 @@ export default function CalculatorBirthDetailsForm({
           <button
             type="button"
             onClick={handleSubmit}
-            className="w-full min-h-[52px] rounded-full bg-[#5D1409] font-mukta text-[16px] font-bold text-white hover:opacity-95 transition-opacity"
+            disabled={submitting}
+            className="w-full min-h-[52px] rounded-full bg-[#5D1409] font-mukta text-[16px] font-bold text-white hover:opacity-95 transition-opacity disabled:opacity-60"
           >
-            {submitLabel}
+            {submitting ? 'Calculating…' : submitLabel}
           </button>
           <button
             type="button"

@@ -75,3 +75,51 @@ export function resolveVedastroProxyFetchUrl(
   const qs = query.toString();
   return qs ? `${apiRoot}/vedastro/proxy/${ep}?${qs}` : `${apiRoot}/vedastro/proxy/${ep}`;
 }
+
+/** Full URL for the VedAstro dosha calculation endpoint (`GET /vedastro/dosha`). */
+export function resolveDoshaFetchUrl(
+  baseWithTrailingSlash: string,
+  query: URLSearchParams,
+): string {
+  const trimmed = normalizeBaseUrl(baseWithTrailingSlash);
+  const apiRoot = trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+  const qs = query.toString();
+  return qs ? `${apiRoot}/vedastro/dosha?${qs}` : `${apiRoot}/vedastro/dosha`;
+}
+
+export type VedastroCalculatorEndpoint =
+  | 'numerology'
+  | 'manglik'
+  | 'moon-sign'
+  | 'sun-sign'
+  | 'moon-phase'
+  | 'dasha'
+  | 'love-match';
+
+/** Full URL for Vedastro calculator routes (`GET /vedastro/calculators/:endpoint`). */
+export function resolveVedastroCalculatorUrl(
+  baseWithTrailingSlash: string,
+  endpoint: VedastroCalculatorEndpoint,
+  query: URLSearchParams,
+): string {
+  const trimmed = normalizeBaseUrl(baseWithTrailingSlash);
+  const apiRoot = trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+  const ep = endpoint.replace(/^\/+/, '');
+  const qs = query.toString();
+  return qs
+    ? `${apiRoot}/vedastro/calculators/${ep}?${qs}`
+    : `${apiRoot}/vedastro/calculators/${ep}`;
+}
+
+/** Full URL for one-shot free kundali bundle (`GET /vedastro/free-kundali/bundle`). */
+export function resolveFreeKundaliBundleUrl(
+  baseWithTrailingSlash: string,
+  query: URLSearchParams,
+): string {
+  const trimmed = normalizeBaseUrl(baseWithTrailingSlash);
+  const apiRoot = trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+  const qs = query.toString();
+  return qs
+    ? `${apiRoot}/vedastro/free-kundali/bundle?${qs}`
+    : `${apiRoot}/vedastro/free-kundali/bundle`;
+}
