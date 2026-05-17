@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import OpenChart from '@/components/images/openchart.png';
-import { getPublicBackendBaseCandidates, resolveVedastroProxyFetchUrl } from '@/lib/utils/url';
+import PersonDoshaResults from '@/components/shared/person-dosha-results';
+import type { StoredKundaliMatchingResult } from '@/lib/vedastro/fetch-kundali-matching-bundle';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -23,27 +24,7 @@ function unwrapVedastroPayload(payload: unknown): unknown {
   return payload;
 }
 
-type PersonInput = {
-  fullName: string;
-  dateOfBirth: string;
-  birthTime: string;
-  birthPlace: string;
-  gender: string;
-  latitude: string;
-  longitude: string;
-};
-
-type StoredMatchingInput = {
-  man: PersonInput;
-  woman: PersonInput;
-  // Cached individual data
-  manPayload?: unknown;
-  womanPayload?: unknown;
-  manPlanetRows?: string[][];
-  womanPlanetRows?: string[][];
-  manLagnaSvg?: string;
-  womanLagnaSvg?: string;
-};
+type PersonInput = StoredKundaliMatchingResult['man'];
 
 type MatchPredictionRow = {
   Name?: string;
@@ -64,21 +45,6 @@ type MatchReportPayload = {
     ScoreSummary?: string;
   };
   PredictionList?: MatchPredictionRow[];
-};
-
-type MatchApiResponse = {
-  success?: boolean;
-  message?: string;
-  data?: {
-    payload?: {
-      MatchReport?: MatchReportPayload;
-    };
-  };
-};
-
-type VedastroProxyResult = {
-  calculator?: string;
-  payload?: unknown;
 };
 
 type TabButtonProps = {
@@ -107,36 +73,11 @@ function TabButton({ id, label, activeTab, onSelect }: TabButtonProps) {
   );
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const VEDASTRO_NINE_PLANETS = [
-  'Sun',
-  'Moon',
-  'Mars',
-  'Mercury',
-  'Jupiter',
-  'Venus',
-  'Saturn',
-  'Rahu',
-  'Ketu',
-] as const;
-
 // ─── Formatting Helpers ───────────────────────────────────────────────────────
 
 function toTitleCase(value: string | undefined): string {
   if (!value) return '-';
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-}
-
-function getLocalOffset(dateInput: string): string {
-  const [day, month, year] = dateInput.split('-').map(Number);
-  const date = new Date(year, month - 1, day, 12, 0, 0);
-  const offsetMinutes = -date.getTimezoneOffset();
-  const sign = offsetMinutes >= 0 ? '+' : '-';
-  const abs = Math.abs(offsetMinutes);
-  const hours = Math.floor(abs / 60);
-  const minutes = abs % 60;
-  return `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
 function formatPanchangaValue(value: unknown): string {
@@ -195,185 +136,10 @@ function getPanchangaValue(source: unknown, ...paths: string[][]): string {
   return '-';
 }
 
-function getStoredKundaliQueryParams(person: PersonInput): URLSearchParams | null {
-  if (!person.latitude || !person.longitude || !person.dateOfBirth || !person.birthTime)
-    return null;
-  return new URLSearchParams({
-    lat: person.latitude,
-    lon: person.longitude,
-    date: person.dateOfBirth,
-    time: person.birthTime,
-    offset: getLocalOffset(person.dateOfBirth),
-    location: person.birthPlace || '',
-  });
-}
-
-function cleanVedastroCell(value: unknown): string {
-  if (value === undefined || value === null) return '-';
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-  if (typeof value === 'number' && Number.isFinite(value)) return String(value);
-  if (typeof value === 'string') {
-    if (
-      value.includes('TargetInvocationException') ||
-      value.includes('System.Reflection') ||
-      value.includes('KeyNotFoundException')
-    )
-      return '—';
-    return value.trim() || '-';
-  }
-  return '-';
-}
-
-function degreeFromBlock(block: unknown): string {
-  if (!block || typeof block !== 'object') return '-';
-  const d = (block as Record<string, unknown>).DegreeMinuteSecond;
-  return typeof d === 'string' && d.trim() ? d : '-';
-}
-
-function planetDetailRow(planet: string, raw: Record<string, unknown>): string[] {
-  const rasi = raw.PlanetRasiD1Sign as Record<string, unknown> | undefined;
-  const signName = typeof rasi?.Name === 'string' ? rasi.Name : '-';
-  const degInSign =
-    rasi && typeof rasi.DegreesIn === 'object' ? degreeFromBlock(rasi.DegreesIn) : '-';
-  const nirayana = degreeFromBlock(raw.PlanetNirayanaLongitude);
-  const nak = cleanVedastroCell(raw.PlanetConstellation);
-  const houseSign = cleanVedastroCell(raw.HousePlanetOccupiesBasedOnSign);
-  const houseLong = cleanVedastroCell(raw.HousePlanetOccupiesBasedOnLongitudes);
-  const retro = cleanVedastroCell(raw.IsPlanetRetrograde);
-  const lordBlock = raw.PlanetLordOfConstellation as Record<string, unknown> | undefined;
-  const nakLord =
-    lordBlock && typeof lordBlock.Name === 'string' ? lordBlock.Name : cleanVedastroCell(lordBlock);
-
-  return [planet, signName, degInSign, nirayana, nak, houseSign, houseLong, retro, nakLord];
-}
-
-// ─── Network Helpers ──────────────────────────────────────────────────────────
-
-const getCandidateBackendBases = getPublicBackendBaseCandidates;
-
-async function fetchMatchReport(man: PersonInput, woman: PersonInput): Promise<MatchReportPayload> {
-  const bride = woman.gender === 'male' ? man : woman;
-  const groom = woman.gender === 'male' ? woman : man;
-
-  const params = new URLSearchParams({
-    brideLat: bride.latitude,
-    brideLon: bride.longitude,
-    brideTime: bride.birthTime,
-    brideDate: bride.dateOfBirth,
-    brideOffset: getLocalOffset(bride.dateOfBirth),
-    brideName: bride.fullName,
-    groomLat: groom.latitude,
-    groomLon: groom.longitude,
-    groomTime: groom.birthTime,
-    groomDate: groom.dateOfBirth,
-    groomOffset: getLocalOffset(groom.dateOfBirth),
-    groomName: groom.fullName,
-  });
-
-  const attemptErrors: string[] = [];
-  for (const base of getCandidateBackendBases()) {
-    const url = resolveVedastroProxyFetchUrl(base, 'match', params);
-    try {
-      const res = await fetch(url);
-      const ct = res.headers.get('content-type')?.toLowerCase() ?? '';
-      if (!ct.includes('application/json')) {
-        attemptErrors.push(`Non-JSON from ${url} (${res.status})`);
-        continue;
-      }
-      const json = (await res.json()) as MatchApiResponse;
-      if (!res.ok || json.success === false) {
-        attemptErrors.push(json.message ?? `Request failed (${res.status}).`);
-        continue;
-      }
-      const report = json.data?.payload?.MatchReport;
-      if (!report) {
-        attemptErrors.push('MatchReport missing in response.');
-        continue;
-      }
-      return report;
-    } catch (err) {
-      attemptErrors.push(err instanceof Error ? err.message : 'Network error');
-    }
-  }
-  throw new Error(attemptErrors[attemptErrors.length - 1] ?? 'Failed to fetch match report.');
-}
-
-async function fetchVedastroGeneral(
-  query: URLSearchParams,
-): Promise<{ payload: VedastroProxyResult; usedBase: string }> {
-  for (const base of getCandidateBackendBases()) {
-    const url = resolveVedastroProxyFetchUrl(base, 'general', query);
-    try {
-      const response = await fetch(url);
-      if (!response.ok) continue;
-      const payload = (await response.json()) as VedastroProxyResult;
-      return { payload, usedBase: base };
-    } catch (e) {
-      /* empty */
-    }
-  }
-  throw new Error('Failed to reach backend endpoint for Dosha.');
-}
-
-async function fetchVedastroPlanetsTable(
-  query: URLSearchParams,
-): Promise<{ rows: string[][]; usedBase: string }> {
-  const attemptErrors: string[] = [];
-
-  for (const base of getCandidateBackendBases()) {
-    try {
-      const tasks = VEDASTRO_NINE_PLANETS.map(async planet => {
-        const q = new URLSearchParams(query);
-        q.set('planet', planet);
-        const url = resolveVedastroProxyFetchUrl(base, 'planets', q);
-        const response = await fetch(url);
-        if (!response.ok) {
-          const body = await response.text();
-          throw new Error(
-            `Planet ${planet} request failed: ${response.status} ${response.statusText} - ${body.slice(
-              0,
-              200,
-            )}`,
-          );
-        }
-        const json = (await response.json()) as unknown;
-        if (!isRecord(json)) {
-          throw new Error(`Invalid JSON response for planet ${planet}`);
-        }
-        const data = isRecord(json['data']) ? json['data'] : undefined;
-        const inner = data && isRecord(data['payload']) ? data['payload'] : {};
-        return planetDetailRow(planet, inner);
-      });
-      const rows = await Promise.all(tasks);
-      return { rows, usedBase: base };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown planet fetch error';
-      attemptErrors.push(`${base}: ${message}`);
-    }
-  }
-  throw new Error(`Failed to load planet details. ${attemptErrors.join(' | ')}`);
-}
-
-async function fetchVedastroBirthChart(
-  query: URLSearchParams,
-): Promise<{ svg: string; usedBase: string }> {
-  const q = new URLSearchParams(query);
-  q.set('style', 'south');
-  for (const base of getCandidateBackendBases()) {
-    const url = resolveVedastroProxyFetchUrl(base, 'chart', q);
-    try {
-      const response = await fetch(url);
-      if (!response.ok) continue;
-      const json = (await response.json()) as unknown;
-      const data = isRecord(json) && isRecord(json['data']) ? json['data'] : undefined;
-      const payload = data ? data['payload'] : undefined;
-      if (typeof payload === 'string' && payload.includes('<svg'))
-        return { svg: payload, usedBase: base };
-    } catch (e) {
-      /* empty */
-    }
-  }
-  throw new Error('Failed to load birth chart.');
+function chartDataUrl(svg: string | undefined): string | null {
+  return svg && svg.includes('<svg')
+    ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+    : null;
 }
 
 // ─── Render Helpers ───────────────────────────────────────────────────────────
@@ -579,7 +345,7 @@ const KutaTable: React.FC<{
   man: PersonInput;
   woman: PersonInput;
 }> = ({ predictions, man, woman }) => {
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
   return (
     <div className="overflow-x-auto rounded-2xl border border-[#f5e9c6] shadow-sm">
       <table className="w-full min-w-[500px] text-sm font-mukta">
@@ -598,13 +364,14 @@ const KutaTable: React.FC<{
         <tbody>
           {predictions.map((row, i) => {
             const name = row.Name ?? `Row ${i + 1}`;
-            const isOpen = expanded === name;
+            const rowKey = `${i}-${name}`;
+            const isOpen = expandedKey === rowKey;
             const info = row.Info?.trim() || row.Description?.trim();
             return (
-              <React.Fragment key={name}>
+              <React.Fragment key={rowKey}>
                 <tr
                   className={`border-t border-[#f5e9c6] cursor-pointer transition-colors ${i % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#faf8f5]'} hover:bg-[#f9ece0]`}
-                  onClick={() => setExpanded(isOpen ? null : name)}
+                  onClick={() => setExpandedKey(isOpen ? null : rowKey)}
                 >
                   <td className="px-4 py-2.5 font-medium text-[#3d1a14] border-r border-[#f5e9c6]">
                     <span className="flex items-center gap-1.5">
@@ -644,10 +411,6 @@ const KutaTable: React.FC<{
     </div>
   );
 };
-
-const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`animate-pulse rounded-lg bg-[#e8dcc8] ${className}`} />
-);
 
 // ─── Individual Tabs Renderers ────────────────────────────────────────────────
 
@@ -796,22 +559,18 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
   );
 };
 
-const DoshaSummary: React.FC<{ report: MatchReportPayload | null; loading: boolean }> = ({
-  report,
-  loading,
-}) => {
-  const scoreText = report?.KutaScore != null ? `${Math.round((Math.max(0, Math.min(100, report.KutaScore)) * 36) / 100 * 10) / 10}/36` : '-';
-  const yesNo = report ? 'Yes' : '-';
+const DoshaSummary: React.FC<{ report: MatchReportPayload }> = ({ report }) => {
+  const scoreText =
+    report.KutaScore != null
+      ? `${Math.round((Math.max(0, Math.min(100, report.KutaScore)) * 36) / 100 * 10) / 10}/36`
+      : '-';
+  const yesNo = 'Yes';
   const cards: Array<[string, string]> = [
     ['Ashtakoot', scoreText],
     ['Ashtakoot', yesNo],
     ['Vedha Dosha', yesNo],
     ['Manglik Match', yesNo],
   ];
-
-  if (loading) {
-    return <p className="font-mukta text-center py-10">Loading Dosha info...</p>;
-  }
 
   return (
     <div className="space-y-10">
@@ -958,165 +717,20 @@ const IndividualLagnaChart: React.FC<{ svg: string | undefined; title: string }>
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const KundaliMatchingResultSection: React.FC = () => {
-  const [input, setInput] = useState<StoredMatchingInput | null>(null);
-  const [activeTab, setActiveTab] = useState<KundaliMatchingTab>('basic');
-  const [report, setReport] = useState<MatchReportPayload | null>(null);
-  const [loadingMatch, setLoadingMatch] = useState(false);
-  const [errorMatch, setErrorMatch] = useState<string | null>(null);
-
-  // States for tabs
-  const [isFetchingDosha, setIsFetchingDosha] = useState(false);
-  const [isFetchingPlanets, setIsFetchingPlanets] = useState(false);
-  const [isFetchingChart, setIsFetchingChart] = useState(false);
-  const [planetsFetchError, setPlanetsFetchError] = useState<string | null>(null);
+  const [result, setResult] = useState<StoredKundaliMatchingResult | null>(null);
+  const [activeTab, setActiveTab] = useState<KundaliMatchingTab>('match');
 
   useEffect(() => {
-    const raw = window.sessionStorage.getItem('kundaliMatchingInput');
+    const raw = window.sessionStorage.getItem('kundaliMatchingResult');
     if (!raw) return;
-    let cancelled = false;
     try {
-      const parsed = JSON.parse(raw) as StoredMatchingInput;
-      queueMicrotask(() => {
-        if (!cancelled) setInput(parsed);
-      });
+      setResult(JSON.parse(raw) as StoredKundaliMatchingResult);
     } catch {
-      queueMicrotask(() => {
-        if (!cancelled) setInput(null);
-      });
+      setResult(null);
     }
-    return () => {
-      cancelled = true;
-    };
   }, []);
 
-  // Update session storage
-  const updateInput = (newInput: StoredMatchingInput) => {
-    setInput(newInput);
-    if (typeof window !== 'undefined')
-      window.sessionStorage.setItem('kundaliMatchingInput', JSON.stringify(newInput));
-  };
-
-  // Fetch MatchReport
-  useEffect(() => {
-    if (!input || report || loadingMatch) return;
-    let cancelled = false;
-    queueMicrotask(() => {
-      if (cancelled) return;
-      setLoadingMatch(true);
-      setErrorMatch(null);
-    });
-    fetchMatchReport(input.man, input.woman)
-      .then(data => {
-        if (!cancelled) setReport(data);
-      })
-      .catch(err => {
-        if (!cancelled) setErrorMatch(err.message);
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingMatch(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [input, report]);
-
-  // Fetch Vedastro general payload for both people (dosha/basic tabs)
-  useEffect(() => {
-    if (!input || (input.manPayload && input.womanPayload)) return;
-    let cancelled = false;
-    queueMicrotask(() => {
-      if (!cancelled) setIsFetchingDosha(true);
-    });
-    Promise.all([
-      input.manPayload
-        ? Promise.resolve({ payload: input.manPayload })
-        : fetchVedastroGeneral(getStoredKundaliQueryParams(input.man)!),
-      input.womanPayload
-        ? Promise.resolve({ payload: input.womanPayload })
-        : fetchVedastroGeneral(getStoredKundaliQueryParams(input.woman)!),
-    ])
-      .then(([manRes, womanRes]) => {
-        if (cancelled) return;
-        updateInput({ ...input, manPayload: manRes.payload, womanPayload: womanRes.payload });
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (!cancelled) setIsFetchingDosha(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [input]);
-
-  // Fetch Planets
-  useEffect(() => {
-    if (activeTab !== 'planets' || !input || (input.manPlanetRows && input.womanPlanetRows)) return;
-    let cancelled = false;
-    setPlanetsFetchError(null);
-    const manQuery = getStoredKundaliQueryParams(input.man);
-    const womanQuery = getStoredKundaliQueryParams(input.woman);
-    if (!manQuery || !womanQuery) {
-      setPlanetsFetchError('Unable to build planet query parameters.');
-      return;
-    }
-    queueMicrotask(() => {
-      if (!cancelled) setIsFetchingPlanets(true);
-    });
-    Promise.all([
-      input.manPlanetRows
-        ? Promise.resolve({ rows: input.manPlanetRows })
-        : fetchVedastroPlanetsTable(manQuery),
-      input.womanPlanetRows
-        ? Promise.resolve({ rows: input.womanPlanetRows })
-        : fetchVedastroPlanetsTable(womanQuery),
-    ])
-      .then(([manRes, womanRes]) => {
-        if (cancelled) return;
-        updateInput({ ...input, manPlanetRows: manRes.rows, womanPlanetRows: womanRes.rows });
-      })
-      .catch(err => {
-        if (cancelled) return;
-        setPlanetsFetchError(
-          err instanceof Error ? err.message : 'Failed to load planet details.',
-        );
-      })
-      .finally(() => {
-        if (!cancelled) setIsFetchingPlanets(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [activeTab, input]);
-
-  // Fetch Lagna Chart
-  useEffect(() => {
-    if (activeTab !== 'lagna' || !input || (input.manLagnaSvg && input.womanLagnaSvg)) return;
-    let cancelled = false;
-    queueMicrotask(() => {
-      if (!cancelled) setIsFetchingChart(true);
-    });
-    Promise.all([
-      input.manLagnaSvg
-        ? Promise.resolve({ svg: input.manLagnaSvg })
-        : fetchVedastroBirthChart(getStoredKundaliQueryParams(input.man)!),
-      input.womanLagnaSvg
-        ? Promise.resolve({ svg: input.womanLagnaSvg })
-        : fetchVedastroBirthChart(getStoredKundaliQueryParams(input.woman)!),
-    ])
-      .then(([manRes, womanRes]) => {
-        if (cancelled) return;
-        updateInput({ ...input, manLagnaSvg: manRes.svg, womanLagnaSvg: womanRes.svg });
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (!cancelled) setIsFetchingChart(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [activeTab, input]);
-
-  if (!input) {
+  if (!result) {
     return (
       <section className="w-full px-4 md:px-8 py-8 md:py-12">
         <div className="mx-auto flex max-w-[1453px] flex-col items-center justify-center gap-4 py-24 text-center">
@@ -1132,12 +746,15 @@ const KundaliMatchingResultSection: React.FC = () => {
     );
   }
 
-  const kutaScore = clampPercent(report?.KutaScore);
-  const predictions = report?.PredictionList ?? [];
+  const report = result.matchReport;
+  const kutaScore = clampPercent(report.KutaScore);
+  const predictions = report.PredictionList ?? [];
   const goodCount = predictions.filter(p => p.Nature === 'Good').length;
   const badCount = predictions.filter(p => p.Nature === 'Bad').length;
-  const manName = input.man.fullName?.trim();
-  const womanName = input.woman.fullName?.trim();
+  const manName = result.man.fullName?.trim();
+  const womanName = result.woman.fullName?.trim();
+  const manChartUrl = chartDataUrl(result.manLagnaSvg);
+  const womanChartUrl = chartDataUrl(result.womanLagnaSvg);
   const resultSubtitle =
     manName && womanName
       ? `Matching result for ${manName} and ${womanName}`
@@ -1168,14 +785,22 @@ const KundaliMatchingResultSection: React.FC = () => {
             <div className="flex min-w-0 flex-col items-stretch">
               <figure className="flex flex-col items-center gap-2">
                 <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
-                  <Image
-                    src={OpenChart}
-                    alt="Man Kundali chart"
-                    fill
-                    className="object-contain object-center"
-                    sizes="(max-width: 768px) 100vw, 420px"
-                    priority
-                  />
+                  {manChartUrl ? (
+                    <img
+                      src={manChartUrl}
+                      alt="Man Kundali chart"
+                      className="h-full w-full object-contain object-center"
+                    />
+                  ) : (
+                    <Image
+                      src={OpenChart}
+                      alt="Man Kundali chart"
+                      fill
+                      className="object-contain object-center"
+                      sizes="(max-width: 768px) 100vw, 420px"
+                      priority
+                    />
+                  )}
                 </div>
                 <figcaption className="font-sahitya text-center text-sm font-bold text-primary sm:text-base md:text-xl">
                   Man Kundali Chart
@@ -1185,13 +810,21 @@ const KundaliMatchingResultSection: React.FC = () => {
             <div className="flex min-w-0 flex-col items-stretch">
               <figure className="flex flex-col items-center gap-2">
                 <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
-                  <Image
-                    src={OpenChart}
-                    alt="Woman Kundali chart"
-                    fill
-                    className="object-contain object-center"
-                    sizes="(max-width: 768px) 100vw, 420px"
-                  />
+                  {womanChartUrl ? (
+                    <img
+                      src={womanChartUrl}
+                      alt="Woman Kundali chart"
+                      className="h-full w-full object-contain object-center"
+                    />
+                  ) : (
+                    <Image
+                      src={OpenChart}
+                      alt="Woman Kundali chart"
+                      fill
+                      className="object-contain object-center"
+                      sizes="(max-width: 768px) 100vw, 420px"
+                    />
+                  )}
                 </div>
                 <figcaption className="font-sahitya text-center text-sm font-bold text-primary sm:text-base md:text-xl">
                   Woman Kundali Chart
@@ -1203,6 +836,12 @@ const KundaliMatchingResultSection: React.FC = () => {
 
         {/* Tabs — markup matches Free Kundali: flex row, fixed-width pills, max-w-[1453px] parent */}
         <div className="mt-6 flex flex-nowrap items-center justify-center gap-3 overflow-x-auto">
+          <TabButton
+            id="match"
+            label="Match Result"
+            activeTab={activeTab}
+            onSelect={setActiveTab}
+          />
           <TabButton
             id="basic"
             label="Basic Details"
@@ -1221,155 +860,116 @@ const KundaliMatchingResultSection: React.FC = () => {
 
         {/* Tab Content */}
         <div className="mt-6">
-          {/* Match Result Tab */}
           {activeTab === 'match' && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <PersonCard person={input.man} role="Man" symbol="♂" />
-                <PersonCard person={input.woman} role="Woman" symbol="♀" />
+                <PersonCard person={result.man} role="Man" symbol="♂" />
+                <PersonCard person={result.woman} role="Woman" symbol="♀" />
               </div>
-              {loadingMatch ? (
-                <div className="rounded-3xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
-                  <Skeleton className="w-36 h-36 rounded-full" />
-                  <div className="flex-1 space-y-4 w-full">
-                    {[1, 2, 3, 4].map(i => (
-                      <div key={i}>
-                        <Skeleton className="h-4 w-32 mb-1" />
-                        <Skeleton className="h-2 w-full" />
-                      </div>
+              <div className="rounded-3xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow p-6 md:p-8">
+                <div className="flex flex-col md:flex-row items-center gap-8">
+                  <div className="shrink-0">
+                    <ScoreRing score={kutaScore} />
+                    <div className="mt-3 flex justify-center gap-4 text-xs font-mukta">
+                      <span className="text-green-600 font-semibold">✓ {goodCount} Good</span>
+                      <span className="text-red-500 font-semibold">✗ {badCount} Challenging</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 w-full space-y-4">
+                    {CATEGORIES.map(cat => (
+                      <CategoryBar
+                        key={cat.label}
+                        label={cat.label}
+                        icon={cat.icon}
+                        percent={categoryPercent(cat.names, predictions)}
+                      />
                     ))}
                   </div>
                 </div>
-              ) : errorMatch ? (
-                <div className="rounded-2xl border border-[#f5e9c6] bg-[#fff9f4] p-5 text-center">
-                  <p className="font-mukta text-sm font-semibold text-[#7F1808]">{errorMatch}</p>
-                </div>
-              ) : report ? (
-                <>
-                  <div className="rounded-3xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow p-6 md:p-8">
-                    <div className="flex flex-col md:flex-row items-center gap-8">
-                      <div className="shrink-0">
-                        <ScoreRing score={kutaScore} />
-                        <div className="mt-3 flex justify-center gap-4 text-xs font-mukta">
-                          <span className="text-green-600 font-semibold">✓ {goodCount} Good</span>
-                          <span className="text-red-500 font-semibold">
-                            ✗ {badCount} Challenging
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex-1 w-full space-y-4">
-                        {CATEGORIES.map(cat => (
-                          <CategoryBar
-                            key={cat.label}
-                            label={cat.label}
-                            icon={cat.icon}
-                            percent={categoryPercent(cat.names, predictions)}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    {report.Summary?.ScoreSummary && (
-                      <div className="mt-6 rounded-xl bg-[#fffdf6] border border-[#f5e9c6] px-5 py-4">
-                        <p className="font-mukta text-sm text-[#5a2a20] leading-relaxed">
-                          <span className="font-semibold text-primary">Astro Summary: </span>
-                          {report.Summary.ScoreSummary}
-                        </p>
-                      </div>
-                    )}
+                {report.Summary?.ScoreSummary && (
+                  <div className="mt-6 rounded-xl bg-[#fffdf6] border border-[#f5e9c6] px-5 py-4">
+                    <p className="font-mukta text-sm text-[#5a2a20] leading-relaxed">
+                      <span className="font-semibold text-primary">Astro Summary: </span>
+                      {report.Summary.ScoreSummary}
+                    </p>
                   </div>
-                  {predictions.length > 0 && (
-                    <div className="space-y-3">
-                      <h2 className="font-sahitya font-bold text-xl text-primary">
-                        Guna Milan — Detailed Kuta Analysis
-                      </h2>
-                      <KutaTable predictions={predictions} man={input.man} woman={input.woman} />
-                    </div>
-                  )}
-                </>
-              ) : null}
+                )}
+              </div>
+              {predictions.length > 0 && (
+                <div className="space-y-3">
+                  <h2 className="font-sahitya font-bold text-xl text-primary">
+                    Guna Milan — Detailed Kuta Analysis
+                  </h2>
+                  <KutaTable predictions={predictions} man={result.man} woman={result.woman} />
+                </div>
+              )}
             </div>
           )}
 
-          {/* Basic Details Tab */}
           {activeTab === 'basic' && (
-            <div>
-              {isFetchingDosha ? (
-                <p className="font-mukta text-center py-10">Loading detailed info...</p>
-              ) : (
-                <div className="flex flex-col md:flex-row gap-6">
-                  <IndividualBasicDetails
-                    person={input.man}
-                    payload={input.manPayload}
-                    title={`${input.man.fullName}'s Details (Man)`}
-                  />
-                  <IndividualBasicDetails
-                    person={input.woman}
-                    payload={input.womanPayload}
-                    title={`${input.woman.fullName}'s Details (Woman)`}
-                  />
-                </div>
-              )}
+            <div className="flex flex-col md:flex-row gap-6">
+              <IndividualBasicDetails
+                person={result.man}
+                payload={result.manPayload}
+                title={`${result.man.fullName}'s Details (Man)`}
+              />
+              <IndividualBasicDetails
+                person={result.woman}
+                payload={result.womanPayload}
+                title={`${result.woman.fullName}'s Details (Woman)`}
+              />
             </div>
           )}
 
-          {/* Dosha Tab */}
           {activeTab === 'dosha' && (
-            <div>
-              <DoshaSummary report={report} loading={isFetchingDosha} />
-            </div>
-          )}
-
-          {/* Planets Tab */}
-          {activeTab === 'planets' && (
-            <div>
-              {isFetchingPlanets ? (
-                <p className="font-mukta text-center py-10">Loading Planet tables...</p>
-              ) : planetsFetchError ? (
-                <div className="rounded-2xl border border-[#f5e9c6] bg-[#fff9f4] p-5 text-center">
-                  <p className="font-mukta text-sm font-semibold text-[#7F1808]">
-                    {planetsFetchError}
-                  </p>
-                </div>
-              ) : input.manPlanetRows || input.womanPlanetRows ? (
-                <div className="flex flex-col gap-8">
-                  {input.manPlanetRows && (
-                    <IndividualPlanetsTable
-                      rows={input.manPlanetRows}
-                      title={`${input.man.fullName}'s Planets (Man)`}
-                    />
-                  )}
-                  {input.womanPlanetRows && (
-                    <IndividualPlanetsTable
-                      rows={input.womanPlanetRows}
-                      title={`${input.woman.fullName}'s Planets (Woman)`}
-                    />
-                  )}
-                </div>
-              ) : (
-                <p className="font-mukta text-center py-10 text-[#666]">
-                  Planet details are unavailable. Please try again or refresh the page.
+            <div className="mt-8 space-y-12">
+              <div>
+                <h3 className="font-sahitya text-primary text-[28px] leading-[38px] tracking-[0] font-bold">
+                  What Is Dosha?
+                </h3>
+                <p className="mt-4 font-mukta text-[#2d2d2d] text-[18px] leading-[28px] tracking-[0] font-normal text-justify">
+                  In Vedic astrology, a Dosha means an imbalance or flaw in a person&apos;s
+                  horoscope caused by the placement of certain planets in specific houses. These
+                  planetary positions are believed to create challenges or obstacles in areas like
+                  marriage, health, career, or relationships.
                 </p>
-              )}
+              </div>
+              <PersonDoshaResults
+                roleLabel="Man"
+                personName={result.man.fullName}
+                doshas={result.manDoshas}
+              />
+              <PersonDoshaResults
+                roleLabel="Woman"
+                personName={result.woman.fullName}
+                doshas={result.womanDoshas}
+              />
             </div>
           )}
 
-          {/* Lagna Chart Tab */}
+          {activeTab === 'planets' && (
+            <div className="flex flex-col gap-8">
+              <IndividualPlanetsTable
+                rows={result.manPlanetRows}
+                title={`${result.man.fullName}'s Planets (Man)`}
+              />
+              <IndividualPlanetsTable
+                rows={result.womanPlanetRows}
+                title={`${result.woman.fullName}'s Planets (Woman)`}
+              />
+            </div>
+          )}
+
           {activeTab === 'lagna' && (
-            <div>
-              {isFetchingChart ? (
-                <p className="font-mukta text-center py-10">Loading Lagna Charts...</p>
-              ) : (
-                <div className="flex flex-col md:flex-row gap-6">
-                  <IndividualLagnaChart
-                    svg={input.manLagnaSvg}
-                    title={`${input.man.fullName}'s Chart (Man)`}
-                  />
-                  <IndividualLagnaChart
-                    svg={input.womanLagnaSvg}
-                    title={`${input.woman.fullName}'s Chart (Woman)`}
-                  />
-                </div>
-              )}
+            <div className="flex flex-col md:flex-row gap-6">
+              <IndividualLagnaChart
+                svg={result.manLagnaSvg}
+                title={`${result.man.fullName}'s Chart (Man)`}
+              />
+              <IndividualLagnaChart
+                svg={result.womanLagnaSvg}
+                title={`${result.woman.fullName}'s Chart (Woman)`}
+              />
             </div>
           )}
         </div>

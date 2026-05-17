@@ -123,3 +123,16 @@ export function resolveFreeKundaliBundleUrl(
     ? `${apiRoot}/vedastro/free-kundali/bundle?${qs}`
     : `${apiRoot}/vedastro/free-kundali/bundle`;
 }
+
+/** Full URL for kundali matching bundle (`GET /vedastro/kundali-matching/bundle`). */
+export function resolveKundaliMatchingBundleUrl(
+  baseWithTrailingSlash: string,
+  query: URLSearchParams,
+): string {
+  const trimmed = normalizeBaseUrl(baseWithTrailingSlash);
+  const apiRoot = trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+  const qs = query.toString();
+  return qs
+    ? `${apiRoot}/vedastro/kundali-matching/bundle?${qs}`
+    : `${apiRoot}/vedastro/kundali-matching/bundle`;
+}
