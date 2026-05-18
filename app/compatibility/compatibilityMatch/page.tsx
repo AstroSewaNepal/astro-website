@@ -197,11 +197,11 @@ function CompatibilityHoroscopeCardLink({
     return (
       <Link
         href={href}
-        className="group block h-[135px] w-[340px] snap-start rounded-[33px] border border-[1px] border-[#5B5B5B] bg-white px-[14px] py-[12px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-[transform,box-shadow,border-color] duration-200 active:scale-[0.99] hover:border-[#5B5B5B] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]"
+        className="group block h-[135px] w-[340px] snap-start rounded-[33px] border border-[1px] border-[#5B5B5B] bg-transparent px-[14px] py-[12px] opacity-100 shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-[transform,box-shadow,border-color] duration-200 active:scale-[0.99] hover:border-[#5B5B5B] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]"
       >
         <div className="flex items-center gap-[15px]">
           {/* Large outline/light zodiac image */}
-          <div className="flex h-[88px] w-[88px] shrink-0 items-center justify-center rounded-full border border-[#BE7B71]/40 bg-[#F8F3DF]/60 p-2">
+          <div className="flex h-[104px] w-[120px] shrink-0 items-center justify-center rounded-full border border-transparent bg-transparent p-2">
             <Image
               src={card.image}
               alt={card.name}
@@ -246,10 +246,10 @@ function CompatibilityHoroscopeCardLink({
   return (
     <Link
       href={href}
-      className="group block h-full min-w-0 max-w-full rounded-[20px] border border-[#5c4033]/25 bg-transparent px-4 py-4 transition-[transform,box-shadow,colors] duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:border-[#5c4033]/45 hover:bg-white/20 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)] md:rounded-[24px] md:border-[#d4d4d8] md:bg-white md:shadow-[0_2px_12px_rgba(0,0,0,0.05)] md:hover:border-[#c4c4c9] md:hover:bg-white xl:rounded-[26px]"
+      className="group block h-full min-w-0 max-w-full rounded-[20px] border border-[#5c4033]/25 bg-transparent px-4 py-4 transition-[transform,box-shadow,colors] duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:border-[#5c4033]/45 hover:bg-white/20 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)] md:rounded-[24px] md:border-[#d4d4d8] md:bg-transparent md:shadow-[0_2px_12px_rgba(0,0,0,0.05)] md:hover:border-[#c4c4c9] md:hover:bg-transparent xl:rounded-[26px]"
     >
       <div className={innerFlex}>
-        <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[18px] border border-transparent bg-transparent sm:h-[76px] sm:w-[76px] sm:rounded-[20px] md:h-[78px] md:w-[78px] md:rounded-[22px] md:border-[#dfcebc]/40 md:bg-[#f4eadf]/40">
+        <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[18px] border border-transparent bg-transparent sm:h-[76px] sm:w-[76px] sm:rounded-[20px] md:h-[78px] md:w-[78px] md:rounded-[22px] md:border-transparent md:bg-transparent">
           <Image
             src={card.image}
             alt={card.name}
