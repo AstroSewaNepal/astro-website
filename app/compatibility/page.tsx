@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
 import ChevronDownIcon from '@/components/icons/chevron-down';
+import FindNowIcon from '@/components/icons/findnow_love_icon.png';
 import {
   EnglishAquariusColor,
   EnglishAriesColor,
@@ -64,25 +65,34 @@ export default function CompatibilityPage() {
 
   return (
     <main className="min-h-screen">
-      <div className="mx-auto max-w-[1240px] px-4 py-4 sm:px-6 lg:px-8">
-        <section className="mx-auto mt-8 max-w-[1180px]">
-          <h1 className="font-mukta text-[36px] font-bold leading-none text-[#6b2417] sm:text-[44px]">
-            {copy.title}
-          </h1>
-          <p className="mt-2 font-mukta text-[22px] text-[#111111]">{copy.subtitle}</p>
-          <hr className="mt-5 border-[#dcc7b6]" />
+      <div className="container mx-auto px-6 lg:px-0">
+        <section>
+          <div className="w-full">
+            <h1 className="font-sahitya text-[36px] font-bold leading-[48px] text-[#6b2417]">
+              {copy.title}
+            </h1>
+            <p className="mt-2 font-mukta text-[22px] text-[#111111]">{copy.subtitle}</p>
 
-          <p className="mt-8 font-mukta text-[14px] leading-8 text-[#4f463f]">{copy.intro}</p>
+            <div className="mt-4">
+              <p className="font-mukta text-[24px] font-normal leading-[34px] text-[#4f463f]">
+                You may not always click effortlessly with everyone, but when you're with that special someone, life feels brighter, calmer, and more meaningful. Throughout your journey, you'll meet many wonderful people — friends, mentors, and companions — but only one will truly be your life partner. Choosing the right person is important, because they should make you feel cherished, supported, and at peace, never lonely or uncared for.
+                Do you ever feel your heart skip a beat when you meet someone? That spark could be a sign of destiny. Discover what the universe has in store for your love life by exploring your zodiac sign compatibility with Astro Sewa.
+              </p>
+            </div>
+          </div>
 
           <div className="mt-8 rounded-[20px] border border-[#BE7B71] bg-[#F8F3DF] px-4 py-11 sm:px-8 sm:py-11">
-            <h2 className="text-center font-mukta text-[28px] font-bold leading-[38px] text-[#611508] sm:text-[42px] sm:leading-none">
+            <h2 className="text-center font-mukta text-[28px] font-bold leading-[38px] text-[#611508]">
               {copy.cardTitle}
             </h2>
-            <p className="mt-1 text-center font-mukta text-base font-normal leading-6 text-[#141414] sm:text-xl">
-              {copy.cardSubtitle}
+            <p className="mt-1 text-center font-mukta text-[20px] font-normal leading-[26px] text-[#141414]">
+              Choose your and your partner&apos;s zodiac sign
+              <br />
+              to check compatibility
             </p>
 
-            <div className="mx-auto mt-6 grid grid-cols-2 gap-6 sm:mt-8 sm:max-w-[560px] sm:gap-10">
+            {/* ✅ FIX: reduced sm:max-w from [560px] to [380px] to close the gap between the two columns */}
+            <div className="mx-auto mt-6 grid grid-cols-2 gap-x-0 gap-y-2 sm:mt-8 sm:max-w-[380px] sm:gap-x-0 sm:gap-y-2">
               {/* Your Sign */}
               <div className="flex flex-col items-center gap-2 sm:gap-4">
                 <div className="flex h-[120px] w-[120px] items-center justify-center rounded-full border border-[#BE7B71] bg-[#F8F3DF] p-7 sm:h-40 sm:w-40 sm:p-10">
@@ -96,11 +106,14 @@ export default function CompatibilityPage() {
                   <p className="font-mukta text-sm font-medium text-[#BE7B71] sm:text-base">
                     {copy.yourSignLabel}
                   </p>
-                  <div className="relative w-full">
+                  <div className="relative w-[172.65234375px]">
+                    <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center">
+                      <ChevronDownIcon className="h-3 w-3 text-[#611508] sm:h-4 sm:w-4" />
+                    </span>
                     <select
                       value={yourSign}
                       onChange={e => setYourSign(e.target.value as HoroscopeSign)}
-                      className="w-full appearance-none rounded-[32px] border border-[#BE7B71] bg-white px-3 py-1.5 pr-8 font-mukta text-sm font-medium uppercase leading-7 text-[#611508] sm:px-4 sm:pr-10 sm:text-xl"
+                      className="appearance-none w-full h-[40px] rounded-[32px] border border-[#BE7B71] bg-white pl-12 pr-4 text-left font-mukta text-[20px] font-medium uppercase leading-[28px] text-[#611508]"
                     >
                       {signOptions.map(s => (
                         <option key={s} value={s}>
@@ -108,7 +121,6 @@ export default function CompatibilityPage() {
                         </option>
                       ))}
                     </select>
-                    <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 text-[#611508] sm:right-4 sm:h-4 sm:w-4" />
                   </div>
                 </div>
                 <div className="flex items-center justify-center gap-2 font-mukta text-sm font-medium leading-5 text-[#141414] sm:gap-6 sm:text-xl">
@@ -121,31 +133,13 @@ export default function CompatibilityPage() {
                       onChange={() => setYourGender('male')}
                     />
                     {yourGender === 'male' ? (
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 10 10"
-                        fill="none"
-                        aria-hidden="true"
-                      >
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#611508" />
                         <circle cx="4.877" cy="4.877" r="4.377" stroke="#141414" />
-                        <circle
-                          cx="4.877"
-                          cy="4.877"
-                          r="4.377"
-                          stroke="black"
-                          strokeOpacity="0.2"
-                        />
+                        <circle cx="4.877" cy="4.877" r="4.377" stroke="black" strokeOpacity="0.2" />
                       </svg>
                     ) : (
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 10 10"
-                        fill="none"
-                        aria-hidden="true"
-                      >
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#F8F3DF" stroke="#BE7B71" />
                       </svg>
                     )}
@@ -160,31 +154,13 @@ export default function CompatibilityPage() {
                       onChange={() => setYourGender('female')}
                     />
                     {yourGender === 'female' ? (
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 10 10"
-                        fill="none"
-                        aria-hidden="true"
-                      >
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#611508" />
                         <circle cx="4.877" cy="4.877" r="4.377" stroke="#141414" />
-                        <circle
-                          cx="4.877"
-                          cy="4.877"
-                          r="4.377"
-                          stroke="black"
-                          strokeOpacity="0.2"
-                        />
+                        <circle cx="4.877" cy="4.877" r="4.377" stroke="black" strokeOpacity="0.2" />
                       </svg>
                     ) : (
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 10 10"
-                        fill="none"
-                        aria-hidden="true"
-                      >
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#F8F3DF" stroke="#BE7B71" />
                       </svg>
                     )}
@@ -206,11 +182,14 @@ export default function CompatibilityPage() {
                   <p className="font-mukta text-sm font-medium text-[#BE7B71] sm:text-base">
                     {copy.partnerSignLabel}
                   </p>
-                  <div className="relative w-full">
+                  <div className="relative w-[172.65234375px]">
+                    <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center">
+                      <ChevronDownIcon className="h-3 w-3 text-[#611508] sm:h-4 sm:w-4" />
+                    </span>
                     <select
                       value={partnerSign}
                       onChange={e => setPartnerSign(e.target.value as HoroscopeSign)}
-                      className="w-full appearance-none rounded-[32px] border border-[#BE7B71] bg-white px-3 py-1.5 pr-8 font-mukta text-sm font-medium uppercase leading-7 text-[#611508] sm:px-4 sm:pr-10 sm:text-xl"
+                      className="appearance-none w-full h-[40px] rounded-[32px] border border-[#BE7B71] bg-white pl-12 pr-4 text-left font-mukta text-[20px] font-medium uppercase leading-[28px] text-[#611508]"
                     >
                       {signOptions.map(s => (
                         <option key={s} value={s}>
@@ -218,7 +197,6 @@ export default function CompatibilityPage() {
                         </option>
                       ))}
                     </select>
-                    <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 text-[#611508] sm:right-4 sm:h-4 sm:w-4" />
                   </div>
                 </div>
                 <div className="flex items-center justify-center gap-2 font-mukta text-sm font-medium leading-5 text-[#141414] sm:gap-6 sm:text-xl">
@@ -231,31 +209,13 @@ export default function CompatibilityPage() {
                       onChange={() => setPartnerGender('male')}
                     />
                     {partnerGender === 'male' ? (
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 10 10"
-                        fill="none"
-                        aria-hidden="true"
-                      >
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#611508" />
                         <circle cx="4.877" cy="4.877" r="4.377" stroke="#141414" />
-                        <circle
-                          cx="4.877"
-                          cy="4.877"
-                          r="4.377"
-                          stroke="black"
-                          strokeOpacity="0.2"
-                        />
+                        <circle cx="4.877" cy="4.877" r="4.377" stroke="black" strokeOpacity="0.2" />
                       </svg>
                     ) : (
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 10 10"
-                        fill="none"
-                        aria-hidden="true"
-                      >
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#F8F3DF" stroke="#BE7B71" />
                       </svg>
                     )}
@@ -270,31 +230,13 @@ export default function CompatibilityPage() {
                       onChange={() => setPartnerGender('female')}
                     />
                     {partnerGender === 'female' ? (
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 10 10"
-                        fill="none"
-                        aria-hidden="true"
-                      >
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#611508" />
                         <circle cx="4.877" cy="4.877" r="4.377" stroke="#141414" />
-                        <circle
-                          cx="4.877"
-                          cy="4.877"
-                          r="4.377"
-                          stroke="black"
-                          strokeOpacity="0.2"
-                        />
+                        <circle cx="4.877" cy="4.877" r="4.377" stroke="black" strokeOpacity="0.2" />
                       </svg>
                     ) : (
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 10 10"
-                        fill="none"
-                        aria-hidden="true"
-                      >
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#F8F3DF" stroke="#BE7B71" />
                       </svg>
                     )}
@@ -304,20 +246,28 @@ export default function CompatibilityPage() {
               </div>
             </div>
 
-            <div className="mx-auto mt-8 sm:max-w-[560px]">
+            <div className="mx-auto mt-8 flex justify-center sm:max-w-[560px]">
               <button
                 onClick={findNow}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-[24px] bg-[#611508] px-8 py-2 font-mukta text-base font-semibold leading-7 text-[#F8F3DF] disabled:opacity-60"
+                className="inline-flex w-[369.302px] h-[44px] items-center justify-center gap-2 rounded-[24px] bg-[#611508] px-8 py-2 font-mukta text-base font-semibold leading-7 text-[#F8F3DF] disabled:opacity-60"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  ...
-                </svg>
+                <span className="flex h-[18.3px] w-[20.2px] items-center justify-center">
+                  <Image
+                    src={FindNowIcon}
+                    alt="Find now icon"
+                    width={20}
+                    height={18}
+                    className="h-[18.3px] w-[20.2px] object-contain"
+                  />
+                </span>
                 <span>{copy.findNow}</span>
               </button>
             </div>
           </div>
 
-          <p className="mt-8 font-mukta text-[14px] leading-8 text-[#4f463f]">{copy.outro}</p>
+          <p className="mt-8 font-mukta font-normal text-[24px] leading-[34px] tracking-[0] text-[#4f463f]">
+            {copy.outro}
+          </p>
         </section>
 
         <TalkToOurAstrologer className="mx-auto mt-14 max-w-[1180px]" />
