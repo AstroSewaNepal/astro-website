@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Swiper as SwiperClass } from 'swiper';
+import type { Swiper as SwiperType } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 
@@ -24,11 +24,11 @@ type Props = {
 };
 
 export function ZodiacCarousel({ language = ELanguage.ENGLISH }: Props) {
-  const swiperRef = useRef<SwiperClass | null>(null);
+  const swiperRef = useRef<SwiperType | null>(null);
   const [, setActiveIndex] = useState(0);
   const copy = zodiacListingCopy[language];
 
-  const handleSlideChange = (swiper: SwiperClass) => {
+  const handleSlideChange = (swiper: SwiperType) => {
     setActiveIndex(swiper.activeIndex);
   };
 
@@ -47,10 +47,12 @@ export function ZodiacCarousel({ language = ELanguage.ENGLISH }: Props) {
         {/* Swiper Container */}
         <div className="w-full max-w-[640px]">
           <Swiper
-            ref={swiperRef}
             modules={[Navigation, Pagination]}
             slidesPerView={2}
             spaceBetween={20}
+            onSwiper={swiper => {
+              swiperRef.current = swiper;
+            }}
             onSlideChange={handleSlideChange}
             pagination={{
               enabled: true,
