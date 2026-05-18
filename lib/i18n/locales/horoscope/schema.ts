@@ -104,6 +104,7 @@ export type HoroscopeMessages = {
     };
     legal: {
       terms: string;
+      privacy: string;
       pricing: string;
       disclaimer: string;
     };

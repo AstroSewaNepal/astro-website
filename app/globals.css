@@ -88,6 +88,13 @@ body {
   font-family: var(--font-tiro-devanagari);
 }
 
+html,
+body {
+  max-width: 100%;
+  /* Prevent any accidental horizontal overflow on mobile */
+  overflow-x: hidden;
+}
+
 /* Custom font utilities for Tailwind CSS v4 */
 @utility font-tiro-devanagari {
   font-family: var(--font-tiro-devanagari);

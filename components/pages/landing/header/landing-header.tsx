@@ -76,9 +76,34 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
     },
     { title: d.header.nav.compatibility, link: '/compatibility' },
     { title: d.header.nav.pujaBidhi, link: '/puja-bidhi', children: [] },
-    { title: d.header.nav.calculator, children: [], link: '/calculators' },
+    {
+      title: d.header.nav.calculator,
+      link: '/calculators',
+      children: [
+        { title: 'Love Calculator', link: '/calculators/love-calculator' },
+        { title: 'Numerology Calculator', link: '/calculators/numerology-calculator' },
+        { title: 'Sun Sign Calculator', link: '/calculators/sun-sign-calculator' },
+        { title: 'Mangal Dosha Calculator', link: '/calculators/mangal-dosha-calculator' },
+        { title: 'Dasha Calculator', link: '/calculators/dasha-calculator' },
+        { title: 'Moon Phase Calculator', link: '/calculators/moon-phase-calculator' },
+        { title: 'Rashi Calculator', link: '/calculators/rashi-calculator' },
+      ],
+    },
     { title: d.header.nav.blog, link: '/blogs' },
-    { title: 'Calander', link: '/calander' },
+    {
+      title: uiLanguage === ELanguage.NEPALI ? 'क्यालेन्डर' : 'Calendar',
+      link: '/calendar',
+      children: [
+        {
+          title: uiLanguage === ELanguage.NEPALI ? 'नेपाली पात्रो' : 'Nepali Calendar',
+          link: '/calendar/nepali',
+        },
+        {
+          title: uiLanguage === ELanguage.NEPALI ? 'पञ्चाङ्ग पात्रो' : 'Panchang Calendar',
+          link: '/calendar/panchang',
+        },
+      ],
+    },
   ];
 }
 
@@ -162,12 +187,14 @@ function LandingHeaderClient() {
 
   useEffect(() => {
     if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
+      // Lock vertical scroll when mobile menu is open.
+      // Do not touch overflowX so global horizontal overflow guard remains effective.
+      document.body.style.overflowY = 'hidden';
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflowY = '';
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflowY = '';
     };
   }, [isMobileMenuOpen]);
 
@@ -279,13 +306,11 @@ function LandingHeaderClient() {
             <div className="hidden lg:block">{languageControl}</div>
             <button className="bg-primary rounded-3xl px-5 py-2 text-white flex gap-1.5 max-h-fit items-center cursor-pointer">
               <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
-              <Link href={'/login'}>
-                <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">
-                  {d.header.signIn}
-                </p>
-              </Link>
-            </button>
-            <button className="bg-primary p-2.5 rounded-full text-white max-h-fit">
+              <span className="font-mukta text-sm leading-7 md:text-lg lg:text-xl">
+                {d.header.signIn}
+              </span>
+            </Link>
+            <button className="flex-shrink-0 bg-primary p-2.5 rounded-full text-white max-h-fit">
               <TransparentBellIcon />
             </button>
           </div>
@@ -310,7 +335,7 @@ function LandingHeaderClient() {
                 </Link>
 
                 {hasChildren ? (
-                  <div className="absolute left-0 top-[calc(100%+12px)] min-w-[220px] rounded-none bg-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20">
+                  <div className="absolute right-0 top-[calc(100%+12px)] min-w-max rounded-none bg-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20">
                     {value.children?.map(child => (
                       <div key={child.title} className="relative group/nested">
                         <Link

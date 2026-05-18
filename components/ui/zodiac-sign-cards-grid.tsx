@@ -25,6 +25,18 @@ export interface ZodiacSignCardsGridProps<T> {
   renderLoadingSkeleton?: (index: number, layout: ZodiacSignCardLayout) => ReactNode;
   className?: string;
   /**
+   * If false, hide the carousel navigation arrows.
+   */
+  showCarouselNav?: boolean;
+  /**
+   * Optional swiper pagination config.
+   */
+  pagination?: Parameters<typeof Swiper>[0]['pagination'];
+  /**
+   * Show exactly one slide per view on mobile, without partial peeking.
+   */
+  oneSlidePerView?: boolean;
+  /**
    * Tighter carousel + less horizontal padding when nested in a narrow column
    * (avoids page-level horizontal scroll from Swiper overflow).
    */
@@ -51,12 +63,16 @@ export function ZodiacSignCardsGrid<T>({
   renderCard,
   renderLoadingSkeleton,
   className,
+  showCarouselNav = true,
+  pagination,
+  oneSlidePerView = false,
   compact = false,
   useSmUpGrid = false,
 }: ZodiacSignCardsGridProps<T>) {
   const swiperRef = useRef<SwiperType | null>(null);
   const isEmpty = cards !== 'loading' && cards.length === 0;
-  const showCarouselNav = cards !== 'loading' && cards.length > 1;
+  const showCarouselNavButtons = showCarouselNav && cards !== 'loading' && cards.length > 1;
+  const swiperPagination = pagination ?? { clickable: true };
   const showError = Boolean(listError);
   const carouselHideUp = useSmUpGrid ? 'sm:hidden' : 'md:hidden';
   const gridShowFrom = useSmUpGrid ? 'sm:grid' : 'md:grid';
@@ -145,25 +161,27 @@ export function ZodiacSignCardsGrid<T>({
               slidesPerView={2}
               spaceBetween={compact ? 8 : 10}
               breakpoints={
-                compact
-                  ? {
-                      400: { slidesPerView: 1.22, spaceBetween: 9 },
-                      480: { slidesPerView: 1.32, spaceBetween: 10 },
-                      560: { slidesPerView: 1.65, spaceBetween: 10 },
-                      640: { slidesPerView: 1.88, spaceBetween: 11 },
-                    }
-                  : {
-                      400: { slidesPerView: 1.38, spaceBetween: 11 },
-                      480: { slidesPerView: 1.48, spaceBetween: 12 },
-                      560: { slidesPerView: 1.62, spaceBetween: 12 },
-                      640: { slidesPerView: 1.88, spaceBetween: 12 },
-                    }
+                oneSlidePerView
+                  ? {}
+                  : compact
+                    ? {
+                        400: { slidesPerView: 1.22, spaceBetween: 9 },
+                        480: { slidesPerView: 1.32, spaceBetween: 10 },
+                        560: { slidesPerView: 1.65, spaceBetween: 10 },
+                        640: { slidesPerView: 1.88, spaceBetween: 11 },
+                      }
+                    : {
+                        400: { slidesPerView: 1.38, spaceBetween: 11 },
+                        480: { slidesPerView: 1.48, spaceBetween: 12 },
+                        560: { slidesPerView: 1.62, spaceBetween: 12 },
+                        640: { slidesPerView: 1.88, spaceBetween: 12 },
+                      }
               }
               className={clsx(
-                'horoscope-cards-swiper pb-9',
+                'horoscope-cards-swiper pb-12 sm:pb-14',
                 compact ? 'max-w-full !overflow-hidden px-5' : '!overflow-visible px-10',
               )}
-              pagination={{ clickable: true }}
+              pagination={swiperPagination}
               onSwiper={swiper => {
                 swiperRef.current = swiper;
               }}

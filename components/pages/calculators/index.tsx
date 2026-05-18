@@ -1,122 +1,14 @@
 import React from 'react';
 import Image from 'next/image';
 
-import LoveCalculatorImage from '@/components/images/calculator/lovecalculator.png';
+import CalculatorCard from './calculator-card';
+import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
 import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
 import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
 import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
 import DashaImage from '@/components/images/calculator/dasha.png';
 import MoonPhaseImage from '@/components/images/calculator/moonphase.png';
 import RashiCalculatorImage from '@/components/images/calculator/rashicalculator.png';
-
-type CalculatorCardProps = {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  titleClassName?: string;
-  descriptionClassName?: string;
-  mobileHorizontal?: boolean;
-};
-
-const CalculatorCard = ({
-  title,
-  description,
-  icon,
-  titleClassName,
-  descriptionClassName,
-  mobileHorizontal = false,
-}: CalculatorCardProps) => {
-  return (
-    <article
-      className={[
-        'h-full rounded-[22px] border border-[#b8b0a8] bg-transparent shadow-[0_6px_18px_rgba(0,0,0,0.04)]',
-        mobileHorizontal
-          ? 'snap-start w-[332px] min-w-[332px] h-[184.0032px] rounded-[12px] border-[1px] pt-[8px] pr-[16px] pb-[8px] pl-[16px] opacity-100 overflow-hidden shadow-none md:w-auto md:min-w-0 md:h-full md:rounded-[22px] md:px-6 md:pt-10 md:pb-6 md:shadow-[0_6px_18px_rgba(0,0,0,0.04)]'
-          : 'px-6 pt-10 pb-6',
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
-      <div
-        className={
-          mobileHorizontal
-            ? 'hidden md:flex flex-col items-center text-center'
-            : 'flex flex-col items-center text-center'
-        }
-      >
-        <div className="h-[120px] flex items-start justify-center">{icon}</div>
-
-        <h3
-          className={[
-            'mt-4 font-sahitya font-bold text-[14px] md:text-[15px] text-primary',
-            titleClassName,
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          {title}
-        </h3>
-        <p
-          className={[
-            'mt-2 font-mukta text-[12px] md:text-[13px] leading-[1.6] text-[#6d6d6d] max-w-[220px]',
-            descriptionClassName,
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          {description}
-        </p>
-
-        <button
-          type="button"
-          className="mt-4 w-full max-w-[425px] min-w-[84px] h-[48px] rounded-[24px] px-4 bg-primary font-mukta text-[18px] leading-[30px] font-semibold text-center text-secondary opacity-100"
-        >
-          Calculate
-        </button>
-      </div>
-
-      {mobileHorizontal ? (
-        <div className="md:hidden grid grid-cols-[128.2434px_1fr] gap-[16px] items-start">
-          <div className="h-[168.0032px] flex flex-col items-center justify-between">
-            <div className="h-[130.0032px] w-[128.2434px] flex items-center justify-center">
-              {icon}
-            </div>
-            <button
-              type="button"
-              className="w-[134px] h-[28px] min-w-[84px] max-w-[480px] rounded-[24px] px-[16px] bg-primary font-mukta font-semibold text-[16px] leading-[28px] tracking-[0] text-center text-secondary opacity-100"
-            >
-              Calculate
-            </button>
-          </div>
-
-          <div className="w-[134px] h-[140px] flex flex-col gap-[16px] opacity-100 mt-[8px]">
-            <h3
-              className={[
-                'font-sahitya font-normal text-[20px] leading-[32px] tracking-[0] text-primary text-left',
-                titleClassName,
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              {title}
-            </h3>
-            <p
-              className={[
-                'font-mukta font-medium text-[14px] leading-[140%] tracking-[0] text-[#2f2f2f] text-left',
-                'line-clamp-4',
-                descriptionClassName,
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              {description}
-            </p>
-          </div>
-        </div>
-      ) : null}
-    </article>
-  );
-};
 
 const Calculators: React.FC = () => {
   return (
@@ -144,9 +36,10 @@ const Calculators: React.FC = () => {
             title="Love Calculator"
             description="Discover your compatibility with a partner or potential love interest."
             mobileHorizontal
+            calculateHref="/calculators/love-calculator"
             icon={
               <Image
-                src={LoveCalculatorImage}
+                src={LoveCalculatorIcon}
                 alt="Love calculator"
                 width={84}
                 height={84}
@@ -159,6 +52,7 @@ const Calculators: React.FC = () => {
             title="Numerology Calculator"
             description="Discover your life path number and explore numerology insights."
             mobileHorizontal
+            calculateHref="/calculators/numerology-calculator"
             icon={
               <Image
                 src={NumerologyCalculatorImage}
@@ -174,6 +68,7 @@ const Calculators: React.FC = () => {
             title="Sun Sign Calculator"
             description="Discover your zodiac sign based on birth date and astrology insights."
             mobileHorizontal
+            calculateHref="/calculators/sun-sign-calculator"
             icon={
               <Image
                 src={SunSignCalculatorImage}
@@ -189,6 +84,7 @@ const Calculators: React.FC = () => {
             title="Mangal Dosha Calculator"
             description="Check Mangal dosha and marriage effects in your birth chart."
             mobileHorizontal
+            calculateHref="/calculators/mangal-dosha-calculator"
             icon={
               <Image
                 src={MangalDoshaImage}
@@ -205,6 +101,7 @@ const Calculators: React.FC = () => {
               title="Dasha Calculator"
               description="Calculate planetary dasha periods and analyze timing of life events in Vedic astrology."
               mobileHorizontal
+              calculateHref="/calculators/dasha-calculator"
               icon={
                 <Image
                   src={DashaImage}
@@ -222,6 +119,7 @@ const Calculators: React.FC = () => {
               title="Moon Phase Calculator"
               description="Track and explore current moon phases and lunar cycle changes over time."
               mobileHorizontal
+              calculateHref="/calculators/moon-phase-calculator"
               icon={
                 <Image
                   src={MoonPhaseImage}
@@ -239,6 +137,7 @@ const Calculators: React.FC = () => {
               title="Rashi Calculator"
               description="Discover your moon sign and understand your Vedic astrology birth chart insights."
               mobileHorizontal
+              calculateHref="/calculators/rashi-calculator"
               icon={
                 <Image
                   src={RashiCalculatorImage}
@@ -260,6 +159,7 @@ const Calculators: React.FC = () => {
           titleClassName="md:text-[22px] md:leading-[32px] text-center"
           descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
           description="Calculate planetary dasha periods and analyze timing of life events in Vedic astrology."
+          calculateHref="/calculators/dasha-calculator"
           icon={
             <Image
               src={DashaImage}
@@ -276,6 +176,7 @@ const Calculators: React.FC = () => {
           titleClassName="md:text-[22px] md:leading-[32px] text-center"
           descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
           description="Track and explore current moon phases and lunar cycle changes over time."
+          calculateHref="/calculators/moon-phase-calculator"
           icon={
             <Image
               src={MoonPhaseImage}
@@ -292,6 +193,7 @@ const Calculators: React.FC = () => {
           titleClassName="md:text-[22px] md:leading-[32px] text-center"
           descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
           description="Discover your moon sign and understand your Vedic astrology birth chart insights."
+          calculateHref="/calculators/rashi-calculator"
           icon={
             <Image
               src={RashiCalculatorImage}

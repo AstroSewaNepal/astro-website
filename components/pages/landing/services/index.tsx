@@ -66,13 +66,13 @@ const Services = () => {
 
   return (
     <section>
-      <div className="max-w-[1180px] mx-auto px-4 sm:px-5 flex flex-col items-center gap-10">
+      <div className="max-w-[1450px] mx-auto px-5 flex flex-col items-center gap-12">
         {/* Header */}
         <div className="flex flex-col items-center gap-4 md:gap-5 lg:gap-6 max-w-[1405px] w-full">
           <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[34px] md:leading-[40px] lg:leading-[47.83px] text-primary font-tiro-devanagari text-center">
             Our Services
           </h2>
-          <p className="font-mukta text-sm md:text-base lg:text-lg text-[#000000CF] max-w-[753px] text-center px-4">
+          <p className="font-mukta text-base md:text-lg lg:text-2xl text-[#000000CF] max-w-[753px] text-center px-4">
             Explore our range of trusted astrology services, designed to bring clarity, guidance,
             and confidence to every step of your journey.
           </p>
@@ -108,8 +108,8 @@ const Services = () => {
           >
             {SERVICES_LIST.map(service => (
               <SwiperSlide key={service.id}>
-                <div className="flex flex-col items-center gap-5 w-full min-h-[390px] flex-shrink-0 p-3 sm:p-4 select-none">
-                  <div className="flex justify-center items-center w-[150px] h-[180px] sm:w-[170px] sm:h-[200px] lg:w-[189px] lg:h-[222px]">
+                <div className="flex flex-col items-center gap-6 w-full min-h-[450px] flex-shrink-0 p-5 select-none">
+                  <div className="flex justify-center items-center w-[189px] h-[222px]">
                     <div className="w-full h-full flex justify-center items-center rounded-lg">
                       <Image
                         src={service.icon}
@@ -121,11 +121,11 @@ const Services = () => {
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-4 w-full flex-1 justify-between">
-                    <h3 className="font-mukta text-[15px] md:text-base lg:text-[18px] leading-[1.3] text-[#000000CF] text-center max-w-[260px]">
+                    <h3 className="font-mukta text-base md:text-lg lg:text-[20px] leading-[120%] text-[#000000CF] text-center">
                       {service.title}
                     </h3>
-                    <button className="flex justify-center items-center gap-2.5 px-4 md:px-[18px] py-2 w-full max-w-[280px] bg-[#691709] border-none rounded-[32px] cursor-pointer transition-all duration-300 hover:bg-[#8b1f0f] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(105,23,9,0.3)] active:translate-y-0">
-                      <span className="font-mukta font-bold text-sm md:text-[15px] lg:text-base leading-[1.4] text-center text-[#f8f3df]">
+                    <button className="flex justify-center items-center gap-2.5 px-4 md:px-[18px] py-2 w-full bg-[#691709] border-none rounded-[32px] cursor-pointer transition-all duration-300 hover:bg-[#8b1f0f] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(105,23,9,0.3)] active:translate-y-0">
+                      <span className="font-mukta font-bold text-sm md:text-base lg:text-lg leading-[1.78] text-center text-[#f8f3df]">
                         {service.buttonText}
                       </span>
                     </button>

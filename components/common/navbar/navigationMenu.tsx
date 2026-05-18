@@ -64,13 +64,15 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ items, className, onIte
 
   useEffect(() => {
     if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
+      // Lock vertical scroll when mobile menu is open.
+      // Do not touch overflowX so global horizontal overflow guard remains effective.
+      document.body.style.overflowY = 'hidden';
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflowY = '';
     }
 
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflowY = '';
     };
   }, [isMobileMenuOpen]);
 
