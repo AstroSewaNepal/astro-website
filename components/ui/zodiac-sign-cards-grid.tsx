@@ -25,6 +25,18 @@ export interface ZodiacSignCardsGridProps<T> {
   renderLoadingSkeleton?: (index: number, layout: ZodiacSignCardLayout) => ReactNode;
   className?: string;
   /**
+   * If false, hide the carousel navigation arrows.
+   */
+  showCarouselNav?: boolean;
+  /**
+   * Optional swiper pagination config.
+   */
+  pagination?: Parameters<typeof Swiper>[0]['pagination'];
+  /**
+   * Show exactly one slide per view on mobile, without partial peeking.
+   */
+  oneSlidePerView?: boolean;
+  /**
    * Tighter carousel + less horizontal padding when nested in a narrow column
    * (avoids page-level horizontal scroll from Swiper overflow).
    */
@@ -51,12 +63,16 @@ export function ZodiacSignCardsGrid<T>({
   renderCard,
   renderLoadingSkeleton,
   className,
+  showCarouselNav = true,
+  pagination,
+  oneSlidePerView = false,
   compact = false,
   useSmUpGrid = false,
 }: ZodiacSignCardsGridProps<T>) {
   const swiperRef = useRef<SwiperType | null>(null);
   const isEmpty = cards !== 'loading' && cards.length === 0;
-  const showCarouselNav = cards !== 'loading' && cards.length > 1;
+  const showCarouselNavButtons = showCarouselNav && cards !== 'loading' && cards.length > 1;
+  const swiperPagination = pagination ?? { clickable: true };
   const showError = Boolean(listError);
   const carouselHideUp = useSmUpGrid ? 'sm:hidden' : 'md:hidden';
   const gridShowFrom = useSmUpGrid ? 'sm:grid' : 'md:grid';
@@ -85,7 +101,7 @@ export function ZodiacSignCardsGrid<T>({
               carouselHideUp,
             )}
           >
-            {showCarouselNav ? (
+            {showCarouselNavButtons ? (
               <>
                 <button
                   type="button"
@@ -118,13 +134,15 @@ export function ZodiacSignCardsGrid<T>({
             <Swiper
               key={swiperKey}
               modules={[Pagination]}
-              slidesPerView={compact ? 1.12 : 1.28}
-              spaceBetween={compact ? 8 : 10}
+              slidesPerView={oneSlidePerView ? 1 : compact ? 1.12 : 1.28}
+              spaceBetween={oneSlidePerView ? 0 : compact ? 8 : 10}
               centeredSlides
-              slidesOffsetBefore={compact ? 0 : 4}
-              slidesOffsetAfter={compact ? 0 : 4}
+              slidesOffsetBefore={oneSlidePerView ? 0 : compact ? 0 : 4}
+              slidesOffsetAfter={oneSlidePerView ? 0 : compact ? 0 : 4}
               breakpoints={
-                compact
+                oneSlidePerView
+                  ? {}
+                  : compact
                   ? {
                       400: { slidesPerView: 1.22, spaceBetween: 9 },
                       480: { slidesPerView: 1.32, spaceBetween: 10 },
@@ -135,10 +153,10 @@ export function ZodiacSignCardsGrid<T>({
                     }
               }
               className={clsx(
-                'horoscope-cards-swiper pb-9',
+                'horoscope-cards-swiper pb-12 sm:pb-14',
                 compact ? 'max-w-full !overflow-hidden px-5' : '!overflow-visible px-10',
               )}
-              pagination={{ clickable: true }}
+              pagination={swiperPagination}
               onSwiper={swiper => {
                 swiperRef.current = swiper;
               }}

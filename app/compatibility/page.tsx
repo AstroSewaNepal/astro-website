@@ -107,13 +107,13 @@ export default function CompatibilityPage() {
                     {copy.yourSignLabel}
                   </p>
                   <div className="relative w-[172.65234375px]">
-                    <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center">
+                    <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
                       <ChevronDownIcon className="h-3 w-3 text-[#611508] sm:h-4 sm:w-4" />
                     </span>
                     <select
                       value={yourSign}
                       onChange={e => setYourSign(e.target.value as HoroscopeSign)}
-                      className="appearance-none w-full h-[40px] rounded-[32px] border border-[#BE7B71] bg-white pl-12 pr-4 text-left font-mukta text-[20px] font-medium uppercase leading-[28px] text-[#611508]"
+                      className="appearance-none w-full h-[40px] rounded-[32px] border border-[#BE7B71] bg-white px-4 text-center font-mukta text-[20px] font-medium uppercase leading-[28px] text-[#611508]"
                     >
                       {signOptions.map(s => (
                         <option key={s} value={s}>
@@ -183,13 +183,13 @@ export default function CompatibilityPage() {
                     {copy.partnerSignLabel}
                   </p>
                   <div className="relative w-[172.65234375px]">
-                    <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center">
+                    <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
                       <ChevronDownIcon className="h-3 w-3 text-[#611508] sm:h-4 sm:w-4" />
                     </span>
                     <select
                       value={partnerSign}
                       onChange={e => setPartnerSign(e.target.value as HoroscopeSign)}
-                      className="appearance-none w-full h-[40px] rounded-[32px] border border-[#BE7B71] bg-white pl-12 pr-4 text-left font-mukta text-[20px] font-medium uppercase leading-[28px] text-[#611508]"
+                      className="appearance-none w-full h-[40px] rounded-[32px] border border-[#BE7B71] bg-white px-4 text-center font-mukta text-[20px] font-medium uppercase leading-[28px] text-[#611508]"
                     >
                       {signOptions.map(s => (
                         <option key={s} value={s}>
@@ -265,9 +265,7 @@ export default function CompatibilityPage() {
             </div>
           </div>
 
-          <p className="mt-8 font-mukta font-normal text-[24px] leading-[34px] tracking-[0] text-[#4f463f]">
-            {copy.outro}
-          </p>
+          <p className="mt-8 font-mukta text-[14px] leading-8 text-[#4f463f]">{copy.outro}</p>
         </section>
 
         <TalkToOurAstrologer className="mx-auto mt-14 max-w-[1180px]" />
