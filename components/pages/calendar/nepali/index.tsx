@@ -73,8 +73,6 @@ const NepaliCalendarPageContent: React.FC = () => {
   });
 
   const today = useMemo(() => NepaliDate.now(), []);
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { title, monthNp, yearNp, adRangeLabel, cells } = useMemo(() => {
     const firstDay = new NepaliDate(visibleMonth.year, visibleMonth.month, 1);
@@ -158,26 +156,15 @@ const NepaliCalendarPageContent: React.FC = () => {
 
   const handlePrevMonth = () => {
     setVisibleMonth(prev => getAdjacentNepaliMonth(prev.year, prev.month, -1));
-    setSelectedKey(null);
-    setIsDialogOpen(false);
   };
 
   const handleNextMonth = () => {
     setVisibleMonth(prev => getAdjacentNepaliMonth(prev.year, prev.month, 1));
-    setSelectedKey(null);
-    setIsDialogOpen(false);
   };
 
   const handleGoToToday = () => {
     const currentToday = NepaliDate.now();
     setVisibleMonth({ year: currentToday.getYear(), month: currentToday.getMonth() });
-    setIsDialogOpen(false);
-  };
-
-  const selectedCell = selectedKey ? (cells.find(cell => cell.key === selectedKey) ?? null) : null;
-
-  const closeDialog = () => {
-    setIsDialogOpen(false);
   };
 
   return (
@@ -262,95 +249,37 @@ const NepaliCalendarPageContent: React.FC = () => {
 
         <div className="grid grid-cols-7">
           {cells.map((date, idx) => (
-            <button
+            <div
               key={`${date.key}-${idx}`}
-              type="button"
-              onClick={() => {
-                setSelectedKey(date.key);
-                setIsDialogOpen(true);
-              }}
-              className={`min-h-[88px] md:min-h-[120px] border-r border-b border-[#d9d9d9] last:border-r-0 p-1.5 md:p-2 flex flex-col justify-between text-left transition-colors duration-150 ${
+              className={`min-h-[88px] md:min-h-[120px] border-r border-b border-[#d9d9d9] last:border-r-0 p-1.5 md:p-2 flex flex-col justify-between text-left ${
                 date.isToday
-                  ? 'bg-[#fff1cf]'
+                  ? 'bg-[#1f6c1f] border border-[#145a19] text-white shadow-[0_8px_24px_rgba(31,108,31,0.18)]'
                   : date.monthOffset === 0
-                    ? 'bg-white hover:bg-[#f9fbff]'
-                    : 'bg-[#f8f8f8] hover:bg-[#f2f2f2]'
-              } ${selectedKey === date.key ? 'ring-2 ring-[#cc1f1f]/40 ring-inset bg-[#fff1cf]' : ''}`}
+                    ? 'bg-white'
+                    : 'bg-[rgba(31,108,31,0.04)] text-[#7d7d7d]'
+              }`}
             >
               <span
                 className={`font-mukta text-[32px] md:text-[46px] leading-none font-bold ${
-                  date.monthOffset === 0 && date.weekDay === 6
-                    ? 'text-[#d91515]'
-                    : date.monthOffset === 0
-                      ? 'text-[#101010]'
-                      : 'text-[#9b9b9b]'
+                  date.isToday
+                    ? 'text-white'
+                    : date.monthOffset === 0 && date.weekDay === 6
+                      ? 'text-[#d91515]'
+                      : date.monthOffset === 0
+                        ? 'text-[#101010]'
+                        : 'text-[#7d7d7d] opacity-30'
                 }`}
               >
                 {getCellDisplayDay(date)}
               </span>
-              <span className="font-mukta text-[10px] md:text-[12px] text-[#444]">
-                AD {date.adDate.getDate()}
+              <span className={`font-mukta text-[10px] md:text-[12px] ${date.isToday ? 'text-[#dfe9df]' : date.monthOffset === 0 ? 'text-[#444]' : 'text-[#7d7d7d] opacity-30'}`}>
+                {date.adDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
-            </button>
+            </div>
           ))}
         </div>
       </section>
 
-      {isDialogOpen && selectedCell ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-          <button
-            type="button"
-            aria-label="Close calendar details dialog"
-            onClick={closeDialog}
-            className="absolute inset-0 bg-black/40"
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            className="relative w-full max-w-[560px] rounded-2xl border border-[#d9a18d] bg-[#fff8f2] p-5 md:p-6 shadow-[0_20px_55px_rgba(85,24,14,0.28)]"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-sahitya text-[24px] leading-[30px] text-[#7b1c1c] font-bold">
-                Date Details
-              </h3>
-              <button
-                type="button"
-                onClick={closeDialog}
-                aria-label="Close dialog"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-[#c0785a] bg-white text-[#7b1c1c] shadow-sm transition-colors hover:bg-[#ffe8cc] focus:outline-none focus:ring-2 focus:ring-[#c0785a]/50"
-              >
-                ×
-              </button>
-            </div>
-            <p className="font-mukta text-[14px] md:text-[16px] text-[#5b463f]">
-              Selected Date:{' '}
-              <span className="font-semibold text-[#7b1c1c]">
-                {new NepaliDate(selectedCell.year, selectedCell.month, selectedCell.day).format(
-                  'ddd, DD MMMM YYYY',
-                  'np',
-                )}
-              </span>
-            </p>
-            <p className="font-mukta text-[14px] md:text-[16px] text-[#5b463f] mt-1">
-              AD Date:{' '}
-              <span className="font-semibold text-[#7b1c1c]">
-                {selectedCell.adDate.toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </span>
-            </p>
-            <p className="font-mukta text-[14px] md:text-[16px] text-[#5b463f] mt-1">
-              Festival / Observance:{' '}
-              <span className="font-semibold text-[#7b1c1c]">
-                {selectedCell ? getFestivalLabel(selectedCell) : '—'}
-              </span>
-            </p>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 };

@@ -5,6 +5,17 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ServiceReport } from '@/components/images/services';
 import GoogleGIcon from '@/components/images/icons/google_G.png';
+import {
+  BirthTimeFields,
+  EMPTY_BIRTH_TIME,
+  UnknownBirthTimeCheckbox,
+  birthTimePartsToInput,
+  type BirthTimeParts,
+} from '@/components/shared/birth-time-fields';
+import {
+  bundleToStoredResult,
+  fetchKundaliMatchingBundle,
+} from '@/lib/vedastro/fetch-kundali-matching-bundle';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -95,6 +106,17 @@ function parseBirthTime(input: string): string | null {
   if (Number.isNaN(hour) || Number.isNaN(minute) || hour > 23 || minute > 59) return null;
 
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
+function getLocalOffset(dateInput: string): string {
+  const [day, month, year] = dateInput.split('-').map(Number);
+  const date = new Date(year, month - 1, day, 12, 0, 0);
+  const offsetMinutes = -date.getTimezoneOffset();
+  const sign = offsetMinutes >= 0 ? '+' : '-';
+  const abs = Math.abs(offsetMinutes);
+  const hours = Math.floor(abs / 60);
+  const minutes = abs % 60;
+  return `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
 async function geocodePlace(place: string): Promise<GeocodeResponseItem> {
@@ -358,6 +380,8 @@ type PersonSectionProps = {
   prefix: 'man' | 'woman';
   label: string;
   symbol: string;
+  birthTimeParts: BirthTimeParts;
+  onBirthTimeChange: (value: BirthTimeParts) => void;
   unknownBirthTime: boolean;
   onToggleUnknownTime: (v: boolean) => void;
   errors: PersonErrors;
@@ -367,6 +391,8 @@ const PersonSection = ({
   prefix,
   label,
   symbol,
+  birthTimeParts,
+  onBirthTimeChange,
   unknownBirthTime,
   onToggleUnknownTime,
   errors,
@@ -426,18 +452,16 @@ const PersonSection = ({
     </div>
 
     <div className="grid grid-cols-2 gap-3 md:gap-4">
-      {/* Birth time */}
-      <InputPill
+      <BirthTimeFields
         id={`${prefix}-birth-time`}
         label="Birth time"
-        name={`${prefix}BirthTime`}
-        placeholder="hh / mm / am"
+        variant="matching"
+        value={birthTimeParts}
+        onChange={onBirthTimeChange}
         disabled={unknownBirthTime}
-        rightIcon={<ClockIcon />}
         error={unknownBirthTime ? undefined : errors.birthTime}
       />
 
-      {/* Gender */}
       <SelectPill
         id={`${prefix}-gender`}
         label="Select gender"
@@ -446,17 +470,11 @@ const PersonSection = ({
       />
     </div>
 
-    {/* Unknown time checkbox */}
-    <label className="flex items-center gap-2 font-mukta text-[12px] md:text-[13px] text-Trinary mt-1 cursor-pointer select-none">
-      <input
-        type="checkbox"
-        checked={unknownBirthTime}
-        onChange={e => onToggleUnknownTime(e.target.checked)}
-        className="h-4 w-4 rounded border-primary/40 focus:ring-primary/20"
-        style={{ accentColor: 'var(--primary)' }}
-      />
-      Don&apos;t know my exact birth time
-    </label>
+    <UnknownBirthTimeCheckbox
+      variant="matching"
+      checked={unknownBirthTime}
+      onChange={onToggleUnknownTime}
+    />
   </div>
 );
 
@@ -469,6 +487,8 @@ const KundaliMatchingFormSection: React.FC = () => {
 
   const [manUnknownTime, setManUnknownTime] = useState(false);
   const [womanUnknownTime, setWomanUnknownTime] = useState(false);
+  const [manBirthTime, setManBirthTime] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
+  const [womanBirthTime, setWomanBirthTime] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors>(EMPTY_ERRORS);
 
@@ -479,6 +499,7 @@ const KundaliMatchingFormSection: React.FC = () => {
   const validatePerson = (
     prefix: 'man' | 'woman',
     formData: FormData,
+    birthTimeParts: BirthTimeParts,
     unknownTime: boolean,
     errorsOut: PersonErrors,
   ): {
@@ -490,7 +511,7 @@ const KundaliMatchingFormSection: React.FC = () => {
   } | null => {
     const fullName = String(formData.get(`${prefix}FullName`) ?? '').trim();
     const dateOfBirthInput = String(formData.get(`${prefix}DateOfBirth`) ?? '').trim();
-    const birthTimeInput = String(formData.get(`${prefix}BirthTime`) ?? '').trim();
+    const birthTimeInput = birthTimePartsToInput(birthTimeParts).trim();
     const birthPlace = String(formData.get(`${prefix}BirthPlace`) ?? '').trim();
     const gender = String(formData.get(`${prefix}Gender`) ?? '').trim();
 
@@ -568,8 +589,8 @@ const KundaliMatchingFormSection: React.FC = () => {
     const newErrors: FormErrors = { man: {}, woman: {} };
     const formData = new FormData(e.currentTarget);
 
-    const man = validatePerson('man', formData, manUnknownTime, newErrors.man);
-    const woman = validatePerson('woman', formData, womanUnknownTime, newErrors.woman);
+    const man = validatePerson('man', formData, manBirthTime, manUnknownTime, newErrors.man);
+    const woman = validatePerson('woman', formData, womanBirthTime, womanUnknownTime, newErrors.woman);
 
     // If any field has errors, show them and stop
     if (!man || !woman) {
@@ -587,29 +608,48 @@ const KundaliMatchingFormSection: React.FC = () => {
         geocodePlace(woman.birthPlace),
       ]);
 
+      const manPerson = {
+        fullName: man.fullName,
+        dateOfBirth: man.dateOfBirth,
+        birthTime: man.birthTime,
+        birthPlace: man.birthPlace,
+        gender: man.gender,
+        latitude: manGeo.lat,
+        longitude: manGeo.lon,
+      };
+      const womanPerson = {
+        fullName: woman.fullName,
+        dateOfBirth: woman.dateOfBirth,
+        birthTime: woman.birthTime,
+        birthPlace: woman.birthPlace,
+        gender: woman.gender,
+        latitude: womanGeo.lat,
+        longitude: womanGeo.lon,
+      };
+
+      const bundle = await fetchKundaliMatchingBundle({
+        manLat: manGeo.lat,
+        manLon: manGeo.lon,
+        manDate: man.dateOfBirth,
+        manTime: man.birthTime,
+        manOffset: getLocalOffset(man.dateOfBirth),
+        manLocation: man.birthPlace,
+        manName: man.fullName,
+        manGender: man.gender,
+        womanLat: womanGeo.lat,
+        womanLon: womanGeo.lon,
+        womanDate: woman.dateOfBirth,
+        womanTime: woman.birthTime,
+        womanOffset: getLocalOffset(woman.dateOfBirth),
+        womanLocation: woman.birthPlace,
+        womanName: woman.fullName,
+        womanGender: woman.gender,
+      });
+
       if (typeof window !== 'undefined') {
         window.sessionStorage.setItem(
-          'kundaliMatchingInput',
-          JSON.stringify({
-            man: {
-              fullName: man.fullName,
-              dateOfBirth: man.dateOfBirth,
-              birthTime: man.birthTime,
-              birthPlace: man.birthPlace,
-              gender: man.gender,
-              latitude: manGeo.lat,
-              longitude: manGeo.lon,
-            },
-            woman: {
-              fullName: woman.fullName,
-              dateOfBirth: woman.dateOfBirth,
-              birthTime: woman.birthTime,
-              birthPlace: woman.birthPlace,
-              gender: woman.gender,
-              latitude: womanGeo.lat,
-              longitude: womanGeo.lon,
-            },
-          }),
+          'kundaliMatchingResult',
+          JSON.stringify(bundleToStoredResult(manPerson, womanPerson, bundle)),
         );
       }
 
@@ -640,21 +680,25 @@ const KundaliMatchingFormSection: React.FC = () => {
           noValidate
           className="w-full max-w-[380px] mx-auto lg:mx-0 lg:max-w-none lg:col-span-8 rounded-[32.41px] md:rounded-[32px] border-2 border-primary shadow-[0_10px_30px_rgba(97,21,8,0.08)] p-4 pb-[12.96px] md:p-6"
         >
-          <div className="relative">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+          <div>
+            <div className="relative grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
               {/* Man */}
               <PersonSection
                 prefix="man"
                 label="Man"
                 symbol="♂"
+                birthTimeParts={manBirthTime}
+                onBirthTimeChange={setManBirthTime}
                 unknownBirthTime={manUnknownTime}
                 onToggleUnknownTime={v => {
                   setManUnknownTime(v);
-                  if (v)
+                  if (v) {
+                    setManBirthTime(EMPTY_BIRTH_TIME);
                     setFormErrors(prev => ({
                       ...prev,
                       man: { ...prev.man, birthTime: undefined },
                     }));
+                  }
                 }}
                 errors={formErrors.man}
               />
@@ -675,30 +719,37 @@ const KundaliMatchingFormSection: React.FC = () => {
                 prefix="woman"
                 label="Woman"
                 symbol="♀"
+                birthTimeParts={womanBirthTime}
+                onBirthTimeChange={setWomanBirthTime}
                 unknownBirthTime={womanUnknownTime}
                 onToggleUnknownTime={v => {
                   setWomanUnknownTime(v);
-                  if (v)
+                  if (v) {
+                    setWomanBirthTime(EMPTY_BIRTH_TIME);
                     setFormErrors(prev => ({
                       ...prev,
                       woman: { ...prev.woman, birthTime: undefined },
                     }));
+                  }
                 }}
                 errors={formErrors.woman}
               />
+
+              {/* Desktop vertical divider — only between Man/Woman columns */}
+              <div
+                aria-hidden
+                className="pointer-events-none hidden md:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 border-l border-dashed border-primary"
+              />
             </div>
 
-            {/* Desktop vertical divider */}
-            <div className="hidden md:block absolute left-1/2 -top-6 bottom-0 w-px -translate-x-1/2 border-l border-dashed border-primary" />
-
-            <div className="mt-5 md:mt-6 flex flex-col items-center gap-3 relative z-[1]">
+            <div className="mt-5 md:mt-6 flex flex-col items-center gap-3">
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="inline-flex w-[154.814px] h-[48.61px] items-center justify-center rounded-[25.93px] bg-primary pt-[12.96px] pr-[32.41px] pb-[12.96px] pl-[32.41px] font-mukta text-[14.58px] font-semibold leading-[24.31px] tracking-normal text-secondary shadow-[0_10px_26px_rgba(97,21,8,0.18)] transition-colors hover:bg-[#8e2f27] disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ gap: '8.1px', opacity: isSubmitting ? 0.6 : 1 }}
               >
-                {isSubmitting ? 'Processing…' : 'Generate Now'}
+                {isSubmitting ? 'Generating…' : 'Generate Now'}
               </button>
 
               {formErrors.general ? (

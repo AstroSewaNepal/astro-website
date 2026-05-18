@@ -3,6 +3,22 @@ export function normalizeBaseUrl(url: string): string {
   return url.replace(/\/+$/, '');
 }
 
+/**
+ * Nest uses global prefix `api/v1`. Accepts either `http://host:port` or
+ * `http://host:port/api/v1` in `NEXT_PUBLIC_BACKEND_URL` so all callers match.
+ */
+export function ensureNestApiRoot(base: string): string {
+  const b = normalizeBaseUrl(base.trim());
+  return b.endsWith('/api/v1') ? b : `${b}/api/v1`;
+}
+
+/** API root including `/api/v1`, or `null` when unset. */
+export function tryGetPublicBackendBaseUrl(): string | null {
+  const raw = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+  if (!raw) return null;
+  return ensureNestApiRoot(raw);
+}
+
 export function joinUrl(base: string, path: string): string {
   const b = normalizeBaseUrl(base);
   const p = path.startsWith('/') ? path : `/${path}`;
@@ -17,13 +33,13 @@ function withTrailingSlash(url: string): string {
  * Client-safe backend origin from env (browser / server with NEXT_PUBLIC_*).
  */
 export function getPublicBackendBaseUrl(): string {
-  const base = process.env.NEXT_PUBLIC_BACKEND_URL ?? '';
+  const base = tryGetPublicBackendBaseUrl();
   if (!base) {
     throw new Error(
       'NEXT_PUBLIC_BACKEND_URL is not set; required for Astro Sewa API calls',
     );
   }
-  return normalizeBaseUrl(base);
+  return base;
 }
 
 /**
@@ -33,11 +49,12 @@ export function getPublicBackendBaseUrl(): string {
 export function getPublicBackendBaseCandidates(): string[] {
   const configured = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
   if (configured) {
-    return [withTrailingSlash(configured)];
+    return [withTrailingSlash(ensureNestApiRoot(configured))];
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    return ['http://localhost:3000/', 'http://localhost:5000/'];
+    // Prefer Nest default host first (Next does not serve `/api/v1/vedastro/*`).
+    return ['http://localhost:5000/', 'http://localhost:3000/'];
   }
 
   throw new Error('NEXT_PUBLIC_BACKEND_URL is required in production.');
@@ -57,4 +74,65 @@ export function resolveVedastroProxyFetchUrl(
   const ep = proxyEndpoint.replace(/^\/+/, '');
   const qs = query.toString();
   return qs ? `${apiRoot}/vedastro/proxy/${ep}?${qs}` : `${apiRoot}/vedastro/proxy/${ep}`;
+}
+
+/** Full URL for the VedAstro dosha calculation endpoint (`GET /vedastro/dosha`). */
+export function resolveDoshaFetchUrl(
+  baseWithTrailingSlash: string,
+  query: URLSearchParams,
+): string {
+  const trimmed = normalizeBaseUrl(baseWithTrailingSlash);
+  const apiRoot = trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+  const qs = query.toString();
+  return qs ? `${apiRoot}/vedastro/dosha?${qs}` : `${apiRoot}/vedastro/dosha`;
+}
+
+export type VedastroCalculatorEndpoint =
+  | 'numerology'
+  | 'manglik'
+  | 'moon-sign'
+  | 'sun-sign'
+  | 'moon-phase'
+  | 'dasha'
+  | 'love-match';
+
+/** Full URL for Vedastro calculator routes (`GET /vedastro/calculators/:endpoint`). */
+export function resolveVedastroCalculatorUrl(
+  baseWithTrailingSlash: string,
+  endpoint: VedastroCalculatorEndpoint,
+  query: URLSearchParams,
+): string {
+  const trimmed = normalizeBaseUrl(baseWithTrailingSlash);
+  const apiRoot = trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+  const ep = endpoint.replace(/^\/+/, '');
+  const qs = query.toString();
+  return qs
+    ? `${apiRoot}/vedastro/calculators/${ep}?${qs}`
+    : `${apiRoot}/vedastro/calculators/${ep}`;
+}
+
+/** Full URL for one-shot free kundali bundle (`GET /vedastro/free-kundali/bundle`). */
+export function resolveFreeKundaliBundleUrl(
+  baseWithTrailingSlash: string,
+  query: URLSearchParams,
+): string {
+  const trimmed = normalizeBaseUrl(baseWithTrailingSlash);
+  const apiRoot = trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+  const qs = query.toString();
+  return qs
+    ? `${apiRoot}/vedastro/free-kundali/bundle?${qs}`
+    : `${apiRoot}/vedastro/free-kundali/bundle`;
+}
+
+/** Full URL for kundali matching bundle (`GET /vedastro/kundali-matching/bundle`). */
+export function resolveKundaliMatchingBundleUrl(
+  baseWithTrailingSlash: string,
+  query: URLSearchParams,
+): string {
+  const trimmed = normalizeBaseUrl(baseWithTrailingSlash);
+  const apiRoot = trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+  const qs = query.toString();
+  return qs
+    ? `${apiRoot}/vedastro/kundali-matching/bundle?${qs}`
+    : `${apiRoot}/vedastro/kundali-matching/bundle`;
 }
