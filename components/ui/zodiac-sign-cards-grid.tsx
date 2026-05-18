@@ -37,6 +37,10 @@ export interface ZodiacSignCardsGridProps<T> {
    */
   oneSlidePerView?: boolean;
   /**
+   * Start the carousel aligned to the left edge instead of centering the first card.
+   */
+  alignStart?: boolean;
+  /**
    * Tighter carousel + less horizontal padding when nested in a narrow column
    * (avoids page-level horizontal scroll from Swiper overflow).
    */
@@ -66,6 +70,7 @@ export function ZodiacSignCardsGrid<T>({
   showCarouselNav = true,
   pagination,
   oneSlidePerView = false,
+  alignStart = false,
   compact = false,
   useSmUpGrid = false,
 }: ZodiacSignCardsGridProps<T>) {
@@ -136,9 +141,9 @@ export function ZodiacSignCardsGrid<T>({
               modules={[Pagination]}
               slidesPerView={oneSlidePerView ? 1 : compact ? 1.12 : 1.28}
               spaceBetween={oneSlidePerView ? 0 : compact ? 8 : 10}
-              centeredSlides
-              slidesOffsetBefore={oneSlidePerView ? 0 : compact ? 0 : 4}
-              slidesOffsetAfter={oneSlidePerView ? 0 : compact ? 0 : 4}
+                centeredSlides={!alignStart}
+              slidesOffsetBefore={oneSlidePerView || alignStart ? 0 : compact ? 0 : 4}
+              slidesOffsetAfter={oneSlidePerView || alignStart ? 0 : compact ? 0 : 4}
               breakpoints={
                 oneSlidePerView
                   ? {}
@@ -154,7 +159,11 @@ export function ZodiacSignCardsGrid<T>({
               }
               className={clsx(
                 'horoscope-cards-swiper pb-12 sm:pb-14',
-                compact ? 'max-w-full !overflow-hidden px-5' : '!overflow-visible px-10',
+                alignStart
+                  ? 'max-w-full !overflow-hidden px-0'
+                  : compact
+                  ? 'max-w-full !overflow-hidden px-5'
+                  : '!overflow-visible px-10',
               )}
               pagination={swiperPagination}
               onSwiper={swiper => {
