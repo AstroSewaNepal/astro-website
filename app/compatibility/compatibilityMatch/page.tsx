@@ -205,7 +205,7 @@ function CompatibilityHoroscopeCardLink({
             <Image
               src={card.image}
               alt={card.name}
-              className="h-[68px] w-[68px] object-contain"
+              className="h-[104px] w-[120px] object-contain opacity-100"
             />
           </div>
 
@@ -249,11 +249,11 @@ function CompatibilityHoroscopeCardLink({
       className="group block h-full min-w-0 max-w-full rounded-[20px] border border-[#5c4033]/25 bg-transparent px-4 py-4 transition-[transform,box-shadow,colors] duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:border-[#5c4033]/45 hover:bg-white/20 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)] md:rounded-[24px] md:border-[#d4d4d8] md:bg-transparent md:shadow-[0_2px_12px_rgba(0,0,0,0.05)] md:hover:border-[#c4c4c9] md:hover:bg-transparent xl:rounded-[26px]"
     >
       <div className={innerFlex}>
-        <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[18px] border border-transparent bg-transparent sm:h-[76px] sm:w-[76px] sm:rounded-[20px] md:h-[78px] md:w-[78px] md:rounded-[22px] md:border-transparent md:bg-transparent">
+        <div className="flex h-[104px] w-[120px] shrink-0 items-center justify-center rounded-[18px] border border-transparent bg-transparent md:border-transparent md:bg-transparent">
           <Image
             src={card.image}
             alt={card.name}
-            className="h-[54px] w-[54px] object-contain sm:h-[58px] sm:w-[58px] md:h-[60px] md:w-[60px]"
+            className="h-[104px] w-[120px] object-contain opacity-100"
           />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -541,11 +541,11 @@ export default function CompatibilityMatchPage() {
             <div className="flex flex-col gap-3 border-b border-[#F8F3DF] pb-4 lg:flex-row lg:items-center lg:justify-between">
 
               {/* Title */}
-              <div className="flex flex-col gap-1">
-                <h1 className="font-sahitya text-[28px] font-bold leading-[36px] text-primary sm:text-[36px] sm:leading-[48px]">
+              <div className="flex flex-col gap-1 text-center sm:text-left">
+                <h1 className="font-sahitya text-[24px] font-bold leading-[48px] text-primary sm:text-[36px] sm:leading-[48px]">
                   Zodiac Compatibility
                 </h1>
-                <p className="font-mukta text-[18px] font-medium leading-[26px] text-[#141414] sm:text-[24px] sm:leading-[30px]">
+                <p className="font-mukta text-[20px] font-medium leading-[30px] text-[#141414] sm:text-[24px] sm:leading-[30px]">
                   Love, Sex, Friendship &amp; More
                 </p>
               </div>
@@ -666,7 +666,7 @@ export default function CompatibilityMatchPage() {
               </div>
 
               {/* Right: Find Compatible Partner — full width on mobile, sidebar on desktop */}
-              <div className="w-full rounded-[20px] border border-[#BE7B71] bg-[#F8F3DF] p-4 sm:p-6 lg:w-[354px] lg:flex-shrink-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0">
+              <div className="w-full rounded-[20px] border-0 bg-transparent p-4 sm:border sm:border-[#BE7B71] sm:bg-[#F8F3DF] sm:p-6 lg:w-[354px] lg:flex-shrink-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0">
                 <h3 className="text-center font-mukta text-[20px] font-semibold leading-[28px] text-primary sm:text-left">
                   Find Your Compatible Partner?
                 </h3>
@@ -885,12 +885,12 @@ export default function CompatibilityMatchPage() {
                   <span className="hidden sm:block">Read Horoscope For Other Zodiac Signs</span>
               </h2>
 
-              <div className="mx-auto flex w-full flex-row flex-wrap justify-center gap-3">
+              <div className="mx-auto flex w-full flex-row flex-wrap justify-center gap-[10px]">
                 <button
                   type="button"
                   onClick={() => setHoroscopeCardLang(ELanguage.ENGLISH)}
                   className={clsx(
-                    'rounded-full border px-6 py-2.5 font-mukta text-[15px] transition-colors',
+                    'flex h-[38px] w-[130px] items-center justify-center rounded-[28px] border font-mukta text-[15px] transition-colors',
                     horoscopeCardLang === ELanguage.ENGLISH
                       ? 'border-[#6f2618] bg-[#6f2618] text-white shadow-sm'
                       : 'border-[#6f2618] bg-white text-[#6f2618] hover:bg-white/90',
@@ -902,7 +902,7 @@ export default function CompatibilityMatchPage() {
                   type="button"
                   onClick={() => setHoroscopeCardLang(ELanguage.NEPALI)}
                   className={clsx(
-                    'rounded-full border px-6 py-2.5 font-mukta text-[15px] transition-colors',
+                    'flex h-[38px] w-[130px] items-center justify-center rounded-[28px] border font-mukta text-[15px] transition-colors',
                     horoscopeCardLang === ELanguage.NEPALI
                       ? 'border-[#6f2618] bg-[#6f2618] text-white shadow-sm'
                       : 'border-[#6f2618] bg-white text-[#6f2618] hover:bg-white/90',
