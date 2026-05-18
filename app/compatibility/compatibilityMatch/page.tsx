@@ -198,56 +198,79 @@ function CompatibilityHoroscopeCardLink({
   const starCount = layout === 'carousel' ? 3 : card.stars;
   const innerFlex =
     layout === 'grid'
-      ? 'flex flex-col items-center gap-3 text-center md:flex-row md:items-center md:gap-4 md:text-left'
-      : 'flex min-h-0 flex-row items-center gap-3 text-left';
+      ? 'flex flex-col items-center gap-3 text-center md:flex-row md:items-center md:gap-5 md:text-left'
+      : 'flex min-h-0 w-full flex-col items-center gap-4 text-center sm:gap-5';
 
   return (
     <Link
       href={href}
       className={clsx(
-        'group block h-full min-w-0 max-w-full rounded-[20px] border px-4 py-4 transition-[transform,box-shadow,colors] duration-200 active:scale-[0.99] sm:px-4 sm:py-3 md:rounded-[24px] xl:rounded-[26px]',
+        'group block h-full min-w-0 max-w-full transition-[transform,box-shadow,colors] duration-200 active:scale-[0.99]',
         layout === 'carousel' &&
           clsx(
-            'w-full snap-start border-[#d4d4d8] bg-white py-4 shadow-[0_2px_12px_rgba(0,0,0,0.06)] hover:border-[#c4c4c9] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] sm:py-5',
-            'min-[380px]:px-5 sm:py-6',
+            'w-full snap-start rounded-[40px] border border-[#4a4a4a] bg-[#f5f2eb] px-5 py-7 shadow-[0_2px_14px_rgba(0,0,0,0.07)]',
+            'sm:px-7 sm:py-8',
+            'hover:border-[#383838] hover:shadow-[0_4px_20px_rgba(0,0,0,0.09)]',
           ),
         layout === 'grid' &&
           clsx(
-            'border-[#5c4033]/25 bg-transparent hover:-translate-y-0.5 hover:border-[#5c4033]/45 hover:bg-white/20 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)]',
-            'md:border-[#d4d4d8] md:bg-white md:shadow-[0_2px_12px_rgba(0,0,0,0.05)] md:hover:border-[#c4c4c9] md:hover:bg-white',
+            'rounded-[20px] border border-[#5c4033]/25 bg-transparent px-4 py-4 sm:px-4 sm:py-3 md:rounded-[24px] xl:rounded-[26px]',
+            'hover:-translate-y-0.5 hover:border-[#5c4033]/45 hover:bg-white/20 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)]',
+            'md:border-[#4a4a4a] md:bg-[#f5f2eb] md:px-6 md:py-5 md:shadow-[0_2px_14px_rgba(0,0,0,0.06)] md:hover:border-[#383838] md:hover:bg-[#f5f2eb]',
           ),
       )}
     >
       <div className={innerFlex}>
         <div
           className={clsx(
-            'flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[18px] border border-transparent bg-transparent',
-            'sm:h-[76px] sm:w-[76px] sm:rounded-[20px]',
-            'md:h-[78px] md:w-[78px] md:rounded-[22px]',
-            layout === 'grid' && 'md:border-[#dfcebc]/40 md:bg-[#f4eadf]/40',
+            'flex shrink-0 items-center justify-center border border-transparent bg-transparent',
+            layout === 'carousel' &&
+              'h-[88px] w-[88px] rounded-[22px] sm:h-[92px] sm:w-[92px] sm:rounded-[24px]',
+            layout === 'grid' &&
+              clsx(
+                'h-[72px] w-[72px] rounded-[18px] sm:h-[76px] sm:w-[76px] sm:rounded-[20px]',
+                'md:h-[78px] md:w-[78px] md:rounded-[22px] md:border-[#dfcebc]/40 md:bg-[#f4eadf]/40',
+              ),
           )}
         >
           <Image
             src={card.image}
             alt={card.name}
-            className="h-[54px] w-[54px] object-contain sm:h-[58px] sm:w-[58px] md:h-[60px] md:w-[60px]"
+            className={clsx(
+              'object-contain',
+              layout === 'carousel'
+                ? 'h-[66px] w-[66px] sm:h-[72px] sm:w-[72px]'
+                : 'h-[54px] w-[54px] sm:h-[58px] sm:w-[58px] md:h-[60px] md:w-[60px]',
+            )}
           />
         </div>
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <div
+          className={clsx(
+            'flex min-h-0 min-w-0 flex-1 flex-col',
+            layout === 'carousel' && 'w-full max-w-[300px] items-center sm:max-w-[320px]',
+          )}
+        >
           <div
             className={clsx(
               'flex flex-wrap items-center gap-1.5',
-              layout === 'grid' ? 'justify-center md:justify-start' : 'justify-start',
+              layout === 'grid' ? 'justify-center md:justify-start' : 'justify-center',
             )}
           >
-            <p className="font-mukta text-[15px] font-bold leading-snug text-[#742718] sm:text-[16px]">
+            <p
+              className={clsx(
+                'font-mukta font-bold leading-snug',
+                layout === 'carousel'
+                  ? 'text-[17px] text-[#5d1f1a] sm:text-[18px]'
+                  : 'text-[15px] text-[#5d1f1a] sm:text-[16px]',
+              )}
+            >
               {card.name}
             </p>
-            <div className="flex items-center gap-0.5 text-[#ef8a20]">
+            <div className="flex items-center gap-0.5 text-[#f39c12]">
               {Array.from({ length: starCount }).map((_, starIndex) => (
                 <StartIcon
                   key={`${card.key}-star-${starIndex}`}
-                  className="h-3 w-3 text-[#ef8a20] sm:h-3.5 sm:w-3.5"
+                  className="h-3 w-3 text-[#f39c12] sm:h-3.5 sm:w-3.5"
                 />
               ))}
             </div>
@@ -255,10 +278,11 @@ function CompatibilityHoroscopeCardLink({
 
           <p
             className={clsx(
-              'mt-1.5 line-clamp-3 font-mukta text-[11px] leading-[1.45] sm:line-clamp-2 sm:text-[11px] md:leading-[1.35]',
-              layout === 'carousel'
-                ? 'line-clamp-3 text-[#6b6560] sm:line-clamp-3 sm:text-[12px]'
-                : 'text-[#706258]',
+              'font-mukta leading-snug',
+              layout === 'carousel' &&
+                'mt-2 line-clamp-3 text-center text-[12px] text-[#666666] sm:mt-2.5 sm:text-[13px] sm:leading-[1.5]',
+              layout === 'grid' &&
+                'mt-1.5 line-clamp-3 text-[11px] leading-[1.45] text-[#706258] sm:line-clamp-2 sm:text-[11px] md:mt-2 md:line-clamp-3 md:text-[12px] md:leading-[1.45] md:text-[#666666]',
             )}
           >
             {card.summary}
@@ -266,14 +290,14 @@ function CompatibilityHoroscopeCardLink({
 
           <span
             className={clsx(
-              'mt-3 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta text-[12px] font-semibold text-[#7b3b27]',
+              'mt-4 inline-flex items-center gap-1 border-b border-[#5d1f1a] pb-0.5 font-mukta text-[12px] font-semibold text-[#5d1f1a] sm:mt-5 sm:text-[13px]',
               layout === 'grid'
-                ? 'justify-center self-center md:mt-2 md:justify-start md:self-start'
-                : 'mt-2 self-start',
+                ? 'justify-center self-center md:mt-3 md:justify-start md:self-start'
+                : 'justify-center self-center',
             )}
           >
             {readMoreLabel}
-            <ArrowRight className="h-3 w-3 text-[#7b3b27]" />
+            <ArrowRight className="h-3 w-3 text-[#5d1f1a] sm:h-3.5 sm:w-3.5" />
           </span>
         </div>
       </div>

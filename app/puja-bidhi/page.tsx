@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Puja Bidhi — Hindu Rituals & Worship Guides | Astro Sewa',
     description:
-      'Step-by-step Hindu puja procedures, mantras, and ritual guides for Nepal\'s festivals and daily worship.',
+      "Step-by-step Hindu puja procedures, mantras, and ritual guides for Nepal's festivals and daily worship.",
   },
 };
 

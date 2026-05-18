@@ -19,7 +19,6 @@ type LoginPageProps = {
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-
   let session = null;
   try {
     session = await auth();

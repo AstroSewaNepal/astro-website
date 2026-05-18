@@ -35,9 +35,9 @@ export interface ZodiacSignCardsGridProps<T> {
 
 function DefaultLoadingSkeleton({ layout }: { layout: ZodiacSignCardLayout }) {
   return layout === 'carousel' ? (
-    <div className="min-h-[140px] animate-pulse rounded-[20px] border border-[#d4d4d8] bg-neutral-100" />
+    <div className="min-h-[272px] w-full animate-pulse rounded-[40px] border border-[#4a4a4a]/35 sm:min-h-[288px]" />
   ) : (
-    <div className="min-h-[120px] animate-pulse rounded-[20px] border border-[#5c4033]/25 bg-transparent md:min-h-[120px] md:rounded-[24px] md:border-[#d4d4d8] md:bg-neutral-100 xl:rounded-[26px]" />
+    <div className="min-h-[120px] animate-pulse rounded-[20px] border border-[#5c4033]/25 bg-transparent md:min-h-[120px] md:rounded-[24px] md:border-[#d4d4d8] xl:rounded-[26px]" />
   );
 }
 
@@ -85,53 +85,78 @@ export function ZodiacSignCardsGrid<T>({
               carouselHideUp,
             )}
           >
-            {showCarouselNav ? (
+            {/* {showCarouselNav ? (
               <>
                 <button
                   type="button"
                   aria-label="Previous sign"
                   onClick={() => swiperRef.current?.slidePrev()}
                   className={clsx(
-                    'absolute top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white',
+                    'absolute top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 shadow-sm transition-colors',
                     compact ? 'left-0.5 h-8 w-8 sm:left-0 sm:h-9 sm:w-9' : 'left-0 h-9 w-9',
                   )}
                 >
-                  <Image src={ChevronLeftIcon} alt="" className="h-2.5 w-2.5 opacity-75" />
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M15 19L8 12L15 5"
+                      stroke="#6B2417"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
                 </button>
                 <button
                   type="button"
                   aria-label="Next sign"
                   onClick={() => swiperRef.current?.slideNext()}
                   className={clsx(
-                    'absolute top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white',
+                    'absolute top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 shadow-sm transition-colors',
                     compact ? 'right-0.5 h-8 w-8 sm:right-0 sm:h-9 sm:w-9' : 'right-0 h-9 w-9',
                   )}
                 >
-                  <Image
-                    src={ChevronLeftIcon}
-                    alt=""
-                    className="h-2.5 w-2.5 rotate-180 opacity-75"
-                  />
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M9 5L16 12L9 19"
+                      stroke="#6B2417"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
                 </button>
               </>
-            ) : null}
+            ) : null} */}
             <Swiper
               key={swiperKey}
               modules={[Pagination]}
-              slidesPerView={compact ? 1.12 : 1.28}
+              slidesPerView={2}
               spaceBetween={compact ? 8 : 10}
-              centeredSlides
-              slidesOffsetBefore={compact ? 0 : 4}
-              slidesOffsetAfter={compact ? 0 : 4}
               breakpoints={
                 compact
                   ? {
                       400: { slidesPerView: 1.22, spaceBetween: 9 },
                       480: { slidesPerView: 1.32, spaceBetween: 10 },
+                      560: { slidesPerView: 1.65, spaceBetween: 10 },
+                      640: { slidesPerView: 1.88, spaceBetween: 11 },
                     }
                   : {
                       400: { slidesPerView: 1.38, spaceBetween: 11 },
                       480: { slidesPerView: 1.48, spaceBetween: 12 },
+                      560: { slidesPerView: 1.62, spaceBetween: 12 },
+                      640: { slidesPerView: 1.88, spaceBetween: 12 },
                     }
               }
               className={clsx(

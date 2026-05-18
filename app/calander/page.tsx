@@ -7,7 +7,7 @@ import DownloadApp from '@/components/pages/landing/download-app';
 export const metadata: Metadata = {
   title: 'Nepali Calendar & Panchang',
   description:
-    'View today\'s Nepali Panchang calendar with tithi, nakshatra, yoga, karana, and auspicious timings. Free daily Panchang by Astro Sewa Nepal.',
+    "View today's Nepali Panchang calendar with tithi, nakshatra, yoga, karana, and auspicious timings. Free daily Panchang by Astro Sewa Nepal.",
   keywords: [
     'nepali calendar',
     'panchang',
