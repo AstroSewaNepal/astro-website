@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function PanchangCalendarPage() {
   return (
-    <main className="space-y-10 md:space-y-[100px]">
+    <main className="min-h-screen pt-6 sm:pt-8 lg:pt-10 space-y-10 md:space-y-[100px]">
       <PanchangCalendarPageContent />
       <Services />
       <DownloadApp />
