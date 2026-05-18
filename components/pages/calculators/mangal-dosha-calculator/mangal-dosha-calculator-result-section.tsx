@@ -29,10 +29,7 @@ export default function MangalDoshaCalculatorResultSection() {
       getReportDisplay={data => {
         const meta = getMangalDoshaMeta(data.level);
         const reasons = data.manglik?.reasons?.filter(Boolean) ?? [];
-        const reasonText =
-          reasons.length > 0
-            ? ` Chart factors: ${reasons.join('; ')}.`
-            : '';
+        const reasonText = reasons.length > 0 ? ` Chart factors: ${reasons.join('; ')}.` : '';
         return {
           title: meta?.title ?? data.level,
           subtitle: meta?.subtitle,

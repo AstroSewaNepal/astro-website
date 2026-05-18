@@ -309,7 +309,7 @@ function LandingHeaderClient() {
               <span className="font-mukta text-sm leading-7 md:text-lg lg:text-xl">
                 {d.header.signIn}
               </span>
-            </Link>
+            </button>
             <button className="flex-shrink-0 bg-primary p-2.5 rounded-full text-white max-h-fit">
               <TransparentBellIcon />
             </button>

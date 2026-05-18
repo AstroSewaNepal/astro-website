@@ -45,10 +45,9 @@ export default function DashaCalculatorResultSection() {
           subtitle: data.currentAntardasha
             ? `Antardasha: ${data.currentAntardasha.lord}`
             : undefined,
-          description:
-            data.nakshatra?.name
-              ? `Birth nakshatra ${data.nakshatra.name} (${data.nakshatra.lord}). Timelines use Lahiri ayanamsa and standard 120-year Vimshottari proportions.`
-              : 'Vimshottari dasha timeline from your birth chart.',
+          description: data.nakshatra?.name
+            ? `Birth nakshatra ${data.nakshatra.name} (${data.nakshatra.lord}). Timelines use Lahiri ayanamsa and standard 120-year Vimshottari proportions.`
+            : 'Vimshottari dasha timeline from your birth chart.',
           image: getDashaMeta(1)?.image,
           imageAlt: 'Dasha calculator',
         };
@@ -82,10 +81,7 @@ export default function DashaCalculatorResultSection() {
           rows.push({
             label: 'Upcoming mahadashas',
             value: upcoming
-              .map(
-                m =>
-                  `${m.lord} (${formatPeriodDate(m.start)} – ${formatPeriodDate(m.end)})`,
-              )
+              .map(m => `${m.lord} (${formatPeriodDate(m.start)} – ${formatPeriodDate(m.end)})`)
               .join('; '),
           });
         }

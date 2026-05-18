@@ -181,7 +181,7 @@ const Footer: React.FC = () => {
                       className="font-mukta text-[18px] font-medium text-[#F8F3DF] hover:opacity-75 transition-opacity"
                     >
                       support@astrosewa.com
-                    </span>
+                    </a>
                   </div>
                 </div>
               </div>

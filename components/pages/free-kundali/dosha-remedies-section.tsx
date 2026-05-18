@@ -35,15 +35,15 @@ export default function DoshaRemediesSection({ doshas }: DoshaRemediesSectionPro
         Remedies &amp; guidance
       </h3>
       <p className="mt-3 font-mukta text-base leading-relaxed text-[#4a4a4a]">
-        Traditional remedies and lifestyle suggestions associated with each dosha. These are
-        general Vedic practices for reflection — not medical or legal advice. For personalised
-        puja, gemstones, or marriage matching, consult a qualified Jyotish acharya.
+        Traditional remedies and lifestyle suggestions associated with each dosha. These are general
+        Vedic practices for reflection — not medical or legal advice. For personalised puja,
+        gemstones, or marriage matching, consult a qualified Jyotish acharya.
       </p>
 
       {presentCount === 0 ? (
         <p className="mt-4 rounded-lg border border-[#e5d9bc] bg-[#fffdf6] px-4 py-3 font-mukta text-base text-[#2d6a4f]">
-          No major dosha flags in this automated check. You may still read preventive tips below
-          for general wellbeing.
+          No major dosha flags in this automated check. You may still read preventive tips below for
+          general wellbeing.
         </p>
       ) : (
         <p className="mt-4 font-mukta text-base text-[#5c4033]">

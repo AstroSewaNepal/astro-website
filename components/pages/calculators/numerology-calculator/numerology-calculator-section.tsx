@@ -20,8 +20,7 @@ const FIELD_LABEL_CLASS =
 
 const FORM_FOOTER_CLASS = '-mt-2 flex flex-col gap-1.5';
 
-const ERROR_SLOT_CLASS =
-  'min-h-[24px] font-mukta text-sm leading-[24px] text-[#8d1f1f]';
+const ERROR_SLOT_CLASS = 'min-h-[24px] font-mukta text-sm leading-[24px] text-[#8d1f1f]';
 
 const INFO_SECTIONS_CLASS = 'mt-24 w-full space-y-8';
 

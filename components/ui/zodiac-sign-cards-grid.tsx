@@ -2,15 +2,12 @@
 
 import { useRef, type ReactNode } from 'react';
 import clsx from 'clsx';
-import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
-
-import { ChevronLeftIcon } from '@/components/images/icons';
 
 export type ZodiacSignCardLayout = 'carousel' | 'grid';
 
@@ -63,7 +60,6 @@ export function ZodiacSignCardsGrid<T>({
   renderCard,
   renderLoadingSkeleton,
   className,
-  showCarouselNav = true,
   pagination,
   oneSlidePerView = false,
   compact = false,
@@ -71,7 +67,6 @@ export function ZodiacSignCardsGrid<T>({
 }: ZodiacSignCardsGridProps<T>) {
   const swiperRef = useRef<SwiperType | null>(null);
   const isEmpty = cards !== 'loading' && cards.length === 0;
-  const showCarouselNavButtons = showCarouselNav && cards !== 'loading' && cards.length > 1;
   const swiperPagination = pagination ?? { clickable: true };
   const showError = Boolean(listError);
   const carouselHideUp = useSmUpGrid ? 'sm:hidden' : 'md:hidden';
