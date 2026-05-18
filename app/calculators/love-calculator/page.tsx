@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function LoveCalculatorPage() {
   return (
-    <main className="space-y-12">
+    <main className="min-h-screen pt-6 sm:pt-8 lg:pt-10 space-y-12">
       <LoveCalculatorSection />
       <Services />
       <DownloadApp />
