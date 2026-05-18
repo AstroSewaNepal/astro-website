@@ -88,7 +88,14 @@ export default function LoveCalculatorResultSection() {
         <div className="rounded-[16px] border border-[#d4c4b8] p-4 md:p-6 flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-8">
           {/* Photo */}
           <div className="shrink-0 relative rounded-[19px] overflow-hidden w-full max-w-[320px] h-[332px] md:w-[318px] md:h-[333px]">
-            <Image src={UploadPhotoImg} alt="Couple photo" className="w-full h-full object-cover" width={318} height={333} priority />
+            <Image
+              src={UploadPhotoImg}
+              alt="Couple photo"
+              className="w-full h-full object-cover"
+              width={318}
+              height={333}
+              priority
+            />
           </div>
 
           {/* Names + Heart */}
@@ -102,13 +109,13 @@ export default function LoveCalculatorResultSection() {
 
             <div className="flex-shrink-0 mx-0 relative flex items-center justify-center w-[60%]">
               <div className="relative flex items-center justify-center w-[87.11408996582031px] h-[79.92717742919922px]">
-              <Image
-                src={LoveMatchIcon}
-                alt="Heart"
-                width={205}
-                height={188}
-                className="object-contain w-[87.11408996582031px] h-[79.92717742919922px]"
-              />
+                <Image
+                  src={LoveMatchIcon}
+                  alt="Heart"
+                  width={205}
+                  height={188}
+                  className="object-contain w-[87.11408996582031px] h-[79.92717742919922px]"
+                />
               </div>
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
                 <span className="font-sahitya font-normal text-white text-[18px] leading-none tracking-[0%] text-center drop-shadow-md">

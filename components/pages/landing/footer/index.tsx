@@ -165,15 +165,23 @@ const Footer: React.FC = () => {
                   {/* Phone */}
                   <div className="flex items-center gap-3">
                     <div className="w-5 h-5 bg-gray-300 rounded"></div>
-                    <span className="font-mukta text-[18px] font-medium">+977 9818080676</span>
+                    <a
+                      href="tel:+9779818080676"
+                      className="font-mukta text-[18px] font-medium text-[#F8F3DF] hover:opacity-75 transition-opacity"
+                    >
+                      +977 9818080676
+                    </a>
                   </div>
 
                   {/* Email */}
                   <div className="flex items-center gap-3">
                     <div className="w-5 h-5 bg-gray-300 rounded"></div>
-                    <span className="font-mukta text-[18px] font-medium">
+                    <a
+                      href="mailto:support@astrosewa.com"
+                      className="font-mukta text-[18px] font-medium text-[#F8F3DF] hover:opacity-75 transition-opacity"
+                    >
                       support@astrosewa.com
-                    </span>
+                    </a>
                   </div>
                 </div>
               </div>

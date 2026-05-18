@@ -87,7 +87,9 @@ export default function CalculatorReportResult<T extends CalculatorReportResultD
     return (
       <section className="w-full px-3 md:px-8 pb-12">
         <div className="mx-auto max-w-[1440px] rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center shadow-[0_10px_30px_rgba(0,0,0,0.06)]">
-          <h1 className="font-sahitya text-[32px] font-bold text-[#5D1409] md:text-[40px]">{emptyTitle}</h1>
+          <h1 className="font-sahitya text-[32px] font-bold text-[#5D1409] md:text-[40px]">
+            {emptyTitle}
+          </h1>
           <p className="mt-4 font-mukta text-[16px] text-[#2f2f2f]">
             No result found. Please go back and run the calculator first.
           </p>

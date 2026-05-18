@@ -714,39 +714,13 @@ body {
 
 /* Horoscope hero mobile — dots under cards (active dark, inactive light gray) */
 .horoscope-hero-swiper-mob .swiper-pagination {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  bottom: auto !important;
-  right: auto !important;
-  transform: none !important;
-  margin: 14px auto 0 !important;
+  margin-top: 26px;
   justify-content: center !important;
-  display: flex !important;
-  width: max-content !important;
-}
-.horoscope-hero-swiper-mob .swiper-pagination.swiper-pagination-bullets-dynamic .swiper-pagination-bullet {
-  opacity: 0 !important;
-  width: 0 !important;
-  height: 0 !important;
-  margin: 0 !important;
-  pointer-events: none !important;
-}
-.horoscope-hero-swiper-mob .swiper-pagination.swiper-pagination-bullets-dynamic .swiper-pagination-bullet.swiper-pagination-bullet-main,
-.horoscope-hero-swiper-mob .swiper-pagination.swiper-pagination-bullets-dynamic .swiper-pagination-bullet.swiper-pagination-bullet-active,
-.horoscope-hero-swiper-mob .swiper-pagination.swiper-pagination-bullets-dynamic .swiper-pagination-bullet.swiper-pagination-bullet-prev,
-.horoscope-hero-swiper-mob .swiper-pagination.swiper-pagination-bullets-dynamic .swiper-pagination-bullet.swiper-pagination-bullet-next,
-.horoscope-hero-swiper-mob .swiper-pagination.swiper-pagination-bullets-dynamic .swiper-pagination-bullet.swiper-pagination-bullet-prev-prev,
-.horoscope-hero-swiper-mob .swiper-pagination.swiper-pagination-bullets-dynamic .swiper-pagination-bullet.swiper-pagination-bullet-next-next {
-  opacity: 1 !important;
-  width: 8px !important;
-  height: 8px !important;
-  margin: 0 4px !important;
-  pointer-events: auto !important;
+  position: relative !important;
 }
 .horoscope-hero-swiper-mob .swiper-pagination-bullet {
-  width: 8px !important;
-  height: 8px !important;
+  width: 5px !important;
+  height: 5px !important;
   background: rgba(120, 120, 120, 0.35) !important;
   opacity: 1 !important;
 }

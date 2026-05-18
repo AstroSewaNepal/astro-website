@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import OpenChart from '@/components/images/openchart.png';
@@ -562,7 +562,7 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
 const DoshaSummary: React.FC<{ report: MatchReportPayload }> = ({ report }) => {
   const scoreText =
     report.KutaScore != null
-      ? `${Math.round((Math.max(0, Math.min(100, report.KutaScore)) * 36) / 100 * 10) / 10}/36`
+      ? `${Math.round(((Math.max(0, Math.min(100, report.KutaScore)) * 36) / 100) * 10) / 10}/36`
       : '-';
   const yesNo = 'Yes';
   const cards: Array<[string, string]> = [
@@ -579,9 +579,10 @@ const DoshaSummary: React.FC<{ report: MatchReportPayload }> = ({ report }) => {
           What Is Dosha?
         </h2>
         <p className="font-mukta text-[#464646] text-[16px] leading-[28px] tracking-[0] text-justify">
-          In Vedic astrology, a Dosha means an imbalance or flaw in a person&apos;s horoscope caused by
-          the placement of certain planets in specific houses. These planetary positions are believed
-          to create challenges or obstacles in areas like marriage, health, career, or relationships.
+          In Vedic astrology, a Dosha means an imbalance or flaw in a person&apos;s horoscope caused
+          by the placement of certain planets in specific houses. These planetary positions are
+          believed to create challenges or obstacles in areas like marriage, health, career, or
+          relationships.
         </p>
       </div>
 
@@ -592,14 +593,14 @@ const DoshaSummary: React.FC<{ report: MatchReportPayload }> = ({ report }) => {
         <p className="font-mukta text-[#464646] text-[16px] leading-[28px] tracking-[0] text-justify">
           Ashtakoot Points, also known as Guna Milan, are used in Vedic astrology to check marriage
           compatibility between two individuals. The word “Ashta” means eight and “Koot” means
-          categories, so Ashtakoot refers to eight aspects of life that are compared in the horoscopes
-          of the bride and groom. These eight aspects are Varna (temperament), Vashya (attraction),
-          Tara (luck), Yoni (nature and intimacy), Graha Maitri (planetary friendship), Gana
-          (behavior), Bhakoot (family life), and Nadi (health and progeny). Each aspect carries certain
-          points, making a total of 36 points. A higher score indicates better compatibility — 28 or
-          more points is considered excellent, 23 to 27 good, 18 to 22 average, and less than 18 not
-          recommended for marriage. In simple terms, Ashtakoot Points help determine harmony in love,
-          health, family, and overall married life.
+          categories, so Ashtakoot refers to eight aspects of life that are compared in the
+          horoscopes of the bride and groom. These eight aspects are Varna (temperament), Vashya
+          (attraction), Tara (luck), Yoni (nature and intimacy), Graha Maitri (planetary
+          friendship), Gana (behavior), Bhakoot (family life), and Nadi (health and progeny). Each
+          aspect carries certain points, making a total of 36 points. A higher score indicates
+          better compatibility — 28 or more points is considered excellent, 23 to 27 good, 18 to 22
+          average, and less than 18 not recommended for marriage. In simple terms, Ashtakoot Points
+          help determine harmony in love, health, family, and overall married life.
         </p>
       </div>
 
@@ -716,19 +717,30 @@ const IndividualLagnaChart: React.FC<{ svg: string | undefined; title: string }>
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-const KundaliMatchingResultSection: React.FC = () => {
-  const [result, setResult] = useState<StoredKundaliMatchingResult | null>(null);
-  const [activeTab, setActiveTab] = useState<KundaliMatchingTab>('match');
+function readKundaliMatchingResult(): StoredKundaliMatchingResult | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  const raw = window.sessionStorage.getItem('kundaliMatchingResult');
+  if (!raw) {
+    return null;
+  }
+  try {
+    return JSON.parse(raw) as StoredKundaliMatchingResult;
+  } catch {
+    return null;
+  }
+}
 
-  useEffect(() => {
-    const raw = window.sessionStorage.getItem('kundaliMatchingResult');
-    if (!raw) return;
-    try {
-      setResult(JSON.parse(raw) as StoredKundaliMatchingResult);
-    } catch {
-      setResult(null);
-    }
-  }, []);
+const subscribeKundaliMatchingResult = () => () => {};
+
+const KundaliMatchingResultSection: React.FC = () => {
+  const result = useSyncExternalStore(
+    subscribeKundaliMatchingResult,
+    readKundaliMatchingResult,
+    () => null,
+  );
+  const [activeTab, setActiveTab] = useState<KundaliMatchingTab>('match');
 
   if (!result) {
     return (

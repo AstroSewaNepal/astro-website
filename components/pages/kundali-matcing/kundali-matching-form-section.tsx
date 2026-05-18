@@ -590,7 +590,13 @@ const KundaliMatchingFormSection: React.FC = () => {
     const formData = new FormData(e.currentTarget);
 
     const man = validatePerson('man', formData, manBirthTime, manUnknownTime, newErrors.man);
-    const woman = validatePerson('woman', formData, womanBirthTime, womanUnknownTime, newErrors.woman);
+    const woman = validatePerson(
+      'woman',
+      formData,
+      womanBirthTime,
+      womanUnknownTime,
+      newErrors.woman,
+    );
 
     // If any field has errors, show them and stop
     if (!man || !woman) {

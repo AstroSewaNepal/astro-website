@@ -272,14 +272,15 @@ const NepaliCalendarPageContent: React.FC = () => {
               >
                 {getCellDisplayDay(date)}
               </span>
-              <span className={`font-mukta text-[10px] md:text-[12px] ${date.isToday ? 'text-[#dfe9df]' : date.monthOffset === 0 ? 'text-[#444]' : 'text-[#7d7d7d] opacity-30'}`}>
+              <span
+                className={`font-mukta text-[10px] md:text-[12px] ${date.isToday ? 'text-[#dfe9df]' : date.monthOffset === 0 ? 'text-[#444]' : 'text-[#7d7d7d] opacity-30'}`}
+              >
                 {date.adDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
             </div>
           ))}
         </div>
       </section>
-
     </div>
   );
 };

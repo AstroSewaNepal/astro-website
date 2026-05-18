@@ -16,7 +16,6 @@ const CARD_LANG_STORAGE_KEY = 'horoscope-card-lang';
 
 /** Zodiac card grid language (English / Nepali) — independent of header UI language. */
 export function readCardDisplayLanguage(): ELanguage {
-  debugger;
   if (typeof window === 'undefined') {
     return ELanguage.ENGLISH;
   }

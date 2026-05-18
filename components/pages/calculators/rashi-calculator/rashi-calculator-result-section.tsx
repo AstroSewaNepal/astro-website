@@ -90,7 +90,8 @@ export default function RashiCalculatorResultSection() {
 
   const meta = getRashiMeta(data.rashi);
   const displayName = getReportDisplayName(data.fullName);
-  const signLabel = meta?.englishName ??
+  const signLabel =
+    meta?.englishName ??
     data.rashi
       .split(/\s+/)
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -114,8 +115,8 @@ export default function RashiCalculatorResultSection() {
           Rashi/Moon Sign Calculator
         </h1>
         <p className="mt-3 w-full text-left font-mukta text-[14px] font-normal leading-[24px] text-[#4a423d] md:text-[18px] md:leading-[30px]">
-          Discover your Rashi (moon sign) from your birth date and explore what it reveals about your
-          emotional nature in Vedic astrology.
+          Discover your Rashi (moon sign) from your birth date and explore what it reveals about
+          your emotional nature in Vedic astrology.
         </p>
 
         <div className="mt-10 flex flex-col gap-8 lg:mt-12 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
@@ -149,7 +150,9 @@ export default function RashiCalculatorResultSection() {
                     priority
                   />
                 ) : (
-                  <span className="font-sahitya text-[32px] font-bold text-[#5D1409]">{data.rashi}</span>
+                  <span className="font-sahitya text-[32px] font-bold text-[#5D1409]">
+                    {data.rashi}
+                  </span>
                 )}
               </div>
             </div>

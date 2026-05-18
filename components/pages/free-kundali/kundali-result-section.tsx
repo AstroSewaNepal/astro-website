@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import OpenChart from '@/components/images/openchart.png';
@@ -314,19 +314,30 @@ function formatRashiFromNakshatra(nakshatraWithPada: string | undefined): string
   return `${nakshatraName} - ${pada} (${rashi.hindi} / ${rashi.english})`;
 }
 
-const KundaliResultSection: React.FC = () => {
-  const [result, setResult] = useState<StoredKundaliResult | null>(null);
-  const [activeTab, setActiveTab] = useState<'basic' | 'dosha' | 'planets' | 'lagna'>('basic');
+function readFreeKundaliResult(): StoredKundaliResult | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  const raw = window.sessionStorage.getItem('freeKundaliResult');
+  if (!raw) {
+    return null;
+  }
+  try {
+    return JSON.parse(raw) as StoredKundaliResult;
+  } catch {
+    return null;
+  }
+}
 
-  useEffect(() => {
-    const raw = window.sessionStorage.getItem('freeKundaliResult');
-    if (!raw) return;
-    try {
-      setResult(JSON.parse(raw) as StoredKundaliResult);
-    } catch {
-      setResult(null);
-    }
-  }, []);
+const subscribeFreeKundaliResult = () => () => {};
+
+const KundaliResultSection: React.FC = () => {
+  const result = useSyncExternalStore(
+    subscribeFreeKundaliResult,
+    readFreeKundaliResult,
+    () => null,
+  );
+  const [activeTab, setActiveTab] = useState<'basic' | 'dosha' | 'planets' | 'lagna'>('basic');
 
   const planetHouseLines =
     result?.planetRows && result.planetRows.length > 0 ? planetHouseBullets(result.planetRows) : [];

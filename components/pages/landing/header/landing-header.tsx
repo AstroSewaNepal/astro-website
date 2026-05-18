@@ -292,28 +292,24 @@ function LandingHeaderClient() {
 
   return (
     <>
-      <header className="container mx-auto px-6 lg:px-0 py-10">
+      <header className="container mx-auto px-6 lg:px-0 py-10 pb-0">
         <div className="flex justify-between">
           <div className="flex gap-2">
             <div className="block md:hidden">
               <NavIcon onClick={openMobileMenu} />
             </div>
             <Link href="/">
-              <AstroSewaLogo className="max-w-[84px] text-[#611508] md:max-w-[100px] lg:max-w-[188px] w-full" />
+              <AstroSewaLogo className="max-w-[84px] text-[#611508] md:max-w-[100px] lg:max-w-[188px] w-full mt-1" />
             </Link>
           </div>
-          <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-            <div className="hidden sm:block">{languageControl}</div>
-            <Link
-              href="/login"
-              aria-label={d.header.signIn}
-              className="flex flex-shrink-0 items-center gap-1.5 rounded-3xl bg-primary px-4 py-2 text-white sm:px-5"
-            >
+          <div className="flex gap-4">
+            <div className="hidden lg:block">{languageControl}</div>
+            <button className="bg-primary rounded-3xl px-5 py-2 text-white flex gap-1.5 max-h-fit items-center cursor-pointer">
               <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
               <span className="font-mukta text-sm leading-7 md:text-lg lg:text-xl">
                 {d.header.signIn}
               </span>
-            </Link>
+            </button>
             <button className="flex-shrink-0 bg-primary p-2.5 rounded-full text-white max-h-fit">
               <TransparentBellIcon />
             </button>

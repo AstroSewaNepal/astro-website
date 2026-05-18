@@ -58,12 +58,10 @@ function SunSignReportCard({ meta, mirrored = false }: SunSignReportCardProps) {
         Sidereal chart from VedAstro at your birth time
       </p>
       <p className="mt-5 font-mukta text-[14px] font-normal text-[#141414] md:text-[16px]">
-        Element:{' '}
-        <span className={ACCENT_VALUE_CLASS}>{meta.element}</span>
+        Element: <span className={ACCENT_VALUE_CLASS}>{meta.element}</span>
       </p>
       <p className="mt-2 font-mukta text-[14px] font-normal text-[#141414] md:text-[16px]">
-        Ruling Planet:{' '}
-        <span className={ACCENT_VALUE_CLASS}>{meta.rulingPlanet}</span>
+        Ruling Planet: <span className={ACCENT_VALUE_CLASS}>{meta.rulingPlanet}</span>
       </p>
     </div>
   );

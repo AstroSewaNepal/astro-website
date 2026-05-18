@@ -37,8 +37,15 @@ export default function LoveCalculatorSection() {
         setError('Please enter both names.');
         return;
       }
-      if (!yourBirthDate || !yourBirthPlace.trim() || !partnerBirthDate || !partnerBirthPlace.trim()) {
-        setError('Please enter birth date and place for both people (used for VedAstro MatchReport).');
+      if (
+        !yourBirthDate ||
+        !yourBirthPlace.trim() ||
+        !partnerBirthDate ||
+        !partnerBirthPlace.trim()
+      ) {
+        setError(
+          'Please enter birth date and place for both people (used for VedAstro MatchReport).',
+        );
         return;
       }
 
@@ -221,7 +228,9 @@ export default function LoveCalculatorSection() {
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <div>
-                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">Your birth date</label>
+                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">
+                  Your birth date
+                </label>
                 <input
                   type="date"
                   value={yourBirthDate}
@@ -230,7 +239,9 @@ export default function LoveCalculatorSection() {
                 />
               </div>
               <div>
-                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">Partner birth date</label>
+                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">
+                  Partner birth date
+                </label>
                 <input
                   type="date"
                   value={partnerBirthDate}
@@ -239,7 +250,9 @@ export default function LoveCalculatorSection() {
                 />
               </div>
               <div>
-                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">Your birth place</label>
+                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">
+                  Your birth place
+                </label>
                 <input
                   type="text"
                   placeholder="Kathmandu, Nepal"
@@ -249,7 +262,9 @@ export default function LoveCalculatorSection() {
                 />
               </div>
               <div>
-                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">Partner birth place</label>
+                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">
+                  Partner birth place
+                </label>
                 <input
                   type="text"
                   placeholder="Pokhara, Nepal"

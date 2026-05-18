@@ -30,7 +30,7 @@ const Clarity: React.FC = () => {
           <div className="mt-6 md:mt-8 flex flex-row flex-nowrap items-center justify-center lg:justify-start gap-4 md:gap-6">
             <button className="flex items-center justify-center gap-1 border border-[#F8F3DF] border-[1px] rounded-[24px] h-[34px] min-w-[111px] py-2 px-8 text-[#F8F3DF] text-sm transition-all duration-300 hover:bg-[#F8F3DF]/10 whitespace-nowrap sm:rounded-3xl sm:h-auto sm:w-auto sm:px-6 sm:py-2.5 sm:text-base md:px-7 lg:px-8">
               <span className="font-mukta text-sm sm:text-base whitespace-nowrap">Chat Now</span>
-              <ChevronRight className="!w-[24px] !h-[24px]" style={{ width: 24, height: 24 }} />
+              <ChevronRight className="!h-6 !w-6 shrink-0" />
             </button>
             <button className="bg-[#F8F3DF] rounded-[24px] h-[34px] min-w-[116px] px-8 py-2 text-black font-mukta text-sm flex items-center justify-center transition-all duration-300 hover:bg-[#F8F3DF]/90 whitespace-nowrap sm:rounded-3xl sm:h-auto sm:w-auto sm:px-6 sm:py-2.5 sm:text-base">
               <span className="whitespace-nowrap">Download app</span>
