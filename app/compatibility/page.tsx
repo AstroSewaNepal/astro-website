@@ -68,34 +68,35 @@ export default function CompatibilityPage() {
       <div className="container mx-auto px-6 lg:px-0">
         <section>
           <div className="w-full">
-            <h1 className="font-sahitya text-[36px] font-bold leading-[48px] text-[#6b2417]">
+            <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-[0%] text-[#6b2417] sm:text-[36px] sm:leading-[48px]">
               {copy.title}
             </h1>
-            <p className="mt-2 font-mukta text-[22px] text-[#111111]">{copy.subtitle}</p>
+            <p className="mt-2 font-mukta font-normal text-[14px] leading-[24px] tracking-[0%] text-[#111111] max-sm:!text-[14px] max-sm:!leading-[24px] sm:text-[22px] sm:leading-[30px]">
+              {copy.subtitle}
+            </p>
 
             <div className="mt-4">
-              <p className="font-mukta text-[24px] font-normal leading-[34px] text-[#4f463f]">
+              <p className="font-mukta text-[16px] leading-[28px] tracking-[0%] text-[#4f463f] sm:text-[24px] sm:leading-[34px]">
                 You may not always click effortlessly with everyone, but when you're with that special someone, life feels brighter, calmer, and more meaningful. Throughout your journey, you'll meet many wonderful people — friends, mentors, and companions — but only one will truly be your life partner. Choosing the right person is important, because they should make you feel cherished, supported, and at peace, never lonely or uncared for.
                 Do you ever feel your heart skip a beat when you meet someone? That spark could be a sign of destiny. Discover what the universe has in store for your love life by exploring your zodiac sign compatibility with Astro Sewa.
               </p>
             </div>
           </div>
 
-          <div className="mt-8 rounded-[20px] border border-[#BE7B71] bg-[#F8F3DF] px-4 py-11 sm:px-8 sm:py-11">
-            <h2 className="text-center font-mukta text-[28px] font-bold leading-[38px] text-[#611508]">
+          <div className="mt-8 rounded-[20px] px-4 py-11 sm:border sm:border-[#BE7B71] sm:bg-[#F8F3DF] sm:px-8 sm:py-11">
+            <h2 className="text-left sm:text-center font-mukta text-[24px] leading-[34px] font-bold tracking-[0%] text-[#611508] -ml-4 sm:ml-0 sm:font-sahitya sm:text-[28px] sm:leading-[38px] break-words">
               {copy.cardTitle}
             </h2>
-            <p className="mt-1 text-center font-mukta text-[20px] font-normal leading-[26px] text-[#141414]">
-              Choose your and your partner&apos;s zodiac sign
-              <br />
-              to check compatibility
+            <p className="mt-1 text-left sm:text-center font-mukta text-[20px] leading-[26px] tracking-[0%] text-[#141414] -ml-4 sm:ml-0">
+              <span className="block whitespace-nowrap">Choose your and your partner&apos;s zodiac sign</span>
+              <span className="block">to check compatibility</span>
             </p>
 
             {/* ✅ FIX: reduced sm:max-w from [560px] to [380px] to close the gap between the two columns */}
-            <div className="mx-auto mt-6 grid grid-cols-2 gap-x-0 gap-y-2 sm:mt-8 sm:max-w-[380px] sm:gap-x-0 sm:gap-y-2">
+            <div className="mx-auto mt-6 grid grid-cols-2 gap-x-12 gap-y-2 sm:mt-8 sm:max-w-[380px] sm:gap-x-0 sm:gap-y-2">
               {/* Your Sign */}
-              <div className="flex flex-col items-center gap-2 sm:gap-4">
-                <div className="flex h-[120px] w-[120px] items-center justify-center rounded-full border border-[#BE7B71] bg-[#F8F3DF] p-7 sm:h-40 sm:w-40 sm:p-10">
+              <div className="flex flex-col items-center gap-[19.59px] sm:gap-4">
+                <div className="flex h-[161.4238739013672px] w-[164.65234375px] items-center justify-center rounded-[102.91px] border border-[#BE7B71] bg-[#F8F3DF] p-[39.17px] sm:h-40 sm:w-40 sm:p-10">
                   <Image
                     src={zodiacImageMap[yourSign]}
                     alt={yourSign}
@@ -123,7 +124,7 @@ export default function CompatibilityPage() {
                     </select>
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-2 font-mukta text-sm font-medium leading-5 text-[#141414] sm:gap-6 sm:text-xl">
+                <div className="flex items-center justify-center gap-2 font-mukta text-[20px] leading-[20px] font-medium text-[#141414] sm:gap-6 sm:text-xl sm:leading-5">
                   <label className="inline-flex cursor-pointer items-center gap-1.5">
                     <input
                       type="radio"
@@ -170,8 +171,8 @@ export default function CompatibilityPage() {
               </div>
 
               {/* Partner's Sign */}
-              <div className="flex flex-col items-center gap-2 sm:gap-4">
-                <div className="flex h-[120px] w-[120px] items-center justify-center rounded-full border border-[#BE7B71] bg-[#F8F3DF] p-7 sm:h-40 sm:w-40 sm:p-10">
+              <div className="flex flex-col items-center gap-[19.59px] sm:gap-4">
+                <div className="flex h-[161.4238739013672px] w-[164.65234375px] items-center justify-center rounded-[102.91px] border border-[#BE7B71] bg-[#F8F3DF] p-[39.17px] sm:h-40 sm:w-40 sm:p-10">
                   <Image
                     src={zodiacImageMap[partnerSign]}
                     alt={partnerSign}
@@ -199,7 +200,7 @@ export default function CompatibilityPage() {
                     </select>
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-2 font-mukta text-sm font-medium leading-5 text-[#141414] sm:gap-6 sm:text-xl">
+                <div className="flex items-center justify-center gap-2 font-mukta text-[20px] leading-[20px] font-medium text-[#141414] sm:gap-6 sm:text-xl sm:leading-5">
                   <label className="inline-flex cursor-pointer items-center gap-1.5">
                     <input
                       type="radio"
@@ -265,7 +266,9 @@ export default function CompatibilityPage() {
             </div>
           </div>
 
-          <p className="mt-8 font-mukta text-[14px] leading-8 text-[#4f463f]">{copy.outro}</p>
+          <p className="mt-8 font-mukta font-normal text-[24px] leading-[34px] tracking-[0%] text-[#464646]">
+            {copy.outro}
+          </p>
         </section>
 
         <TalkToOurAstrologer className="mx-auto mt-14 max-w-[1180px]" />

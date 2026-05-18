@@ -668,7 +668,7 @@ export default function CompatibilityMatchPage() {
 
               {/* Right: Find Compatible Partner — full width on mobile, sidebar on desktop */}
               <div className="w-full rounded-[20px] border-0 bg-transparent p-4 sm:border sm:border-[#BE7B71] sm:bg-[#F8F3DF] sm:p-6 lg:w-[354px] lg:flex-shrink-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0">
-                <h3 className="text-center font-mukta text-[20px] font-semibold leading-[28px] text-primary sm:text-left">
+                <h3 className="text-center font-mukta text-[28px] font-bold leading-[38px] tracking-[0px] text-primary sm:text-left sm:text-[20px] sm:leading-[28px]">
                   Find Your Compatible Partner?
                 </h3>
                 <p className="mt-1 text-center font-mukta text-[14px] leading-[22px] text-[#464646] sm:text-left sm:text-[16px] sm:leading-[24px]">
