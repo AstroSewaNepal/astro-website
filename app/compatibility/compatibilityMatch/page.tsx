@@ -12,6 +12,7 @@ import { ELanguage } from '@/components/enums/language.enum';
 
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
+import Clarity from '@/components/pages/landing/clarity';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import { ZodiacSignCardsGrid } from '@/components/ui/zodiac-sign-cards-grid';
 import {
@@ -940,45 +941,7 @@ export default function CompatibilityMatchPage() {
             </div>
           </div>
 
-          {/* ── Find Clarity Today banner ── */}
-          <div
-            className="relative overflow-hidden rounded-[28px] sm:rounded-[40px] lg:rounded-[74px]"
-            style={{ background: 'linear-gradient(90deg, #350B04 -50.26%, #691709 100%)' }}
-          >
-            <div className="flex flex-col items-start gap-6 px-6 py-8 sm:gap-8 sm:px-8 sm:py-10 lg:flex-row lg:items-center lg:gap-10 lg:px-[116px] lg:py-10">
-              <div className="flex flex-1 flex-col gap-6 sm:gap-8">
-                <div className="flex flex-col gap-0">
-                  <h2 className="font-tiro-devanagari text-[36px] font-normal leading-[122%] text-secondary sm:text-[48px] lg:text-[80px]">
-                    Find clarity today.
-                  </h2>
-                  <p className="font-mukta text-[18px] font-normal capitalize leading-[140%] text-[rgba(255,255,255,0.81)] sm:text-[22px] sm:leading-[71px] lg:text-[36px]">
-                    Discover Insights Through Vedic Astrology.
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-                  <button className="flex items-center gap-1 rounded-[24px] border-2 border-secondary px-6 py-3 font-mukta text-[18px] leading-[24px] text-secondary sm:px-8 sm:py-3.5 sm:text-[24px] sm:leading-[28px]">
-                    Chat Now
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="sm:w-6 sm:h-6">
-                      <path d="M5 12H19" stroke="#F8F3DF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M12 5L19 12L12 19" stroke="#F8F3DF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-                  <button className="rounded-[24px] bg-secondary px-6 py-3 font-mukta text-[18px] leading-[24px] text-black sm:px-8 sm:py-3.5 sm:text-[24px] sm:leading-[28px]">
-                    Download app
-                  </button>
-                </div>
-              </div>
-
-              {/* Mandala image — hidden on mobile */}
-              <div className="hidden lg:block flex-shrink-0">
-                <img
-                  src="https://api.builder.io/api/v1/image/assets/TEMP/b042b3fb63b0eb77d9201455c8ffeccd2852ff0d?width=752"
-                  alt="Vedic astrology wheel"
-                  className="h-[286px] w-[376px] object-contain"
-                />
-              </div>
-            </div>
-          </div>
+          <Clarity />
 
           {/* ── Our Services ── */}
           <div>
