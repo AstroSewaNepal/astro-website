@@ -31,14 +31,7 @@ type BirthTimeFieldsProps = {
 };
 
 const CLOCK_ICON = (
-  <svg
-    width="17"
-    height="17"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-  >
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
     <circle cx="12" cy="12" r="10" />
     <polyline points="12 6 12 12 16 14" />
   </svg>
@@ -100,8 +93,7 @@ export function BirthTimeFields({
   const iconWrapClass = clsx(
     variant === 'calculator' && 'ml-auto pr-4 text-[#5D1409] opacity-60',
     variant === 'kundali' && 'shrink-0 text-primary',
-    variant === 'matching' &&
-      'absolute inset-y-0 right-3 flex items-center text-primary/70 pointer-events-none',
+    variant === 'matching' && 'absolute inset-y-0 right-3 flex items-center text-primary/70 pointer-events-none',
   );
 
   const labelClass = clsx(
@@ -182,7 +174,8 @@ export function UnknownBirthTimeCheckbox({
   variant = 'calculator',
   className,
 }: UnknownBirthTimeCheckboxProps) {
-  const borderColor = variant === 'calculator' ? 'border-[#5D1409]' : 'border-primary';
+  const borderColor =
+    variant === 'calculator' ? 'border-[#5D1409]' : 'border-primary';
   const fillColor = variant === 'calculator' ? 'bg-[#5D1409]' : 'bg-primary';
   const textColor =
     variant === 'calculator'

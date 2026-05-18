@@ -190,106 +190,93 @@ function CompatibilityHoroscopeCardLink({
 
   const innerFlex =
     layout === 'grid'
-      ? 'flex flex-col items-center gap-3 text-center md:flex-row md:items-center md:gap-5 md:text-left'
-      : 'flex min-h-0 w-full flex-col items-center gap-4 text-center sm:gap-5';
+      ? 'flex flex-col items-center gap-3 text-center md:flex-row md:items-center md:gap-4 md:text-left'
+      : 'flex min-h-0 flex-row items-center gap-3 text-left';
 
+  // Carousel layout: matches Figma design with large outline image + clean text
+  if (layout === 'carousel') {
+    return (
+      <Link
+        href={href}
+        className="group block h-[135px] w-[340px] snap-start rounded-[33px] border border-[1px] border-[#5B5B5B] bg-transparent px-[14px] py-[12px] opacity-100 shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-[transform,box-shadow,border-color] duration-200 active:scale-[0.99] hover:border-[#5B5B5B] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]"
+      >
+        <div className="flex items-center gap-[15px]">
+          {/* Large outline/light zodiac image */}
+          <div className="flex h-[104px] w-[120px] shrink-0 items-center justify-center rounded-full border border-transparent bg-transparent p-2">
+            <Image
+              src={card.image}
+              alt={card.name}
+              className="h-[104px] w-[120px] object-contain opacity-100"
+            />
+          </div>
+
+          {/* Text content */}
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            {/* Name + stars */}
+            <div className="flex items-center gap-2">
+              <p className="font-mukta text-[18px] font-bold leading-[26px] text-[#742718]">
+                {card.name}
+              </p>
+              <div className="flex items-center gap-0.5">
+                {Array.from({ length: starCount }).map((_, i) => (
+                  <StartIcon
+                    key={`${card.key}-star-${i}`}
+                    className="h-3.5 w-3.5 text-[#ef8a20]"
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Summary */}
+            <p className="line-clamp-2 font-mukta text-[13px] leading-[20px] text-[#6b6560]">
+              {cleanSummary}
+            </p>
+
+            {/* Read More */}
+            <span className="mt-1 inline-flex items-center gap-1 self-start border-b border-[#7b3b27] pb-0.5 font-mukta text-[13px] font-semibold text-[#7b3b27]">
+              {readMoreLabel}
+              <ArrowRight className="h-3 w-3 text-[#7b3b27]" />
+            </span>
+          </div>
+        </div>
+      </Link>
+    );
+  }
+
+  // Grid layout (desktop)
   return (
     <Link
       href={href}
-      className={clsx(
-        'group block h-full min-w-0 max-w-full transition-[transform,box-shadow,colors] duration-200 active:scale-[0.99]',
-        layout === 'carousel' &&
-          clsx(
-            'w-full snap-start rounded-[40px] border border-[#4a4a4a] bg-[#f5f2eb] px-5 py-7 shadow-[0_2px_14px_rgba(0,0,0,0.07)]',
-            'sm:px-7 sm:py-8',
-            'hover:border-[#383838] hover:shadow-[0_4px_20px_rgba(0,0,0,0.09)]',
-          ),
-        layout === 'grid' &&
-          clsx(
-            'rounded-[20px] border border-[#5c4033]/25 bg-transparent px-4 py-4 sm:px-4 sm:py-3 md:rounded-[24px] xl:rounded-[26px]',
-            'hover:-translate-y-0.5 hover:border-[#5c4033]/45 hover:bg-white/20 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)]',
-            'md:border-[#4a4a4a] md:bg-[#f5f2eb] md:px-6 md:py-5 md:shadow-[0_2px_14px_rgba(0,0,0,0.06)] md:hover:border-[#383838] md:hover:bg-[#f5f2eb]',
-          ),
-      )}
+      className="group block h-full min-w-0 max-w-full rounded-[20px] border border-[#5c4033]/25 bg-transparent px-4 py-4 transition-[transform,box-shadow,colors] duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:border-[#5c4033]/45 hover:bg-white/20 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)] md:rounded-[24px] md:border-[#d4d4d8] md:bg-transparent md:shadow-[0_2px_12px_rgba(0,0,0,0.05)] md:hover:border-[#c4c4c9] md:hover:bg-transparent xl:rounded-[26px]"
     >
       <div className={innerFlex}>
-        <div
-          className={clsx(
-            'flex shrink-0 items-center justify-center border border-transparent bg-transparent',
-            layout === 'carousel' &&
-              'h-[88px] w-[88px] rounded-[22px] sm:h-[92px] sm:w-[92px] sm:rounded-[24px]',
-            layout === 'grid' &&
-              clsx(
-                'h-[72px] w-[72px] rounded-[18px] sm:h-[76px] sm:w-[76px] sm:rounded-[20px]',
-                'md:h-[78px] md:w-[78px] md:rounded-[22px] md:border-[#dfcebc]/40 md:bg-[#f4eadf]/40',
-              ),
-          )}
-        >
+        <div className="flex h-[104px] w-[120px] shrink-0 items-center justify-center rounded-[18px] border border-transparent bg-transparent md:border-transparent md:bg-transparent">
           <Image
             src={card.image}
             alt={card.name}
-            className={clsx(
-              'object-contain',
-              layout === 'carousel'
-                ? 'h-[66px] w-[66px] sm:h-[72px] sm:w-[72px]'
-                : 'h-[54px] w-[54px] sm:h-[58px] sm:w-[58px] md:h-[60px] md:w-[60px]',
-            )}
+            className="h-[104px] w-[120px] object-contain opacity-100"
           />
         </div>
-        <div
-          className={clsx(
-            'flex min-h-0 min-w-0 flex-1 flex-col',
-            layout === 'carousel' && 'w-full max-w-[300px] items-center sm:max-w-[320px]',
-          )}
-        >
-          <div
-            className={clsx(
-              'flex flex-wrap items-center gap-1.5',
-              layout === 'grid' ? 'justify-center md:justify-start' : 'justify-center',
-            )}
-          >
-            <p
-              className={clsx(
-                'font-mukta font-bold leading-snug',
-                layout === 'carousel'
-                  ? 'text-[17px] text-[#5d1f1a] sm:text-[18px]'
-                  : 'text-[15px] text-[#5d1f1a] sm:text-[16px]',
-              )}
-            >
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <div className="flex flex-wrap items-center justify-center gap-1.5 md:justify-start">
+            <p className="font-mukta text-[15px] font-bold leading-snug text-[#742718] sm:text-[16px]">
               {card.name}
             </p>
-            <div className="flex items-center gap-0.5 text-[#f39c12]">
-              {Array.from({ length: starCount }).map((_, starIndex) => (
+            <div className="flex items-center gap-0.5">
+              {Array.from({ length: starCount }).map((_, i) => (
                 <StartIcon
-                  key={`${card.key}-star-${starIndex}`}
-                  className="h-3 w-3 text-[#f39c12] sm:h-3.5 sm:w-3.5"
+                  key={`${card.key}-star-${i}`}
+                  className="h-3 w-3 text-[#ef8a20] sm:h-3.5 sm:w-3.5"
                 />
               ))}
             </div>
           </div>
-
-          <p
-            className={clsx(
-              'font-mukta leading-snug',
-              layout === 'carousel' &&
-                'mt-2 line-clamp-3 text-center text-[12px] text-[#666666] sm:mt-2.5 sm:text-[13px] sm:leading-[1.5]',
-              layout === 'grid' &&
-                'mt-1.5 line-clamp-3 text-[11px] leading-[1.45] text-[#706258] sm:line-clamp-2 sm:text-[11px] md:mt-2 md:line-clamp-3 md:text-[12px] md:leading-[1.45] md:text-[#666666]',
-            )}
-          >
-            {card.summary}
+          <p className="mt-1.5 line-clamp-3 font-mukta text-[11px] leading-[1.45] text-[#706258] sm:line-clamp-2 sm:text-[11px] md:leading-[1.35]">
+            {cleanSummary}
           </p>
-
-          <span
-            className={clsx(
-              'mt-4 inline-flex items-center gap-1 border-b border-[#5d1f1a] pb-0.5 font-mukta text-[12px] font-semibold text-[#5d1f1a] sm:mt-5 sm:text-[13px]',
-              layout === 'grid'
-                ? 'justify-center self-center md:mt-3 md:justify-start md:self-start'
-                : 'justify-center self-center',
-            )}
-          >
+          <span className="mt-3 inline-flex items-center justify-center gap-1 self-center border-b border-[#7b3b27] pb-0.5 font-mukta text-[12px] font-semibold text-[#7b3b27] md:mt-2 md:justify-start md:self-start">
             {readMoreLabel}
-            <ArrowRight className="h-3 w-3 text-[#5d1f1a] sm:h-3.5 sm:w-3.5" />
+            <ArrowRight className="h-3 w-3 text-[#7b3b27]" />
           </span>
         </div>
       </div>
@@ -365,9 +352,7 @@ export default function CompatibilityMatchPage() {
           if (!cancelled) setHoroscopeListLoading(false);
         });
     });
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   const horoscopeSectionCards = useMemo(
@@ -549,10 +534,13 @@ export default function CompatibilityMatchPage() {
     <main className="min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-0">
         <section className="flex flex-col gap-10 pb-20 sm:gap-20">
+
           {/* ── Hero / Header ── */}
           <div className="flex flex-col gap-6">
+
             {/* ── Mobile: stacked hero layout ── */}
             <div className="flex flex-col gap-3 border-b border-[#F8F3DF] pb-4 lg:flex-row lg:items-center lg:justify-between">
+
               {/* Title */}
               <div className="flex flex-col gap-1 text-center sm:text-left">
                 <h1 className="font-sahitya text-[24px] font-bold leading-[48px] text-primary sm:text-[36px] sm:leading-[48px]">
@@ -623,8 +611,10 @@ export default function CompatibilityMatchPage() {
 
             {/* Content + Sidebar row */}
             <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-8">
+
               {/* Left: tabs + score + description */}
               <div className="flex flex-1 flex-col gap-2.5">
+
                 {/* Tabs — horizontal scroll on mobile */}
                 <div className="w-full overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <div className="flex min-w-max gap-2">
@@ -667,14 +657,11 @@ export default function CompatibilityMatchPage() {
                 {/* Description */}
                 <p className="font-mukta text-[15px] leading-[28px] text-[#464646] sm:text-[16px] sm:leading-[32px]">
                   {loading ? (
-                    <span className="animate-pulse text-[#888]">
-                      Loading compatibility details…
-                    </span>
+                    <span className="animate-pulse text-[#888]">Loading compatibility details…</span>
                   ) : error ? (
                     <span className="text-red-600">Error: {error}</span>
                   ) : (
-                    getTabContent() ||
-                    'No additional details available for this compatibility aspect.'
+                    getTabContent() || 'No additional details available for this compatibility aspect.'
                   )}
                 </p>
               </div>
@@ -805,13 +792,7 @@ export default function CompatibilityMatchPage() {
                   onClick={handleFindNow}
                   className="mt-5 flex w-full items-center justify-center gap-2 rounded-[24px] bg-primary py-2.5 font-mukta text-[15px] font-semibold leading-[26px] text-secondary sm:py-2 sm:text-[16px] sm:leading-[28px]"
                 >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    className="sm:w-6 sm:h-6"
-                  >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="sm:w-6 sm:h-6">
                     <path
                       d="M19.3 14.9C19.7 14.2 20 13.4 20 12.5C20 10 18 8 15.5 8C13 8 11 10 11 12.5C11 15 13 17 15.5 17C16.4 17 17.2 16.7 17.9 16.3L20.8 19.2L22.2 17.8L19.3 14.9ZM15.5 15C14.1 15 13 13.9 13 12.5C13 11.1 14.1 10 15.5 10C16.9 10 18 11.1 18 12.5C18 13.9 16.9 15 15.5 15ZM14.7 18.9C14.3 19.3 13.9 19.6 13.5 20L12 21.3L10.5 20C5.4 15.4 2 12.3 2 8.5C2 5.4 4.4 3 7.5 3C9.2 3 10.9 3.8 12 5.1C13.1 3.8 14.8 3 16.5 3C19.6 3 22 5.4 22 8.5C22 9.2 21.9 9.8 21.7 10.5C20.8 7.9 18.4 6 15.5 6C11.9 6 9 8.9 9 12.5C9 15.8 11.5 18.5 14.7 18.9Z"
                       fill="#F8F3DF"
@@ -854,10 +835,7 @@ export default function CompatibilityMatchPage() {
                         </div>
                       ))}
                     </div>
-                    <div
-                      className="flex flex-wrap items-center justify-center gap-2"
-                      aria-label="Compatibility pair slides"
-                    >
+                    <div className="flex flex-wrap items-center justify-center gap-2" aria-label="Compatibility pair slides">
                       {dynamicPairs.map((secondSign, i) => (
                         <button
                           key={secondSign}
@@ -903,9 +881,9 @@ export default function CompatibilityMatchPage() {
           {/* ── Read Horoscope For Other Zodiac Signs ── */}
           <div className="w-full min-w-0 max-w-full overflow-x-clip">
             <div className="flex flex-col gap-6 sm:gap-8">
-              <h2 className="px-1 text-center font-sahitya text-[20px] font-bold leading-[28px] text-primary text-balance sm:text-left sm:text-[26px] sm:leading-[34px] md:text-[28px] md:leading-[38px]">
-                <span className="block sm:hidden">Explore Zodiac Signs</span>
-                <span className="hidden sm:block">Read Horoscope For Other Zodiac Signs</span>
+<h2 className="px-1 text-center font-sahitya text-[20px] font-bold leading-[28px] text-primary text-balance sm:text-left sm:text-[26px] sm:leading-[34px] md:text-[28px] md:leading-[38px]">
+                  <span className="block sm:hidden">Explore Zodiac Signs</span>
+                  <span className="hidden sm:block">Read Horoscope For Other Zodiac Signs</span>
               </h2>
 
               <div className="mx-auto flex w-full flex-row flex-wrap justify-center gap-[10px]">
