@@ -126,10 +126,15 @@ export async function uploadMedia(
   token: string,
   file: File,
 ): Promise<{ mediaId: string; url: string }> {
+  const base = tryGetPublicBackendBaseUrl();
+  if (!base) {
+    throw new Error('NEXT_PUBLIC_BACKEND_URL is not set');
+  }
+
   const formData = new FormData();
   formData.append("image", file);
 
-  const res = await fetch(`${BACKEND_URL}/remedies-categories/media`, {
+  const res = await fetch(`${base}/remedies-categories/media`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
