@@ -197,6 +197,14 @@ function scoreLabel(score: number): string {
   return 'Low Compatibility';
 }
 
+function planetHouseBullets(planetRows: string[][]): string[] {
+  return planetRows.map(row => {
+    const planet = row[0] ?? '—';
+    const house = row[5] ?? '—';
+    return `${planet} is in ${house} in your birth chart.`;
+  });
+}
+
 const RING_R = 52;
 const RING_CIRC = 2 * Math.PI * RING_R;
 
@@ -784,6 +792,10 @@ const KundaliMatchingResultSection: React.FC = () => {
   const womanPayloadRoot = unwrapVedastroPayload(result.womanPayload);
   const womanPanchanga = isRecord(womanPayloadRoot) && womanPayloadRoot['PanchangaTable'] ? womanPayloadRoot['PanchangaTable'] : womanPayloadRoot;
   const womanLagnaSignFallback = getPanchangaValue(isRecord(womanPanchanga) ? womanPanchanga : undefined, ['Lagna'], ['LagnaSign']);
+  const manPlanetHouseLines =
+    result.manPlanetRows && result.manPlanetRows.length > 0 ? planetHouseBullets(result.manPlanetRows) : [];
+  const womanPlanetHouseLines =
+    result.womanPlanetRows && result.womanPlanetRows.length > 0 ? planetHouseBullets(result.womanPlanetRows) : [];
   const resultSubtitle =
     manName && womanName
       ? `Matching result for ${manName} and ${womanName}`
@@ -1004,31 +1016,46 @@ const KundaliMatchingResultSection: React.FC = () => {
           )}
 
           {activeTab === 'lagna' && (
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="flex-1 min-w-[300px]">
-                {result.manPlanetRows && result.manPlanetRows.length > 0 ? (
-                  <div className={`rounded-[20px] p-5 shadow-sm h-full ${OPEN_CHART_FRAME_CLASS}`}>
-                    <NorthIndianOpenChartWithPlanets
-                      planetRows={result.manPlanetRows}
-                      lagnaSignFallback={manLagnaSignFallback}
-                    />
-                  </div>
-                ) : (
-                  <IndividualLagnaChart svg={result.manLagnaSvg} title={`${result.man.fullName}'s Chart (Man)`} />
-                )}
+            <div className="space-y-8">
+              <div className="rounded-[20px] bg-[#fffdf6] p-6 text-[#2d2d2d]">
+                <h3 className="font-sahitya text-primary text-[28px] leading-[36px] font-bold">
+                  Lagna chart
+                </h3>
+                <p className="mt-3 font-mukta text-[18px] leading-[30px]">
+                  North Indian D1: house numbers, whole-sign rashi (from Lagna), nine grahas + Ascendant with degree-in-sign, retrograde (®), nakshatra, and longitude-house (Lh) when it differs from sign-house — data from VedAstro.
+                </p>
+                <p className="mt-4 font-mukta text-[18px] leading-[30px]">Planets by house</p>
               </div>
 
-              <div className="flex-1 min-w-[300px]">
-                {result.womanPlanetRows && result.womanPlanetRows.length > 0 ? (
-                  <div className={`rounded-[20px] p-5 shadow-sm h-full ${OPEN_CHART_FRAME_CLASS}`}>
-                    <NorthIndianOpenChartWithPlanets
-                      planetRows={result.womanPlanetRows}
-                      lagnaSignFallback={womanLagnaSignFallback}
-                    />
-                  </div>
-                ) : (
-                  <IndividualLagnaChart svg={result.womanLagnaSvg} title={`${result.woman.fullName}'s Chart (Woman)`} />
-                )}
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="rounded-[20px] border border-[#e5d9bc] bg-[#fffdf6] p-4">
+                  <h4 className="font-sahitya text-lg font-bold text-primary">Man: Planet house summary</h4>
+                  {manPlanetHouseLines.length > 0 ? (
+                    <ul className="mt-3 list-disc pl-5 font-mukta text-[16px] leading-[28px] text-[#2d2d2d]">
+                      {manPlanetHouseLines.map((line, idx) => (
+                        <li key={`man-line-${idx}-${line.slice(0, 24)}`}>{line}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-3 font-mukta text-[16px] leading-[28px] text-[#4a4a4a]">
+                      Lagna chart is already shown above. Detailed house summary will appear here when available.
+                    </p>
+                  )}
+                </div>
+                <div className="rounded-[20px] border border-[#e5d9bc] bg-[#fffdf6] p-4">
+                  <h4 className="font-sahitya text-lg font-bold text-primary">Woman: Planet house summary</h4>
+                  {womanPlanetHouseLines.length > 0 ? (
+                    <ul className="mt-3 list-disc pl-5 font-mukta text-[16px] leading-[28px] text-[#2d2d2d]">
+                      {womanPlanetHouseLines.map((line, idx) => (
+                        <li key={`woman-line-${idx}-${line.slice(0, 24)}`}>{line}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-3 font-mukta text-[16px] leading-[28px] text-[#4a4a4a]">
+                      Lagna chart is already shown above. Detailed house summary will appear here when available.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           )}
