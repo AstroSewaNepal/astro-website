@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function KundaliDetailsPage() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pt-6 sm:pt-8 lg:pt-10">
       <div className="space-y-10 md:space-y-[100px]">
         <KundaliDetails />
         <Services />

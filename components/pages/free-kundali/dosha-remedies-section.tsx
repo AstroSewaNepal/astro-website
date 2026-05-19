@@ -30,7 +30,7 @@ export default function DoshaRemediesSection({ doshas }: DoshaRemediesSectionPro
   });
 
   return (
-    <div className="mt-10 rounded-[20px] bg-[#f9f4dd] p-5 md:p-7">
+    <div className="mt-10 p-5 md:p-7">
       <h3 className="font-sahitya text-primary text-[26px] leading-tight md:text-[32px] font-bold">
         Remedies &amp; guidance
       </h3>
@@ -41,7 +41,7 @@ export default function DoshaRemediesSection({ doshas }: DoshaRemediesSectionPro
       </p>
 
       {presentCount === 0 ? (
-        <p className="mt-4 rounded-lg border border-[#e5d9bc] bg-[#fffdf6] px-4 py-3 font-mukta text-base text-[#2d6a4f]">
+        <p className="mt-4 px-4 py-3 font-mukta text-base text-[#2d6a4f]">
           No major dosha flags in this automated check. You may still read preventive tips below for
           general wellbeing.
         </p>
@@ -69,7 +69,7 @@ export default function DoshaRemediesSection({ doshas }: DoshaRemediesSectionPro
                 const isOpen = e.currentTarget.open;
                 setExpanded(prev => ({ ...prev, [key]: isOpen }));
               }}
-              className="group overflow-hidden rounded-xl border border-[#e5d9bc] bg-[#fffdf6]"
+              className="group overflow-hidden rounded-xl"
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-mukta text-base font-semibold text-[#2d2d2d] marker:content-none [&::-webkit-details-marker]:hidden">
                 <span className="flex flex-wrap items-center gap-2">
@@ -92,7 +92,7 @@ export default function DoshaRemediesSection({ doshas }: DoshaRemediesSectionPro
                 </span>
               </summary>
 
-              <div className="border-t border-[#f0e6d0] px-4 py-4">
+              <div className="px-4 py-4">
                 <p className="font-mukta text-sm font-medium text-[#5c4033]">May influence</p>
                 <p className="mt-1 font-mukta text-base leading-relaxed text-[#4a4a4a]">
                   {guide.affects}
