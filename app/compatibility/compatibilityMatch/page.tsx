@@ -198,7 +198,7 @@ function CompatibilityHoroscopeCardLink({
     return (
       <Link
         href={href}
-        className="group block h-[135px] w-[340px] snap-start rounded-[33px] border border-[1px] border-[#5B5B5B] bg-transparent px-[14px] py-[12px] opacity-100 shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-[transform,box-shadow,border-color] duration-200 active:scale-[0.99] hover:border-[#5B5B5B] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]"
+        className="group block w-[min(80vw,320px)] h-[135px] snap-start rounded-[33px] border-[1px] border-[#5B5B5B] bg-transparent px-[14px] py-[12px] opacity-100 rotate-0"
       >
         <div className="flex items-center gap-[15px]">
           {/* Large outline/light zodiac image */}
@@ -247,7 +247,7 @@ function CompatibilityHoroscopeCardLink({
   return (
     <Link
       href={href}
-      className="group block h-full min-w-0 max-w-full rounded-[20px] border border-[#5c4033]/25 bg-transparent px-4 py-4 transition-[transform,box-shadow,colors] duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:border-[#5c4033]/45 hover:bg-white/20 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)] md:rounded-[24px] md:border-[#d4d4d8] md:bg-transparent md:shadow-[0_2px_12px_rgba(0,0,0,0.05)] md:hover:border-[#c4c4c9] md:hover:bg-transparent xl:rounded-[26px]"
+      className="group block h-full min-w-0 max-w-full rounded-[20px] border border-[#5B5B5B] bg-transparent px-4 py-4 transition-[transform,box-shadow,colors] duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:border-[#5B5B5B] hover:bg-white/20 hover:shadow-[0_6px_20px_rgba(97,21,8,0.06)] md:rounded-[24px] md:border-[#5B5B5B] md:bg-transparent md:shadow-[0_2px_12px_rgba(0,0,0,0.05)] md:hover:border-[#5B5B5B] md:hover:bg-transparent xl:rounded-[26px]"
     >
       <div className={innerFlex}>
         <div className="flex h-[104px] w-[120px] shrink-0 items-center justify-center rounded-[18px] border border-transparent bg-transparent md:border-transparent md:bg-transparent">
@@ -531,7 +531,7 @@ export default function CompatibilityMatchPage() {
   const overallScore = compatibilityData?.overall_match_percent || 95;
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pt-6 sm:pt-8 lg:pt-10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-0">
         <section className="flex flex-col gap-10 pb-20 sm:gap-20">
 
@@ -926,8 +926,8 @@ export default function CompatibilityMatchPage() {
                 dataQaId="compatibility-horoscope-sign-cards-grid"
                 compact
                 useSmUpGrid
+                alignStart
                 showCarouselNav={false}
-                oneSlidePerView
                 className="lg:grid-cols-3"
                 renderCard={(card, layout) => (
                   <CompatibilityHoroscopeCardLink

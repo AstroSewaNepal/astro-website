@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
+import DownloadApp from '@/components/pages/landing/download-app';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import FindNowIcon from '@/components/icons/findnow_love_icon.png';
 import {
@@ -64,31 +65,31 @@ export default function CompatibilityPage() {
   }, [partnerGender, partnerSign, router, yourGender, yourSign]);
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pt-6 sm:pt-8 lg:pt-10">
       <div className="container mx-auto px-6 lg:px-0">
         <section>
           <div className="w-full">
             <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-[0%] text-[#6b2417] sm:text-[36px] sm:leading-[48px]">
               {copy.title}
             </h1>
-            <p className="mt-2 font-mukta font-normal text-[14px] leading-[24px] tracking-[0%] text-[#111111] max-sm:!text-[14px] max-sm:!leading-[24px] sm:text-[22px] sm:leading-[30px]">
+            <p className="mt-2 font-mukta font-normal text-[14px] leading-[24px] tracking-[0%] text-[#111111] text-justify max-sm:!text-[14px] max-sm:!leading-[24px] sm:text-[22px] sm:leading-[30px]">
               {copy.subtitle}
             </p>
 
             <div className="mt-4">
-              <p className="font-mukta text-[16px] leading-[28px] tracking-[0%] text-[#4f463f] sm:text-[24px] sm:leading-[34px]">
+              <p className="font-mukta text-[16px] leading-[28px] tracking-[0%] text-[#4f463f] text-justify sm:text-[24px] sm:leading-[34px]">
                 You may not always click effortlessly with everyone, but when you're with that special someone, life feels brighter, calmer, and more meaningful. Throughout your journey, you'll meet many wonderful people — friends, mentors, and companions — but only one will truly be your life partner. Choosing the right person is important, because they should make you feel cherished, supported, and at peace, never lonely or uncared for.
                 Do you ever feel your heart skip a beat when you meet someone? That spark could be a sign of destiny. Discover what the universe has in store for your love life by exploring your zodiac sign compatibility with Astro Sewa.
               </p>
             </div>
           </div>
 
-          <div className="mt-8 rounded-[20px] px-4 py-11 sm:border sm:border-[#BE7B71] sm:bg-[#F8F3DF] sm:px-8 sm:py-11">
+          <div className="mt-8 rounded-[20px] px-4 py-6 sm:border sm:border-[#BE7B71] sm:bg-[#F8F3DF] sm:px-8 sm:py-11">
             <h2 className="text-left sm:text-center font-mukta text-[24px] leading-[34px] font-bold tracking-[0%] text-[#611508] -ml-4 sm:ml-0 sm:font-sahitya sm:text-[28px] sm:leading-[38px] break-words">
               {copy.cardTitle}
             </h2>
-            <p className="mt-1 text-left sm:text-center font-mukta text-[20px] leading-[26px] tracking-[0%] text-[#141414] -ml-4 sm:ml-0">
-              <span className="block whitespace-nowrap">Choose your and your partner&apos;s zodiac sign</span>
+              <p className="mt-1 text-left sm:text-center font-mukta text-[18px] sm:text-[20px] leading-[24px] sm:leading-[26px] tracking-[0%] text-[#141414] -ml-4 sm:ml-0">
+              <span className="block">Choose your and your partner&apos;s zodiac sign</span>
               <span className="block">to check compatibility</span>
             </p>
 
@@ -266,7 +267,7 @@ export default function CompatibilityPage() {
             </div>
           </div>
 
-          <p className="mt-8 font-mukta font-normal text-[24px] leading-[34px] tracking-[0%] text-[#464646]">
+          <p className="mt-8 font-mukta font-normal text-[24px] leading-[34px] tracking-[0%] text-[#464646] text-justify">
             {copy.outro}
           </p>
         </section>
@@ -275,6 +276,10 @@ export default function CompatibilityPage() {
 
         <div className="mx-auto mt-14 max-w-[1180px]">
           <Services />
+        </div>
+
+        <div className="mx-auto mt-14 max-w-[1180px]">
+          <DownloadApp />
         </div>
       </div>
     </main>
