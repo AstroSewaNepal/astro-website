@@ -60,7 +60,7 @@ type TabButtonProps = {
 
 /** Same pill classes as `free-kundali/kundali-result-section.tsx` tab buttons. */
 function freeKundaliTabButtonClass(active: boolean): string {
-  return `h-[46px] w-[334.25px] max-w-full rounded-[32px] border border-[#A13924] p-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 ${
+  return `inline-flex items-center justify-center h-[34px] min-w-[118px] max-w-full rounded-[32px] border border-[#A13924] px-4 py-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 whitespace-nowrap md:h-[46px] md:min-w-[334.25px] md:px-2 ${
     active ? 'bg-[#7F1808] text-white' : 'bg-[#ede9d9] text-[#7F1808]'
   } hover:bg-[#7F1808] hover:text-white`;
 }
@@ -168,16 +168,8 @@ function natureColor(nature: string | undefined): string {
 
 function natureBadge(nature: string | undefined): React.ReactNode {
   const label = nature ?? 'Unknown';
-  const cls =
-    nature === 'Good'
-      ? 'bg-green-100 text-green-700 border-green-200'
-      : nature === 'Bad'
-        ? 'bg-red-100 text-red-700 border-red-200'
-        : 'bg-amber-100 text-amber-700 border-amber-200';
   return (
-    <span
-      className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border font-mukta ${cls}`}
-    >
+    <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border border-[#C8A9A0] bg-[#fffdf6] text-[#3a3a3a] font-mukta">
       {label}
     </span>
   );
@@ -301,7 +293,6 @@ const CategoryBar: React.FC<{ label: string; icon: string; percent: number }> = 
   icon,
   percent,
 }) => {
-  const color = percent >= 70 ? '#22c55e' : percent >= 45 ? '#f59e0b' : '#ef4444';
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between">
@@ -309,66 +300,46 @@ const CategoryBar: React.FC<{ label: string; icon: string; percent: number }> = 
           <span>{icon}</span>
           {label}
         </span>
-        <span className="font-mukta text-sm font-bold" style={{ color }}>
+        <span className="font-mukta text-sm font-bold text-[#3a3a3a]">
           {percent}%
         </span>
       </div>
-      <div className="w-full h-2 rounded-full bg-[#f3e8de] overflow-hidden">
+      <div className="w-full h-2 rounded-full bg-transparent overflow-hidden">
         <div
-          className="h-full rounded-full transition-all duration-700"
-          style={{ width: `${percent}%`, background: color }}
+          className="h-full rounded-full transition-all duration-700 bg-primary"
+          style={{ width: `${percent}%` }}
         />
       </div>
     </div>
   );
 };
 
-const PersonCard: React.FC<{ person: PersonInput; role: string; symbol: string }> = ({
-  person,
-  role,
-  symbol,
-}) => (
-  <div className="rounded-2xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow-sm p-4 md:p-5 flex flex-col gap-2">
-    <div className="flex items-center gap-2 mb-1">
-      <span className="text-2xl">{symbol}</span>
-      <div>
-        <p className="font-sahitya font-bold text-primary text-base leading-tight">
-          {person.fullName}
-        </p>
-        <p className="font-mukta text-xs text-[#7c3a2d] capitalize">{role}</p>
-      </div>
-    </div>
-    {[
-      ['Date of Birth', person.dateOfBirth],
-      ['Birth Time', person.birthTime],
-      ['Birth Place', person.birthPlace],
-      ['Gender', toTitleCase(person.gender)],
-    ].map(([k, v]) => (
-      <div key={k} className="flex justify-between text-xs border-t border-[#f3e8de] pt-1.5">
-        <span className="font-mukta text-[#7c3a2d]">{k}</span>
-        <span className="font-mukta font-medium text-[#3d1a14]">{v || '-'}</span>
-      </div>
-    ))}
-  </div>
-);
+const PersonCard: React.FC<{ person: PersonInput; role: string; symbol: string }> = () => {
+  return null;
+};
 
 const KutaTable: React.FC<{
   predictions: MatchPredictionRow[];
   man: PersonInput;
   woman: PersonInput;
-}> = ({ predictions, man, woman }) => {
+  kutaRaw?: number | null;
+}> = ({ predictions, man, woman, kutaRaw = null }) => {
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
   return (
-    <div className="overflow-x-auto rounded-2xl border border-[#f5e9c6] shadow-sm">
-      <table className="w-full min-w-[500px] text-sm font-mukta">
+    <div className="rounded-[20px] border border-[#e5d9bc] bg-transparent p-3 overflow-x-auto">
+      <table className="w-full min-w-[640px] border-separate border-spacing-0 font-mukta">
         <thead>
-          <tr className="bg-[#fffdf6] text-[#2d2d2d]">
-            <th className="px-4 py-3 text-left font-semibold">Kuta / Factor</th>
-            <th className="px-3 py-3 text-center font-semibold">Nature</th>
-            <th className="px-3 py-3 text-center font-semibold">
+          <tr>
+            <th className="border-b border-[#C8A9A0] bg-transparent px-3 py-3 text-left font-sahitya text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
+              Kuta / Factor
+            </th>
+            <th className="border-b border-[#C8A9A0] bg-transparent px-3 py-3 text-center font-sahitya text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
+              Nature
+            </th>
+            <th className="border-b border-[#C8A9A0] bg-transparent px-3 py-3 text-center font-sahitya text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
               For {man.fullName.split(' ')[0]}
             </th>
-            <th className="px-3 py-3 text-center font-semibold">
+            <th className="border-b border-[#C8A9A0] bg-transparent px-3 py-3 text-center font-sahitya text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
               For {woman.fullName.split(' ')[0]}
             </th>
           </tr>
@@ -382,10 +353,10 @@ const KutaTable: React.FC<{
             return (
               <React.Fragment key={rowKey}>
                 <tr
-                  className={`border-t border-[#f5e9c6] cursor-pointer transition-colors ${i % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#faf8f5]'} hover:bg-[#f9ece0]`}
+                  className="border-t border-[#C8A9A0] cursor-pointer transition-colors hover:bg-[#f3e8de]"
                   onClick={() => setExpandedKey(isOpen ? null : rowKey)}
                 >
-                  <td className="px-4 py-2.5 font-medium text-[#3d1a14] border-r border-[#f5e9c6]">
+                  <td className="border border-[#C8A9A0] px-3 py-2 text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
                     <span className="flex items-center gap-1.5">
                       {info && (
                         <span className="text-primary/50 text-xs">{isOpen ? '▾' : '▸'}</span>
@@ -393,25 +364,22 @@ const KutaTable: React.FC<{
                       {name}
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 text-center border-r border-[#f5e9c6]">
+                  <td className="border border-[#C8A9A0] px-3 py-2 text-center text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
                     {natureBadge(row.Nature)}
                   </td>
-                  <td
-                    className={`px-3 py-2.5 text-center text-xs border-r border-[#f5e9c6] ${natureColor(row.Nature)}`}
-                  >
+                  <td className="border border-[#C8A9A0] px-3 py-2 text-center text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
                     {row.MaleInfo?.trim() || (row.Nature ?? '-')}
                   </td>
-                  <td className={`px-3 py-2.5 text-center text-xs ${natureColor(row.Nature)}`}>
+                  <td className="border border-[#C8A9A0] px-3 py-2 text-center text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
                     {row.FemaleInfo?.trim() || (row.Nature ?? '-')}
                   </td>
                 </tr>
                 {isOpen && info && (
-                  <tr className="border-t border-[#f5e9c6]">
-                    <td
-                      colSpan={4}
-                      className="px-4 py-3 bg-[#fffdf6] text-xs text-[#5a2a20] leading-relaxed italic"
-                    >
-                      {info}
+                  <tr>
+                    <td colSpan={4} className="px-3 py-3">
+                      <div className="rounded-[16px] bg-transparent p-3 text-[18px] leading-[30px] font-normal text-[#3a3a3a]">
+                        {info}
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -420,6 +388,11 @@ const KutaTable: React.FC<{
           })}
         </tbody>
       </table>
+      <div className="mt-3 px-3 text-right font-mukta text-[16px] font-semibold text-[#3a3a3a]">
+        {kutaRaw != null
+          ? `Total Kuta Score: ${clampPercent(kutaRaw)}% — ${Math.round(((Math.max(0, Math.min(100, kutaRaw)) * 36) / 100) * 10) / 10}/36`
+          : 'Total Kuta Score: -'}
+      </div>
     </div>
   );
 };
@@ -465,16 +438,16 @@ const IndividualBasicDetails: React.FC<{
         </h3>
         <div className="mt-2 grid grid-cols-1 gap-8">
           <div>
-            <h3 className="font-sahitya text-primary text-[34px] leading-[44px] font-bold">
+            <h3 className="font-sahitya text-primary text-[22px] leading-[32px] font-bold md:text-[34px] md:leading-[44px]">
               Basic Details
             </h3>
             <div className="mt-2">
               {basicRows.map(([label, value]) => (
                 <div key={`basic-${label}`} className="grid grid-cols-2">
-                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-medium text-[#3a3a3a]">
+                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
                     {label}
                   </div>
-                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-normal text-[#4a4a4a]">
+                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[18px] leading-[30px] font-semibold text-[#4a4a4a]">
                     {value}
                   </div>
                 </div>
@@ -483,16 +456,16 @@ const IndividualBasicDetails: React.FC<{
           </div>
 
           <div>
-            <h3 className="font-sahitya text-primary text-[34px] leading-[44px] font-bold">
+            <h3 className="font-sahitya text-primary text-[22px] leading-[32px] font-bold md:text-[34px] md:leading-[44px]">
               Kundali Details
             </h3>
             <div className="mt-2">
               {kundaliRows.map(([label, value]) => (
                 <div key={`kundali-${label}`} className="grid grid-cols-2">
-                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-medium text-[#3a3a3a]">
+                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
                     {label}
                   </div>
-                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-normal text-[#4a4a4a]">
+                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[18px] leading-[30px] font-semibold text-[#4a4a4a]">
                     {value}
                   </div>
                 </div>
@@ -758,7 +731,7 @@ const KundaliMatchingResultSection: React.FC = () => {
     readKundaliMatchingResult,
     () => null,
   );
-  const [activeTab, setActiveTab] = useState<KundaliMatchingTab>('match');
+  const [activeTab, setActiveTab] = useState<KundaliMatchingTab>('basic');
 
   if (!result) {
     return (
@@ -808,10 +781,10 @@ const KundaliMatchingResultSection: React.FC = () => {
       <div className="mx-auto w-full max-w-[1453px] space-y-8">
         <section className="w-full pt-0 md:pt-2 pb-6">
           <div className="max-w-4xl">
-            <h1 className="font-sahitya font-bold text-[20px] leading-[100%] md:text-[36px] md:leading-[48px] text-primary mb-1">
+            <h1 className="font-mukta font-semibold text-[18px] leading-[28px] tracking-[0] md:font-sahitya md:font-bold md:text-[36px] md:leading-[48px] text-primary mb-1">
               Kundali Matching Result
             </h1>
-            <p className="font-mukta font-medium text-[16px] leading-[30px] md:text-[24px] text-[#141414] mb-3">
+            <p className="font-mukta font-normal text-[12px] leading-[20px] tracking-[0] capitalize md:text-[24px] md:leading-[34px] text-[#141414] mb-3">
               {resultSubtitle}
             </p>
             <p className="font-mukta font-normal text-[16px] leading-6 tracking-[0] md:text-[24px] md:leading-[34px] text-[#464646] text-justify">
@@ -825,7 +798,7 @@ const KundaliMatchingResultSection: React.FC = () => {
           <div className="mx-auto grid w-full max-w-[900px] grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-6 md:gap-8">
             <div className="flex min-w-0 flex-col items-stretch">
               <figure className="flex flex-col items-center gap-15">
-                <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
+                <div className="relative h-[240px] w-full sm:h-[280px] md:h-[300px]">
                   {result.manPlanetRows && result.manPlanetRows.length > 0 ? (
                     <div className={`w-full h-full ${OPEN_CHART_FRAME_CLASS}`}>
                       <NorthIndianOpenChartWithPlanets
@@ -857,7 +830,7 @@ const KundaliMatchingResultSection: React.FC = () => {
             </div>
             <div className="flex min-w-0 flex-col items-stretch">
               <figure className="flex flex-col items-center gap-15">
-                <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
+                <div className="relative h-[240px] w-full sm:h-[280px] md:h-[300px]">
                   {result.womanPlanetRows && result.womanPlanetRows.length > 0 ? (
                     <div className={`w-full h-full ${OPEN_CHART_FRAME_CLASS}`}>
                       <NorthIndianOpenChartWithPlanets
@@ -889,28 +862,30 @@ const KundaliMatchingResultSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Tabs — markup matches Free Kundali: flex row, fixed-width pills, max-w-[1453px] parent */}
-        <div className="mt-6 flex flex-nowrap items-center justify-center gap-3 overflow-x-auto">
-          <TabButton
-            id="match"
-            label="Match Result"
-            activeTab={activeTab}
-            onSelect={setActiveTab}
-          />
-          <TabButton
-            id="basic"
-            label="Basic Details"
-            activeTab={activeTab}
-            onSelect={setActiveTab}
-          />
-          <TabButton id="dosha" label="Dosha" activeTab={activeTab} onSelect={setActiveTab} />
-          <TabButton
-            id="planets"
-            label="Planets Detail"
-            activeTab={activeTab}
-            onSelect={setActiveTab}
-          />
-          <TabButton id="lagna" label="Lagna Chart" activeTab={activeTab} onSelect={setActiveTab} />
+        {/* Tabs — horizontal scroll on mobile with hidden scrollbar */}
+        <div className="mt-6 w-full overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex min-w-max gap-3">
+            <TabButton
+              id="basic"
+              label="Basic Details"
+              activeTab={activeTab}
+              onSelect={setActiveTab}
+            />
+            <TabButton
+              id="match"
+              label="Match Result"
+              activeTab={activeTab}
+              onSelect={setActiveTab}
+            />
+            <TabButton id="dosha" label="Dosha" activeTab={activeTab} onSelect={setActiveTab} />
+            <TabButton
+              id="planets"
+              label="Planets Detail"
+              activeTab={activeTab}
+              onSelect={setActiveTab}
+            />
+            <TabButton id="lagna" label="Lagna Chart" activeTab={activeTab} onSelect={setActiveTab} />
+          </div>
         </div>
 
         {/* Tab Content */}
@@ -921,41 +896,18 @@ const KundaliMatchingResultSection: React.FC = () => {
                 <PersonCard person={result.man} role="Man" symbol="♂" />
                 <PersonCard person={result.woman} role="Woman" symbol="♀" />
               </div>
-              <div className="rounded-3xl border-2 border-[#f5e9c6] bg-[#f9f4dd] shadow p-6 md:p-8">
-                <div className="flex flex-col md:flex-row items-center gap-8">
-                  <div className="shrink-0">
-                    <ScoreRing score={kutaScore} />
-                    <div className="mt-3 flex justify-center gap-4 text-xs font-mukta">
-                      <span className="text-green-600 font-semibold">✓ {goodCount} Good</span>
-                      <span className="text-red-500 font-semibold">✗ {badCount} Challenging</span>
-                    </div>
-                  </div>
-                  <div className="flex-1 w-full space-y-4">
-                    {CATEGORIES.map(cat => (
-                      <CategoryBar
-                        key={cat.label}
-                        label={cat.label}
-                        icon={cat.icon}
-                        percent={categoryPercent(cat.names, predictions)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {report.Summary?.ScoreSummary && (
-                  <div className="mt-6 rounded-xl bg-[#fffdf6] border border-[#f5e9c6] px-5 py-4">
-                    <p className="font-mukta text-sm text-[#5a2a20] leading-relaxed">
-                      <span className="font-semibold text-primary">Astro Summary: </span>
-                      {report.Summary.ScoreSummary}
-                    </p>
-                  </div>
-                )}
-              </div>
+              {/* match content removed per request */}
               {predictions.length > 0 && (
                 <div className="space-y-3">
                   <h2 className="font-sahitya font-bold text-xl text-primary">
                     Guna Milan — Detailed Kuta Analysis
                   </h2>
-                  <KutaTable predictions={predictions} man={result.man} woman={result.woman} />
+                  <KutaTable
+                    predictions={predictions}
+                    man={result.man}
+                    woman={result.woman}
+                    kutaRaw={report.KutaScore ?? null}
+                  />
                 </div>
               )}
             </div>
