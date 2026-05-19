@@ -120,7 +120,7 @@ const DatePickerDialog: React.FC<DatePickerDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xs fixed !left-4 !right-auto !top-1/2 !translate-x-0 !translate-y-[-50%] md:!left-8 !p-3">
+      <DialogContent className="w-[min(100vw-2rem,20rem)] fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:!left-8 md:!top-1/2 md:!translate-x-0 md:!translate-y-[-50%] md:!right-auto !p-3">
         <DialogHeader>
           <DialogTitle className="text-base">Select Date of Birth</DialogTitle>
           <DialogClose />
@@ -159,22 +159,22 @@ const DatePickerDialog: React.FC<DatePickerDialogProps> = ({
               </div>
 
               {/* Day names */}
-              <div className="grid grid-cols-7 gap-1">
+              <div className="grid grid-cols-7 gap-1 justify-items-center">
                 {dayNames.map(day => (
-                  <div key={day} className="text-center text-xs font-semibold text-gray-600 py-2">
+                  <div key={day} className="text-center text-xs font-semibold text-gray-600 py-2 w-full">
                     {day}
                   </div>
                 ))}
               </div>
 
               {/* Days grid */}
-              <div className="grid grid-cols-7 gap-1">
+              <div className="grid grid-cols-7 gap-1 justify-items-center">
                 {days.map((day, idx) => (
                   <button
                     key={idx}
                     onClick={() => day && handleDayClick(day)}
                     disabled={!day}
-                    className={`py-2 text-center rounded transition-colors text-sm ${
+                    className={`w-full h-10 py-2 text-center rounded-full transition-colors text-sm ${
                       day
                         ? 'hover:bg-primary hover:text-white cursor-pointer'
                         : 'cursor-default text-gray-200'

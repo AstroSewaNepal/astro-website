@@ -141,8 +141,10 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
         style={{
           position: 'absolute',
           zIndex: 50,
-          width: 409,
-          height: 325,
+          width: 'min(100vw - 32px, 520px)',
+          maxWidth: '100%',
+          maxHeight: 'calc(100vh - 48px)',
+          minHeight: 320,
           borderRadius: 24,
           border: `1px solid ${maroon}30`,
           opacity: 1,
@@ -217,7 +219,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
                       background: hl ? maroon : 'transparent',
                       color: !day ? `${maroon}35` : hl ? cream : maroon,
                       border: 'none', borderRadius: '50%',
-                      width: 34, height: 34, margin: '0 auto',
+                      width: '100%', minHeight: 40, maxWidth: 54,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontWeight: hl ? 700 : 500,
                       cursor: day ? 'pointer' : 'default',
@@ -246,7 +248,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
               </div>
             </div>
             <div style={{ borderTop:`1.5px dashed ${maroon}50`, marginBottom:12 }}/>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, flex:1, alignContent:'space-evenly' }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(68px,1fr))', gap:8, flex:1, alignContent:'space-evenly' }}>
               {monthNames.map((month, idx) => (
                 <button key={month} onClick={() => handleMonthClick(idx)} type="button"
                   style={{
@@ -278,7 +280,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
               </div>
             </div>
             <div style={{ borderTop:`1.5px dashed ${maroon}50`, marginBottom:12 }}/>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:8, flex:1, alignContent:'space-evenly' }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(64px,1fr))', gap:8, flex:1, alignContent:'space-evenly' }}>
               {Array.from({ length:10 }, (_, i) => displayYear - 5 + i).map(year => (
                 <button key={year} onClick={() => handleYearClick(year)} type="button"
                   style={{

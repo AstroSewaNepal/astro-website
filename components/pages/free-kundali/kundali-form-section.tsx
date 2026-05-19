@@ -411,7 +411,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                     onClick={() => setIsDatePickerOpen(true)}
                     type="button"
                     className={clsx(
-                      'w-full flex items-center rounded-full border px-4 py-3 focus-within:border-primary transition-colors bg-transparent font-mukta text-sm md:text-base text-[#4f2620]',
+                      'w-full flex items-center rounded-full border px-4 py-3 focus-within:border-primary transition-colors bg-transparent font-mukta text-sm md:text-base text-[#4f2620] cursor-pointer',
                       fieldErrors.dateOfBirth ? 'border-red-500' : 'border-Trinary',
                     )}
                   >
