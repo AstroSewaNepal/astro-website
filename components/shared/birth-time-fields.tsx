@@ -61,20 +61,20 @@ export function BirthTimeFields({
       ),
     variant === 'matching' &&
       clsx(
-        'relative w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 focus-within:ring-2 focus-within:ring-primary/10',
+        'relative w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-1.5 md:px-2 pr-11 gap-0 justify-start focus-within:ring-2 focus-within:ring-primary/10',
         error ? 'border-red-500' : 'border-primary focus-within:border-primary',
       ),
     disabled && 'opacity-50 pointer-events-none',
   );
 
   const inputClass = clsx(
-    'text-center bg-transparent outline-none disabled:cursor-not-allowed',
+    'bg-transparent outline-none disabled:cursor-not-allowed',
     variant === 'calculator' &&
-      'w-12 px-2 py-3 font-mukta text-[15px] text-[#2f2f2f] placeholder:text-[#b0a098]',
+      'text-center w-12 px-2 py-3 font-mukta text-[15px] text-[#2f2f2f] placeholder:text-[#b0a098]',
     variant === 'kundali' &&
-      'w-10 py-0 font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph',
+      'text-center w-10 py-0 font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph',
     variant === 'matching' &&
-      'w-10 font-mukta text-[13px] md:text-[14px] text-[#141414] placeholder:text-[#7b6b69]',
+      'w-6 md:w-8 font-mukta text-left text-[13px] md:text-[14px] text-[#141414] placeholder:text-[#7b6b69]',
   );
 
   const separatorClass = clsx(
@@ -87,13 +87,13 @@ export function BirthTimeFields({
     'bg-transparent outline-none disabled:cursor-not-allowed cursor-pointer',
     variant === 'calculator' && 'px-2 py-3 font-mukta text-[15px] text-[#2f2f2f]',
     variant === 'kundali' && 'font-mukta text-sm md:text-base text-[#4f2620]',
-    variant === 'matching' && 'font-mukta text-[13px] md:text-[14px] text-[#141414]',
+    variant === 'matching' && 'font-mukta text-left text-[13px] md:text-[14px] text-[#141414]',
   );
 
   const iconWrapClass = clsx(
     variant === 'calculator' && 'ml-auto pr-4 text-[#5D1409] opacity-60',
     variant === 'kundali' && 'shrink-0 text-primary',
-    variant === 'matching' && 'absolute inset-y-0 right-3 flex items-center text-primary/70 pointer-events-none',
+    variant === 'matching' && 'absolute inset-y-0 right-1 md:right-3 flex items-center text-primary/70 pointer-events-none',
   );
 
   const labelClass = clsx(

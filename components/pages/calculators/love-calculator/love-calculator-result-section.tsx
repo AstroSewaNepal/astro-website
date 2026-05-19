@@ -72,7 +72,7 @@ export default function LoveCalculatorResultSection() {
   }
 
   return (
-    <section className="w-full px-3 md:px-8 pb-12">
+    <section className="w-full px-3 md:px-8 pt-12 pb-12">
       <div className="mx-auto max-w-[1454px]">
         {/* Header */}
         <div className="mb-4">

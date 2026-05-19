@@ -297,8 +297,9 @@ const InputPill = ({
         onInput={onInput}
         className={[
           'w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 pr-10 font-mukta text-[13px] md:text-[14px] text-[#141414] placeholder:text-[#7b6b69] outline-none focus:ring-2 focus:ring-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors',
+          type === 'date' ? 'hide-native-picker' : '',
           error ? 'border-red-500 focus:border-red-500' : 'border-primary focus:border-primary',
-        ].join(' ')}
+        ].filter(Boolean).join(' ')}
       />
       {rightIcon ? (
         <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-primary/70">

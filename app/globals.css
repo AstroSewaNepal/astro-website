@@ -746,6 +746,18 @@ body {
   display: none; /* Safari and Chrome */
 }
 
+input.hide-native-picker[type='date']::-webkit-calendar-picker-indicator,
+input.hide-native-picker[type='date']::-webkit-clear-button,
+input.hide-native-picker[type='date']::-webkit-inner-spin-button {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+input.hide-native-picker[type='date']::-ms-clear,
+input.hide-native-picker[type='date']::-ms-expand {
+  display: none;
+}
+
 /* ================================================================
    shadcn/ui CSS variables — themed to brand #611508
    Appended below existing tokens — DO NOT remove content above
