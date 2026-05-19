@@ -4,6 +4,10 @@ import React, { useState, useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import OpenChart from '@/components/images/openchart.png';
+import {
+  NorthIndianOpenChartWithPlanets,
+  OPEN_CHART_FRAME_CLASS,
+} from '@/components/pages/free-kundali/north-indian-open-chart';
 import PersonDoshaResults from '@/components/shared/person-dosha-results';
 import type { StoredKundaliMatchingResult } from '@/lib/vedastro/fetch-kundali-matching-bundle';
 
@@ -717,19 +721,25 @@ const IndividualLagnaChart: React.FC<{ svg: string | undefined; title: string }>
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
+let __lastKundaliRaw: string | null | undefined = undefined;
+let __lastKundaliParsed: StoredKundaliMatchingResult | null = null;
+
 function readKundaliMatchingResult(): StoredKundaliMatchingResult | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
+  if (typeof window === 'undefined') return null;
   const raw = window.sessionStorage.getItem('kundaliMatchingResult');
+  // If the raw string hasn't changed, return the previously parsed object (stable reference)
+  if (raw === __lastKundaliRaw) return __lastKundaliParsed;
+  __lastKundaliRaw = raw;
   if (!raw) {
+    __lastKundaliParsed = null;
     return null;
   }
   try {
-    return JSON.parse(raw) as StoredKundaliMatchingResult;
+    __lastKundaliParsed = JSON.parse(raw) as StoredKundaliMatchingResult;
   } catch {
-    return null;
+    __lastKundaliParsed = null;
   }
+  return __lastKundaliParsed;
 }
 
 const subscribeKundaliMatchingResult = () => () => {};
@@ -767,6 +777,13 @@ const KundaliMatchingResultSection: React.FC = () => {
   const womanName = result.woman.fullName?.trim();
   const manChartUrl = chartDataUrl(result.manLagnaSvg);
   const womanChartUrl = chartDataUrl(result.womanLagnaSvg);
+  const manPayloadRoot = unwrapVedastroPayload(result.manPayload);
+  const manPanchanga = isRecord(manPayloadRoot) && manPayloadRoot['PanchangaTable'] ? manPayloadRoot['PanchangaTable'] : manPayloadRoot;
+  const manLagnaSignFallback = getPanchangaValue(isRecord(manPanchanga) ? manPanchanga : undefined, ['Lagna'], ['LagnaSign']);
+
+  const womanPayloadRoot = unwrapVedastroPayload(result.womanPayload);
+  const womanPanchanga = isRecord(womanPayloadRoot) && womanPayloadRoot['PanchangaTable'] ? womanPayloadRoot['PanchangaTable'] : womanPayloadRoot;
+  const womanLagnaSignFallback = getPanchangaValue(isRecord(womanPanchanga) ? womanPanchanga : undefined, ['Lagna'], ['LagnaSign']);
   const resultSubtitle =
     manName && womanName
       ? `Matching result for ${manName} and ${womanName}`
@@ -795,9 +812,16 @@ const KundaliMatchingResultSection: React.FC = () => {
         <div className="mx-auto w-full max-w-4xl">
           <div className="mx-auto grid w-full max-w-[900px] grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-6 md:gap-8">
             <div className="flex min-w-0 flex-col items-stretch">
-              <figure className="flex flex-col items-center gap-2">
+              <figure className="flex flex-col items-center gap-15">
                 <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
-                  {manChartUrl ? (
+                  {result.manPlanetRows && result.manPlanetRows.length > 0 ? (
+                    <div className={`w-full h-full ${OPEN_CHART_FRAME_CLASS}`}>
+                      <NorthIndianOpenChartWithPlanets
+                        planetRows={result.manPlanetRows}
+                        lagnaSignFallback={manLagnaSignFallback}
+                      />
+                    </div>
+                  ) : manChartUrl ? (
                     <img
                       src={manChartUrl}
                       alt="Man Kundali chart"
@@ -820,9 +844,16 @@ const KundaliMatchingResultSection: React.FC = () => {
               </figure>
             </div>
             <div className="flex min-w-0 flex-col items-stretch">
-              <figure className="flex flex-col items-center gap-2">
+              <figure className="flex flex-col items-center gap-15">
                 <div className="relative h-[180px] w-full sm:h-[240px] md:h-[300px]">
-                  {womanChartUrl ? (
+                  {result.womanPlanetRows && result.womanPlanetRows.length > 0 ? (
+                    <div className={`w-full h-full ${OPEN_CHART_FRAME_CLASS}`}>
+                      <NorthIndianOpenChartWithPlanets
+                        planetRows={result.womanPlanetRows}
+                        lagnaSignFallback={womanLagnaSignFallback}
+                      />
+                    </div>
+                  ) : womanChartUrl ? (
                     <img
                       src={womanChartUrl}
                       alt="Woman Kundali chart"
@@ -974,14 +1005,31 @@ const KundaliMatchingResultSection: React.FC = () => {
 
           {activeTab === 'lagna' && (
             <div className="flex flex-col md:flex-row gap-6">
-              <IndividualLagnaChart
-                svg={result.manLagnaSvg}
-                title={`${result.man.fullName}'s Chart (Man)`}
-              />
-              <IndividualLagnaChart
-                svg={result.womanLagnaSvg}
-                title={`${result.woman.fullName}'s Chart (Woman)`}
-              />
+              <div className="flex-1 min-w-[300px]">
+                {result.manPlanetRows && result.manPlanetRows.length > 0 ? (
+                  <div className={`rounded-[20px] p-5 shadow-sm h-full ${OPEN_CHART_FRAME_CLASS}`}>
+                    <NorthIndianOpenChartWithPlanets
+                      planetRows={result.manPlanetRows}
+                      lagnaSignFallback={manLagnaSignFallback}
+                    />
+                  </div>
+                ) : (
+                  <IndividualLagnaChart svg={result.manLagnaSvg} title={`${result.man.fullName}'s Chart (Man)`} />
+                )}
+              </div>
+
+              <div className="flex-1 min-w-[300px]">
+                {result.womanPlanetRows && result.womanPlanetRows.length > 0 ? (
+                  <div className={`rounded-[20px] p-5 shadow-sm h-full ${OPEN_CHART_FRAME_CLASS}`}>
+                    <NorthIndianOpenChartWithPlanets
+                      planetRows={result.womanPlanetRows}
+                      lagnaSignFallback={womanLagnaSignFallback}
+                    />
+                  </div>
+                ) : (
+                  <IndividualLagnaChart svg={result.womanLagnaSvg} title={`${result.woman.fullName}'s Chart (Woman)`} />
+                )}
+              </div>
             </div>
           )}
         </div>

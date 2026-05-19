@@ -130,9 +130,9 @@ const HOUSE_ANCHORS: Record<number, { leftPct: number; topPct: number; widthPct:
   6: { leftPct: 35, topPct: 90, widthPct: 14 },
   7: { leftPct: 50, topPct: 75, widthPct: 14 },
   8: { leftPct: 69.5, topPct: 90, widthPct: 14 },
-  9: { leftPct: 100, topPct: 70, widthPct: 14 },
+  9: { leftPct: 90, topPct: 75, widthPct: 16},
   10: { leftPct: 75, topPct: 50, widthPct: 14 },
-  11: { leftPct: 90, topPct: 25, widthPct: 14 },
+  11: { leftPct: 92, topPct: 30, widthPct: 10 },
   12: { leftPct: 72, topPct: 9, widthPct: 17 },
 };
 
@@ -249,7 +249,7 @@ function groupPlanetsByHouse(rows: PlanetTableRow[]): Map<number, HousePlanet[]>
 
 /** Same frame as Basic Details `OpenChart` preview (matches Next/Image fill + object-contain box). */
 export const OPEN_CHART_FRAME_CLASS =
-  'relative mx-auto h-[353.0445861816406px] w-[463.39971923828125px] max-w-full';
+  'relative mx-auto h-[300] w-[700px] max-w-full';
 
 export type NorthIndianOpenChartProps = {
   planetRows: PlanetTableRow[];
@@ -264,6 +264,7 @@ export function NorthIndianOpenChartWithPlanets({
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [imgFit, setImgFit] = useState<ImgFitRect | null>(null);
+  const [minHeight, setMinHeight] = useState<number | undefined>(undefined);
 
   const recalcImgFit = useCallback(() => {
     const wrap = containerRef.current;
@@ -273,6 +274,16 @@ export function NorthIndianOpenChartWithPlanets({
     const nh = img?.naturalHeight || OPEN_CHART_NATURAL_SIZE.h;
     const next = computeObjectContainFit(wrap.clientWidth, wrap.clientHeight, nw, nh);
     setImgFit(next);
+    if (next) {
+      // If the computed image height is larger than the current container, expand container
+      // so overlay text doesn't spill outside (keeps labels below surrounding text).
+      if (next.height > wrap.clientHeight) {
+        setMinHeight(Math.ceil(next.height));
+      } else if (minHeight) {
+        // Reset if container is larger again
+        setMinHeight(undefined);
+      }
+    }
   }, []);
 
   useLayoutEffect(() => {
@@ -308,7 +319,11 @@ export function NorthIndianOpenChartWithPlanets({
   const fzLh = Math.max(6, Math.round(fitH * 0.02));
 
   return (
-    <div ref={containerRef} className={`${OPEN_CHART_FRAME_CLASS}`}>
+    <div
+      ref={containerRef}
+      className={`${OPEN_CHART_FRAME_CLASS}`}
+      style={minHeight ? { height: `${minHeight}px` } : undefined}
+    >
       <img
         ref={imgRef}
         src={src}
