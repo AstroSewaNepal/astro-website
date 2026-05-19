@@ -1,9 +1,7 @@
 'use client';
 
-import React, { useState, useSyncExternalStore } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import OpenChart from '@/components/images/openchart.png';
 import {
   NorthIndianOpenChartWithPlanets,
   OPEN_CHART_FRAME_CLASS,
@@ -329,14 +327,12 @@ function readFreeKundaliResult(): StoredKundaliResult | null {
   }
 }
 
-const subscribeFreeKundaliResult = () => () => {};
-
 const KundaliResultSection: React.FC = () => {
-  const result = useSyncExternalStore(
-    subscribeFreeKundaliResult,
-    readFreeKundaliResult,
-    () => null,
-  );
+  const [result, setResult] = useState<StoredKundaliResult | null>(null);
+
+  useEffect(() => {
+    setResult(readFreeKundaliResult());
+  }, []);
   const [activeTab, setActiveTab] = useState<'basic' | 'dosha' | 'planets' | 'lagna'>('basic');
 
   const planetHouseLines =
@@ -406,16 +402,20 @@ const KundaliResultSection: React.FC = () => {
         <p className="mt-2 font-mukta text-[#141414] text-sm md:text-lg">
           Discover your detailed Janam Kundli instantly
         </p>
-        <div className={`mt-4 rotate-0 opacity-100 ${OPEN_CHART_FRAME_CLASS}`}>
-          <Image
-            src={OpenChart}
-            alt="Free kundali chart"
-            fill
-            className="object-contain"
-            sizes="(max-width: 768px) 100vw, 463px"
-            priority
-          />
-        </div>
+        {result?.planetRows && result.planetRows.length > 0 ? (
+          <div className={`mt-4 rotate-0 opacity-100 ${OPEN_CHART_FRAME_CLASS}`}>
+            <NorthIndianOpenChartWithPlanets
+              planetRows={result.planetRows}
+              lagnaSignFallback={getPanchangaValue(panchanga, ['Lagna'], ['LagnaSign'])}
+            />
+          </div>
+        ) : (
+          <div className="mt-4 flex h-[353px] items-center justify-center rounded-[28px] border border-[#e5d9bc] bg-[#fffdf6] px-6 text-center text-[#666]">
+            <p className="font-mukta text-base leading-relaxed">
+              Your Lagna chart preview appears here after generating your Kundali.
+            </p>
+          </div>
+        )}
         <div className="mt-6 flex flex-nowrap items-center justify-center gap-3 overflow-x-auto">
           <button
             type="button"
@@ -680,60 +680,30 @@ const KundaliResultSection: React.FC = () => {
             )}
 
             {activeTab === 'lagna' && (
-              <div className="mt-8 space-y-[28px]">
-                <div className="w-[1009px] max-w-full min-h-[440px] opacity-100 rotate-0">
-                  <div className="flex min-h-[440px] flex-col gap-[28px] p-5">
-                    <div className="mx-auto w-full">
-                      <div className="flex w-full flex-col overflow-visible bg-transparent p-3 md:p-4">
-                        <p className="mb-3 text-center font-mukta text-[15px] font-semibold uppercase tracking-wide text-[#5c4033]">
-                          North Indian (D1)
-                        </p>
-                        <div className="flex justify-center overflow-auto">
-                          {result?.planetRows && result.planetRows.length > 0 ? (
-                            <NorthIndianOpenChartWithPlanets
-                              planetRows={result.planetRows}
-                              lagnaSignFallback={getPanchangaValue(
-                                panchanga,
-                                ['Lagna'],
-                                ['LagnaSign'],
-                              )}
-                            />
-                          ) : (
-                            <p className="px-4 text-center font-mukta text-[16px] text-[#666]">
-                              Planet positions are not available. Generate your kundali again from
-                              the form.
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="min-h-0 w-full overflow-hidden">
-                      <h3 className="font-sahitya text-primary text-[36px] md:text-[48px] leading-tight md:leading-[58px] font-bold">
-                        Lagna chart
-                      </h3>
-                      <p className="mt-3 font-mukta text-[18px] md:text-[20px] leading-[30px] text-[#2d2d2d]">
-                        North Indian D1: house numbers, whole-sign rashi (from Lagna), nine grahas +
-                        Ascendant with degree-in-sign, retrograde (®), nakshatra, and
-                        longitude-house (Lh) when it differs from sign-house — data from VedAstro.
-                      </p>
-                      <p className="mt-4 font-mukta text-[18px] md:text-[20px] leading-[30px] text-[#2d2d2d]">
-                        Planets by house
-                      </p>
-                      {planetHouseLines.length > 0 ? (
-                        <ul className="mt-3 list-disc pl-6 font-mukta text-[18px] leading-[32px] text-[#2d2d2d]">
-                          {planetHouseLines.map((line, idx) => (
-                            <li key={`ph-${idx}-${line.slice(0, 24)}`}>{line}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="mt-2 font-mukta text-[16px] text-[#777] italic">
-                          Planet house list is not available. Generate your kundali again from the
-                          form.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
+              <div className="mt-8 p-6">
+                <h3 className="font-sahitya text-primary text-[36px] md:text-[48px] leading-tight md:leading-[58px] font-bold">
+                  Lagna chart
+                </h3>
+                <p className="mt-3 font-mukta text-[18px] md:text-[20px] leading-[30px] text-[#2d2d2d]">
+                  North Indian D1: house numbers, whole-sign rashi (from Lagna), nine grahas +
+                  Ascendant with degree-in-sign, retrograde (®), nakshatra, and
+                  longitude-house (Lh) when it differs from sign-house — data from VedAstro.
+                </p>
+                <p className="mt-4 font-mukta text-[18px] md:text-[20px] leading-[30px] text-[#2d2d2d]">
+                  Planets by house
+                </p>
+                {planetHouseLines.length > 0 ? (
+                  <ul className="mt-3 list-disc pl-6 font-mukta text-[18px] leading-[32px] text-[#2d2d2d]">
+                    {planetHouseLines.map((line, idx) => (
+                      <li key={`ph-${idx}-${line.slice(0, 24)}`}>{line}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-2 font-mukta text-[16px] text-[#777] italic">
+                    Planet house list is not available. Generate your kundali again from the
+                    form.
+                  </p>
+                )}
               </div>
             )}
           </>

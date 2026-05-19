@@ -121,19 +121,19 @@ const PLANET_ABBR: Record<string, string> = {
  * North Indian layout (house 1 = top / Lagna diamond). Nudged slightly toward chart centre
  * so labels clear red strokes (especially houses 2, 10, 12).
  */
-const HOUSE_ANCHORS: Record<number, { leftPct: number; topPct: number }> = {
-  1: { leftPct: 49.5, topPct: 17 },
-  2: { leftPct: 28.5, topPct: 15 },
-  3: { leftPct: 13.5, topPct: 24 },
-  4: { leftPct: 27.5, topPct: 42 },
-  5: { leftPct: 13.5, topPct: 60 },
-  6: { leftPct: 28.5, topPct: 79 },
-  7: { leftPct: 49.5, topPct: 71 },
-  8: { leftPct: 69.5, topPct: 77.5 },
-  9: { leftPct: 84.5, topPct: 58.5 },
-  10: { leftPct: 65.5, topPct: 43 },
-  11: { leftPct: 86.5, topPct: 24 },
-  12: { leftPct: 66.5, topPct: 15 },
+const HOUSE_ANCHORS: Record<number, { leftPct: number; topPct: number; widthPct: number }> = {
+  1: { leftPct: 50, topPct: 25, widthPct: 14 },
+  2: { leftPct: 30, topPct: 10, widthPct: 10 },
+  3: { leftPct: 12.5, topPct: 32, widthPct: 14 },
+  4: { leftPct: 25, topPct: 50, widthPct: 14 },
+  5: { leftPct: 13.5, topPct: 74, widthPct: 14 },
+  6: { leftPct: 35, topPct: 90, widthPct: 14 },
+  7: { leftPct: 50, topPct: 75, widthPct: 14 },
+  8: { leftPct: 69.5, topPct: 90, widthPct: 14 },
+  9: { leftPct: 100, topPct: 70, widthPct: 14 },
+  10: { leftPct: 75, topPct: 50, widthPct: 14 },
+  11: { leftPct: 90, topPct: 25, widthPct: 14 },
+  12: { leftPct: 72, topPct: 9, widthPct: 17 },
 };
 
 function parseHouseNumber(cell: string): number | null {
@@ -337,11 +337,12 @@ export function NorthIndianOpenChartWithPlanets({
             return (
               <div
                 key={houseNum}
-                className="absolute flex max-w-[22%] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-[2px] px-[2px] text-center"
+                className="absolute -translate-x-1/2 -translate-y-1/2"
                 style={{
                   left: `${anchor.leftPct}%`,
                   top: `${anchor.topPct}%`,
-                  maxWidth: `${Math.min(26, 18 + nPlanets * 3)}%`,
+                  width: `${anchor.widthPct}%`,
+                  minWidth: '5rem',
                 }}
               >
                 <span
@@ -361,7 +362,7 @@ export function NorthIndianOpenChartWithPlanets({
                 {planets.map(p => (
                   <div
                     key={p.planet}
-                    className="mt-[3px] flex max-w-full flex-col items-center gap-px break-words"
+                    className="mt-[3px] flex max-w-full items-center justify-center break-words"
                   >
                     <span
                       className="font-mukta font-semibold leading-[1.08] tracking-tight text-primary [text-shadow:0_0_3px_rgba(255,255,255,0.85)]"
@@ -369,22 +370,6 @@ export function NorthIndianOpenChartWithPlanets({
                     >
                       {p.line1}
                     </span>
-                    {p.line2 ? (
-                      <span
-                        className="font-mukta font-normal leading-[1.06] text-primary/95 [text-shadow:0_0_3px_rgba(255,255,255,0.85)]"
-                        style={{ fontSize: Math.round(fzNak * dense) }}
-                      >
-                        {p.line2}
-                      </span>
-                    ) : null}
-                    {p.line3 ? (
-                      <span
-                        className="font-mukta font-medium leading-none text-primary/90 [text-shadow:0_0_3px_rgba(255,255,255,0.85)]"
-                        style={{ fontSize: Math.round(fzLh * dense) }}
-                      >
-                        {p.line3}
-                      </span>
-                    ) : null}
                   </div>
                 ))}
               </div>
