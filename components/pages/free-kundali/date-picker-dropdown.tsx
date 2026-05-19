@@ -140,12 +140,13 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
         ref={dropdownRef}
         style={{
           position: 'absolute',
+          left: 0,
           zIndex: 50,
           width: 'min(100vw - 32px, 520px)',
           maxWidth: '100%',
           maxHeight: 'calc(100vh - 48px)',
           minHeight: 320,
-          borderRadius: 24,
+          borderRadius: 14,
           border: `1px solid ${maroon}30`,
           opacity: 1,
           backgroundColor: cream,
