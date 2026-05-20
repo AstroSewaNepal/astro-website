@@ -76,9 +76,48 @@ export const metadata: Metadata = {
     ],
   },
   icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
+    icon: [
+      {
+        url: '/light_favicon.svg',
+        type: 'image/svg+xml',
+        sizes: 'any',
+        media: '(prefers-color-scheme: dark)',
+      },
+      {
+        url: '/dark_favicon.svg',
+        type: 'image/svg+xml',
+        sizes: 'any',
+        media: '(prefers-color-scheme: light)',
+      },
+    ],
+    shortcut: [
+      {
+        url: '/light_favicon.svg',
+        type: 'image/svg+xml',
+        sizes: 'any',
+        media: '(prefers-color-scheme: dark)',
+      },
+      {
+        url: '/dark_favicon.svg',
+        type: 'image/svg+xml',
+        sizes: 'any',
+        media: '(prefers-color-scheme: light)',
+      },
+    ],
+    apple: [
+      {
+        url: '/light_favicon.svg',
+        type: 'image/svg+xml',
+        sizes: 'any',
+        media: '(prefers-color-scheme: dark)',
+      },
+      {
+        url: '/dark_favicon.svg',
+        type: 'image/svg+xml',
+        sizes: 'any',
+        media: '(prefers-color-scheme: light)',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
