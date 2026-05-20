@@ -168,10 +168,11 @@ const NepaliCalendarPageContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen px-4 md:px-8 pt-2 pb-10 text-[#2a1f1a]">
-      <h1 className="text-[24px] leading-[30px] md:text-[36px] md:leading-[44px] font-sahitya font-bold text-[#7b1c1c] mb-1 tracking-wide">
-        Nepali Calendar
-      </h1>
+    <div className="min-h-screen pt-2 pb-10 text-[#2a1f1a]">
+      <div className="container mx-auto px-6 lg:px-0">
+        <h1 className="break-words text-[24px] leading-[30px] md:text-[36px] md:leading-[44px] font-sahitya font-bold text-[#7b1c1c] mb-1 tracking-wide">
+          Nepali Calendar
+        </h1>
 
       <p className="text-[16px] leading-[24px] md:text-[24px] md:leading-[30px] font-medium font-mukta text-[#141414] mb-3 tracking-wide">
         Track Nepali dates, festivals, and auspicious timings
@@ -231,23 +232,26 @@ const NepaliCalendarPageContent: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-7 border-b border-[#c7c7c7]">
-          {weekDays.map(weekDay => (
-            <div
-              key={weekDay.en}
-              className="bg-[#123b8f] border-r border-[#9db5e6] last:border-r-0 text-white text-center py-2 md:py-2.5"
-            >
-              <p className="font-mukta font-semibold text-[11px] md:text-[15px] leading-tight">
-                {weekDay.np}
-              </p>
-              <p className="font-mukta text-[10px] md:text-[13px] leading-tight opacity-95">
-                {weekDay.en}
-              </p>
-            </div>
-          ))}
+        <div className="overflow-x-auto">
+          <div className="grid grid-cols-7 border-b border-[#c7c7c7]">
+            {weekDays.map(weekDay => (
+              <div
+                key={weekDay.en}
+                className="bg-[#123b8f] border-r border-[#9db5e6] last:border-r-0 text-white text-center py-2 md:py-2.5"
+              >
+                <p className="font-mukta font-semibold text-[11px] md:text-[15px] leading-tight">
+                  {weekDay.np}
+                </p>
+                <p className="font-mukta text-[10px] md:text-[13px] leading-tight opacity-95">
+                  {weekDay.en}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="grid grid-cols-7">
+        <div className="overflow-x-auto">
+          <div className="grid grid-cols-7">
           {cells.map((date, idx) => (
             <div
               key={`${date.key}-${idx}`}
@@ -279,8 +283,10 @@ const NepaliCalendarPageContent: React.FC = () => {
               </span>
             </div>
           ))}
-        </div>
+            </div>
+          </div>
       </section>
+      </div>
     </div>
   );
 };

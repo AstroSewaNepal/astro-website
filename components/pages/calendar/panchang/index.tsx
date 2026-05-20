@@ -6,10 +6,11 @@ import PanchangTodaySection from './panchang-today-section';
 
 const PanchangCalendarPageContent: React.FC = () => {
   return (
-    <div className="min-h-screen px-4 md:px-8 pt-2 pb-10 text-[#2a1f1a]">
-      <h1 className="text-[24px] leading-[30px] md:text-[36px] md:leading-[44px] font-sahitya font-bold text-[#7b1c1c] mb-1 tracking-wide">
-        Panchang Calendar
-      </h1>
+    <div className="min-h-screen pt-2 pb-10 text-[#2a1f1a]">
+      <div className="container mx-auto px-6 lg:px-0">
+        <h1 className="break-words text-[24px] leading-[30px] md:text-[36px] md:leading-[44px] font-sahitya font-bold text-[#7b1c1c] mb-1 tracking-wide">
+          Panchang Calendar
+        </h1>
 
       <p className="text-[16px] leading-[24px] md:text-[24px] md:leading-[30px] font-medium font-mukta text-[#141414] mb-3 tracking-wide">
         Plan Your Day with Accurate Panchang
@@ -30,6 +31,7 @@ const PanchangCalendarPageContent: React.FC = () => {
       </p>
 
       <PanchangTodaySection />
+      </div>
     </div>
   );
 };
