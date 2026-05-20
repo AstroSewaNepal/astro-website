@@ -138,17 +138,21 @@ export default function LoveCalculatorSection() {
   );
 
   return (
-    <section className="w-full px-3 md:px-8 pb-12">
-      <div className="mx-auto grid max-w-[1454px] items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,480px)] lg:gap-14 xl:gap-20">
-        <div>
-          <h1 className="font-sahitya text-[22px] leading-[32px] tracking-[0%] font-bold text-primary md:text-[40px] md:leading-[1.1] lg:text-[44px]">
-            Love Calculator
-          </h1>
-          <p className="mt-3 font-mukta font-medium text-[14px] leading-[30px] tracking-[0%] text-[#2f2f2f] md:text-[18px]">
-            Ever wondered if you and your crush are truly compatible?
-          </p>
+    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+      <div className="max-w-[1454px] mx-auto">
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,480px)] lg:gap-14 xl:gap-20">
+          <div>
+            <h1 className="font-sahitya font-bold text-[30px] md:text-[36px] lg:text-[44px] leading-[1.1] text-primary">
+              Love Calculator
+            </h1>
+            <p className="mt-2 font-mukta text-[14px] md:text-[16px] lg:text-[18px] leading-[1.7] text-[#141414] max-w-[950px]">
+              Discover how compatible you are with your partner using Astro Sewa’s Vedic love calculator.
+            </p>
+            <p className="mt-6 font-mukta text-[14px] md:text-[16px] lg:text-[18px] leading-[1.8] text-Paragraph max-w-[1200px]">
+              Enter your names, birth dates and birth places to get a compatibility score based on VedAstro MatchReport and our love calculator algorithm.
+            </p>
 
-          <div className="relative mx-auto my-6 block w-[235px] h-[340px] lg:hidden mix-blend-darken">
+            <div className="relative mx-auto my-6 block w-[235px] h-[340px] lg:hidden mix-blend-darken">
             <div className="relative w-full h-full overflow-hidden rounded-[20px]">
               <Image
                 src={LoveHeroImage}
@@ -175,30 +179,30 @@ export default function LoveCalculatorSection() {
 
           <form
             onSubmit={onSubmit}
-            className="mt-8 flex w-full max-w-[632px] flex-col gap-4 rounded-[16px] border border-Trinary bg-transparent p-4"
+            className="mt-8 flex w-full max-w-[632px] sm:max-w-[680px] md:max-w-[720px] lg:max-w-[800px] flex-col gap-3 sm:gap-4 md:gap-5 lg:gap-6 rounded-[14px] sm:rounded-[16px] md:rounded-[18px] lg:rounded-[20px] border border-Trinary bg-transparent p-4 sm:p-5 md:p-6 lg:p-8"
           >
-            <h2 className="text-center font-mukta text-[20px] md:text-[28px] font-bold leading-[30px] md:leading-[38px] tracking-[0%] text-[#5D1409]">
+            <h2 className="text-center font-mukta text-[18px] sm:text-[22px] md:text-[26px] lg:text-[28px] font-bold leading-[26px] sm:leading-[30px] md:leading-[34px] lg:leading-[38px] tracking-[0%] text-[#5D1409]">
               Find Your Love % Between You And Your Partner.
             </h2>
 
-            <div className="grid grid-cols-2 gap-2 md:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
               <div>
                 <label
                   htmlFor="love-your-name"
-                  className="mb-2 block font-mukta text-[14px] md:text-[18px] font-medium leading-[28px] tracking-normal text-[#141414]"
+                  className="mb-2 block font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-medium leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[28px] tracking-normal text-[#141414]"
                 >
                   Your Name
                 </label>
-                <div className="flex min-h-[48px] items-stretch overflow-hidden rounded-full border border-Trinary bg-transparent pl-4 pr-1 transition-colors duration-200 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20">
+                <div className="flex min-h-[40px] sm:min-h-[44px] md:min-h-[48px] lg:min-h-[52px] items-stretch overflow-hidden rounded-full border border-Trinary bg-transparent pl-3 sm:pl-4 lg:pl-5 pr-1 transition-colors duration-200 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20">
                   <input
                     id="love-your-name"
-                    className="min-w-0 flex-1 border-none bg-transparent py-2.5 font-mukta text-[15px] text-Paragraph outline-none placeholder:text-Paragraph"
+                    className="min-w-0 flex-1 border-none bg-transparent py-2 sm:py-2.5 md:py-3 lg:py-3.5 font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-Paragraph outline-none placeholder:text-Paragraph"
                     placeholder="Rupak"
                     value={yourName}
                     onChange={e => setYourName(e.target.value)}
                     autoComplete="name"
                   />
-                  <span className="shrink-0 self-center pr-3 font-mukta text-[14px] font-medium leading-[28px] tracking-[0] text-primary">
+                  <span className="shrink-0 self-center pr-2 sm:pr-3 lg:pr-4 font-mukta text-[12px] sm:text-[13px] md:text-[14px] font-medium leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[28px] tracking-[0] text-primary">
                     Man
                   </span>
                 </div>
@@ -206,51 +210,51 @@ export default function LoveCalculatorSection() {
               <div>
                 <label
                   htmlFor="love-partner-name"
-                  className="mb-2 block font-mukta text-[14px] md:text-[18px] font-medium leading-[28px] tracking-normal text-[#141414]"
+                  className="mb-2 block font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-medium leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[28px] tracking-normal text-[#141414]"
                 >
                   Partner&apos;s Name
                 </label>
-                <div className="flex min-h-[48px] items-stretch overflow-hidden rounded-full border border-Trinary bg-transparent pl-4 pr-1 transition-colors duration-200 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20">
+                <div className="flex min-h-[40px] sm:min-h-[44px] md:min-h-[48px] lg:min-h-[52px] items-stretch overflow-hidden rounded-full border border-Trinary bg-transparent pl-3 sm:pl-4 lg:pl-5 pr-1 transition-colors duration-200 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20">
                   <input
                     id="love-partner-name"
-                    className="min-w-0 flex-1 border-none bg-transparent py-2.5 font-mukta text-[15px] text-Paragraph outline-none placeholder:text-Paragraph"
+                    className="min-w-0 flex-1 border-none bg-transparent py-2 sm:py-2.5 md:py-3 lg:py-3.5 font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-Paragraph outline-none placeholder:text-Paragraph"
                     placeholder="Sarah"
                     value={partnerName}
                     onChange={e => setPartnerName(e.target.value)}
                     autoComplete="off"
                   />
-                  <span className="shrink-0 self-center pr-3 font-mukta text-[14px] font-medium leading-[28px] tracking-[0] text-primary">
+                  <span className="shrink-0 self-center pr-2 sm:pr-3 lg:pr-4 font-mukta text-[12px] sm:text-[13px] md:text-[14px] font-medium leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[28px] tracking-[0] text-primary">
                     Woman
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
               <div>
-                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">
+                <label className="mb-1.5 sm:mb-2 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#141414]">
                   Your birth date
                 </label>
                 <input
                   type="date"
                   value={yourBirthDate}
                   onChange={e => setYourBirthDate(e.target.value)}
-                  className="w-full rounded-full border border-Trinary px-4 py-2.5 font-mukta text-[15px]"
+                  className="w-full rounded-full border border-Trinary px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 md:py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px]"
                 />
               </div>
               <div>
-                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">
+                <label className="mb-1.5 sm:mb-2 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#141414]">
                   Partner birth date
                 </label>
                 <input
                   type="date"
                   value={partnerBirthDate}
                   onChange={e => setPartnerBirthDate(e.target.value)}
-                  className="w-full rounded-full border border-Trinary px-4 py-2.5 font-mukta text-[15px]"
+                  className="w-full rounded-full border border-Trinary px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 md:py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px]"
                 />
               </div>
               <div>
-                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">
+                <label className="mb-1.5 sm:mb-2 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#141414]">
                   Your birth place
                 </label>
                 <input
@@ -258,11 +262,11 @@ export default function LoveCalculatorSection() {
                   placeholder="Kathmandu, Nepal"
                   value={yourBirthPlace}
                   onChange={e => setYourBirthPlace(e.target.value)}
-                  className="w-full rounded-full border border-Trinary px-4 py-2.5 font-mukta text-[15px]"
+                  className="w-full rounded-full border border-Trinary px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 md:py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px]"
                 />
               </div>
               <div>
-                <label className="mb-1 block font-mukta text-[14px] text-[#141414]">
+                <label className="mb-1.5 sm:mb-2 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#141414]">
                   Partner birth place
                 </label>
                 <input
@@ -270,7 +274,7 @@ export default function LoveCalculatorSection() {
                   placeholder="Pokhara, Nepal"
                   value={partnerBirthPlace}
                   onChange={e => setPartnerBirthPlace(e.target.value)}
-                  className="w-full rounded-full border border-Trinary px-4 py-2.5 font-mukta text-[15px]"
+                  className="w-full rounded-full border border-Trinary px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 md:py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px]"
                 />
               </div>
             </div>
@@ -284,9 +288,9 @@ export default function LoveCalculatorSection() {
             <button
               type="submit"
               disabled={submitting}
-              className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#5D1409] px-6 py-3.5 font-mukta text-[17px] font-bold text-white transition-opacity hover:opacity-95 disabled:opacity-60"
+              className="flex min-h-[40px] sm:min-h-[44px] md:min-h-[48px] lg:min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#5D1409] px-4 sm:px-5 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 lg:py-3.5 font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-bold text-white transition-opacity hover:opacity-95 disabled:opacity-60"
             >
-              <IoHeart className="text-xl text-white" aria-hidden />
+              <IoHeart className="text-lg sm:text-lg md:text-xl lg:text-xl text-white" aria-hidden />
               {submitting ? 'Calculating…' : 'Calculate Love %'}
             </button>
           </form>
@@ -424,7 +428,6 @@ export default function LoveCalculatorSection() {
             }
           />
         </div>
-      </div>
-    </section>
+      </div>    </div>    </section>
   );
 }

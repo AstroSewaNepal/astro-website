@@ -13,10 +13,10 @@ const CALCULATOR_TYPES = [
 ];
 
 const FORM_OUTLINE_CLASS =
-  'box-border mx-auto mt-2 flex w-full max-w-[399px] min-h-[368px] flex-col gap-10 rounded-[16px] border border-Trinary bg-transparent py-4 px-4 md:max-w-[684px] md:min-h-[518px] md:gap-9 md:rounded-[40px] md:py-10 md:px-[50px]';
+  'box-border mx-auto mt-2 flex w-full max-w-[399px] sm:max-w-[480px] md:max-w-[680px] lg:max-w-[800px] min-h-[360px] sm:min-h-[400px] md:min-h-[480px] lg:min-h-[520px] flex-col gap-8 sm:gap-9 md:gap-10 lg:gap-12 rounded-[14px] sm:rounded-[16px] md:rounded-[24px] lg:rounded-[32px] border border-Trinary bg-transparent py-4 sm:py-5 md:py-7 lg:py-10 px-4 sm:px-5 md:px-8 lg:px-12';
 
 const FIELD_LABEL_CLASS =
-  'mb-1.5 block font-mukta text-[18px] font-semibold leading-[30px] tracking-normal text-[#141414]';
+  'mb-1.5 sm:mb-2 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] font-semibold leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[30px] tracking-normal text-[#141414]';
 
 const FORM_FOOTER_CLASS = '-mt-2 flex flex-col gap-1.5';
 
@@ -39,10 +39,10 @@ const FORM_HEADING_CLASS =
 const INFO_BODY_CLASS = `mt-3 max-w-none text-left ${MUKTA_BODY_TEXT_CLASS}`;
 
 const CALCULATE_BUTTON_CLASS =
-  'box-border flex h-[60px] w-[250px] items-center justify-center gap-[10px] rounded-[32px] bg-[#5d1409] py-4 px-[10px] font-mukta text-[17px] font-bold text-white transition hover:opacity-95 disabled:opacity-60';
+  'box-border flex h-[40px] sm:h-[48px] md:h-[52px] lg:h-[60px] w-full items-center justify-center gap-[10px] rounded-[24px] sm:rounded-[28px] md:rounded-[30px] lg:rounded-[32px] bg-[#5d1409] py-2.5 sm:py-3 md:py-3 lg:py-4 px-4 sm:px-5 md:px-6 lg:px-8 font-mukta text-[12px] sm:text-[13px] md:text-[15px] lg:text-[17px] font-bold text-white transition hover:opacity-95 disabled:opacity-60';
 
 const RESET_BUTTON_CLASS =
-  'box-border flex h-[60px] w-[250px] items-center justify-center gap-[10px] rounded-[32px] border-2 border-[#5d1409] bg-[#fff5e3] py-4 px-[10px] font-mukta text-[17px] font-bold text-[#5d1409] transition hover:bg-[#f7e7d2]';
+  'box-border flex h-[40px] sm:h-[48px] md:h-[52px] lg:h-[60px] w-full items-center justify-center gap-[10px] rounded-[24px] sm:rounded-[28px] md:rounded-[30px] lg:rounded-[32px] border-2 border-[#5d1409] bg-[#fff5e3] py-2.5 sm:py-3 md:py-3 lg:py-4 px-4 sm:px-5 md:px-6 lg:px-8 font-mukta text-[12px] sm:text-[13px] md:text-[15px] lg:text-[17px] font-bold text-[#5d1409] transition hover:bg-[#f7e7d2]';
 
 const INFO_SECTIONS = [
   {
@@ -132,8 +132,8 @@ export default function NumerologyCalculatorSection() {
   };
 
   return (
-    <section className="w-full px-3 pb-12 md:px-8">
-      <div className="mx-auto max-w-[1440px]">
+    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+      <div className="max-w-[1454px] mx-auto">
         <div>
           <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-normal text-[#4b1b16] md:text-[40px] md:leading-[1.1] lg:text-[44px]">
             Numerology Calculator
@@ -146,9 +146,9 @@ export default function NumerologyCalculatorSection() {
           </p>
         </div>
 
-        <div className="mx-auto mt-8 w-full max-w-[399px] md:max-w-[684px]">
-          <div className="mb-4">
-            <p className={FORM_HEADING_CLASS}>Fill up the Details</p>
+        <div className="mx-auto mt-6 sm:mt-7 md:mt-8 lg:mt-10 w-full max-w-[399px] sm:max-w-[480px] md:max-w-[680px] lg:max-w-[800px]">
+          <div className="mb-3 sm:mb-4 md:mb-5 px-0 sm:px-0 md:px-0">
+            <p className="font-sahitya text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px] font-bold leading-[24px] sm:leading-[26px] md:leading-[28px] lg:leading-[30px] text-primary">Fill up the Details</p>
           </div>
 
           <form onSubmit={handleSubmit} className={FORM_OUTLINE_CLASS}>
@@ -156,10 +156,10 @@ export default function NumerologyCalculatorSection() {
               <label htmlFor="numerology-fullname" className={FIELD_LABEL_CLASS}>
                 Enter full name
               </label>
-              <div className="flex h-[56px] items-center gap-2 rounded-[32px] border-2 border-[#aa4c44] px-5 py-4">
+              <div className="flex h-[40px] sm:h-[44px] md:h-[48px] lg:h-[56px] items-center gap-2 rounded-[22px] sm:rounded-[26px] md:rounded-[28px] lg:rounded-[32px] border-2 border-[#aa4c44] px-4 sm:px-4.5 md:px-5 lg:px-5 py-2.5 sm:py-3 md:py-3 lg:py-4">
                 <input
                   id="numerology-fullname"
-                  className="min-w-0 flex-1 border-none bg-transparent text-[15px] font-mukta text-[#34211d] outline-none"
+                  className="min-w-0 flex-1 border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none"
                   placeholder="John Doe"
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
@@ -171,11 +171,11 @@ export default function NumerologyCalculatorSection() {
               <label htmlFor="numerology-dob" className={FIELD_LABEL_CLASS}>
                 Enter date of birth
               </label>
-              <div className="flex h-[56px] items-center gap-2 rounded-[32px] border-2 border-[#aa4c44] px-5 py-4">
+              <div className="flex h-[40px] sm:h-[44px] md:h-[48px] lg:h-[56px] items-center gap-2 rounded-[22px] sm:rounded-[26px] md:rounded-[28px] lg:rounded-[32px] border-2 border-[#aa4c44] px-4 sm:px-4.5 md:px-5 lg:px-5 py-2.5 sm:py-3 md:py-3 lg:py-4">
                 <input
                   id="numerology-dob"
                   type="date"
-                  className="min-w-0 flex-1 border-none bg-transparent text-[15px] font-mukta text-[#34211d] outline-none"
+                  className="min-w-0 flex-1 border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none"
                   value={birthDate}
                   onChange={e => setBirthDate(e.target.value)}
                 />
@@ -186,10 +186,10 @@ export default function NumerologyCalculatorSection() {
               <label htmlFor="numerology-type" className={FIELD_LABEL_CLASS}>
                 Report focus
               </label>
-              <div className="relative flex h-[56px] items-center rounded-[32px] border-2 border-[#aa4c44] px-5 py-4">
+              <div className="relative flex h-[40px] sm:h-[44px] md:h-[48px] lg:h-[56px] items-center rounded-[22px] sm:rounded-[26px] md:rounded-[28px] lg:rounded-[32px] border-2 border-[#aa4c44] px-4 sm:px-4.5 md:px-5 lg:px-5 py-2.5 sm:py-3 md:py-3 lg:py-4">
                 <select
                   id="numerology-type"
-                  className="min-w-0 flex-1 appearance-none border-none bg-transparent text-[15px] font-mukta text-[#34211d] outline-none"
+                  className="min-w-0 flex-1 appearance-none border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none"
                   value={calculatorType}
                   onChange={e => setCalculatorType(e.target.value)}
                 >
@@ -206,7 +206,7 @@ export default function NumerologyCalculatorSection() {
               <p className={ERROR_SLOT_CLASS} role="alert">
                 {error || '\u00a0'}
               </p>
-              <div className="flex flex-col gap-[10px] sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 sm:flex-row sm:items-center sm:justify-between">
                 <button type="submit" disabled={submitting} className={CALCULATE_BUTTON_CLASS}>
                   {submitting ? 'Calculating…' : 'Calculate'}
                 </button>

@@ -56,24 +56,26 @@ export default function LoveCalculatorResultSection() {
 
   if (!result) {
     return (
-      <section className="w-full px-4 md:px-8 py-24 flex flex-col items-center justify-center">
-        <h2 className="font-sahitya text-3xl font-bold text-[#5D1409]">No Data Found</h2>
-        <p className="font-mukta mt-2 text-[#4a4a4a]">
-          Please enter your names in the Love Calculator first.
-        </p>
-        <Link
-          href="/calculators/love-calculator"
-          className="mt-6 flex min-h-[48px] items-center justify-center rounded-full bg-[#5D1409] px-8 font-mukta text-lg font-bold text-white transition-opacity hover:opacity-95"
-        >
-          Go to Love Calculator
-        </Link>
+      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-24">
+        <div className="max-w-[1454px] mx-auto flex flex-col items-center justify-center text-center">
+          <h2 className="font-sahitya text-3xl md:text-4xl font-bold text-[#5D1409]">No Data Found</h2>
+          <p className="font-mukta mt-2 text-[#4a4a4a] text-[15px] md:text-[16px] leading-[1.8] max-w-[760px]">
+            Please enter your names in the Love Calculator first.
+          </p>
+          <Link
+            href="/calculators/love-calculator"
+            className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-full bg-[#5D1409] px-8 font-mukta text-lg font-bold text-white transition-opacity hover:opacity-95"
+          >
+            Go to Love Calculator
+          </Link>
+        </div>
       </section>
     );
   }
 
   return (
-    <section className="w-full px-3 md:px-8 pb-12">
-      <div className="mx-auto max-w-[1454px]">
+    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+      <div className="max-w-[1454px] mx-auto">
         {/* Header */}
         <div className="mb-4">
           <h1 className="font-sahitya font-bold text-[22px] md:text-[48px] leading-[32px] md:leading-[48px] tracking-[0%] text-[#471207]">

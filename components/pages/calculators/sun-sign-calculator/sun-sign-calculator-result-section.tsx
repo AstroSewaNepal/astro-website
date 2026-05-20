@@ -117,16 +117,16 @@ export default function SunSignCalculatorResultSection() {
 
   if (!loaded) {
     return (
-      <section className="w-full px-3 py-24 md:px-8">
-        <div className="mx-auto max-w-[1440px] font-mukta text-[16px] text-[#4a423d]">Loading…</div>
+      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+        <div className="max-w-[1454px] mx-auto font-mukta text-[16px] text-[#4a423d]">Loading…</div>
       </section>
     );
   }
 
   if (!data) {
     return (
-      <section className="w-full px-3 md:px-8 pb-12">
-        <div className="mx-auto max-w-[1440px] rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center shadow-[0_10px_30px_rgba(0,0,0,0.06)]">
+      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+        <div className="max-w-[1454px] mx-auto rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center shadow-[0_10px_30px_rgba(0,0,0,0.06)]">
           <h1 className="font-sahitya text-[32px] font-bold text-[#5D1409] md:text-[40px]">
             Sun Sign Result
           </h1>
@@ -151,8 +151,8 @@ export default function SunSignCalculatorResultSection() {
 
   if (!meta) {
     return (
-      <section className="w-full px-3 md:px-8 pb-12">
-        <div className="mx-auto max-w-[1440px] text-center">
+      <section className="w-full pb-12">
+        <div className="container mx-auto max-w-[1440px] px-6 lg:px-0 text-center">
           <p className="font-mukta text-[16px] text-[#2f2f2f]">Unable to load sun sign details.</p>
           <button
             type="button"
@@ -167,8 +167,8 @@ export default function SunSignCalculatorResultSection() {
   }
 
   return (
-    <section className="w-full px-3 py-8 md:px-8 md:pb-16">
-      <div className="mx-auto max-w-[1440px]">
+    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+      <div className="max-w-[1454px] mx-auto">
         <h1 className="font-sahitya text-[28px] font-bold text-[#5D1409] md:text-[34px]">
           Your Astrological Profile
         </h1>
