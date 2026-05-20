@@ -295,7 +295,7 @@ function LandingHeaderClient() {
       <header className="container mx-auto px-6 lg:px-0 py-10 pb-0">
         <div className="flex justify-between">
           <div className="flex gap-2">
-            <div className="block md:hidden">
+            <div className="block xl:hidden">
               <NavIcon onClick={openMobileMenu} />
             </div>
             <Link href="/">
@@ -304,8 +304,11 @@ function LandingHeaderClient() {
           </div>
           <div className="flex gap-4">
             <div className="hidden lg:block">{languageControl}</div>
-            <button className="bg-primary rounded-3xl px-5 py-2 text-white flex gap-1.5 max-h-fit items-center cursor-pointer">
-              <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
+            <button
+              className="inline-flex items-center gap-1 rounded-3xl border border-solid border-primary bg-primary text-white px-[15px] py-2 min-w-[93.2794189453125px] h-[40px] lg:min-w-[124px] lg:h-[44px] lg:px-[20px] lg:py-[8px]"
+              style={{ borderWidth: '0.36px' }}
+            >
+              <UserLineIcon className="w-[17.279px] h-[17.279px]" />
               <span className="font-mukta text-sm leading-7 md:text-lg lg:text-xl">
                 {d.header.signIn}
               </span>
@@ -315,13 +318,13 @@ function LandingHeaderClient() {
             </button>
           </div>
         </div>
-        <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex relative z-40">
+        <nav className="mt-10 bg-primary py-3 px-6 gap-[22px] rounded-3xl hidden xl:flex xl:flex-wrap xl:justify-center relative z-40 w-full overflow-hidden">
           {landingNav.map(value => {
             const hasChildren = !!value.children?.length;
             const navActive = desktopNavItemActive(pathname, value);
 
             return (
-              <div key={value.title} className="relative group">
+              <div key={value.title} className="relative group flex-shrink-0">
                 <Link href={value.link ?? '#'} className="block">
                   <div
                     className={clsx(
@@ -379,7 +382,7 @@ function LandingHeaderClient() {
       </header>
 
       <div
-        className={`fixed inset-0 z-50 md:hidden transition-opacity duration-300 ${
+        className={`fixed inset-0 z-50 xl:hidden transition-opacity duration-300 ${
           isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
         style={{ pointerEvents: isMobileMenuOpen ? 'auto' : 'none' }}
@@ -522,7 +525,7 @@ function LandingHeaderFallback() {
     <header className="container mx-auto px-6 lg:px-0 py-10">
       <div className="flex justify-between">
         <div className="flex gap-2">
-          <div className="block md:hidden w-12" />
+          <div className="block lg:hidden w-12" />
           <Link href="/">
             <AstroSewaLogo className="max-w-[84px] text-[#611508] md:max-w-[100px] lg:max-w-[188px] w-full" />
           </Link>
@@ -535,9 +538,12 @@ function LandingHeaderFallback() {
             </p>
             <ChevronDownIcon />
           </div>
-          <button className="bg-primary rounded-3xl px-5 py-2 text-white flex gap-1.5 max-h-fit items-center cursor-pointer">
-            <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
-            <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">
+          <button
+            className="inline-flex items-center gap-1 rounded-3xl border border-solid border-primary bg-primary text-white px-[15px] py-2 min-w-[93.2794189453125px] h-[40px] lg:min-w-[124px] lg:h-[44px] lg:px-[20px] lg:py-[8px]"
+            style={{ borderWidth: '0.36px' }}
+          >
+            <UserLineIcon className="w-[17.279px] h-[17.279px]" />
+            <p className="font-mukta text-sm leading-7 md:text-lg lg:text-xl max-h-fit">
               {d.header.signIn}
             </p>
           </button>
@@ -546,9 +552,9 @@ function LandingHeaderFallback() {
           </button>
         </div>
       </div>
-      <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex">
+      <nav className="mt-10 items-center justify-between bg-primary py-3 px-6 gap-[22px] rounded-3xl hidden lg:flex w-full">
         {landingNav.map(value => (
-          <Link href={value.link ?? '#'} key={value.title}>
+          <Link href={value.link ?? '#'} key={value.title} className="flex-shrink-0">
             <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
               <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
               {value.children && <ChevronDownIcon className="text-white" />}

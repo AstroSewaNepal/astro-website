@@ -1,13 +1,13 @@
 'use client';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 import clsx from 'clsx';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 
 import { VerifiedIcon } from '@/components/images';
+import Pagination from '@/components/common/pagination';
 import ChatIcon from '@/components/icons/chat-icon';
 import PhoneIcon from '@/components/icons/phone-icon';
 import StartIcon from '@/components/icons/start-icon';
@@ -16,7 +16,6 @@ import { ChevronLeftIcon } from '@/components/images/icons';
 import CalendarIcon from '@/components/icons/calendar-icon';
 
 import 'swiper/css';
-import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 interface TalkToOurAstrologerProps {
@@ -31,17 +30,32 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
   className,
 }) => {
   const swiperRef = useRef<SwiperType | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = ASTROLOGER_LIST.length;
 
   const handlePrevious = () => {
     if (swiperRef.current) {
       swiperRef.current.slidePrev();
+      setCurrentPage(prev => Math.max(1, prev - 1));
     }
   };
 
   const handleNext = () => {
     if (swiperRef.current) {
       swiperRef.current.slideNext();
+      setCurrentPage(prev => Math.min(totalPages, prev + 1));
     }
+  };
+
+  const handleSlideChange = (swiper: SwiperType) => {
+    setCurrentPage(swiper.realIndex + 1);
+  };
+
+  const handlePageChange = (page: number) => {
+    if (swiperRef.current) {
+      swiperRef.current.slideTo(page - 1);
+    }
+    setCurrentPage(page);
   };
 
   return (
@@ -52,16 +66,43 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
       )}
     >
       <div className="flex flex-col items-center justify-center gap-4 sm:gap-5 md:gap-6">
-        <h2 className="max-w-[20ch] px-1 text-center font-sahitya text-[26px] font-normal leading-[1.12] text-primary sm:max-w-none sm:text-[34px] sm:leading-tight md:text-[42px] lg:text-[52px] xl:text-[56px]">
+        <h2
+          className="max-w-[20ch] px-1 text-center font-sahitya text-[26px] font-normal leading-[1.12] text-primary sm:max-w-none sm:text-[34px] sm:leading-tight md:text-[42px] lg:text-[52px] xl:text-[56px]"
+          style={{
+            fontFamily: 'Tiro Devanagari Sanskrit',
+            fontWeight: 400,
+            fontStyle: 'normal',
+            fontSize: '56px',
+            lineHeight: '47.83px',
+            letterSpacing: '0%',
+            textAlign: 'center',
+          }}
+        >
           {title}
         </h2>
-        <p className="max-w-[810px] px-1 text-center font-mukta text-[14px] leading-relaxed text-black/75 sm:text-[16px] sm:leading-7 md:text-lg lg:text-xl xl:text-2xl">
+        <p
+          className="max-w-[810px] px-1 text-center font-mukta text-black/75"
+          style={{
+            fontFamily: 'Mukta',
+            fontWeight: 400,
+            fontStyle: 'normal',
+            fontSize: '24px',
+            lineHeight: '150%',
+            letterSpacing: '2%',
+            textAlign: 'center',
+            textTransform: 'capitalize',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
           {description}
         </p>
       </div>
       <div className="mt-8 sm:mt-10 md:mt-[50px]">
         <Swiper
-          modules={[Pagination]}
           slidesPerView={1}
           spaceBetween={16}
           breakpoints={{
@@ -81,14 +122,11 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
           onSwiper={swiper => {
             swiperRef.current = swiper;
           }}
-          pagination={{
-            el: '.swiper-pagination',
-            clickable: true,
-          }}
+          onSlideChange={handleSlideChange}
         >
           {ASTROLOGER_LIST.map(data => (
             <SwiperSlide key={`data-${data.id}`}>
-              <div className="h-full overflow-hidden rounded-4xl border border-solid border-[#0000007D] bg-[#fbf6ee] shadow-[0_8px_32px_rgba(97,21,8,0.08)]">
+              <div className="h-full overflow-hidden rounded-4xl border border-solid border-[#0000007D] shadow-[0_8px_32px_rgba(97,21,8,0.08)]">
                 <div className="flex flex-col p-6 pt-11 sm:p-7 sm:pt-12">
                   <div className="flex flex-col items-center">
                     <div className="relative shrink-0">
@@ -197,36 +235,14 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
             </SwiperSlide>
           ))}
         </Swiper>
-        <div className="mt-6 flex items-center justify-center sm:mt-8">
-          <div className="flex items-center gap-3 sm:gap-5">
-            <button
-              type="button"
-              onClick={handlePrevious}
-              className="flex aspect-square h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/35 bg-white/90 text-primary shadow-sm transition-colors hover:bg-[#fbf6ee] sm:h-[40px] sm:w-[40px]"
-              aria-label="Previous astrologer"
-            >
-              <Image
-                src={ChevronLeftIcon}
-                alt=""
-                className="h-2 w-2 opacity-80 sm:h-2.5 sm:w-2.5"
-              />
-            </button>
-
-            <div className="swiper-pagination flex min-h-[11px] items-center gap-2 sm:gap-[9px]" />
-
-            <button
-              type="button"
-              onClick={handleNext}
-              className="flex aspect-square h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/35 bg-white/90 text-primary shadow-sm transition-colors hover:bg-[#fbf6ee] sm:h-[40px] sm:w-[40px]"
-              aria-label="Next astrologer"
-            >
-              <Image
-                src={ChevronLeftIcon}
-                alt=""
-                className="h-2 w-2 rotate-180 opacity-80 sm:h-2.5 sm:w-2.5"
-              />
-            </button>
-          </div>
+        <div className="mt-6 flex justify-center sm:mt-8 pb-12">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+          />
         </div>
       </div>
     </section>

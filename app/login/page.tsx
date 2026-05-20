@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 import { Button } from '@/components/ui/button';
+import SignInButton from '@/components/ui/sign-in-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import PasswordInput from './PasswordInput';
@@ -103,13 +104,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               <PasswordInput />
             </div>
 
-            <Button
-              type="submit"
-              className="w-full rounded-xl font-mukta text-base py-5"
-              style={{ backgroundColor: '#611508' }}
-            >
+            <SignInButton type="submit" className="bg-[#611508] w-full md:rounded-xl md:py-5">
               Sign In
-            </Button>
+            </SignInButton>
           </form>
 
           {/* Divider */}

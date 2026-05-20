@@ -4,6 +4,8 @@ import React, { useState, useRef, useMemo } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 
+import ArrowLeft from '@/components/icons/arrow-left';
+import ArrowRight from '@/components/icons/arrow-right';
 import { SERVICES_LIST } from './service.const';
 import Pagination from '@/components/common/pagination';
 
@@ -19,6 +21,8 @@ const Services = () => {
     if (slidesPerView >= SERVICES_LIST.length) return 1;
     return Math.ceil(SERVICES_LIST.length / slidesPerView);
   }, [slidesPerView]);
+
+  const displayPages = useMemo(() => Math.max(5, totalPages), [totalPages]);
 
   const currentPage = useMemo(() => {
     if (slidesPerView >= SERVICES_LIST.length) return 1;
@@ -108,27 +112,74 @@ const Services = () => {
           >
             {SERVICES_LIST.map(service => (
               <SwiperSlide key={service.id}>
-                <div className="flex flex-col items-center gap-6 w-full min-h-[450px] flex-shrink-0 p-5 select-none">
-                  <div className="flex justify-center items-center w-[189px] h-[222px]">
-                    <div className="w-full h-full flex justify-center items-center rounded-lg">
-                      <Image
-                        src={service.icon}
-                        alt={`${service.buttonText} icon`}
-                        width={189}
-                        height={222}
-                        className="w-full h-full object-contain"
-                      />
+                <div className="flex flex-col items-center gap-2 md:gap-6 w-full md:min-h-[450px] flex-shrink-0 p-5 select-none">
+                  <div className="flex flex-col items-center gap-2 w-full">
+                    <div className="flex items-center justify-center gap-14 md:gap-0 w-full">
+                      <button
+                        type="button"
+                        onClick={handlePrevious}
+                        aria-label="Previous service"
+                        className="md:hidden w-[40.72px] h-[40.72px] rounded-full flex items-center justify-center border border-[#611508] bg-transparent text-[#611508] hover:bg-[#fff7f4] transition-colors"
+                      >
+                        <ArrowLeft className="w-[12px] h-[12px]" />
+                      </button>
+                      <div className="flex justify-center items-center w-[123.49827575683594px] h-[144.8117218017578px] md:w-[189px] md:h-[222px]">
+                        <div className="w-full h-full flex justify-center items-center rounded-lg">
+                          <Image
+                            src={service.icon}
+                            alt={`${service.buttonText} icon`}
+                            width={123.49827575683594}
+                            height={144.8117218017578}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleNext}
+                        aria-label="Next service"
+                        className="md:hidden w-[40.72px] h-[40.72px] rounded-full flex items-center justify-center border border-[#611508] bg-transparent text-[#611508] hover:bg-[#fff7f4] transition-colors"
+                      >
+                        <ArrowRight className="w-[12px] h-[12px]" />
+                      </button>
                     </div>
                   </div>
-                  <div className="flex flex-col items-center gap-4 w-full flex-1 justify-between">
-                    <h3 className="font-mukta text-base md:text-lg lg:text-[20px] leading-[120%] text-[#000000CF] text-center">
-                      {service.title}
-                    </h3>
-                    <button className="flex justify-center items-center gap-2.5 px-4 md:px-[18px] py-2 w-full bg-[#691709] border-none rounded-[32px] cursor-pointer transition-all duration-300 hover:bg-[#8b1f0f] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(105,23,9,0.3)] active:translate-y-0">
-                      <span className="font-mukta font-bold text-sm md:text-base lg:text-lg leading-[1.78] text-center text-[#f8f3df]">
+                  <div className="flex flex-col items-center gap-4 w-full flex-1 md:justify-between">
+                    <div className="min-h-[84px] md:min-h-[96px] flex items-center justify-center">
+                      <h3
+                        className="font-mukta font-normal text-[14px] md:text-lg lg:text-[20px] leading-[150%] md:leading-[120%] tracking-[0.02em] text-[#000000CF] text-center capitalize overflow-hidden"
+                        style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                        }}
+                      >
+                        {service.title}
+                      </h3>
+                    </div>
+                    <button
+                      className="flex justify-center items-center bg-[#691709] border-none rounded-[32px] cursor-pointer transition-all duration-300 hover:bg-[#8b1f0f] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(105,23,9,0.3)] active:translate-y-0 w-[278px] h-[40px] gap-[10px] px-[18px] py-[4px] md:w-full md:h-auto md:gap-2.5 md:px-4 md:py-2"
+                    >
+                      <span className="font-mukta font-bold text-sm md:text-base lg:text-lg leading-[1.78] text-center text-[#f8f3df] whitespace-nowrap">
                         {service.buttonText}
                       </span>
                     </button>
+                    <div className="flex items-center justify-center gap-3 mt-4 md:hidden">
+                      {Array.from({ length: displayPages }, (_, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          aria-label={`Go to page ${index + 1}`}
+                          onClick={() => handlePageChange(index + 1)}
+                          className={`rounded-full transition-colors shadow-sm ${
+                            currentPage === index + 1
+                              ? 'bg-[#611508]'
+                              : 'bg-[#d9bdb7] hover:opacity-80'
+                          }`}
+                          style={{ width: '10.36px', height: '10.36px' }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </SwiperSlide>
@@ -137,13 +188,15 @@ const Services = () => {
         </div>
 
         {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-        />
+        <div className="hidden md:block">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={displayPages}
+            onPageChange={handlePageChange}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+          />
+        </div>
       </div>
     </section>
   );

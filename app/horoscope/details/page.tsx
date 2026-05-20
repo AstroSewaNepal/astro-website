@@ -311,11 +311,9 @@ function HoroscopeDetailsContent() {
         )}
 
         <TalkToOurAstrologer className="mx-auto mt-14 max-w-[1180px]" />
-
-        <div className="mx-auto mt-14 max-w-[1180px]">
-          <Services />
-        </div>
       </div>
+
+      <Services />
     </main>
   );
 }

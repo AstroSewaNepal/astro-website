@@ -4,6 +4,7 @@ import clsx from 'clsx';
 
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
+import DownloadApp from '@/components/pages/landing/download-app';
 import LandingFAQ from '@/components/pages/landing/faq';
 import { ZodiacSignMiniCard } from '@/components/pages/zodiac-sign/zodiac-sign-mini-card';
 import { ELanguage } from '@/components/enums/language.enum';
@@ -178,13 +179,10 @@ export function ZodiacSignListing({ mode }: Props) {
             <LandingFAQ />
           </div>
         )}
-
-        {mode === 'hub-en' ? (
-          <div className="mx-auto mt-12 max-w-[1180px]">
-            <Services />
-          </div>
-        ) : null}
       </div>
+
+      {mode === 'hub-en' ? <Services /> : null}
+      {mode === 'hub-en' ? <DownloadApp className="mx-auto mt-14 max-w-[1180px]" /> : null}
     </main>
   );
 }
