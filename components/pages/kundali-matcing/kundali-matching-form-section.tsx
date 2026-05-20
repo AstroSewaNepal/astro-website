@@ -366,7 +366,12 @@ const DatePickerPill = ({
       <input type="hidden" name={name} value={value} />
     </span>
     <FieldError message={error} />
-    <DatePickerDropdown open={open} onOpenChange={onOpenChange} onDateSelect={onDateSelect} value={value} />
+    <DatePickerDropdown
+      open={open}
+      onOpenChange={onOpenChange}
+      onDateSelect={onDateSelect}
+      value={value}
+    />
   </div>
 );
 

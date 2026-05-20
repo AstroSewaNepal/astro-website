@@ -21,7 +21,13 @@ export default function SignInButton({ children, icon, href, className = '', ...
       style={{ borderWidth: '0.36px', ...(rest.style || {}) }}
     >
       {icon ? (
-        <span style={{ display: 'block', width: '17.279422760009766px', height: '17.279422760009766px' }}>
+        <span
+          style={{
+            display: 'block',
+            width: '17.279422760009766px',
+            height: '17.279422760009766px',
+          }}
+        >
           {icon}
         </span>
       ) : null}

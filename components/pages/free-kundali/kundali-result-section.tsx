@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import {
   NorthIndianOpenChartWithPlanets,
@@ -327,12 +327,14 @@ function readFreeKundaliResult(): StoredKundaliResult | null {
   }
 }
 
-const KundaliResultSection: React.FC = () => {
-  const [result, setResult] = useState<StoredKundaliResult | null>(null);
+const subscribeFreeKundaliResult = () => () => {};
 
-  useEffect(() => {
-    setResult(readFreeKundaliResult());
-  }, []);
+const KundaliResultSection: React.FC = () => {
+  const result = useSyncExternalStore(
+    subscribeFreeKundaliResult,
+    readFreeKundaliResult,
+    () => null,
+  );
   const [activeTab, setActiveTab] = useState<'basic' | 'dosha' | 'planets' | 'lagna'>('basic');
 
   const planetHouseLines =
@@ -686,8 +688,8 @@ const KundaliResultSection: React.FC = () => {
                 </h3>
                 <p className="mt-3 font-mukta text-[18px] md:text-[20px] leading-[30px] text-[#2d2d2d]">
                   North Indian D1: house numbers, whole-sign rashi (from Lagna), nine grahas +
-                  Ascendant with degree-in-sign, retrograde (®), nakshatra, and
-                  longitude-house (Lh) when it differs from sign-house — data from VedAstro.
+                  Ascendant with degree-in-sign, retrograde (®), nakshatra, and longitude-house
+                  (Lh) when it differs from sign-house — data from VedAstro.
                 </p>
                 <p className="mt-4 font-mukta text-[18px] md:text-[20px] leading-[30px] text-[#2d2d2d]">
                   Planets by house
@@ -700,8 +702,7 @@ const KundaliResultSection: React.FC = () => {
                   </ul>
                 ) : (
                   <p className="mt-2 font-mukta text-[16px] text-[#777] italic">
-                    Planet house list is not available. Generate your kundali again from the
-                    form.
+                    Planet house list is not available. Generate your kundali again from the form.
                   </p>
                 )}
               </div>

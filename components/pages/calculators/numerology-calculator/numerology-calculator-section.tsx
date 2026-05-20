@@ -148,7 +148,9 @@ export default function NumerologyCalculatorSection() {
 
         <div className="mx-auto mt-6 sm:mt-7 md:mt-8 lg:mt-10 w-full max-w-[399px] sm:max-w-[480px] md:max-w-[680px] lg:max-w-[800px]">
           <div className="mb-3 sm:mb-4 md:mb-5 px-0 sm:px-0 md:px-0">
-            <p className="font-sahitya text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px] font-bold leading-[24px] sm:leading-[26px] md:leading-[28px] lg:leading-[30px] text-primary">Fill up the Details</p>
+            <p className="font-sahitya text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px] font-bold leading-[24px] sm:leading-[26px] md:leading-[28px] lg:leading-[30px] text-primary">
+              Fill up the Details
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className={FORM_OUTLINE_CLASS}>

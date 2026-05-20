@@ -157,9 +157,7 @@ const Services = () => {
                         {service.title}
                       </h3>
                     </div>
-                    <button
-                      className="flex justify-center items-center bg-[#691709] border-none rounded-[32px] cursor-pointer transition-all duration-300 hover:bg-[#8b1f0f] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(105,23,9,0.3)] active:translate-y-0 w-[278px] h-[40px] gap-[10px] px-[18px] py-[4px] md:w-full md:h-auto md:gap-2.5 md:px-4 md:py-2"
-                    >
+                    <button className="flex justify-center items-center bg-[#691709] border-none rounded-[32px] cursor-pointer transition-all duration-300 hover:bg-[#8b1f0f] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(105,23,9,0.3)] active:translate-y-0 w-[278px] h-[40px] gap-[10px] px-[18px] py-[4px] md:w-full md:h-auto md:gap-2.5 md:px-4 md:py-2">
                       <span className="font-mukta font-bold text-sm md:text-base lg:text-lg leading-[1.78] text-center text-[#f8f3df] whitespace-nowrap">
                         {service.buttonText}
                       </span>

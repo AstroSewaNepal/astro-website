@@ -227,7 +227,10 @@ export default function CalculatorBirthDetailsForm({
         />
 
         {error ? (
-          <p className="mb-3 sm:mb-4 font-mukta text-[11px] sm:text-[12px] md:text-[13px] text-[#8d1f1f]" role="alert">
+          <p
+            className="mb-3 sm:mb-4 font-mukta text-[11px] sm:text-[12px] md:text-[13px] text-[#8d1f1f]"
+            role="alert"
+          >
             {error}
           </p>
         ) : null}

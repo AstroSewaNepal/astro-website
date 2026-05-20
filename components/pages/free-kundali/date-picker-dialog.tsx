@@ -161,7 +161,10 @@ const DatePickerDialog: React.FC<DatePickerDialogProps> = ({
               {/* Day names */}
               <div className="grid grid-cols-7 gap-1 justify-items-center">
                 {dayNames.map(day => (
-                  <div key={day} className="text-center text-xs font-semibold text-gray-600 py-2 w-full">
+                  <div
+                    key={day}
+                    className="text-center text-xs font-semibold text-gray-600 py-2 w-full"
+                  >
                     {day}
                   </div>
                 ))}

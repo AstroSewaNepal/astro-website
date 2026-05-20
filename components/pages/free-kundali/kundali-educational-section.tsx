@@ -3,7 +3,10 @@ import { KUNDALI_EDUCATIONAL_BLOCKS } from './kundali-educational.const';
 
 const KundaliEducationalSection: React.FC = () => {
   return (
-    <section className="container mx-auto px-6 lg:px-0" aria-labelledby="kundali-educational-heading">
+    <section
+      className="container mx-auto px-6 lg:px-0"
+      aria-labelledby="kundali-educational-heading"
+    >
       <h2 id="kundali-educational-heading" className="sr-only">
         About Janam Kundli
       </h2>

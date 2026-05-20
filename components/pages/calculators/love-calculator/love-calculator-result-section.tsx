@@ -58,7 +58,9 @@ export default function LoveCalculatorResultSection() {
     return (
       <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-24">
         <div className="max-w-[1454px] mx-auto flex flex-col items-center justify-center text-center">
-          <h2 className="font-sahitya text-3xl md:text-4xl font-bold text-[#5D1409]">No Data Found</h2>
+          <h2 className="font-sahitya text-3xl md:text-4xl font-bold text-[#5D1409]">
+            No Data Found
+          </h2>
           <p className="font-mukta mt-2 text-[#4a4a4a] text-[15px] md:text-[16px] leading-[1.8] max-w-[760px]">
             Please enter your names in the Love Calculator first.
           </p>
