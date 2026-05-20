@@ -431,7 +431,7 @@ const IndividualBasicDetails: React.FC<{
   ];
 
   return (
-    <div className="flex-1 min-w-[300px]">
+    <div className="flex-1 min-w-0">
       <div className="rounded-[20px] p-5 shadow-sm h-full">
         <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold border-b border-[#f5e9c6] pb-2 mb-4">
           {title}
@@ -443,7 +443,7 @@ const IndividualBasicDetails: React.FC<{
             </h3>
             <div className="mt-2">
               {basicRows.map(([label, value]) => (
-                <div key={`basic-${label}`} className="grid grid-cols-2">
+                <div key={`basic-${label}`} className="grid grid-cols-1 sm:grid-cols-2">
                   <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
                     {label}
                   </div>
@@ -461,7 +461,7 @@ const IndividualBasicDetails: React.FC<{
             </h3>
             <div className="mt-2">
               {kundaliRows.map(([label, value]) => (
-                <div key={`kundali-${label}`} className="grid grid-cols-2">
+                <div key={`kundali-${label}`} className="grid grid-cols-1 sm:grid-cols-2">
                   <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
                     {label}
                   </div>
@@ -507,7 +507,7 @@ const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
   ];
 
   return (
-    <div className="flex-1 min-w-[300px]">
+    <div className="flex-1 min-w-0">
       <div className="rounded-[20px] bg-[#f9f4dd] p-5 shadow-sm h-full">
         <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold border-b border-[#f5e9c6] pb-2 mb-4">
           {title}
@@ -679,7 +679,7 @@ const IndividualLagnaChart: React.FC<{ svg: string | undefined; title: string }>
       ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
       : null;
   return (
-    <div className="flex-1 min-w-[300px]">
+    <div className="flex-1 min-w-0">
       <div className="rounded-[20px] bg-[#f9f4dd] p-5 border-2 border-[#f5e9c6] shadow-sm h-full flex flex-col items-center">
         <h3 className="font-sahitya text-primary text-[28px] font-bold mb-4 border-b border-[#f5e9c6] pb-2 w-full text-center">
           {title}
@@ -735,8 +735,8 @@ const KundaliMatchingResultSection: React.FC = () => {
 
   if (!result) {
     return (
-      <section className="w-full px-4 md:px-8 py-8 md:py-12">
-        <div className="mx-auto flex max-w-[1453px] flex-col items-center justify-center gap-4 py-24 text-center">
+      <section className="container mx-auto px-6 lg:px-0 py-8 md:py-12">
+        <div className="mx-auto flex w-full max-w-[1453px] flex-col items-center justify-center gap-4 py-24 text-center">
           <p className="font-sahitya text-2xl font-bold text-primary">No Kundali data found.</p>
           <Link
             href="/kundali-matching"
@@ -777,7 +777,7 @@ const KundaliMatchingResultSection: React.FC = () => {
         : 'Your Kundali Matching Result';
 
   return (
-    <section className="w-full px-4 md:px-8 py-8 md:py-12">
+    <section className="container mx-auto px-6 lg:px-0 py-8 md:py-12">
       <div className="mx-auto w-full max-w-[1453px] space-y-8">
         <section className="w-full pt-0 md:pt-2 pb-6">
           <div className="max-w-4xl">

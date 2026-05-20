@@ -249,7 +249,7 @@ function groupPlanetsByHouse(rows: PlanetTableRow[]): Map<number, HousePlanet[]>
 
 /** Same frame as Basic Details `OpenChart` preview (matches Next/Image fill + object-contain box). */
 export const OPEN_CHART_FRAME_CLASS =
-  'relative mx-auto h-[300] w-[700px] max-w-full';
+  'relative mx-auto h-[300px] w-full max-w-[700px]';
 
 export type NorthIndianOpenChartProps = {
   planetRows: PlanetTableRow[];
