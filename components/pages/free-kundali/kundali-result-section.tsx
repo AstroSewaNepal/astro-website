@@ -628,11 +628,11 @@ const KundaliResultSection: React.FC = () => {
                     </h3>
                     <div className="mt-2">
                       {basicRows.map(([label, value]) => (
-                        <div key={`basic-${label}`} className="grid grid-cols-2">
-                          <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-medium text-[#3a3a3a]">
+                        <div key={`basic-${label}`} className="grid grid-cols-1 sm:grid-cols-2">
+                          <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[24px] leading-[34px] sm:text-[28px] sm:leading-[40px] font-medium text-[#3a3a3a]">
                             {label}
                           </div>
-                          <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-normal text-[#4a4a4a]">
+                          <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[24px] leading-[34px] sm:text-[28px] sm:leading-[40px] font-normal text-[#4a4a4a]">
                             {value}
                           </div>
                         </div>
@@ -646,11 +646,11 @@ const KundaliResultSection: React.FC = () => {
                     </h3>
                     <div className="mt-2">
                       {kundaliRows.map(([label, value]) => (
-                        <div key={`kundali-${label}`} className="grid grid-cols-2">
-                          <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-medium text-[#3a3a3a]">
+                        <div key={`kundali-${label}`} className="grid grid-cols-1 sm:grid-cols-2">
+                          <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[24px] leading-[34px] sm:text-[28px] sm:leading-[40px] font-medium text-[#3a3a3a]">
                             {label}
                           </div>
-                          <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-normal text-[#4a4a4a]">
+                          <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[24px] leading-[34px] sm:text-[28px] sm:leading-[40px] font-normal text-[#4a4a4a]">
                             {value}
                           </div>
                         </div>
@@ -665,11 +665,11 @@ const KundaliResultSection: React.FC = () => {
                   </h3>
                   <div className="mt-2 max-w-[760px]">
                     {favourableRows.map(([label, value]) => (
-                      <div key={`favourable-${label}`} className="grid grid-cols-2">
-                        <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-medium text-[#3a3a3a]">
+                      <div key={`favourable-${label}`} className="grid grid-cols-1 sm:grid-cols-2">
+                        <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[24px] leading-[34px] sm:text-[28px] sm:leading-[40px] font-medium text-[#3a3a3a]">
                           {label}
                         </div>
-                        <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[28px] leading-[40px] font-normal text-[#4a4a4a]">
+                        <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[24px] leading-[34px] sm:text-[28px] sm:leading-[40px] font-normal text-[#4a4a4a]">
                           {value}
                         </div>
                       </div>

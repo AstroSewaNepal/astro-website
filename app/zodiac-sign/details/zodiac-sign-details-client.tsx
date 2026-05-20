@@ -11,6 +11,7 @@ import { ZodiacSignMiniCard } from '@/components/pages/zodiac-sign/zodiac-sign-m
 import { ZodiacSignStripNav } from '@/components/pages/zodiac-sign/zodiac-sign-strip-nav';
 import { useZodiacSignDetails } from '@/components/pages/zodiac-sign/use-zodiac-sign-details';
 import Services from '@/components/pages/landing/services';
+import DownloadApp from '@/components/pages/landing/download-app';
 import { CompatibilitySignsGrid } from '@/components/ui/compatibility-signs-grid';
 import ArrowRight from '@/components/icons/arrow-right';
 import { ServiceTalkToAstrologer } from '@/components/images/services';
@@ -300,11 +301,10 @@ export function ZodiacSignDetailsClient() {
             </div>
           </div>
         </section>
-
-        <div className="mx-auto mt-10 max-w-[1180px]">
-          <Services />
-        </div>
       </div>
+
+      <Services />
+      <DownloadApp className="mx-auto mt-14 max-w-[1180px]" />
     </main>
   );
 }

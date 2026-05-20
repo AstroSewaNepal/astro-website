@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import PhoneIcon from '@/components/icons/phone-icon';
 import {
   AppleDownloadImage,
   AstroSewaTransparentLogo,
@@ -164,7 +165,9 @@ const Footer: React.FC = () => {
                 <div className="flex flex-col gap-6">
                   {/* Phone */}
                   <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 bg-gray-300 rounded"></div>
+                    <div className="flex h-[22px] w-[22px] items-center justify-center rounded" style={{ opacity: 1, transform: 'rotate(0deg)' }}>
+                      <PhoneIcon className="h-[22px] w-[22px] text-[#F8F3DF]" />
+                    </div>
                     <a
                       href="tel:+9779818080676"
                       className="font-mukta text-[18px] font-medium text-[#F8F3DF] hover:opacity-75 transition-opacity"
@@ -175,7 +178,27 @@ const Footer: React.FC = () => {
 
                   {/* Email */}
                   <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 bg-gray-300 rounded"></div>
+                    <div className="flex h-[22px] w-[22px] items-center justify-center rounded" style={{ opacity: 1, transform: 'rotate(0deg)' }}>
+                      <svg
+                        width="22"
+                        height="22"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-[22px] w-[22px] text-[#F8F3DF] opacity-100"
+                      >
+                        <path
+                          d="M20 6H4C2.9 6 2 6.9 2 8V16C2 17.1 2.9 18 4 18H20C21.1 18 22 17.1 22 16V8C22 6.9 21.1 6 20 6Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                        />
+                        <path
+                          d="M22 8L12 13L2 8"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                        />
+                      </svg>
+                    </div>
                     <a
                       href="mailto:support@astrosewa.com"
                       className="font-mukta text-[18px] font-medium text-[#F8F3DF] hover:opacity-75 transition-opacity"

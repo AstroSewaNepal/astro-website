@@ -274,13 +274,11 @@ export default function CompatibilityPage() {
 
         <TalkToOurAstrologer className="mx-auto mt-14 max-w-[1180px]" />
 
-        <div className="mx-auto mt-14 max-w-[1180px]">
+        <div className="mt-14">
           <Services />
         </div>
 
-        <div className="mx-auto mt-14 max-w-[1180px]">
-          <DownloadApp />
-        </div>
+        <DownloadApp className="mx-auto mt-14 max-w-[1180px]" />
       </div>
     </main>
   );

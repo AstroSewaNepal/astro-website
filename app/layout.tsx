@@ -75,6 +75,11 @@ export const metadata: Metadata = {
       },
     ],
   },
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   twitter: {
     card: 'summary_large_image',
     title: "Astro Sewa - Nepal's Trusted Online Astrology Platform",

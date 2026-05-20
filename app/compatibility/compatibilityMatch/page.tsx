@@ -942,17 +942,13 @@ export default function CompatibilityMatchPage() {
           </div>
 
           <Clarity />
-
-          {/* ── Our Services ── */}
-          <div>
-            <Services />
-          </div>
-
-          {/* ── Download App ── */}
-          <div>
-            <DownloadApp />
-          </div>
         </section>
+      </div>
+
+      <Services />
+
+      <div className="mt-14">
+        <DownloadApp />
       </div>
     </main>
   );

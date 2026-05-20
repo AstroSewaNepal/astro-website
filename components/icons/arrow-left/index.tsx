@@ -17,7 +17,7 @@ const ArrowLeft: React.FC<IIconsProps> = ({
       <path
         d="M5.5 1L1 6.135L5.5 11.27"
         stroke={'currentColor'}
-        strokeWidth={2}
+        strokeWidth={1.27}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
