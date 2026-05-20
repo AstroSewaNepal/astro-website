@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ServiceReport } from '@/components/images/services';
 import GoogleGIcon from '@/components/images/icons/google_G.png';
+import DatePickerDropdown from '@/components/pages/free-kundali/date-picker-dropdown';
 import {
   BirthTimeFields,
   EMPTY_BIRTH_TIME,
@@ -320,6 +321,55 @@ type SelectPillProps = {
   error?: string;
 };
 
+const DatePickerPill = ({
+  id,
+  label,
+  name,
+  value,
+  error,
+  open,
+  onOpenChange,
+  onDateSelect,
+}: {
+  id: string;
+  label: string;
+  name: string;
+  value: string;
+  error?: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onDateSelect: (value: string) => void;
+}) => (
+  <div className="block relative">
+    <label htmlFor={id} className="block font-mukta text-[12px] md:text-[13px] text-primary mb-1.5">
+      {label}
+    </label>
+    <span className="relative block">
+      <button
+        id={id}
+        type="button"
+        onClick={() => onOpenChange(true)}
+        className={[
+          'w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 pr-10 text-left font-mukta text-[13px] md:text-[14px] text-[#141414] outline-none focus:ring-2 focus:ring-primary/10 transition-colors cursor-pointer',
+          error ? 'border-red-500' : 'border-primary',
+        ].join(' ')}
+      >
+        <span className="flex min-w-0 items-center justify-between gap-2">
+          <span className="truncate text-left text-[13px] md:text-[14px] text-[#141414]">
+            {value || 'Select date of birth'}
+          </span>
+          <span className="flex items-center text-primary/80">
+            <CalendarIcon className="w-4 h-4" />
+          </span>
+        </span>
+      </button>
+      <input type="hidden" name={name} value={value} />
+    </span>
+    <FieldError message={error} />
+    <DatePickerDropdown open={open} onOpenChange={onOpenChange} onDateSelect={onDateSelect} value={value} />
+  </div>
+);
+
 const SelectPill = ({ id, label, name, className, error }: SelectPillProps) => (
   <div className={['block', className].filter(Boolean).join(' ')}>
     <label htmlFor={id} className="block font-mukta text-[12px] md:text-[13px] text-primary mb-1.5">
@@ -385,6 +435,10 @@ type PersonSectionProps = {
   unknownBirthTime: boolean;
   onToggleUnknownTime: (v: boolean) => void;
   errors: PersonErrors;
+  dateOfBirthValue: string;
+  isDatePickerOpen: boolean;
+  onDateOfBirthChange: (value: string) => void;
+  onDatePickerOpenChange: (open: boolean) => void;
 };
 
 const PersonSection = ({
@@ -396,6 +450,10 @@ const PersonSection = ({
   unknownBirthTime,
   onToggleUnknownTime,
   errors,
+  dateOfBirthValue,
+  isDatePickerOpen,
+  onDateOfBirthChange,
+  onDatePickerOpenChange,
 }: PersonSectionProps) => (
   <div className="space-y-3 md:space-y-3.5">
     <SectionPillHeader
@@ -428,12 +486,14 @@ const PersonSection = ({
 
     <div className="grid grid-cols-2 gap-3 md:gap-4">
       {/* Date of birth */}
-      <InputPill
+      <DatePickerPill
         id={`${prefix}-dob`}
         label="Date of birth"
         name={`${prefix}DateOfBirth`}
-        type="date"
-        rightIcon={<CalendarIcon />}
+        value={dateOfBirthValue}
+        open={isDatePickerOpen}
+        onOpenChange={onDatePickerOpenChange}
+        onDateSelect={onDateOfBirthChange}
         error={errors.dateOfBirth}
       />
 
@@ -489,6 +549,10 @@ const KundaliMatchingFormSection: React.FC = () => {
   const [womanUnknownTime, setWomanUnknownTime] = useState(false);
   const [manBirthTime, setManBirthTime] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
   const [womanBirthTime, setWomanBirthTime] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
+  const [manDateOfBirth, setManDateOfBirth] = useState('');
+  const [womanDateOfBirth, setWomanDateOfBirth] = useState('');
+  const [isManDatePickerOpen, setIsManDatePickerOpen] = useState(false);
+  const [isWomanDatePickerOpen, setIsWomanDatePickerOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors>(EMPTY_ERRORS);
 
@@ -707,6 +771,10 @@ const KundaliMatchingFormSection: React.FC = () => {
                   }
                 }}
                 errors={formErrors.man}
+                dateOfBirthValue={manDateOfBirth}
+                isDatePickerOpen={isManDatePickerOpen}
+                onDateOfBirthChange={setManDateOfBirth}
+                onDatePickerOpenChange={setIsManDatePickerOpen}
               />
 
               {/* Mobile divider */}
@@ -739,6 +807,10 @@ const KundaliMatchingFormSection: React.FC = () => {
                   }
                 }}
                 errors={formErrors.woman}
+                dateOfBirthValue={womanDateOfBirth}
+                isDatePickerOpen={isWomanDatePickerOpen}
+                onDateOfBirthChange={setWomanDateOfBirth}
+                onDatePickerOpenChange={setIsWomanDatePickerOpen}
               />
 
               {/* Desktop vertical divider — only between Man/Woman columns */}

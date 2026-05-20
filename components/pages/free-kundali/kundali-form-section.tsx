@@ -19,6 +19,7 @@ import ChevronDownIcon from '@/components/icons/chevron-down';
 import { ServiceReport } from '@/components/images/services';
 import { fetchFreeKundaliBundle } from '@/lib/vedastro/fetch-free-kundali-bundle';
 import { FreeKundaliGoogleSignIn } from '@/components/pages/free-kundali/free-kundali-google-sign-in';
+import DatePickerDropdown from '@/components/pages/free-kundali/date-picker-dropdown';
 
 const fieldIconClass = 'w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary';
 const cardShell = clsx(
@@ -169,6 +170,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
   const [birthTimeParts, setBirthTimeParts] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>(EMPTY_ERRORS);
+  const [dateOfBirthValue, setDateOfBirthValue] = useState<string>('');
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const nameRegex = /^[A-Za-z ]+$/;
   const placeRegex = /^[A-Za-z ]+$/;
@@ -179,7 +182,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
 
     const formData = new FormData(e.currentTarget);
     const fullName = String(formData.get('fullName') ?? '').trim();
-    const dateOfBirthInput = String(formData.get('dateOfBirth') ?? '').trim();
+    const dateOfBirthInput = dateOfBirthValue.trim();
     const birthPlace = String(formData.get('birthPlace') ?? '').trim();
     const birthTimeInput = birthTimePartsToInput(birthTimeParts).trim();
     const gender = String(formData.get('gender') ?? '').trim();
@@ -301,7 +304,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
   };
 
   return (
-    <section className="w-full px-4 md:px-8">
+    <>
+      <section className="w-full px-4 md:px-8">
       <div className="mx-auto w-full max-w-[2400px]">
         <div className="flex flex-col lg:block items-center">
           {/* Right Card - Mobile Only */}
@@ -396,27 +400,32 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                 </div>
 
                 {/* DOB */}
-                <div>
+                <div className="relative">
                   <label
                     htmlFor="kundali-dob"
                     className="block font-mukta text-sm text-Trinary mb-2"
                   >
                     Enter date of birth
                   </label>
-                  <div
+                  <button
+                    onClick={() => setIsDatePickerOpen(true)}
+                    type="button"
                     className={clsx(
-                      'flex items-center rounded-full border px-4 py-3 focus-within:border-primary transition-colors',
+                      'w-full flex items-center rounded-full border px-4 py-3 focus-within:border-primary transition-colors bg-transparent font-mukta text-sm md:text-base text-[#4f2620] cursor-pointer',
                       fieldErrors.dateOfBirth ? 'border-red-500' : 'border-Trinary',
                     )}
                   >
-                    <input
-                      id="kundali-dob"
-                      name="dateOfBirth"
-                      type="date"
-                      placeholder="Select date of birth"
-                      className="cursor-pointer flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none"
-                    />
-                  </div>
+                    <span className="flex-1 min-w-0 text-left">
+                      {dateOfBirthValue || 'Select date of birth'}
+                    </span>
+                    <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary" />
+                  </button>
+                  <DatePickerDropdown
+                    open={isDatePickerOpen}
+                    onOpenChange={setIsDatePickerOpen}
+                    onDateSelect={setDateOfBirthValue}
+                    value={dateOfBirthValue}
+                  />
                   <FieldError message={fieldErrors.dateOfBirth} />
                 </div>
 
@@ -553,6 +562,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
         </div>
       </div>
     </section>
+    </>
   );
 };
 
