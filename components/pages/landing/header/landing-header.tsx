@@ -318,7 +318,7 @@ function LandingHeaderClient() {
             </button>
           </div>
         </div>
-        <nav className="mt-10 bg-primary py-3 px-6 gap-[22px] rounded-3xl hidden xl:flex xl:flex-wrap xl:justify-center relative z-40 w-full overflow-hidden">
+        <nav className="mt-10 bg-primary py-3 px-6 gap-[22px] rounded-3xl hidden xl:flex xl:flex-wrap xl:justify-center relative z-40 w-full overflow-visible">
           {landingNav.map(value => {
             const hasChildren = !!value.children?.length;
             const navActive = desktopNavItemActive(pathname, value);

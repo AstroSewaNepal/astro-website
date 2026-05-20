@@ -394,7 +394,7 @@ const KundaliResultSection: React.FC = () => {
   ];
 
   return (
-    <section className="w-full px-4 md:px-8">
+    <section className="container mx-auto px-6 lg:px-0">
       <div className="mx-auto w-full max-w-[1453px]">
         <h1 className="font-sahitya text-primary text-[28px] md:text-[40px] leading-tight font-bold">
           Kundali Details

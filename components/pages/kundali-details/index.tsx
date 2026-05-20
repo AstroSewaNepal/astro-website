@@ -5,7 +5,7 @@ import { AstrologyPrimaryColor, SquareNumberChart } from '@/components/images';
 
 const KundaliDetails: React.FC = () => {
   return (
-    <section className="w-full px-8 pt-0 md:pt-2 pb-10">
+    <section className="w-full px-0 pt-0 md:pt-2 pb-10">
       <header className="max-w-4xl">
         <h1 className="font-sahitya font-bold text-[20px] leading-[100%] md:text-[36px] md:leading-[48px] text-primary mb-1">
           Kundali
