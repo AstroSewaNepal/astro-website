@@ -1,10 +1,16 @@
 import { AppleDownloadImage, DownloadPhoneImage, GoogleDownloadImage } from '@/components/images';
+import clsx from 'clsx';
 import Image from 'next/image';
 import React from 'react';
 
-const DownloadApp: React.FC = () => {
+type DownloadAppProps = {
+  className?: string;
+};
+
+const DownloadApp: React.FC<DownloadAppProps> = ({ className }) => {
   return (
-    <div className="flex flex-col lg:flex-row items-center lg:items-center justify-between gap-8 md:gap-12 lg:gap-24 xl:gap-36 px-4 md:px-6 lg:px-4 py-8 md:py-12 lg:py-16 max-w-7xl mx-auto">
+    <section className={clsx(className)}>
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 px-4 py-8 md:gap-12 md:px-6 md:py-12 lg:flex-row lg:items-center lg:gap-24 lg:px-4 lg:py-16 xl:gap-36">
       {/* Left Content */}
       <div className="flex flex-col gap-4 md:gap-5 lg:gap-6 max-w-full lg:max-w-[684px] w-full lg:w-auto text-center lg:text-left">
         {/* Title */}
@@ -56,7 +62,8 @@ const DownloadApp: React.FC = () => {
           className="w-full max-w-[300px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[516px] h-auto"
         />
       </div>
-    </div>
+      </div>
+    </section>
   );
 };
 
