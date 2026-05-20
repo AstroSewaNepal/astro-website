@@ -38,26 +38,30 @@ export default function NumerologyCalculatorResultSection() {
 
   if (!loaded) {
     return (
-      <section className="w-full px-3 md:px-8 pb-12">
-        <p className="py-24 text-center font-mukta text-[#4a4a4a]">Loading…</p>
+      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+        <div className="max-w-[1454px] mx-auto">
+          <p className="py-24 text-center font-mukta text-[#4a4a4a]">Loading…</p>
+        </div>
       </section>
     );
   }
 
   if (!data) {
     return (
-      <section className="w-full px-3 md:px-8 pb-12">
-        <div className="mx-auto max-w-[900px] rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center">
-          <h1 className="font-sahitya text-[32px] font-bold text-[#5D1409]">Numerology Result</h1>
-          <p className="mt-4 font-mukta text-[16px] text-[#2f2f2f]">
-            No result found. Please calculate again.
-          </p>
-          <Link
-            href="/calculators/numerology-calculator"
-            className="mt-8 inline-block rounded-full bg-[#5D1409] px-8 py-3.5 font-mukta text-[17px] font-bold text-white"
-          >
-            Go to Numerology Calculator
-          </Link>
+      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+        <div className="max-w-[1454px] mx-auto">
+          <div className="rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center">
+            <h1 className="font-sahitya text-[32px] font-bold text-[#5D1409]">Numerology Result</h1>
+            <p className="mt-4 font-mukta text-[16px] text-[#2f2f2f]">
+              No result found. Please calculate again.
+            </p>
+            <Link
+              href="/calculators/numerology-calculator"
+              className="mt-8 inline-block rounded-full bg-[#5D1409] px-8 py-3.5 font-mukta text-[17px] font-bold text-white"
+            >
+              Go to Numerology Calculator
+            </Link>
+          </div>
         </div>
       </section>
     );
@@ -66,8 +70,8 @@ export default function NumerologyCalculatorResultSection() {
   const rows = data.rows ?? [];
 
   return (
-    <section className="w-full px-3 md:px-8 pb-16">
-      <div className="mx-auto max-w-[900px]">
+    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+      <div className="max-w-[1454px] mx-auto">
         <div className="pt-8 pb-4">
           <h1 className="font-sahitya text-[28px] font-bold text-[#5D1409] md:text-[34px]">
             Numerology Calculator

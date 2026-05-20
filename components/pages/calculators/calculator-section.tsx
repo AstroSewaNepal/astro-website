@@ -58,8 +58,8 @@ export default function CalculatorSection({
   };
 
   return (
-    <section className="w-full px-3 md:px-8 pb-12">
-      <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-start lg:gap-16">
+    <section className="w-full pb-12">
+      <div className="container mx-auto max-w-[1440px] px-6 lg:px-0 grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-start lg:gap-16">
         <div>
           <h1 className="font-sahitya text-[32px] font-bold leading-[1.1] text-primary md:text-[40px] lg:text-[44px]">
             {title}

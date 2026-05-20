@@ -130,7 +130,7 @@ const HOUSE_ANCHORS: Record<number, { leftPct: number; topPct: number; widthPct:
   6: { leftPct: 35, topPct: 90, widthPct: 14 },
   7: { leftPct: 50, topPct: 75, widthPct: 14 },
   8: { leftPct: 69.5, topPct: 90, widthPct: 14 },
-  9: { leftPct: 90, topPct: 75, widthPct: 16},
+  9: { leftPct: 90, topPct: 75, widthPct: 16 },
   10: { leftPct: 75, topPct: 50, widthPct: 14 },
   11: { leftPct: 92, topPct: 30, widthPct: 10 },
   12: { leftPct: 72, topPct: 9, widthPct: 17 },
@@ -248,8 +248,7 @@ function groupPlanetsByHouse(rows: PlanetTableRow[]): Map<number, HousePlanet[]>
 }
 
 /** Same frame as Basic Details `OpenChart` preview (matches Next/Image fill + object-contain box). */
-export const OPEN_CHART_FRAME_CLASS =
-  'relative mx-auto h-[300px] w-full max-w-[700px]';
+export const OPEN_CHART_FRAME_CLASS = 'relative mx-auto h-[300px] w-full max-w-[700px]';
 
 export type NorthIndianOpenChartProps = {
   planetRows: PlanetTableRow[];
@@ -279,8 +278,7 @@ export function NorthIndianOpenChartWithPlanets({
       // so overlay text doesn't spill outside (keeps labels below surrounding text).
       if (next.height > wrap.clientHeight) {
         setMinHeight(Math.ceil(next.height));
-      } else if (minHeight) {
-        // Reset if container is larger again
+      } else {
         setMinHeight(undefined);
       }
     }

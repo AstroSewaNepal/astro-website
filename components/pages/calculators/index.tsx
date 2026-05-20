@@ -12,9 +12,9 @@ import RashiCalculatorImage from '@/components/images/calculator/rashicalculator
 
 const Calculators: React.FC = () => {
   return (
-    <section className="w-full px-3 md:px-8 pt-6 md:pt-12">
+    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12">
       <div className="max-w-[1454px] mx-auto">
-        <h1 className="font-sahitya font-bold text-[30px] md:text-[36px] lg:text-[44px]  leading-[1.1] text-primary">
+        <h1 className="font-sahitya font-bold text-[30px] md:text-[36px] lg:text-[44px] leading-[1.1] text-primary">
           Astrology Calculators
         </h1>
         <p className="mt-2 font-mukta text-[14px] md:text-[16px] lg:text-[18px] leading-[1.5] text-[#141414]">
@@ -31,11 +31,10 @@ const Calculators: React.FC = () => {
           Choose Your Calculator
         </h2>
 
-        <div className="mt-5 flex gap-4 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 lg:gap-8 md:overflow-visible md:pb-0">
+        <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
           <CalculatorCard
             title="Love Calculator"
             description="Discover your compatibility with a partner or potential love interest."
-            mobileHorizontal
             calculateHref="/calculators/love-calculator"
             icon={
               <Image
@@ -51,7 +50,6 @@ const Calculators: React.FC = () => {
           <CalculatorCard
             title="Numerology Calculator"
             description="Discover your life path number and explore numerology insights."
-            mobileHorizontal
             calculateHref="/calculators/numerology-calculator"
             icon={
               <Image
@@ -67,7 +65,6 @@ const Calculators: React.FC = () => {
           <CalculatorCard
             title="Sun Sign Calculator"
             description="Discover your zodiac sign based on birth date and astrology insights."
-            mobileHorizontal
             calculateHref="/calculators/sun-sign-calculator"
             icon={
               <Image
@@ -83,7 +80,6 @@ const Calculators: React.FC = () => {
           <CalculatorCard
             title="Mangal Dosha Calculator"
             description="Check Mangal dosha and marriage effects in your birth chart."
-            mobileHorizontal
             calculateHref="/calculators/mangal-dosha-calculator"
             icon={
               <Image
@@ -96,114 +92,57 @@ const Calculators: React.FC = () => {
             }
           />
 
-          <div className="md:hidden">
-            <CalculatorCard
-              title="Dasha Calculator"
-              description="Calculate planetary dasha periods and analyze timing of life events in Vedic astrology."
-              mobileHorizontal
-              calculateHref="/calculators/dasha-calculator"
-              icon={
-                <Image
-                  src={DashaImage}
-                  alt="Dasha calculator"
-                  width={130}
-                  height={130}
-                  className="h-[130.0032px] w-[128.2434px] object-contain opacity-100"
-                />
-              }
-            />
-          </div>
+          <CalculatorCard
+            title="Dasha Calculator"
+            titleClassName="md:text-[22px] md:leading-[32px] text-center"
+            descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
+            description="Calculate planetary dasha periods and analyze timing of life events in Vedic astrology."
+            calculateHref="/calculators/dasha-calculator"
+            icon={
+              <Image
+                src={DashaImage}
+                alt="Dasha calculator"
+                width={130}
+                height={130}
+                className="h-[130px] w-[128px] object-contain opacity-100"
+              />
+            }
+          />
 
-          <div className="md:hidden">
-            <CalculatorCard
-              title="Moon Phase Calculator"
-              description="Track and explore current moon phases and lunar cycle changes over time."
-              mobileHorizontal
-              calculateHref="/calculators/moon-phase-calculator"
-              icon={
-                <Image
-                  src={MoonPhaseImage}
-                  alt="Moon phase calculator"
-                  width={130}
-                  height={130}
-                  className="h-[130.0032px] w-[128.2434px] object-contain opacity-100"
-                />
-              }
-            />
-          </div>
+          <CalculatorCard
+            title="Moon Phase Calculator"
+            titleClassName="md:text-[22px] md:leading-[32px] text-center"
+            descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
+            description="Track and explore current moon phases and lunar cycle changes over time."
+            calculateHref="/calculators/moon-phase-calculator"
+            icon={
+              <Image
+                src={MoonPhaseImage}
+                alt="Moon phase calculator"
+                width={130}
+                height={130}
+                className="h-[130px] w-[128px] object-contain opacity-100"
+              />
+            }
+          />
 
-          <div className="md:hidden">
-            <CalculatorCard
-              title="Rashi Calculator"
-              description="Discover your moon sign and understand your Vedic astrology birth chart insights."
-              mobileHorizontal
-              calculateHref="/calculators/rashi-calculator"
-              icon={
-                <Image
-                  src={RashiCalculatorImage}
-                  alt="Rashi calculator"
-                  width={130}
-                  height={130}
-                  className="h-[130.0032px] w-[128.2434px] object-contain opacity-100"
-                />
-              }
-            />
-          </div>
+          <CalculatorCard
+            title="Rashi Calculator"
+            titleClassName="md:text-[22px] md:leading-[32px] text-center"
+            descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
+            description="Discover your moon sign and understand your Vedic astrology birth chart insights."
+            calculateHref="/calculators/rashi-calculator"
+            icon={
+              <Image
+                src={RashiCalculatorImage}
+                alt="Rashi calculator"
+                width={130}
+                height={130}
+                className="h-[130px] w-[128px] object-contain opacity-100"
+              />
+            }
+          />
         </div>
-      </div>
-
-      {/* Second row */}
-      <div className="mt-6 hidden md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 lg:gap-8">
-        <CalculatorCard
-          title="Dasha Calculator"
-          titleClassName="md:text-[22px] md:leading-[32px] text-center"
-          descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
-          description="Calculate planetary dasha periods and analyze timing of life events in Vedic astrology."
-          calculateHref="/calculators/dasha-calculator"
-          icon={
-            <Image
-              src={DashaImage}
-              alt="Dasha calculator"
-              width={130}
-              height={130}
-              className="h-[130.0032px] w-[128.2434px] md:h-[130.0032px] md:w-[128.2434px] object-contain opacity-100"
-            />
-          }
-        />
-
-        <CalculatorCard
-          title="Moon Phase Calculator"
-          titleClassName="md:text-[22px] md:leading-[32px] text-center"
-          descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
-          description="Track and explore current moon phases and lunar cycle changes over time."
-          calculateHref="/calculators/moon-phase-calculator"
-          icon={
-            <Image
-              src={MoonPhaseImage}
-              alt="Moon phase calculator"
-              width={130}
-              height={130}
-              className="h-[130.0032px] w-[128.2434px] md:h-[130.0032px] md:w-[128.2434px] object-contain opacity-100"
-            />
-          }
-        />
-
-        <CalculatorCard
-          title="Rashi Calculator"
-          titleClassName="md:text-[22px] md:leading-[32px] text-center"
-          descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
-          description="Discover your moon sign and understand your Vedic astrology birth chart insights."
-          calculateHref="/calculators/rashi-calculator"
-          icon={
-            <Image
-              src={RashiCalculatorImage}
-              alt="Rashi calculator"
-              width={130}
-              height={130}
-              className="h-[130.0032px] w-[128.2434px] md:h-[130.0032px] md:w-[128.2434px] object-contain opacity-100"
-            />
-          }
-        />
       </div>
     </section>
   );

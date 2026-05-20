@@ -3,7 +3,10 @@ import { KMATCHING_EDUCATIONAL_BLOCKS } from './kmatching-educational.const';
 
 const KundaliEducationalSection: React.FC = () => {
   return (
-    <section className="container mx-auto px-6 lg:px-0" aria-labelledby="kmatching-educational-heading">
+    <section
+      className="container mx-auto px-6 lg:px-0"
+      aria-labelledby="kmatching-educational-heading"
+    >
       <h2 id="kmatching-educational-heading" className="sr-only">
         About Janam Kundli
       </h2>

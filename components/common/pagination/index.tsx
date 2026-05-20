@@ -41,9 +41,7 @@ const Pagination: React.FC<PaginationProps> = ({
             aria-label={`Go to page ${page}`}
             onClick={() => onPageChange(page)}
             className={`rounded-full transition-colors shadow-sm opacity-100 ${
-              page === currentPage
-                ? 'bg-[#611508]'
-                : 'bg-[#d9bdb7] hover:opacity-80'
+              page === currentPage ? 'bg-[#611508]' : 'bg-[#d9bdb7] hover:opacity-80'
             }`}
             style={{ width: '10.363306999206543px', height: '10.363306999206543px' }}
           />

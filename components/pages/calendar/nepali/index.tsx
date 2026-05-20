@@ -168,119 +168,125 @@ const NepaliCalendarPageContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen px-4 md:px-8 pt-2 pb-10 text-[#2a1f1a]">
-      <h1 className="text-[24px] leading-[30px] md:text-[36px] md:leading-[44px] font-sahitya font-bold text-[#7b1c1c] mb-1 tracking-wide">
-        Nepali Calendar
-      </h1>
+    <div className="min-h-screen pt-2 pb-10 text-[#2a1f1a]">
+      <div className="container mx-auto px-6 lg:px-0">
+        <h1 className="break-words text-[24px] leading-[30px] md:text-[36px] md:leading-[44px] font-sahitya font-bold text-[#7b1c1c] mb-1 tracking-wide">
+          Nepali Calendar
+        </h1>
 
-      <p className="text-[16px] leading-[24px] md:text-[24px] md:leading-[30px] font-medium font-mukta text-[#141414] mb-3 tracking-wide">
-        Track Nepali dates, festivals, and auspicious timings
-      </p>
+        <p className="text-[16px] leading-[24px] md:text-[24px] md:leading-[30px] font-medium font-mukta text-[#141414] mb-3 tracking-wide">
+          Track Nepali dates, festivals, and auspicious timings
+        </p>
 
-      <hr className="border-t border-[#c0785a] mb-6" />
+        <hr className="border-t border-[#c0785a] mb-6" />
 
-      <h2 className="text-[20px] leading-[30px] md:text-[28px] md:leading-[38px] font-bold font-sahitya text-[#7b1c1c] mb-3 tracking-wide">
-        About Nepali Calendar
-      </h2>
+        <h2 className="text-[20px] leading-[30px] md:text-[28px] md:leading-[38px] font-bold font-sahitya text-[#7b1c1c] mb-3 tracking-wide">
+          About Nepali Calendar
+        </h2>
 
-      <p className="text-[16px] leading-6 md:text-[24px] md:leading-[34px] font-normal font-mukta text-Paragraph w-full mb-8 text-justify">
-        The Nepali calendar (Bikram Sambat) is widely used in Nepal for everyday dates, festivals,
-        and religious planning. It helps you follow local months, important occasions, and
-        traditional timings while staying aligned with astrological guidance.
-      </p>
+        <p className="text-[16px] leading-6 md:text-[24px] md:leading-[34px] font-normal font-mukta text-Paragraph w-full mb-8 text-justify">
+          The Nepali calendar (Bikram Sambat) is widely used in Nepal for everyday dates, festivals,
+          and religious planning. It helps you follow local months, important occasions, and
+          traditional timings while staying aligned with astrological guidance.
+        </p>
 
-      <section className="rounded-xl border border-[#c7c7c7] bg-white shadow-[0_10px_26px_rgba(0,0,0,0.1)] overflow-hidden">
-        <div className="bg-[#d91515] text-white px-4 md:px-5 py-2.5 md:py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-          <p className="font-mukta font-bold text-[20px] md:text-[24px] leading-tight">
-            वि.सं {yearNp}
-          </p>
-          <h3 className="font-sahitya font-bold text-[28px] md:text-[36px] leading-none tracking-wide text-center">
-            {monthNp}
-          </h3>
-          <p className="font-mukta font-semibold text-[16px] md:text-[20px] leading-tight">
-            {adRangeLabel}
-          </p>
-        </div>
-
-        <div className="px-4 md:px-5 py-3 border-b border-[#e8d8d8] flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <p className="font-mukta text-[15px] md:text-[18px] text-[#6a1717] font-semibold">
-            {title}
-          </p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleGoToToday}
-              className="px-3 py-1.5 rounded-lg bg-[#7b1c1c] text-white font-mukta shadow-sm hover:bg-[#691709] transition-colors"
-            >
-              Today
-            </button>
-            <button
-              type="button"
-              onClick={handlePrevMonth}
-              className="px-3 py-1.5 rounded-lg border border-[#d29276] text-[#7b1c1c] bg-white font-mukta hover:bg-[#fef0e7] transition-colors"
-            >
-              Prev
-            </button>
-            <button
-              type="button"
-              onClick={handleNextMonth}
-              className="px-3 py-1.5 rounded-lg border border-[#d29276] text-[#7b1c1c] bg-white font-mukta hover:bg-[#fef0e7] transition-colors"
-            >
-              Next
-            </button>
+        <section className="rounded-xl border border-[#c7c7c7] bg-white shadow-[0_10px_26px_rgba(0,0,0,0.1)] overflow-hidden">
+          <div className="bg-[#d91515] text-white px-4 md:px-5 py-2.5 md:py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <p className="font-mukta font-bold text-[20px] md:text-[24px] leading-tight">
+              वि.सं {yearNp}
+            </p>
+            <h3 className="font-sahitya font-bold text-[28px] md:text-[36px] leading-none tracking-wide text-center">
+              {monthNp}
+            </h3>
+            <p className="font-mukta font-semibold text-[16px] md:text-[20px] leading-tight">
+              {adRangeLabel}
+            </p>
           </div>
-        </div>
 
-        <div className="grid grid-cols-7 border-b border-[#c7c7c7]">
-          {weekDays.map(weekDay => (
-            <div
-              key={weekDay.en}
-              className="bg-[#123b8f] border-r border-[#9db5e6] last:border-r-0 text-white text-center py-2 md:py-2.5"
-            >
-              <p className="font-mukta font-semibold text-[11px] md:text-[15px] leading-tight">
-                {weekDay.np}
-              </p>
-              <p className="font-mukta text-[10px] md:text-[13px] leading-tight opacity-95">
-                {weekDay.en}
-              </p>
+          <div className="px-4 md:px-5 py-3 border-b border-[#e8d8d8] flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <p className="font-mukta text-[15px] md:text-[18px] text-[#6a1717] font-semibold">
+              {title}
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleGoToToday}
+                className="px-3 py-1.5 rounded-lg bg-[#7b1c1c] text-white font-mukta shadow-sm hover:bg-[#691709] transition-colors"
+              >
+                Today
+              </button>
+              <button
+                type="button"
+                onClick={handlePrevMonth}
+                className="px-3 py-1.5 rounded-lg border border-[#d29276] text-[#7b1c1c] bg-white font-mukta hover:bg-[#fef0e7] transition-colors"
+              >
+                Prev
+              </button>
+              <button
+                type="button"
+                onClick={handleNextMonth}
+                className="px-3 py-1.5 rounded-lg border border-[#d29276] text-[#7b1c1c] bg-white font-mukta hover:bg-[#fef0e7] transition-colors"
+              >
+                Next
+              </button>
             </div>
-          ))}
-        </div>
+          </div>
 
-        <div className="grid grid-cols-7">
-          {cells.map((date, idx) => (
-            <div
-              key={`${date.key}-${idx}`}
-              className={`min-h-[88px] md:min-h-[120px] border-r border-b border-[#d9d9d9] last:border-r-0 p-1.5 md:p-2 flex flex-col justify-between text-left ${
-                date.isToday
-                  ? 'bg-[#1f6c1f] border border-[#145a19] text-white shadow-[0_8px_24px_rgba(31,108,31,0.18)]'
-                  : date.monthOffset === 0
-                    ? 'bg-white'
-                    : 'bg-[rgba(31,108,31,0.04)] text-[#7d7d7d]'
-              }`}
-            >
-              <span
-                className={`font-mukta text-[32px] md:text-[46px] leading-none font-bold ${
-                  date.isToday
-                    ? 'text-white'
-                    : date.monthOffset === 0 && date.weekDay === 6
-                      ? 'text-[#d91515]'
+          <div className="overflow-x-auto">
+            <div className="grid grid-cols-7 border-b border-[#c7c7c7]">
+              {weekDays.map(weekDay => (
+                <div
+                  key={weekDay.en}
+                  className="bg-[#123b8f] border-r border-[#9db5e6] last:border-r-0 text-white text-center py-2 md:py-2.5"
+                >
+                  <p className="font-mukta font-semibold text-[11px] md:text-[15px] leading-tight">
+                    {weekDay.np}
+                  </p>
+                  <p className="font-mukta text-[10px] md:text-[13px] leading-tight opacity-95">
+                    {weekDay.en}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <div className="grid grid-cols-7">
+              {cells.map((date, idx) => (
+                <div
+                  key={`${date.key}-${idx}`}
+                  className={`min-h-[88px] md:min-h-[120px] border-r border-b border-[#d9d9d9] last:border-r-0 p-1.5 md:p-2 flex flex-col justify-between text-left ${
+                    date.isToday
+                      ? 'bg-[#1f6c1f] border border-[#145a19] text-white shadow-[0_8px_24px_rgba(31,108,31,0.18)]'
                       : date.monthOffset === 0
-                        ? 'text-[#101010]'
-                        : 'text-[#7d7d7d] opacity-30'
-                }`}
-              >
-                {getCellDisplayDay(date)}
-              </span>
-              <span
-                className={`font-mukta text-[10px] md:text-[12px] ${date.isToday ? 'text-[#dfe9df]' : date.monthOffset === 0 ? 'text-[#444]' : 'text-[#7d7d7d] opacity-30'}`}
-              >
-                {date.adDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-              </span>
+                        ? 'bg-white'
+                        : 'bg-[rgba(31,108,31,0.04)] text-[#7d7d7d]'
+                  }`}
+                >
+                  <span
+                    className={`font-mukta text-[32px] md:text-[46px] leading-none font-bold ${
+                      date.isToday
+                        ? 'text-white'
+                        : date.monthOffset === 0 && date.weekDay === 6
+                          ? 'text-[#d91515]'
+                          : date.monthOffset === 0
+                            ? 'text-[#101010]'
+                            : 'text-[#7d7d7d] opacity-30'
+                    }`}
+                  >
+                    {getCellDisplayDay(date)}
+                  </span>
+                  <span
+                    className={`font-mukta text-[10px] md:text-[12px] ${date.isToday ? 'text-[#dfe9df]' : date.monthOffset === 0 ? 'text-[#444]' : 'text-[#7d7d7d] opacity-30'}`}
+                  >
+                    {date.adDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

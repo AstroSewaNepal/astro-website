@@ -26,10 +26,10 @@ export default function CalculatorCard({
   return (
     <article
       className={[
-        'h-full rounded-[22px] border border-[#b8b0a8] bg-transparent shadow-[0_6px_18px_rgba(0,0,0,0.04)]',
+        'h-full min-w-0 rounded-[22px] border border-[#b8b0a8] bg-transparent shadow-[0_6px_18px_rgba(0,0,0,0.04)]',
         mobileHorizontal
           ? 'snap-start w-[332px] min-w-[332px] min-h-[320px] rounded-[22px] px-4 py-4 opacity-100 overflow-hidden md:w-auto md:min-w-0 md:min-h-0 md:px-6 md:pt-10 md:pb-6'
-          : 'px-6 pt-10 pb-6',
+          : 'min-w-0 px-6 pt-10 pb-6',
       ]
         .filter(Boolean)
         .join(' ')}

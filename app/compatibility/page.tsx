@@ -78,8 +78,14 @@ export default function CompatibilityPage() {
 
             <div className="mt-4">
               <p className="font-mukta text-[16px] leading-[28px] tracking-[0%] text-[#4f463f] text-justify sm:text-[24px] sm:leading-[34px]">
-                You may not always click effortlessly with everyone, but when you're with that special someone, life feels brighter, calmer, and more meaningful. Throughout your journey, you'll meet many wonderful people — friends, mentors, and companions — but only one will truly be your life partner. Choosing the right person is important, because they should make you feel cherished, supported, and at peace, never lonely or uncared for.
-                Do you ever feel your heart skip a beat when you meet someone? That spark could be a sign of destiny. Discover what the universe has in store for your love life by exploring your zodiac sign compatibility with Astro Sewa.
+                You may not always click effortlessly with everyone, but when you&apos;re with that
+                special someone, life feels brighter, calmer, and more meaningful. Throughout your
+                journey, you&apos;ll meet many wonderful people — friends, mentors, and companions — but
+                only one will truly be your life partner. Choosing the right person is important,
+                because they should make you feel cherished, supported, and at peace, never lonely
+                or uncared for. Do you ever feel your heart skip a beat when you meet someone? That
+                spark could be a sign of destiny. Discover what the universe has in store for your
+                love life by exploring your zodiac sign compatibility with Astro Sewa.
               </p>
             </div>
           </div>
@@ -88,7 +94,7 @@ export default function CompatibilityPage() {
             <h2 className="text-left sm:text-center font-mukta text-[24px] leading-[34px] font-bold tracking-[0%] text-[#611508] -ml-4 sm:ml-0 sm:font-sahitya sm:text-[28px] sm:leading-[38px] break-words">
               {copy.cardTitle}
             </h2>
-              <p className="mt-1 text-left sm:text-center font-mukta text-[18px] sm:text-[20px] leading-[24px] sm:leading-[26px] tracking-[0%] text-[#141414] -ml-4 sm:ml-0">
+            <p className="mt-1 text-left sm:text-center font-mukta text-[18px] sm:text-[20px] leading-[24px] sm:leading-[26px] tracking-[0%] text-[#141414] -ml-4 sm:ml-0">
               <span className="block">Choose your and your partner&apos;s zodiac sign</span>
               <span className="block">to check compatibility</span>
             </p>
@@ -135,13 +141,31 @@ export default function CompatibilityPage() {
                       onChange={() => setYourGender('male')}
                     />
                     {yourGender === 'male' ? (
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        aria-hidden="true"
+                      >
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#611508" />
                         <circle cx="4.877" cy="4.877" r="4.377" stroke="#141414" />
-                        <circle cx="4.877" cy="4.877" r="4.377" stroke="black" strokeOpacity="0.2" />
+                        <circle
+                          cx="4.877"
+                          cy="4.877"
+                          r="4.377"
+                          stroke="black"
+                          strokeOpacity="0.2"
+                        />
                       </svg>
                     ) : (
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        aria-hidden="true"
+                      >
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#F8F3DF" stroke="#BE7B71" />
                       </svg>
                     )}
@@ -156,13 +180,31 @@ export default function CompatibilityPage() {
                       onChange={() => setYourGender('female')}
                     />
                     {yourGender === 'female' ? (
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        aria-hidden="true"
+                      >
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#611508" />
                         <circle cx="4.877" cy="4.877" r="4.377" stroke="#141414" />
-                        <circle cx="4.877" cy="4.877" r="4.377" stroke="black" strokeOpacity="0.2" />
+                        <circle
+                          cx="4.877"
+                          cy="4.877"
+                          r="4.377"
+                          stroke="black"
+                          strokeOpacity="0.2"
+                        />
                       </svg>
                     ) : (
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        aria-hidden="true"
+                      >
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#F8F3DF" stroke="#BE7B71" />
                       </svg>
                     )}
@@ -211,13 +253,31 @@ export default function CompatibilityPage() {
                       onChange={() => setPartnerGender('male')}
                     />
                     {partnerGender === 'male' ? (
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        aria-hidden="true"
+                      >
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#611508" />
                         <circle cx="4.877" cy="4.877" r="4.377" stroke="#141414" />
-                        <circle cx="4.877" cy="4.877" r="4.377" stroke="black" strokeOpacity="0.2" />
+                        <circle
+                          cx="4.877"
+                          cy="4.877"
+                          r="4.377"
+                          stroke="black"
+                          strokeOpacity="0.2"
+                        />
                       </svg>
                     ) : (
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        aria-hidden="true"
+                      >
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#F8F3DF" stroke="#BE7B71" />
                       </svg>
                     )}
@@ -232,13 +292,31 @@ export default function CompatibilityPage() {
                       onChange={() => setPartnerGender('female')}
                     />
                     {partnerGender === 'female' ? (
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        aria-hidden="true"
+                      >
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#611508" />
                         <circle cx="4.877" cy="4.877" r="4.377" stroke="#141414" />
-                        <circle cx="4.877" cy="4.877" r="4.377" stroke="black" strokeOpacity="0.2" />
+                        <circle
+                          cx="4.877"
+                          cy="4.877"
+                          r="4.377"
+                          stroke="black"
+                          strokeOpacity="0.2"
+                        />
                       </svg>
                     ) : (
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        aria-hidden="true"
+                      >
                         <circle cx="4.877" cy="4.877" r="4.377" fill="#F8F3DF" stroke="#BE7B71" />
                       </svg>
                     )}

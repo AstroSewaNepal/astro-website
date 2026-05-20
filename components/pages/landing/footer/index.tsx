@@ -165,7 +165,10 @@ const Footer: React.FC = () => {
                 <div className="flex flex-col gap-6">
                   {/* Phone */}
                   <div className="flex items-center gap-3">
-                    <div className="flex h-[22px] w-[22px] items-center justify-center rounded" style={{ opacity: 1, transform: 'rotate(0deg)' }}>
+                    <div
+                      className="flex h-[22px] w-[22px] items-center justify-center rounded"
+                      style={{ opacity: 1, transform: 'rotate(0deg)' }}
+                    >
                       <PhoneIcon className="h-[22px] w-[22px] text-[#F8F3DF]" />
                     </div>
                     <a
@@ -178,7 +181,10 @@ const Footer: React.FC = () => {
 
                   {/* Email */}
                   <div className="flex items-center gap-3">
-                    <div className="flex h-[22px] w-[22px] items-center justify-center rounded" style={{ opacity: 1, transform: 'rotate(0deg)' }}>
+                    <div
+                      className="flex h-[22px] w-[22px] items-center justify-center rounded"
+                      style={{ opacity: 1, transform: 'rotate(0deg)' }}
+                    >
                       <svg
                         width="22"
                         height="22"
@@ -192,11 +198,7 @@ const Footer: React.FC = () => {
                           stroke="currentColor"
                           strokeWidth="1.5"
                         />
-                        <path
-                          d="M22 8L12 13L2 8"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                        />
+                        <path d="M22 8L12 13L2 8" stroke="currentColor" strokeWidth="1.5" />
                       </svg>
                     </div>
                     <a

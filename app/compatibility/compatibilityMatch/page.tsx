@@ -219,10 +219,7 @@ function CompatibilityHoroscopeCardLink({
               </p>
               <div className="flex items-center gap-0.5">
                 {Array.from({ length: starCount }).map((_, i) => (
-                  <StartIcon
-                    key={`${card.key}-star-${i}`}
-                    className="h-3.5 w-3.5 text-[#ef8a20]"
-                  />
+                  <StartIcon key={`${card.key}-star-${i}`} className="h-3.5 w-3.5 text-[#ef8a20]" />
                 ))}
               </div>
             </div>
@@ -352,7 +349,9 @@ export default function CompatibilityMatchPage() {
           if (!cancelled) setHoroscopeListLoading(false);
         });
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const horoscopeSectionCards = useMemo(
@@ -534,13 +533,10 @@ export default function CompatibilityMatchPage() {
     <main className="min-h-screen pt-6 sm:pt-8 lg:pt-10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-0">
         <section className="flex flex-col gap-10 pb-20 sm:gap-20">
-
           {/* ── Hero / Header ── */}
           <div className="flex flex-col gap-6">
-
             {/* ── Mobile: stacked hero layout ── */}
             <div className="flex flex-col gap-3 border-b border-[#F8F3DF] pb-4 lg:flex-row lg:items-center lg:justify-between">
-
               {/* Title */}
               <div className="flex flex-col gap-1 text-center sm:text-left">
                 <h1 className="font-sahitya text-[24px] font-bold leading-[48px] text-primary sm:text-[36px] sm:leading-[48px]">
@@ -611,10 +607,8 @@ export default function CompatibilityMatchPage() {
 
             {/* Content + Sidebar row */}
             <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-8">
-
               {/* Left: tabs + score + description */}
               <div className="flex flex-1 flex-col gap-2.5">
-
                 {/* Tabs — horizontal scroll on mobile */}
                 <div className="w-full overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <div className="flex min-w-max gap-2">
@@ -657,11 +651,14 @@ export default function CompatibilityMatchPage() {
                 {/* Description */}
                 <p className="font-mukta text-[15px] leading-[28px] text-[#464646] sm:text-[16px] sm:leading-[32px]">
                   {loading ? (
-                    <span className="animate-pulse text-[#888]">Loading compatibility details…</span>
+                    <span className="animate-pulse text-[#888]">
+                      Loading compatibility details…
+                    </span>
                   ) : error ? (
                     <span className="text-red-600">Error: {error}</span>
                   ) : (
-                    getTabContent() || 'No additional details available for this compatibility aspect.'
+                    getTabContent() ||
+                    'No additional details available for this compatibility aspect.'
                   )}
                 </p>
               </div>
@@ -792,7 +789,13 @@ export default function CompatibilityMatchPage() {
                   onClick={handleFindNow}
                   className="mt-5 flex w-full items-center justify-center gap-2 rounded-[24px] bg-primary py-2.5 font-mukta text-[15px] font-semibold leading-[26px] text-secondary sm:py-2 sm:text-[16px] sm:leading-[28px]"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="sm:w-6 sm:h-6">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="sm:w-6 sm:h-6"
+                  >
                     <path
                       d="M19.3 14.9C19.7 14.2 20 13.4 20 12.5C20 10 18 8 15.5 8C13 8 11 10 11 12.5C11 15 13 17 15.5 17C16.4 17 17.2 16.7 17.9 16.3L20.8 19.2L22.2 17.8L19.3 14.9ZM15.5 15C14.1 15 13 13.9 13 12.5C13 11.1 14.1 10 15.5 10C16.9 10 18 11.1 18 12.5C18 13.9 16.9 15 15.5 15ZM14.7 18.9C14.3 19.3 13.9 19.6 13.5 20L12 21.3L10.5 20C5.4 15.4 2 12.3 2 8.5C2 5.4 4.4 3 7.5 3C9.2 3 10.9 3.8 12 5.1C13.1 3.8 14.8 3 16.5 3C19.6 3 22 5.4 22 8.5C22 9.2 21.9 9.8 21.7 10.5C20.8 7.9 18.4 6 15.5 6C11.9 6 9 8.9 9 12.5C9 15.8 11.5 18.5 14.7 18.9Z"
                       fill="#F8F3DF"
@@ -835,7 +838,10 @@ export default function CompatibilityMatchPage() {
                         </div>
                       ))}
                     </div>
-                    <div className="flex flex-wrap items-center justify-center gap-2" aria-label="Compatibility pair slides">
+                    <div
+                      className="flex flex-wrap items-center justify-center gap-2"
+                      aria-label="Compatibility pair slides"
+                    >
                       {dynamicPairs.map((secondSign, i) => (
                         <button
                           key={secondSign}
@@ -881,9 +887,9 @@ export default function CompatibilityMatchPage() {
           {/* ── Read Horoscope For Other Zodiac Signs ── */}
           <div className="w-full min-w-0 max-w-full overflow-x-clip">
             <div className="flex flex-col gap-6 sm:gap-8">
-<h2 className="px-1 text-center font-sahitya text-[20px] font-bold leading-[28px] text-primary text-balance sm:text-left sm:text-[26px] sm:leading-[34px] md:text-[28px] md:leading-[38px]">
-                  <span className="block sm:hidden">Explore Zodiac Signs</span>
-                  <span className="hidden sm:block">Read Horoscope For Other Zodiac Signs</span>
+              <h2 className="px-1 text-center font-sahitya text-[20px] font-bold leading-[28px] text-primary text-balance sm:text-left sm:text-[26px] sm:leading-[34px] md:text-[28px] md:leading-[38px]">
+                <span className="block sm:hidden">Explore Zodiac Signs</span>
+                <span className="hidden sm:block">Read Horoscope For Other Zodiac Signs</span>
               </h2>
 
               <div className="mx-auto flex w-full flex-row flex-wrap justify-center gap-[10px]">

@@ -141,29 +141,29 @@ export function ZodiacSignCardsGrid<T>({
               modules={[Pagination]}
               slidesPerView={oneSlidePerView ? 1 : compact ? 1.12 : 1.28}
               spaceBetween={oneSlidePerView ? 0 : compact ? 8 : 10}
-                centeredSlides={!alignStart}
+              centeredSlides={!alignStart}
               slidesOffsetBefore={oneSlidePerView || alignStart ? 0 : compact ? 0 : 4}
               slidesOffsetAfter={oneSlidePerView || alignStart ? 0 : compact ? 0 : 4}
               breakpoints={
                 oneSlidePerView
                   ? {}
                   : compact
-                  ? {
-                      400: { slidesPerView: 1.22, spaceBetween: 9 },
-                      480: { slidesPerView: 1.32, spaceBetween: 10 },
-                    }
-                  : {
-                      400: { slidesPerView: 1.38, spaceBetween: 11 },
-                      480: { slidesPerView: 1.48, spaceBetween: 12 },
-                    }
+                    ? {
+                        400: { slidesPerView: 1.22, spaceBetween: 9 },
+                        480: { slidesPerView: 1.32, spaceBetween: 10 },
+                      }
+                    : {
+                        400: { slidesPerView: 1.38, spaceBetween: 11 },
+                        480: { slidesPerView: 1.48, spaceBetween: 12 },
+                      }
               }
               className={clsx(
                 'horoscope-cards-swiper pb-12 sm:pb-14',
                 alignStart
                   ? 'max-w-full !overflow-hidden px-0'
                   : compact
-                  ? 'max-w-full !overflow-hidden px-5'
-                  : '!overflow-visible px-10',
+                    ? 'max-w-full !overflow-hidden px-5'
+                    : '!overflow-visible px-10',
               )}
               pagination={swiperPagination}
               onSwiper={swiper => {
