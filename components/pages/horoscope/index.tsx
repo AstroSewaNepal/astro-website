@@ -188,7 +188,7 @@ export function HoroscopeHeroSignsSection({
       }
     >
       {hideTitle ? null : (
-        <div className="mx-auto max-w-5xl text-center">
+        <div className="mx-auto max-w-5xl text-center mb-8">
           <h1
             className={clsx(
               'w-full text-center font-tiro-devanagari font-normal tracking-normal',
