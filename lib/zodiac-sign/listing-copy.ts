@@ -14,6 +14,8 @@ export const zodiacListingCopy = {
     whyTitle: 'Why Zodiac Signs Important?',
     whyBody:
       'Zodiac signs are important because they help you understand your personality and relationships on a deeper level. They uncover your natural strengths, challenges, and compatibility with others, offering insights into your personal growth and life path.',
+    whyMore:
+      'They also provide language for timing, emotional cycles, and personal decision-making. When used thoughtfully, zodiac signs can support self-awareness while still leaving room for your own judgment and choice.',
     otherSignsTitle: 'Read Horoscope For Other Zodiac Signs',
     readMore: 'Read More',
     cardBlurb: 'Your spark can move mountains, start bold today',
@@ -37,6 +39,8 @@ export const zodiacListingCopy = {
     whyTitle: 'राशि चिन्ह किन महत्त्वपूर्ण?',
     whyBody:
       'राशि चिन्हले व्यक्तित्व, सम्बन्ध र वृद्धिका सम्भावना बुझ्न मद्दत गर्छ। यसले बलियो पक्ष र सन्तुलनको खोजमा सहयोग पुर्‍याउँछ।',
+    whyMore:
+      'राशि चिन्हले समय र भावनात्मक चक्रहरू बुझ्न पनि सहायता गर्छ। यसलाई विवेकपूर्वक प्रयोग गर्दा आत्म-ज्ञान र निर्णयमा समर्थन मिल्छ।',
     otherSignsTitle: 'अन्य राशिहरूको राशिफल पढ्नुहोस्',
     readMore: 'थप पढ्नुहोस्',
     cardBlurb: 'तपाईंको चिंगारीले पहाडहरू सार्न सक्छ, आज साहसी सुरु गर्नुहोस्',
