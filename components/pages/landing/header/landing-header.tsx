@@ -89,6 +89,7 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
         { title: 'Rashi Calculator', link: '/calculators/rashi-calculator' },
       ],
     },
+    { title: d.header.nav.aboutUs, link: '/about-us' },
     { title: d.header.nav.blog, link: '/blogs' },
     {
       title: uiLanguage === ELanguage.NEPALI ? 'क्यालेन्डर' : 'Calendar',
@@ -110,7 +111,6 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
 function buildMobileNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[] {
   return [
     { title: d.header.mobile.home, link: '/' },
-    { title: d.header.mobile.aboutUs, link: '/about-us' },
     ...buildLandingNav(uiLanguage, d),
   ];
 }
@@ -318,22 +318,24 @@ function LandingHeaderClient() {
             </button>
           </div>
         </div>
-        <nav className="mt-10 bg-primary py-3 px-6 gap-[22px] rounded-3xl hidden xl:flex xl:flex-wrap xl:justify-center relative z-40 w-full overflow-visible">
+        <nav className="mt-10 bg-primary py-3 px-4 gap-3 rounded-3xl hidden lg:flex lg:flex-nowrap lg:justify-center relative z-40 w-full overflow-visible">
           {landingNav.map(value => {
             const hasChildren = !!value.children?.length;
             const navActive = desktopNavItemActive(pathname, value);
 
             return (
-              <div key={value.title} className="relative group flex-shrink-0">
-                <Link href={value.link ?? '#'} className="block">
+              <div key={value.title} className="relative group min-w-0">
+                <Link href={value.link ?? '#'} className="block min-w-0">
                   <div
                     className={clsx(
-                      'text-white flex items-center justify-center py-[7px] px-[17px] rounded-xl hover:bg-hoverColor active:bg-hoverColor',
+                      'text-white flex items-center justify-between gap-2 py-2 px-3 lg:py-[7px] lg:px-[14px] rounded-xl hover:bg-hoverColor active:bg-hoverColor',
                       navActive && 'bg-hoverColor',
                     )}
                   >
-                    <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
-                    {hasChildren && <ChevronDownIcon className="text-white" />}
+                    <p className="font-mukta font-light text-base lg:text-lg leading-6 whitespace-nowrap flex-1">
+                      {value.title}
+                    </p>
+                    {hasChildren && <ChevronDownIcon className="text-white shrink-0" />}
                   </div>
                 </Link>
 

@@ -312,19 +312,29 @@ function formatRashiFromNakshatra(nakshatraWithPada: string | undefined): string
   return `${nakshatraName} - ${pada} (${rashi.hindi} / ${rashi.english})`;
 }
 
+let __lastFreeKundaliRaw: string | null | undefined = undefined;
+let __lastFreeKundaliParsed: StoredKundaliResult | null = null;
+
 function readFreeKundaliResult(): StoredKundaliResult | null {
   if (typeof window === 'undefined') {
     return null;
   }
   const raw = window.sessionStorage.getItem('freeKundaliResult');
+  if (raw === __lastFreeKundaliRaw) return __lastFreeKundaliParsed;
+  __lastFreeKundaliRaw = raw;
+
   if (!raw) {
+    __lastFreeKundaliParsed = null;
     return null;
   }
+
   try {
-    return JSON.parse(raw) as StoredKundaliResult;
+    __lastFreeKundaliParsed = JSON.parse(raw) as StoredKundaliResult;
   } catch {
-    return null;
+    __lastFreeKundaliParsed = null;
   }
+
+  return __lastFreeKundaliParsed;
 }
 
 const subscribeFreeKundaliResult = () => () => {};
