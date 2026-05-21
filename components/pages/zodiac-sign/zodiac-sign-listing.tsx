@@ -69,6 +69,21 @@ export function ZodiacSignListing({ mode }: Props) {
             onLanguageChange={setHoroscopeCardLang}
           />
 
+          <div className="mt-12 rounded-[18px] p-5 sm:p-6">
+            <h2 className="font-sahitya text-[24px] font-bold text-[#6b2417] sm:text-[28px]">
+              {t.whatIsTitle}
+            </h2>
+            <p className="mt-3 font-mukta text-[14px] leading-8 text-[#4f463f]">
+              {t.whatIsLead}
+            </p>
+            <h2 className="mt-10 font-sahitya text-[24px] font-bold text-[#6b2417] sm:text-[28px]">
+              {t.whyTitle}
+            </h2>
+            <p className="mt-3 font-mukta text-[14px] leading-8 text-[#4f463f]">
+              {t.whyBody}
+            </p>
+          </div>
+
           {mode === 'hub-ne' ? (
             <div className="mt-10">
               <h2 className="font-sahitya text-[26px] font-bold text-[#6b2417]">
