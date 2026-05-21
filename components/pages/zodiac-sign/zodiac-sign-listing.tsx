@@ -73,14 +73,20 @@ export function ZodiacSignListing({ mode }: Props) {
             <h2 className="font-sahitya text-[24px] font-bold text-[#6b2417] sm:text-[28px]">
               {t.whatIsTitle}
             </h2>
-            <p className="mt-3 font-mukta text-[14px] leading-8 text-[#4f463f]">
+            <p className="mt-3 font-mukta text-[24px] leading-[34px] tracking-[0%] text-[#4f463f]">
               {t.whatIsLead}
+            </p>
+            <p className="mt-4 font-mukta text-[24px] leading-[34px] tracking-[0%] text-[#4f463f]">
+              {t.whatIsMore}
             </p>
             <h2 className="mt-10 font-sahitya text-[24px] font-bold text-[#6b2417] sm:text-[28px]">
               {t.whyTitle}
             </h2>
-            <p className="mt-3 font-mukta text-[14px] leading-8 text-[#4f463f]">
+            <p className="mt-3 font-mukta text-[24px] leading-[34px] tracking-[0%] text-[#4f463f]">
               {t.whyBody}
+            </p>
+            <p className="mt-4 font-mukta text-[24px] leading-[34px] tracking-[0%] text-[#4f463f]">
+              {t.whyMore}
             </p>
           </div>
 
