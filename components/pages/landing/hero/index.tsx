@@ -30,7 +30,7 @@ const LandingHero: React.FC = () => {
           </button>
         </div>
       </div>
-      <div className="flex items-end justify-end">
+      <div className="flex items-center justify-center lg:items-end lg:justify-end w-full">
         <Image
           src={HeroSectionImage}
           alt="Astro Sewa — astrology made personal"

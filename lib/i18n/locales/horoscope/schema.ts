@@ -71,6 +71,7 @@ export type HoroscopeMessages = {
       compatibility: string;
       pujaBidhi: string;
       calculator: string;
+      aboutUs: string;
       blog: string;
     };
     mobile: {

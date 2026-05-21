@@ -134,6 +134,7 @@ const horoscope = {
         compatibility: 'Compatibility',
         pujaBidhi: 'Puja Bidhi',
         calculator: 'Calculator',
+        aboutUs: 'About Us',
         blog: 'Blog',
       },
       mobile: {
