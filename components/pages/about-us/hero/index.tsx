@@ -5,7 +5,7 @@ import { AboutUsHeroImage } from '@/components/images/about-us';
 
 const AboutUsHero: React.FC = () => {
   return (
-    <section className="container mx-auto px-6 lg:px-0 pb-[100px] border-b border-b-[#79787A]">
+    <section className="container mx-auto px-6 lg:px-0 pt-10 md:pt-12 lg:pt-14 pb-[100px] border-b border-b-[#79787A]">
       <div className="flex flex-col items-center gap-[60px] md:gap-[80px] lg:gap-[100px]">
         {/* Main content container */}
         <div className="flex flex-col items-center gap-[30px] md:gap-[40px] lg:gap-[50px] w-full max-w-[1283px]">
