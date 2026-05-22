@@ -567,7 +567,8 @@ const KundaliResultSection: React.FC = () => {
                     Planet details
                   </h3>
                   <p className="mt-2 font-mukta text-[#2d2d2d] text-sm leading-relaxed sm:text-base">
-                    Sidereal positions from your birth time and place, showing each planet’s longitude, house, and sign.
+                    Sidereal positions from your birth time and place, showing each planet’s
+                    longitude, house, and sign.
                   </p>
                   {!result.planetRows?.length && (
                     <p className="mt-4 font-mukta text-sm text-[#4a4a4a] sm:text-base">

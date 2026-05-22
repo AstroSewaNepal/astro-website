@@ -58,7 +58,9 @@ export default function KundaliCard({
       </header>
 
       <div
-        className={['mt-5 flex justify-center mx-auto', imageContainerClassName].filter(Boolean).join(' ')}
+        className={['mt-5 flex justify-center mx-auto', imageContainerClassName]
+          .filter(Boolean)
+          .join(' ')}
         style={{ gap: imageGap ?? 12.64 }}
       >
         <Image

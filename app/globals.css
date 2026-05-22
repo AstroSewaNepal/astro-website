@@ -730,7 +730,7 @@ body {
 .horoscope-hero-swiper-mob .swiper-pagination-bullet:hover {
   background: rgba(74, 74, 74, 0.55) !important;
 }
-.horoscope-hero-swiper-mob .swiper-pagination-bullet:nth-child(n+7) {
+.horoscope-hero-swiper-mob .swiper-pagination-bullet:nth-child(n + 7) {
   display: none !important;
 }
 
