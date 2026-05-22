@@ -71,7 +71,6 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
       children: [
         { title: 'Free Kundali', link: '/free-kundali' },
         { title: 'Kundali Matching', link: '/kundali-matching' },
-        { title: 'Kundali Details', link: '/kundali-details' },
       ],
     },
     { title: d.header.nav.compatibility, link: '/compatibility' },
@@ -318,7 +317,7 @@ function LandingHeaderClient() {
             </button>
           </div>
         </div>
-        <nav className="mt-10 bg-primary py-3 px-4 gap-3 rounded-3xl hidden lg:flex lg:flex-nowrap lg:justify-center relative z-40 w-full overflow-visible">
+        <nav className="mt-10 bg-primary py-3 px-4 gap-3 rounded-3xl hidden xl:flex xl:flex-wrap xl:justify-between items-center relative z-40 w-full overflow-visible">
           {landingNav.map(value => {
             const hasChildren = !!value.children?.length;
             const navActive = desktopNavItemActive(pathname, value);
@@ -332,7 +331,7 @@ function LandingHeaderClient() {
                       navActive && 'bg-hoverColor',
                     )}
                   >
-                    <p className="font-mukta font-light text-base lg:text-lg leading-6 whitespace-nowrap flex-1">
+                    <p className="font-mukta font-light text-sm md:text-base lg:text-lg leading-6 whitespace-nowrap flex-1">
                       {value.title}
                     </p>
                     {hasChildren && <ChevronDownIcon className="text-white shrink-0" />}
@@ -527,7 +526,7 @@ function LandingHeaderFallback() {
     <header className="container mx-auto px-6 lg:px-0 py-10">
       <div className="flex justify-between">
         <div className="flex gap-2">
-          <div className="block lg:hidden w-12" />
+          <div className="block xl:hidden w-12" />
           <Link href="/">
             <AstroSewaLogo className="max-w-[84px] text-[#611508] md:max-w-[100px] lg:max-w-[188px] w-full" />
           </Link>
@@ -554,7 +553,7 @@ function LandingHeaderFallback() {
           </button>
         </div>
       </div>
-      <nav className="mt-10 items-center justify-between bg-primary py-3 px-6 gap-[22px] rounded-3xl hidden lg:flex w-full">
+      <nav className="mt-10 items-center justify-between bg-primary py-3 px-6 gap-[22px] rounded-3xl hidden xl:flex w-full">
         {landingNav.map(value => (
           <Link href={value.link ?? '#'} key={value.title} className="flex-shrink-0">
             <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
