@@ -20,6 +20,7 @@ interface CompatibilityHoroscopeSectionProps {
   errorFallbackSuffix: string;
   horoscopeCardLang: ELanguage;
   onLanguageChange: (lang: ELanguage) => void;
+  mobileButtonsWrapperClass?: string;
 }
 
 type HoroscopeCardLayout = 'grid' | 'carousel';
@@ -177,6 +178,7 @@ export function CompatibilityHoroscopeSection({
   errorFallbackSuffix,
   horoscopeCardLang,
   onLanguageChange,
+  mobileButtonsWrapperClass = '-mt-6 sm:mt-0',
 }: CompatibilityHoroscopeSectionProps) {
   const swiperKey = `compatibility-horoscope-${horoscopeCardLang}-${cards === 'loading' ? 'loading' : cards.map(card => card.key).join(',')
     }`;
@@ -190,7 +192,12 @@ export function CompatibilityHoroscopeSection({
           </h2>
         ) : null}
 
-        <div className="mx-auto flex w-full flex-row flex-wrap justify-center gap-[10px] -mt-6 sm:mt-0">
+        <div
+          className={clsx(
+            'mx-auto flex w-full flex-row flex-wrap justify-center gap-[10px]',
+            mobileButtonsWrapperClass,
+          )}
+        >
           <button
             type="button"
             onClick={() => onLanguageChange(ELanguage.ENGLISH)}
