@@ -70,15 +70,9 @@ function parseBirthDate(input: string): string | null {
   const [first, second, third] = parts.map(Number);
   if ([first, second, third].some(Number.isNaN)) return null;
 
-  let day = first;
-  let month = second;
+  const day = first;
+  const month = second;
   const year = third;
-
-  // Supports both DD/MM/YYYY and MM/DD/YYYY input.
-  if (first <= 12 && second <= 12 && third > 999) {
-    month = first;
-    day = second;
-  }
 
   if (year < 1000 || year > 9999) return null;
   if (month < 1 || month > 12) return null;
@@ -206,7 +200,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
     } else {
       parsedDate = parseBirthDate(dateOfBirthInput);
       if (!parsedDate) {
-        errors.dateOfBirth = 'Invalid date. Use MM/DD/YYYY or select from calendar.';
+        errors.dateOfBirth = 'Invalid date. Use DD-MM-YYYY or select from calendar.';
         valid = false;
       }
     }
@@ -385,7 +379,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                         name="fullName"
                         type="text"
                         defaultValue={defaultFullName}
-                        placeholder="John Doe"
+                        placeholder="Enter name"
                         onInput={event => {
                           event.currentTarget.value = event.currentTarget.value.replace(
                             /[^A-Za-z\s]/g,
@@ -447,7 +441,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                         id="kundali-birth-place"
                         name="birthPlace"
                         type="text"
-                        placeholder="Kathmandu Nepal"
+                        placeholder="Where were you born?"
                         onInput={event => {
                           event.currentTarget.value = event.currentTarget.value.replace(
                             /[^A-Za-z ]/g,
@@ -529,7 +523,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                   className="mt-3 md:mt-6 lg:-translate-y-3 w-full h-[60px] gap-8 rounded-full bg-[#6d1510] text-[18px] font-mukta font-semibold leading-[30px] text-secondary transition-colors hover:bg-[#8e2f27] flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isSubmitting
-                    ? 'Generating kundali (planets, doshas, panchanga)…'
+                    ? 'Preparing Your Kundali…'
                     : 'Generate Now'}
                 </button>
 

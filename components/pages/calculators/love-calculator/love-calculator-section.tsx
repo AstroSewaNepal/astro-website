@@ -261,7 +261,7 @@ export default function LoveCalculatorSection() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Kathmandu, Nepal"
+                    placeholder="Where were you born?"
                     value={yourBirthPlace}
                     onChange={e => setYourBirthPlace(e.target.value)}
                     className="w-full rounded-full border border-Trinary px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 md:py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px]"

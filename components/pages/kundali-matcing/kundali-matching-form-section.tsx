@@ -507,7 +507,7 @@ const PersonSection = ({
         id={`${prefix}-birth-place`}
         label="Birth place"
         name={`${prefix}BirthPlace`}
-        placeholder="Kathmandu, Nepal"
+        placeholder="Where were you born?"
         onInput={e => {
           e.currentTarget.value = e.currentTarget.value.replace(/[^A-Za-z ,]/g, '');
         }}

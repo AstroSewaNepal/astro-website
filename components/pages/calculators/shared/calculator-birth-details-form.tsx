@@ -97,7 +97,7 @@ export default function CalculatorBirthDetailsForm({
             <div className="relative">
               <input
                 type="text"
-                placeholder="John Doe"
+                placeholder="Enter name"
                 value={form.fullName}
                 onChange={e => handleChange('fullName', e.target.value)}
                 className="w-full rounded-full border border-[#c9b9aa] bg-white px-3 sm:px-3.5 md:px-4 lg:px-5 py-2 sm:py-2.5 md:py-2.75 lg:py-3.5 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#b0a098] outline-none focus:border-[#5D1409] transition-colors pr-10"
@@ -188,7 +188,7 @@ export default function CalculatorBirthDetailsForm({
             <div className="relative">
               <input
                 type="text"
-                placeholder="Kathmandu, Nepal"
+                placeholder="Where were you born?"
                 value={form.birthPlace}
                 onChange={e => handleChange('birthPlace', e.target.value)}
                 className="w-full rounded-full border border-[#c9b9aa] bg-white px-3 sm:px-3.5 md:px-4 lg:px-5 py-2 sm:py-2.5 md:py-2.75 lg:py-3.5 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#b0a098] outline-none focus:border-[#5D1409] transition-colors pr-10"

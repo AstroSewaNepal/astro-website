@@ -203,18 +203,31 @@ export function UnknownBirthTimeCheckbox({
     >
       <span
         className={clsx(
-          'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors',
+          'relative flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border transition-colors',
           borderColor,
-          checked ? fillColor : 'bg-transparent',
+          checked ? 'bg-[#6d1510]' : 'bg-white',
         )}
       >
         <input
           type="checkbox"
           checked={checked}
           onChange={e => onChange(e.target.checked)}
-          className="sr-only"
+          className="absolute inset-0 h-full w-full opacity-0 cursor-pointer m-0"
         />
-        {checked ? <span className="h-2 w-2 rounded-full bg-white" aria-hidden="true" /> : null}
+        {checked ? (
+          <svg
+            className="h-3.5 w-3.5 text-white"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        ) : null}
       </span>
       <span className={textColor}>Don&apos;t know my exact birth time</span>
     </label>
