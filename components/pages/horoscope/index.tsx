@@ -191,7 +191,7 @@ export function HoroscopeHeroSignsSection({
         <div className="mx-auto max-w-5xl text-center mb-8">
           <h1
             className={clsx(
-              'w-full text-center font-tiro-devanagari font-normal tracking-normal',
+              'w-full text-center font-tiro-devanagari font-normal tracking-[0em]',
               'text-[24px] leading-[47.83px] text-[#691709]',
               'sm:text-[32px] sm:leading-snug',
               'md:text-[44px] md:leading-[1.08] md:text-[#611508]',

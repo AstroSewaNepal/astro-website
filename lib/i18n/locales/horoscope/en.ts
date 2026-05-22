@@ -2,7 +2,7 @@ const horoscope = {
   HOROSCOPE: {
     range: {
       today: {
-        title: "Today's Astrology Horoscope",
+        title: "Today's Astrologer Horoscope",
         intro:
           'See your horoscope for today with a calm, traditional presentation that keeps the zodiac at the center of the page.',
       },

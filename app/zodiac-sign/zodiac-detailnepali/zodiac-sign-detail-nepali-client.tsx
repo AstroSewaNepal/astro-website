@@ -47,8 +47,8 @@ export function ZodiacSignDetailNepaliClient() {
     : [];
 
   return (
-    <main className="min-h-screen">
-      <div className="mx-auto max-w-[1240px] px-4 py-4 sm:px-6 lg:px-8">
+    <main className="container mx-auto min-h-screen overflow-hidden">
+      <div className="min-w-0 px-3 py-4 sm:px-4">
         <section className="mx-auto mt-6 max-w-[1180px]">
           <ZodiacSignStripNav
             activeSign={slug}

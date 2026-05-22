@@ -773,6 +773,7 @@ export default function CompatibilityMatchPage() {
             errorFallbackSuffix={dict.list.errorFallbackSuffix}
             horoscopeCardLang={horoscopeCardLang}
             onLanguageChange={setHoroscopeCardLang}
+            mobileButtonsWrapperClass="mt-8 sm:mt-0"
           />
 
           <Clarity />

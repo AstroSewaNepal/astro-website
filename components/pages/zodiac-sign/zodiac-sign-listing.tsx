@@ -36,9 +36,11 @@ export function ZodiacSignListing({ mode }: Props) {
   }));
 
   return (
-    <main className="min-h-screen">
-      <div className="mx-auto max-w-[1240px] px-4 py-4 sm:px-6 lg:px-8">
-        <section className="mx-auto mt-8 max-w-[1180px]">
+    <main className="container mx-auto min-h-screen overflow-hidden">
+      <div className="relative isolate">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-64 sm:h-72" />
+        <div className="mx-auto px-6 lg:px-0 py-3">
+          <section className="mx-auto mt-4 px-2 sm:mt-6 sm:px-3 lg:mt-8 lg:px-4">
           {mode === 'hub-ne' ? (
             <p className="font-mukta text-[11px] text-[#7a6658]">
               Home &gt; Zodiac Sign &gt; Zodiac Sign-Nepali
@@ -46,13 +48,13 @@ export function ZodiacSignListing({ mode }: Props) {
           ) : null}
 
           <div className="mx-auto max-w-5xl text-center">
-            <h1 className="font-tiro-devanagari font-normal text-[56px] leading-[47.83px] text-[#6b2417] text-center mb-10">
+            <h1 className="font-tiro-devanagari font-normal text-[24px] leading-[47.83px] text-[#6b2417] text-center mb-10 sm:text-[56px]">
               {t.heroSub}
             </h1>
           </div>
 
           {mode === 'hub-ne' ? (
-            <div className="mt-6 space-y-4 font-mukta text-[14px] leading-8 text-[#4f463f]">
+            <div className="mt-4 space-y-4 font-mukta text-[14px] leading-8 text-[#4f463f]">
               <p>{t.nepaliHubIntro1}</p>
               <p>{t.nepaliHubIntro2}</p>
             </div>
@@ -69,26 +71,37 @@ export function ZodiacSignListing({ mode }: Props) {
             onLanguageChange={setHoroscopeCardLang}
           />
 
-          <div className="mt-12 rounded-[18px] p-5 sm:p-6">
-            <h2 className="font-sahitya text-[24px] font-bold text-[#6b2417] sm:text-[28px]">
+          <section className="mx-auto mt-6 px-2 sm:mt-8 sm:px-3 lg:mt-10 lg:px-4">
+            <h2
+              className={clsx(
+                'font-sahitya text-[#6b2417] text-left',
+                'text-[22px] sm:text-[26px] font-bold lg:text-[32px]',
+              )}
+            >
               {t.whatIsTitle}
             </h2>
-            <p className="mt-3 font-mukta text-[24px] leading-[34px] tracking-[0%] text-[#4f463f]">
-              {t.whatIsLead}
-            </p>
-            <p className="mt-4 font-mukta text-[24px] leading-[34px] tracking-[0%] text-[#4f463f]">
-              {t.whatIsMore}
-            </p>
-            <h2 className="mt-10 font-sahitya text-[24px] font-bold text-[#6b2417] sm:text-[28px]">
+
+            <div className="mx-auto mt-3 space-y-4 text-left font-mukta text-[20px] leading-7 text-[#5f5248] sm:mt-4 sm:space-y-5 sm:text-[15px] sm:leading-8 lg:mt-5 lg:text-[16px] lg:leading-8">
+              <p>{t.whatIsLead}</p>
+              {t.whatIsMore ? <p>{t.whatIsMore}</p> : null}
+            </div>
+          </section>
+
+          <section className="mx-auto mt-6 px-2 sm:mt-8 sm:px-3 lg:mt-10 lg:px-4">
+            <h2
+              className={clsx(
+                'font-sahitya text-[#6b2417] text-left',
+                'text-[22px] sm:text-[26px] font-bold lg:text-[32px]',
+              )}
+            >
               {t.whyTitle}
             </h2>
-            <p className="mt-3 font-mukta text-[24px] leading-[34px] tracking-[0%] text-[#4f463f]">
-              {t.whyBody}
-            </p>
-            <p className="mt-4 font-mukta text-[24px] leading-[34px] tracking-[0%] text-[#4f463f]">
-              {t.whyMore}
-            </p>
-          </div>
+
+            <div className="mx-auto mt-3 space-y-4 text-left font-mukta text-[20px] leading-7 text-[#5f5248] sm:mt-4 sm:space-y-5 sm:text-[15px] sm:leading-8 lg:mt-5 lg:text-[16px] lg:leading-8">
+              <p>{t.whyBody}</p>
+              {t.whyMore ? <p>{t.whyMore}</p> : null}
+            </div>
+          </section>
 
           {mode === 'hub-ne' ? (
             <div className="mt-10">
@@ -100,17 +113,18 @@ export function ZodiacSignListing({ mode }: Props) {
               </p>
             </div>
           ) : null}
-        </section>
+          </section>
 
-        {mode === 'hub-en' ? (
-          <TalkToOurAstrologer className="mx-auto mt-12 max-w-[1180px]" />
-        ) : null}
+          {mode === 'hub-en' ? (
+            <TalkToOurAstrologer className="mx-auto mt-12 max-w-[1180px]" />
+          ) : null}
 
-        {mode === 'hub-ne' ? (
-          <div className="mx-auto mt-16 max-w-[1180px]">
-            <LandingFAQ />
-          </div>
-        ) : null}
+          {mode === 'hub-ne' ? (
+            <div className="mx-auto mt-16 max-w-[1180px]">
+              <LandingFAQ />
+            </div>
+          ) : null}
+        </div>
       </div>
 
       {mode === 'hub-en' ? <Services /> : null}
