@@ -77,7 +77,9 @@ export function ZodiacSignCardsGrid<T>({
   const swiperRef = useRef<SwiperType | null>(null);
   const isEmpty = cards !== 'loading' && cards.length === 0;
   const showCarouselNavButtons = showCarouselNav && cards !== 'loading' && cards.length > 1;
-  const swiperPagination = pagination ?? { clickable: true };
+  const swiperPagination = pagination ?? {
+    clickable: true,
+  };
   const showError = Boolean(listError);
   const carouselHideUp = useSmUpGrid ? 'sm:hidden' : 'md:hidden';
   const gridShowFrom = useSmUpGrid ? 'sm:grid' : 'md:grid';
@@ -139,18 +141,19 @@ export function ZodiacSignCardsGrid<T>({
             <Swiper
               key={swiperKey}
               modules={[Pagination]}
-              slidesPerView={oneSlidePerView ? 1 : compact ? 1.12 : 1.28}
+              slidesPerView={oneSlidePerView ? 1 : compact ? 2 : 1.28}
               spaceBetween={oneSlidePerView ? 0 : compact ? 8 : 10}
               centeredSlides={!alignStart}
-              slidesOffsetBefore={oneSlidePerView || alignStart ? 0 : compact ? 0 : 4}
+              slidesOffsetBefore={oneSlidePerView ? 0 : compact ? 30 : alignStart ? 0 : 4}
               slidesOffsetAfter={oneSlidePerView || alignStart ? 0 : compact ? 0 : 4}
               breakpoints={
                 oneSlidePerView
                   ? {}
                   : compact
                     ? {
-                        400: { slidesPerView: 1.22, spaceBetween: 9 },
-                        480: { slidesPerView: 1.32, spaceBetween: 10 },
+                        320: { slidesPerView: 1.8, spaceBetween: 8 },
+                        400: { slidesPerView: 2, spaceBetween: 8 },
+                        480: { slidesPerView: 2.15, spaceBetween: 10 },
                       }
                     : {
                         400: { slidesPerView: 1.38, spaceBetween: 11 },

@@ -22,7 +22,7 @@ function HoroscopePageContent() {
           <section className={clsx('mx-auto mt-8 px-2 sm:mt-10 sm:px-3 lg:mt-12 lg:px-4')}>
             <h2
               className={clsx(
-                'lg:text-center font-tiro-devanagari leading-tight text-[#611508] sm:text-left',
+                'font-tiro-devanagari leading-tight text-[#611508] text-left',
                 'text-[22px] sm:text-[26px] font-bold lg:text-[32px]',
               )}
             >
@@ -38,7 +38,7 @@ function HoroscopePageContent() {
           <section className={clsx('mx-auto mt-8 px-2 sm:mt-10 sm:px-3 lg:mt-10 lg:px-4')}>
             <h2
               className={clsx(
-                'lg:text-center font-tiro-devanagari font-bold leading-tight text-[#611508] sm:text-left',
+                'font-tiro-devanagari font-bold leading-tight text-[#611508] text-left',
                 'text-[22px] sm:text-[26px] lg:text-[32px]',
               )}
             >
