@@ -9,13 +9,11 @@ export const zodiacListingCopy = {
     whatIsTitle: 'What is Zodiac Sign?',
     whatIsLead:
       "A zodiac sign is determined by the position of the Sun at the time of your birth. The zodiac is divided into 12 signs, each reflecting unique personality traits, strengths, and characteristics. Your zodiac sign acts like your cosmic identity — it reveals how you express yourself, interact with others, and approach life's journey.",
-    whatIsMore:
-      'Zodiac signs are the twelve divisions of the celestial sky, each representing unique traits, energies, and life paths. From fiery Aries to dreamy Pisces, every sign carries distinct qualities that influence emotions, strengths, challenges, and compatibility.',
+    whatIsMore: '',
     whyTitle: 'Why Zodiac Signs Important?',
     whyBody:
       'Zodiac signs are important because they help you understand your personality and relationships on a deeper level. They uncover your natural strengths, challenges, and compatibility with others, offering insights into your personal growth and life path.',
-    whyMore:
-      'They also provide language for timing, emotional cycles, and personal decision-making. When used thoughtfully, zodiac signs can support self-awareness while still leaving room for your own judgment and choice.',
+    whyMore: '',
     otherSignsTitle: 'Read Horoscope For Other Zodiac Signs',
     readMore: 'Read More',
     cardBlurb: 'Your spark can move mountains, start bold today',
