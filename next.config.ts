@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  // Vercel uses its own deployment adapter; `standalone` breaks adapter modifyConfig (path undefined).
+  ...(process.env.VERCEL ? {} : { output: "standalone" }),
   images: {
     remotePatterns: [
         {
