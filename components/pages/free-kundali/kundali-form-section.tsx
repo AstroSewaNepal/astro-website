@@ -6,12 +6,12 @@ import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { IoLocationOutline } from 'react-icons/io5';
 import {
-  BirthTimeFields,
   EMPTY_BIRTH_TIME,
   UnknownBirthTimeCheckbox,
   birthTimePartsToInput,
   type BirthTimeParts,
 } from '@/components/shared/birth-time-fields';
+import { ClockTimePicker } from '@/components/shared/clock-time-picker';
 
 import CalendarIcon from '@/components/icons/calendar-icon';
 import UserLineIcon from '@/components/icons/user/user-line';
@@ -461,14 +461,16 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                     <FieldError message={fieldErrors.birthPlace} />
                   </div>
 
-                  <BirthTimeFields
-                    id="kundali-birth-time"
-                    variant="kundali"
-                    value={birthTimeParts}
-                    onChange={setBirthTimeParts}
-                    disabled={unknownBirthTime}
-                    error={unknownBirthTime ? undefined : fieldErrors.birthTime}
-                  />
+                  <div>
+                    <ClockTimePicker
+                      id="kundali-birth-time"
+                      label="Enter birth time"
+                      value={birthTimeParts}
+                      onChange={setBirthTimeParts}
+                      disabled={unknownBirthTime}
+                    />
+                    <FieldError message={unknownBirthTime ? undefined : fieldErrors.birthTime} />
+                  </div>
 
                   {/* Gender */}
                   <div>
