@@ -60,48 +60,48 @@ export function BirthTimeFields({
   const containerClass = clsx(
     'relative flex items-center overflow-hidden transition-colors',
     variant === 'calculator' &&
-      'rounded-full border border-[#c9b9aa] bg-white focus-within:border-[#5D1409]',
+    'rounded-full border border-[#c9b9aa] bg-white focus-within:border-[#5D1409]',
     variant === 'kundali' &&
-      clsx(
-        'gap-3 rounded-full border px-4 py-3 focus-within:border-primary',
-        error ? 'border-red-500' : 'border-Trinary',
-      ),
+    clsx(
+      'gap-0.5 rounded-full border px-4 py-3 focus-within:border-primary',
+      error ? 'border-red-500' : 'border-Trinary',
+    ),
     variant === 'matching' &&
-      clsx(
-        'relative w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 focus-within:ring-2 focus-within:ring-primary/10',
-        error ? 'border-red-500' : 'border-primary focus-within:border-primary',
-      ),
+    clsx(
+      'relative w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 focus-within:ring-2 focus-within:ring-primary/10',
+      error ? 'border-red-500' : 'border-primary focus-within:border-primary',
+    ),
     disabled && 'opacity-50 pointer-events-none',
   );
 
   const inputClass = clsx(
     'text-center bg-transparent outline-none disabled:cursor-not-allowed',
     variant === 'calculator' &&
-      'w-12 px-2 py-3 font-mukta text-[15px] text-[#2f2f2f] placeholder:text-[#b0a098]',
+    'w-12 px-2 py-3 font-mukta text-[15px] text-[#2f2f2f] placeholder:text-[#b0a098]',
     variant === 'kundali' &&
-      'w-10 py-0 font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph',
+    'w-7 py-0 font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph',
     variant === 'matching' &&
-      'w-10 font-mukta text-[13px] md:text-[14px] text-[#141414] placeholder:text-[#7b6b69]',
+    'w-10 font-mukta text-[13px] md:text-[14px] text-[#141414] placeholder:text-[#7b6b69]',
   );
 
   const separatorClass = clsx(
     variant === 'calculator' && 'font-mukta text-[15px] text-[#b0a098]',
-    variant === 'kundali' && 'font-mukta text-sm text-Paragraph',
+    variant === 'kundali' && 'font-mukta text-sm md:text-base text-[#4f2620]',
     variant === 'matching' && 'font-mukta text-[13px] text-[#7b6b69]',
   );
 
   const selectClass = clsx(
-    'bg-transparent outline-none disabled:cursor-not-allowed cursor-pointer',
+    'bg-transparent outline-none disabled:cursor-not-allowed cursor-pointer appearance-none',
     variant === 'calculator' && 'px-2 py-3 font-mukta text-[15px] text-[#2f2f2f]',
-    variant === 'kundali' && 'font-mukta text-sm md:text-base text-[#4f2620]',
+    variant === 'kundali' && 'font-mukta text-sm md:text-base text-[#4f2620] w-8',
     variant === 'matching' && 'font-mukta text-[13px] md:text-[14px] text-[#141414]',
   );
 
   const iconWrapClass = clsx(
     variant === 'calculator' && 'ml-auto pr-4 text-[#5D1409] opacity-60',
-    variant === 'kundali' && 'shrink-0 text-primary',
+    variant === 'kundali' && 'ml-auto shrink-0 text-[#4f2620] opacity-60',
     variant === 'matching' &&
-      'absolute inset-y-0 right-3 flex items-center text-primary/70 pointer-events-none',
+    'absolute inset-y-0 right-3 flex items-center text-primary/70 pointer-events-none',
   );
 
   const labelClass = clsx(
