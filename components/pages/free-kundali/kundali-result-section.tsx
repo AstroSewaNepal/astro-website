@@ -567,7 +567,8 @@ const KundaliResultSection: React.FC = () => {
                     Planet details
                   </h3>
                   <p className="mt-2 font-mukta text-[#2d2d2d] text-sm leading-relaxed sm:text-base">
-                    Sidereal positions from your birth time and place (VedAstro AllPlanetData).
+                    Sidereal positions from your birth time and place, showing each planet’s
+                    longitude, house, and sign.
                   </p>
                   {!result.planetRows?.length && (
                     <p className="mt-4 font-mukta text-sm text-[#4a4a4a] sm:text-base">
@@ -699,7 +700,7 @@ const KundaliResultSection: React.FC = () => {
                 <p className="mt-3 font-mukta text-[18px] md:text-[20px] leading-[30px] text-[#2d2d2d]">
                   North Indian D1: house numbers, whole-sign rashi (from Lagna), nine grahas +
                   Ascendant with degree-in-sign, retrograde (®), nakshatra, and longitude-house
-                  (Lh) when it differs from sign-house — data from VedAstro.
+                  (Lh) when it differs from sign-house.
                 </p>
                 <p className="mt-4 font-mukta text-[18px] md:text-[20px] leading-[30px] text-[#2d2d2d]">
                   Planets by house
@@ -724,12 +725,14 @@ const KundaliResultSection: React.FC = () => {
           </p>
         )}
 
-        <Link
-          href="/free-kundali"
-          className="mt-6 inline-flex h-[48px] items-center justify-center rounded-full bg-[#6d1510] px-6 font-mukta text-base font-semibold text-secondary transition-colors hover:bg-[#8e2f27]"
-        >
-          Back to Free Kundali Form
-        </Link>
+        <div className="mt-6 flex justify-center">
+          <Link
+            href="/free-kundali"
+            className="inline-flex h-[48px] items-center justify-center rounded-full bg-[#6d1510] px-6 font-mukta text-base font-semibold text-secondary transition-colors hover:bg-[#8e2f27]"
+          >
+            Create Another Free Kundali
+          </Link>
+        </div>
       </div>
     </section>
   );

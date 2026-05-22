@@ -162,7 +162,7 @@ export default function NumerologyCalculatorSection() {
                 <input
                   id="numerology-fullname"
                   className="min-w-0 flex-1 border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none"
-                  placeholder="John Doe"
+                  placeholder="Enter name"
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
                 />

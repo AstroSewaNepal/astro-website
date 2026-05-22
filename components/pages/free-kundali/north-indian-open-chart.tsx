@@ -310,11 +310,11 @@ export function NorthIndianOpenChartWithPlanets({
   const src = typeof OpenChart === 'string' ? OpenChart : OpenChart.src;
 
   const fitH = imgFit?.height ?? 353;
-  const fzHouse = Math.max(7, Math.round(fitH * 0.026));
-  const fzSign = Math.max(7, Math.round(fitH * 0.024));
-  const fzPlanet = Math.max(8, Math.round(fitH * 0.029));
-  const fzNak = Math.max(6, Math.round(fitH * 0.022));
-  const fzLh = Math.max(6, Math.round(fitH * 0.02));
+  const fzHouse = Math.max(10, Math.round(fitH * 0.034));
+  const fzSign = Math.max(9, Math.round(fitH * 0.032));
+  const fzPlanet = Math.max(11, Math.round(fitH * 0.044));
+  const fzNak = Math.max(8, Math.round(fitH * 0.032));
+  const fzLh = Math.max(8, Math.round(fitH * 0.03));
 
   return (
     <div
@@ -345,7 +345,7 @@ export function NorthIndianOpenChartWithPlanets({
             const planets = byHouse.get(houseNum) ?? [];
             const signLabel = houseSignShort?.[houseNum - 1] ?? null;
             const nPlanets = planets.length;
-            const dense = nPlanets >= 4 ? 0.78 : nPlanets >= 2 ? 0.9 : 1;
+            const dense = nPlanets >= 4 ? 0.85 : nPlanets >= 2 ? 0.95 : 1;
 
             return (
               <div
@@ -359,14 +359,14 @@ export function NorthIndianOpenChartWithPlanets({
                 }}
               >
                 <span
-                  className="font-mukta font-bold leading-none text-primary [text-shadow:0_0_3px_rgba(255,255,255,0.85)]"
+                  className="font-mukta font-bold leading-none text-primary [text-shadow:0_0_4px_rgba(255,255,255,0.9)]"
                   style={{ fontSize: Math.round(fzHouse * dense) }}
                 >
                   {houseNum}
                 </span>
                 {signLabel ? (
                   <span
-                    className="font-mukta font-semibold leading-none text-primary [text-shadow:0_0_3px_rgba(255,255,255,0.85)]"
+                    className="font-mukta font-semibold leading-none text-primary [text-shadow:0_0_4px_rgba(255,255,255,0.9)]"
                     style={{ fontSize: Math.round(fzSign * dense), marginTop: 1 }}
                   >
                     {signLabel}
@@ -378,7 +378,7 @@ export function NorthIndianOpenChartWithPlanets({
                     className="mt-[3px] flex max-w-full items-center justify-center break-words"
                   >
                     <span
-                      className="font-mukta font-semibold leading-[1.08] tracking-tight text-primary [text-shadow:0_0_3px_rgba(255,255,255,0.85)]"
+                      className="font-mukta font-semibold leading-[1.08] tracking-tight text-primary [text-shadow:0_0_4px_rgba(255,255,255,0.9)]"
                       style={{ fontSize: Math.round(fzPlanet * dense) }}
                     >
                       {p.line1}
@@ -388,6 +388,13 @@ export function NorthIndianOpenChartWithPlanets({
               </div>
             );
           })}
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="relative h-full w-full">
+              <span className="absolute left-[15%] top-[30%] -rotate-12 text-[15px] font-semibold uppercase tracking-[0.3em] text-[#7f1808]/18">
+                astrosewa.com
+              </span>
+            </div>
+          </div>
         </div>
       ) : null}
     </div>

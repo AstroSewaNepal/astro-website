@@ -60,28 +60,28 @@ export function BirthTimeFields({
   const containerClass = clsx(
     'relative flex items-center overflow-hidden transition-colors',
     variant === 'calculator' &&
-    'rounded-full border border-[#c9b9aa] bg-white focus-within:border-[#5D1409]',
+      'rounded-full border border-[#c9b9aa] bg-white focus-within:border-[#5D1409]',
     variant === 'kundali' &&
-    clsx(
-      'gap-0.5 rounded-full border px-4 py-3 focus-within:border-primary',
-      error ? 'border-red-500' : 'border-Trinary',
-    ),
+      clsx(
+        'gap-0.5 rounded-full border px-4 py-3 focus-within:border-primary',
+        error ? 'border-red-500' : 'border-Trinary',
+      ),
     variant === 'matching' &&
-    clsx(
-      'relative w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 focus-within:ring-2 focus-within:ring-primary/10',
-      error ? 'border-red-500' : 'border-primary focus-within:border-primary',
-    ),
+      clsx(
+        'relative w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 focus-within:ring-2 focus-within:ring-primary/10',
+        error ? 'border-red-500' : 'border-primary focus-within:border-primary',
+      ),
     disabled && 'opacity-50 pointer-events-none',
   );
 
   const inputClass = clsx(
     'text-center bg-transparent outline-none disabled:cursor-not-allowed',
     variant === 'calculator' &&
-    'w-12 px-2 py-3 font-mukta text-[15px] text-[#2f2f2f] placeholder:text-[#b0a098]',
+      'w-12 px-2 py-3 font-mukta text-[15px] text-[#2f2f2f] placeholder:text-[#b0a098]',
     variant === 'kundali' &&
-    'w-7 py-0 font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph',
+      'w-7 py-0 font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph',
     variant === 'matching' &&
-    'w-10 font-mukta text-[13px] md:text-[14px] text-[#141414] placeholder:text-[#7b6b69]',
+      'w-10 font-mukta text-[13px] md:text-[14px] text-[#141414] placeholder:text-[#7b6b69]',
   );
 
   const separatorClass = clsx(
@@ -101,7 +101,7 @@ export function BirthTimeFields({
     variant === 'calculator' && 'ml-auto pr-4 text-[#5D1409] opacity-60',
     variant === 'kundali' && 'ml-auto shrink-0 text-[#4f2620] opacity-60',
     variant === 'matching' &&
-    'absolute inset-y-0 right-3 flex items-center text-primary/70 pointer-events-none',
+      'absolute inset-y-0 right-3 flex items-center text-primary/70 pointer-events-none',
   );
 
   const labelClass = clsx(
@@ -203,18 +203,31 @@ export function UnknownBirthTimeCheckbox({
     >
       <span
         className={clsx(
-          'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors',
+          'relative flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border transition-colors',
           borderColor,
-          checked ? fillColor : 'bg-transparent',
+          checked ? 'bg-[#6d1510]' : 'bg-white',
         )}
       >
         <input
           type="checkbox"
           checked={checked}
           onChange={e => onChange(e.target.checked)}
-          className="sr-only"
+          className="absolute inset-0 h-full w-full opacity-0 cursor-pointer m-0"
         />
-        {checked ? <span className="h-2 w-2 rounded-full bg-white" aria-hidden="true" /> : null}
+        {checked ? (
+          <svg
+            className="h-3.5 w-3.5 text-white"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        ) : null}
       </span>
       <span className={textColor}>Don&apos;t know my exact birth time</span>
     </label>

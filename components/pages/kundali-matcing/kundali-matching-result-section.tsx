@@ -997,7 +997,7 @@ const KundaliMatchingResultSection: React.FC = () => {
                 <p className="mt-3 font-mukta text-[18px] leading-[30px]">
                   North Indian D1: house numbers, whole-sign rashi (from Lagna), nine grahas +
                   Ascendant with degree-in-sign, retrograde (®), nakshatra, and longitude-house
-                  (Lh) when it differs from sign-house — data from VedAstro.
+                  (Lh) when it differs from sign-house.
                 </p>
                 <p className="mt-4 font-mukta text-[18px] leading-[30px]">Planets by house</p>
               </div>
