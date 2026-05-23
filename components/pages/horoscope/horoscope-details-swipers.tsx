@@ -56,7 +56,7 @@ export function HoroscopeDetailsRangeTabs(props: {
   );
 
   return (
-    <div className="mt-7 min-w-0 border-b border-[#e1d3c6] pb-4">
+    <div className="mt-7 min-w-0 pb-4">
       <div className="horoscope-details-tabs-mob -mx-1 md:hidden">
         <Swiper
           modules={[FreeMode]}

@@ -216,11 +216,17 @@ function HoroscopeDetailsContent() {
               <div className="mt-8 h-40 animate-pulse rounded-xl bg-[#efe1d3]/60" />
             ) : detail ? (
               <>
-                <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[1fr_220px] lg:items-start lg:gap-4">
+                <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[1fr_220px] lg:items-start lg:gap-4 lg:max-w-[1016px] lg:h-[272px] lg:opacity-100">
                   <div className="min-w-0 order-2 lg:order-none">
-                    <h2 className="font-sahitya text-[22px] font-bold leading-snug text-[#6f2618] sm:text-[24px] md:text-[26px] lg:text-[28px]">
+                    <h2
+                      className="font-sahitya font-bold text-[28px] leading-[38px] tracking-[0%] text-primary"
+                      style={{ leadingTrim: 'none' }}
+                    >
                       {capitalizeSign(validSign)}{' '}
-                      <span className="block font-mukta text-[15px] font-bold leading-snug text-[#5e4f45] sm:mt-1 sm:inline sm:text-[17px] md:text-[20px]">
+                      <span
+                        className="inline font-sahitya font-bold text-[28px] leading-[38px] tracking-[0%] text-primary"
+                        style={{ leadingTrim: 'none' }}
+                      >
                         (
                         {['today', 'tomorrow', 'yesterday'].includes(
                           detail.horoscope.type?.toLowerCase(),
@@ -245,21 +251,28 @@ function HoroscopeDetailsContent() {
                         )
                       </span>
                     </h2>
-                    <p className="mt-3 font-mukta text-[15px] leading-7 text-[#5e4f45] sm:text-[16px] sm:leading-8 md:text-[18px] md:leading-7">
+                    <p
+                      className="mt-3 font-mukta text-[24px] font-normal leading-[34px] tracking-[0%] text-[#5e4f45]"
+                      style={{ leadingTrim: 'none' }}
+                    >
                       {detail.horoscope.general}
                     </p>
                   </div>
-                  <div className="order-1 mx-auto shrink-0 lg:order-none lg:mx-0 lg:justify-self-end">
+                  <div
+                    className="order-1 mx-auto shrink-0 lg:order-none lg:mx-0 lg:justify-self-end lg:translate-x-40"
+                    style={{ width: '308.29px', height: '297.18px', opacity: 1 }}
+                  >
                     <Image
                       src={SIGN_COLOR_IMAGE[validSign]}
                       alt={capitalizeSign(validSign)}
-                      className="h-auto w-full object-contain"
+                      className="h-full w-full object-contain"
                       sizes="(max-width: 1024px) 160px, 170px"
                       priority={false}
                     />
                     <Link
                       href={zodiacDetailHref(validSign, uiLanguage, uiLanguage)}
-                      className="inline-flex items-center gap-2 rounded-[32px] bg-[#611508] px-4 py-1.5 font-mukta text-[16px] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[20px] sm:leading-8 lg:text-[22px] lg:leading-8"
+                      className="inline-flex h-[44px] w-[366px] items-center justify-center gap-[10px] rounded-[32px] bg-[#611508] px-[16px] py-[6px] font-mukta text-[22px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208]"
+                      style={{ leadingTrim: 'none' }}
                     >
                       Know more about {validSign} Zodiac
                       <ArrowRight className="h-6 w-6 text-[#f8f3df]" />
