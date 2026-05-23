@@ -164,26 +164,8 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
       }
     }
 
-    type EventTargetWithListeners = {
-      addEventListener: (
-        type: string,
-        listener: EventListenerOrEventListenerObject,
-        options?: boolean | AddEventListenerOptions,
-      ) => void;
-      removeEventListener: (
-        type: string,
-        listener: EventListenerOrEventListenerObject,
-        options?: boolean | EventListenerOptions,
-      ) => void;
-    };
-    const hasListeners = (target: Element | Window): target is EventTargetWithListeners =>
-      typeof (target as EventTargetWithListeners).addEventListener === 'function' &&
-      typeof (target as EventTargetWithListeners).removeEventListener === 'function';
-
     scrollParents.forEach(p => {
-      if (hasListeners(p)) {
-        p.addEventListener('scroll', onScroll, { passive: true });
-      }
+      p.addEventListener('scroll', onScroll, { passive: true });
     });
     window.addEventListener('resize', onScroll);
 
@@ -192,9 +174,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
     return () => {
       if (rafId != null) cancelAnimationFrame(rafId);
       scrollParents.forEach(p => {
-        if (hasListeners(p)) {
-          p.removeEventListener('scroll', onScroll);
-        }
+        p.removeEventListener('scroll', onScroll);
       });
       window.removeEventListener('resize', onScroll);
       resetTransform();
