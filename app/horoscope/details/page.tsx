@@ -157,14 +157,14 @@ function HoroscopeDetailsContent() {
             >
               {dict.details.backToList}
             </Link>
-            <div className="mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+            <div className="mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-[10px] sm:grid-cols-4 md:grid-cols-6">
               {HOROSCOPE_SIGNS.map(slug => (
                 <Link
                   key={slug}
                   href={horoscopeDetailPageHref(slug, rangeType, uiLanguage)}
-                  className="group flex flex-col items-center gap-1.5 rounded-lg outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d5d3d0]"
+                  className="group flex flex-col items-center gap-[10px] rounded-lg outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d5d3d0]"
                 >
-                  <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-[#d5d3d0] bg-[#f2f0ee] p-1.5 transition-[border-color,background-color,box-shadow] duration-200 group-hover:border-[#c9a88a] group-hover:bg-[#faf8f6] group-hover:shadow-sm">
+                  <div className="flex h-[98.305px] w-[100px] items-center justify-center rounded-[60px] border-2 border-[#d5d3d0] bg-[#f2f0ee] p-[4px] opacity-100 transition-[border-color,background-color,box-shadow] duration-200 group-hover:border-[#c9a88a] group-hover:bg-[#faf8f6] group-hover:shadow-sm">
                     <Image
                       src={SIGN_COLOR_IMAGE[slug]}
                       alt={capitalizeSign(slug)}
@@ -180,10 +180,16 @@ function HoroscopeDetailsContent() {
           </section>
         ) : (
           <section className="mt-2 min-w-0 py-4 sm:py-5">
-            <h1 className="font-sahitya text-[28px] font-bold leading-[1.1] text-[#6f2618] sm:text-[38px] md:text-[44px] lg:text-[48px]">
+            <h1
+              className="font-sahitya font-bold tracking-[0px] text-[#6f2618] text-[28px] leading-[34px] sm:text-[38px] sm:leading-[42px] md:text-[48px] md:leading-[48px]"
+              style={{ leadingTrim: 'none' }}
+            >
               {dict.details.rangeHeading[rangeType]}
             </h1>
-            <p className="mt-2 font-mukta text-[14px] text-[#D47F2C] sm:text-[15px] md:text-[16px]">
+            <p
+              className="mt-2 font-mukta font-medium text-[24px] leading-[30px] tracking-[0px] text-[#D47F2C]"
+              style={{ leadingTrim: 'none' }}
+            >
               {dict.details.rangeSub[rangeType]}
             </p>
 

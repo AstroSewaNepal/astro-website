@@ -408,13 +408,14 @@ function LandingHeaderClient() {
             <div className="flex flex-col gap-3">
               {mobileNav.map((item, index) => {
                 const hasChildren = item.children && item.children.length > 0;
+                const isZodiacSigns = item.link === '/zodiac-sign';
                 const isExpanded = openMobileDropdown === item.title;
                 const content = (
                   <div className="flex items-center justify-between w-full">
                     <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709]">
                       {item.title}
                     </p>
-                    {hasChildren && (
+                    {hasChildren && !isZodiacSigns && (
                       <ChevronDownIcon
                         className={`text-[#691709] w-[18px] h-[18px] transition-transform duration-200 ${
                           isExpanded ? 'rotate-180' : ''
@@ -423,6 +424,15 @@ function LandingHeaderClient() {
                     )}
                   </div>
                 );
+
+                // Zodiac Signs: navigate directly without dropdown
+                if (isZodiacSigns && item.link) {
+                  return (
+                    <Link key={`m-${index}`} href={item.link} onClick={closeMobileMenu}>
+                      {content}
+                    </Link>
+                  );
+                }
 
                 if (hasChildren) {
                   return (
