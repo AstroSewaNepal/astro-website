@@ -157,14 +157,14 @@ function HoroscopeDetailsContent() {
             >
               {dict.details.backToList}
             </Link>
-            <div className="mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+            <div className="mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-[10px] sm:grid-cols-4 md:grid-cols-6">
               {HOROSCOPE_SIGNS.map(slug => (
                 <Link
                   key={slug}
                   href={horoscopeDetailPageHref(slug, rangeType, uiLanguage)}
-                  className="group flex flex-col items-center gap-1.5 rounded-lg outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d5d3d0]"
+                  className="group flex flex-col items-center gap-[10px] rounded-lg outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d5d3d0]"
                 >
-                  <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-[#d5d3d0] bg-[#f2f0ee] p-1.5 transition-[border-color,background-color,box-shadow] duration-200 group-hover:border-[#c9a88a] group-hover:bg-[#faf8f6] group-hover:shadow-sm">
+                  <div className="flex h-[98.305px] w-[100px] items-center justify-center rounded-[60px] border-2 border-[#d5d3d0] bg-[#f2f0ee] p-[4px] opacity-100 transition-[border-color,background-color,box-shadow] duration-200 group-hover:border-[#c9a88a] group-hover:bg-[#faf8f6] group-hover:shadow-sm">
                     <Image
                       src={SIGN_COLOR_IMAGE[slug]}
                       alt={capitalizeSign(slug)}
@@ -180,10 +180,10 @@ function HoroscopeDetailsContent() {
           </section>
         ) : (
           <section className="mt-2 min-w-0 py-4 sm:py-5">
-            <h1 className="font-sahitya text-[28px] font-bold leading-[1.1] text-[#6f2618] sm:text-[38px] md:text-[44px] lg:text-[48px]">
+            <h1 className="font-sahitya font-bold tracking-[0px] text-[#6f2618] text-[28px] leading-[34px] sm:text-[38px] sm:leading-[42px] md:text-[48px] md:leading-[48px]">
               {dict.details.rangeHeading[rangeType]}
             </h1>
-            <p className="mt-2 font-mukta text-[14px] text-[#D47F2C] sm:text-[15px] md:text-[16px]">
+            <p className="mt-2 font-mukta font-medium text-[24px] leading-[30px] tracking-[0px] text-[#D47F2C]">
               {dict.details.rangeSub[rangeType]}
             </p>
 
@@ -210,11 +210,11 @@ function HoroscopeDetailsContent() {
               <div className="mt-8 h-40 animate-pulse rounded-xl bg-[#efe1d3]/60" />
             ) : detail ? (
               <>
-                <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[1fr_220px] lg:items-start lg:gap-4">
+                <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[1fr_220px] lg:items-start lg:gap-4 lg:max-w-[1016px] lg:h-[272px] lg:opacity-100">
                   <div className="min-w-0 order-2 lg:order-none">
-                    <h2 className="font-sahitya text-[22px] font-bold leading-snug text-[#6f2618] sm:text-[24px] md:text-[26px] lg:text-[28px]">
+                    <h2 className="font-sahitya font-bold text-[28px] leading-[38px] tracking-[0%] text-primary">
                       {capitalizeSign(validSign)}{' '}
-                      <span className="block font-mukta text-[15px] font-bold leading-snug text-[#5e4f45] sm:mt-1 sm:inline sm:text-[17px] md:text-[20px]">
+                      <span className="inline font-sahitya font-bold text-[28px] leading-[38px] tracking-[0%] text-primary">
                         (
                         {['today', 'tomorrow', 'yesterday'].includes(
                           detail.horoscope.type?.toLowerCase(),
@@ -239,21 +239,24 @@ function HoroscopeDetailsContent() {
                         )
                       </span>
                     </h2>
-                    <p className="mt-3 font-mukta text-[15px] leading-7 text-[#5e4f45] sm:text-[16px] sm:leading-8 md:text-[18px] md:leading-7">
+                    <p className="mt-3 font-mukta text-[24px] font-normal leading-[34px] tracking-[0%] text-[#5e4f45]">
                       {detail.horoscope.general}
                     </p>
                   </div>
-                  <div className="order-1 mx-auto shrink-0 lg:order-none lg:mx-0 lg:justify-self-end">
+                  <div
+                    className="order-1 mx-auto shrink-0 lg:order-none lg:mx-0 lg:justify-self-end lg:translate-x-40"
+                    style={{ width: '308.29px', height: '297.18px', opacity: 1 }}
+                  >
                     <Image
                       src={SIGN_COLOR_IMAGE[validSign]}
                       alt={capitalizeSign(validSign)}
-                      className="h-auto w-full object-contain"
+                      className="h-full w-full object-contain"
                       sizes="(max-width: 1024px) 160px, 170px"
                       priority={false}
                     />
                     <Link
                       href={zodiacDetailHref(validSign, uiLanguage, uiLanguage)}
-                      className="inline-flex items-center gap-2 rounded-[32px] bg-[#611508] px-4 py-1.5 font-mukta text-[16px] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[20px] sm:leading-8 lg:text-[22px] lg:leading-8"
+                      className="inline-flex h-[44px] w-[366px] items-center justify-center gap-[10px] rounded-[32px] bg-[#611508] px-[16px] py-[6px] font-mukta text-[22px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208]"
                     >
                       Know more about {validSign} Zodiac
                       <ArrowRight className="h-6 w-6 text-[#f8f3df]" />

@@ -276,6 +276,8 @@ const TodayHoroscope: React.FC = () => {
             onPageChange={handlePageChange}
             onPrevious={handlePrevious}
             onNext={handleNext}
+            dotClassName="w-[4.784643650054932px] h-[4.784643650054932px]"
+            dotGap="4.16px"
           />
         </div>
       </div>

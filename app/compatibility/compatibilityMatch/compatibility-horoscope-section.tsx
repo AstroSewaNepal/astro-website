@@ -239,6 +239,7 @@ export function CompatibilityHoroscopeSection({
           useSmUpGrid
           alignStart
           showCarouselNav={false}
+          showCustomPagination
           className="lg:grid-cols-3"
           renderCard={(card, layout) => (
             <CompatibilityHoroscopeCardLink

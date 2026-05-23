@@ -162,7 +162,7 @@ const Services = () => {
                         {service.buttonText}
                       </span>
                     </button>
-                    <div className="flex items-center justify-center gap-3 mt-4 md:hidden">
+                    <div className="flex items-center justify-center gap-[4.16px] mt-4 md:hidden">
                       {Array.from({ length: displayPages }, (_, index) => (
                         <button
                           key={index}
@@ -174,7 +174,12 @@ const Services = () => {
                               ? 'bg-[#611508]'
                               : 'bg-[#d9bdb7] hover:opacity-80'
                           }`}
-                          style={{ width: '10.36px', height: '10.36px' }}
+                          style={{
+                            width: '4.784643650054932px',
+                            height: '4.784643650054932px',
+                            minWidth: '4.784643650054932px',
+                            minHeight: '4.784643650054932px',
+                          }}
                         />
                       ))}
                     </div>
@@ -193,6 +198,8 @@ const Services = () => {
             onPageChange={handlePageChange}
             onPrevious={handlePrevious}
             onNext={handleNext}
+            dotClassName="w-[10.363306999206543px] h-[10.363306999206543px]"
+            dotGap="3px"
           />
         </div>
       </div>

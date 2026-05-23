@@ -242,6 +242,8 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
             onPageChange={handlePageChange}
             onPrevious={handlePrevious}
             onNext={handleNext}
+            dotClassName="w-[4.784643650054932px] h-[4.784643650054932px] md:w-[10.363306999206543px] md:h-[10.363306999206543px]"
+            dotGap="4.16px"
           />
         </div>
       </div>

@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import clsx from 'clsx';
 import { ServiceReport } from '@/components/images/services';
 import GoogleGIcon from '@/components/images/icons/google_G.png';
 import DatePickerDropdown from '@/components/pages/free-kundali/date-picker-dropdown';
+import { ClockTimePicker } from '@/components/shared/clock-time-picker';
 import {
-  BirthTimeFields,
   EMPTY_BIRTH_TIME,
   UnknownBirthTimeCheckbox,
   birthTimePartsToInput,
@@ -340,38 +341,30 @@ const DatePickerPill = ({
   onOpenChange: (open: boolean) => void;
   onDateSelect: (value: string) => void;
 }) => (
-  <div className="block relative">
-    <label htmlFor={id} className="block font-mukta text-[12px] md:text-[13px] text-primary mb-1.5">
+  <div className="relative">
+    <label htmlFor={id} className="block font-mukta text-sm text-Trinary mb-2">
       {label}
     </label>
-    <span className="relative block">
-      <button
-        id={id}
-        type="button"
-        onClick={() => onOpenChange(true)}
-        className={[
-          'w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 pr-10 text-left font-mukta text-[13px] md:text-[14px] text-[#141414] outline-none focus:ring-2 focus:ring-primary/10 transition-colors cursor-pointer',
-          error ? 'border-red-500' : 'border-primary',
-        ].join(' ')}
-      >
-        <span className="flex min-w-0 items-center justify-between gap-2">
-          <span className="truncate text-left text-[13px] md:text-[14px] text-[#141414]">
-            {value || 'Select date of birth'}
-          </span>
-          <span className="flex items-center text-primary/80">
-            <CalendarIcon className="w-4 h-4" />
-          </span>
-        </span>
-      </button>
-      <input type="hidden" name={name} value={value} />
-    </span>
-    <FieldError message={error} />
+    <button
+      id={id}
+      type="button"
+      onClick={() => onOpenChange(true)}
+      className={clsx(
+        'w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 pr-10 font-mukta text-[13px] md:text-[14px] text-[#141414] outline-none focus:ring-2 focus:ring-primary/10 transition-colors flex items-center justify-between',
+        error ? 'border-red-500' : 'border-primary',
+      )}
+    >
+      <span className="flex-1 min-w-0 text-left">{value || 'Select date of birth'}</span>
+      <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary" />
+    </button>
+    <input type="hidden" name={name} value={value} />
     <DatePickerDropdown
       open={open}
       onOpenChange={onOpenChange}
       onDateSelect={onDateSelect}
       value={value}
     />
+    <FieldError message={error} />
   </div>
 );
 
@@ -517,14 +510,12 @@ const PersonSection = ({
     </div>
 
     <div className="grid grid-cols-2 gap-3 md:gap-4">
-      <BirthTimeFields
+      <ClockTimePicker
         id={`${prefix}-birth-time`}
         label="Birth time"
-        variant="matching"
         value={birthTimeParts}
         onChange={onBirthTimeChange}
         disabled={unknownBirthTime}
-        error={unknownBirthTime ? undefined : errors.birthTime}
       />
 
       <SelectPill

@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useCallback, useEffect, useRef } from 'react';
+import { Fragment, useCallback } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -18,6 +18,8 @@ import {
   SIGN_COLOR_IMAGE,
   SIGN_LIGHT_IMAGE,
 } from './horoscope-details-sign-assets';
+export { HoroscopeDetailsZodiacNav } from './horoscope-details-zodiac-nav';
+import { useSwiperScrollToIndex } from './horoscope-details-swiper-utils';
 
 import 'swiper/css';
 import 'swiper/css/free-mode';
@@ -25,117 +27,6 @@ import 'swiper/css/free-mode';
 type RangeTab = { type: VedastroHoroscopeRangeType; label: string };
 
 type SectionPill = { id: 'general' | 'love' | 'career' | 'health'; label: string };
-
-function useSwiperScrollToIndex(activeIndex: number) {
-  const ref = useRef<SwiperType | null>(null);
-  useEffect(() => {
-    const s = ref.current;
-    if (!s || activeIndex < 0) {
-      return;
-    }
-    queueMicrotask(() => {
-      s.slideTo(activeIndex, 0);
-    });
-  }, [activeIndex]);
-  const onSwiper = useCallback(
-    (s: SwiperType) => {
-      ref.current = s;
-      if (activeIndex >= 0) {
-        queueMicrotask(() => s.slideTo(activeIndex, 0));
-      }
-    },
-    [activeIndex],
-  );
-  return onSwiper;
-}
-
-/** Mobile: horizontal Swiper; md+: 6/12 column grid (unchanged layout). */
-export function HoroscopeDetailsZodiacNav(props: {
-  validSign: HoroscopeSign;
-  rangeType: VedastroHoroscopeRangeType;
-  uiLanguage: ELanguage;
-}) {
-  const { validSign, rangeType, uiLanguage } = props;
-  const activeIndex = HOROSCOPE_SIGNS.indexOf(validSign);
-  const onSwiperZodiac = useSwiperScrollToIndex(activeIndex >= 0 ? activeIndex : 0);
-
-  const signLink = (slug: HoroscopeSign) => {
-    const selected = slug === validSign;
-    return (
-      <Link
-        href={horoscopeDetailPageHref(slug, rangeType, uiLanguage)}
-        className="group flex w-[76px] shrink-0 flex-col items-center gap-1 rounded-lg outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F8F3DF]"
-      >
-        <div
-          className={clsx(
-            'flex h-[52px] w-[52px] items-center justify-center rounded-full border p-1.5 transition-[border-color,box-shadow,background-color] duration-200',
-            selected
-              ? 'border-[#c9a063] bg-[#faf6f0] ring-2 ring-[#e8c47a]/35'
-              : 'border-[#d5d3d0] bg-[#f2f0ee] group-hover:border-[#c9a88a] group-hover:bg-[#faf8f6] group-hover:shadow-sm',
-          )}
-        >
-          <div className="relative h-full w-full">
-            <Image
-              src={SIGN_LIGHT_IMAGE[slug]}
-              alt={capitalizeSign(slug)}
-              className={clsx(
-                'absolute inset-0 h-full w-full object-contain transition-opacity duration-200',
-                selected ? 'opacity-0' : 'opacity-100 group-hover:opacity-0',
-              )}
-            />
-            <Image
-              src={SIGN_COLOR_IMAGE[slug]}
-              alt={capitalizeSign(slug)}
-              className={clsx(
-                'absolute inset-0 h-full w-full object-contain transition-opacity duration-200',
-                selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
-              )}
-            />
-          </div>
-        </div>
-        <span
-          className={clsx(
-            'text-center font-tiro-devanagari text-[11px] font-normal leading-tight transition-colors duration-200 sm:text-[12px]',
-            selected ? 'text-[#611508]' : 'text-[#9a6b5c] group-hover:text-[#691709]',
-          )}
-        >
-          {capitalizeSign(slug)}
-        </span>
-      </Link>
-    );
-  };
-
-  return (
-    <div className="mt-6 min-w-0">
-      <div className="horoscope-details-zodiac-mob -mx-1 min-w-0 md:hidden">
-        <Swiper
-          modules={[FreeMode]}
-          freeMode={{ enabled: true, momentumRatio: 0.85 }}
-          slidesPerView="auto"
-          spaceBetween={10}
-          slidesOffsetBefore={4}
-          slidesOffsetAfter={4}
-          className="!overflow-visible pb-1"
-          onSwiper={onSwiperZodiac}
-        >
-          {HOROSCOPE_SIGNS.map(slug => (
-            <SwiperSlide key={slug} className="!w-auto">
-              {signLink(slug)}
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
-
-      <div className="hidden gap-2 md:grid md:grid-cols-6 lg:grid-cols-12">
-        {HOROSCOPE_SIGNS.map(slug => (
-          <div key={slug} className="min-w-0">
-            {signLink(slug)}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 /** Mobile: horizontal Swiper; md+: flex wrap row. */
 export function HoroscopeDetailsRangeTabs(props: {
@@ -164,7 +55,7 @@ export function HoroscopeDetailsRangeTabs(props: {
   );
 
   return (
-    <div className="mt-7 min-w-0 border-b border-[#e1d3c6] pb-4">
+    <div className="mt-7 min-w-0 pb-4">
       <div className="horoscope-details-tabs-mob -mx-1 md:hidden">
         <Swiper
           modules={[FreeMode]}
