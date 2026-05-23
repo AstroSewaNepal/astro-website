@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface DatePickerDropdownProps {
@@ -8,6 +9,7 @@ interface DatePickerDropdownProps {
   onOpenChange: (open: boolean) => void;
   onDateSelect: (date: string) => void;
   value?: string;
+  anchorId?: string;
 }
 
 const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
@@ -15,9 +17,13 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
   onOpenChange,
   onDateSelect,
   value,
+  anchorId,
 }) => {
   const today = new Date();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [portalPos, setPortalPos] = useState<null | { left: number; top?: number; bottom?: number }>(
+    null,
+  );
   const [positionAbove, setPositionAbove] = useState(false);
 
   const [currentDate] = useState(() => {
@@ -49,31 +55,138 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
     });
   }, [open]);
 
-  useEffect(() => {
-    if (!open || !dropdownRef.current) return;
-    const check = () => {
-      const el = dropdownRef.current;
-      if (!el?.parentElement) return;
-      const pr = el.parentElement.getBoundingClientRect();
-      const dr = el.getBoundingClientRect();
+  const computePosition = () => {
+    if (!open) return;
+    if (anchorId) {
+      const anchor = document.getElementById(anchorId);
+      if (!anchor) return;
+      const ar = anchor.getBoundingClientRect();
       const vh = window.innerHeight;
-      setPositionAbove(vh - pr.bottom < dr.height && pr.top > vh - pr.bottom);
-    };
-    const t = setTimeout(check, 0);
+      const preferAbove = vh - ar.bottom < 320 && ar.top > vh - ar.bottom;
+      setPositionAbove(preferAbove);
+      setPortalPos({ left: Math.max(16, ar.left), top: preferAbove ? undefined : ar.bottom + 8, bottom: preferAbove ? vh - ar.top + 8 : undefined });
+      return;
+    }
+
+    if (!dropdownRef.current) return;
+    const el = dropdownRef.current;
+    if (!el?.parentElement) return;
+    const pr = el.parentElement.getBoundingClientRect();
+    const dr = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    setPositionAbove(vh - pr.bottom < dr.height && pr.top > vh - pr.bottom);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const t = setTimeout(computePosition, 0);
     return () => clearTimeout(t);
-  }, [open]);
+  }, [open, anchorId]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    let rafId: number | null = null;
+    let baseTop: number | null = null;
+
+    const applyTransform = (dy: number) => {
+      if (!dropdownRef.current) return;
+      dropdownRef.current.style.transform = `translate3d(0, ${dy}px, 0)`;
+    };
+
+    const resetTransform = () => {
+      if (!dropdownRef.current) return;
+      dropdownRef.current.style.transform = '';
+      dropdownRef.current.style.willChange = '';
+    };
+
+    const handleFollow = () => {
+      if (!anchorId) return computePosition();
+      const anchor = document.getElementById(anchorId);
+      if (!anchor || !dropdownRef.current) return;
+
+      const ar = anchor.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const dropdownWidth = Math.min(vw - 32, 280);
+      const dropdownHeight = dropdownRef.current.offsetHeight || 300;
+
+      const belowTop = ar.bottom + 8;
+      let targetTop = belowTop;
+      if (belowTop + dropdownHeight > window.innerHeight - 24) {
+        targetTop = Math.max(8, ar.top - dropdownHeight - 8);
+      }
+
+      const left = Math.max(16, Math.min(ar.left, vw - dropdownWidth - 16));
+
+      if (baseTop === null) {
+        baseTop = targetTop;
+        dropdownRef.current.style.position = 'fixed';
+        dropdownRef.current.style.left = `${left}px`;
+        dropdownRef.current.style.top = `${targetTop}px`;
+        dropdownRef.current.style.willChange = 'transform';
+        applyTransform(0);
+        return;
+      }
+
+      const dy = targetTop - baseTop;
+      if (rafId != null) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => applyTransform(dy));
+    };
+
+    const onScroll = () => {
+      handleFollow();
+    };
+
+    const scrollParents: (Element | Window)[] = [window];
+    if (anchorId) {
+      const anchor = document.getElementById(anchorId);
+      if (anchor) {
+        let el: Element | null = anchor.parentElement;
+        while (el) {
+          try {
+            const style = getComputedStyle(el);
+            const overflowY = style.overflowY;
+            if ((overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay') && el.scrollHeight > el.clientHeight) {
+              scrollParents.push(el);
+            }
+          } catch (e) {}
+          el = el.parentElement;
+        }
+      }
+    }
+
+    scrollParents.forEach(p => (p as any).addEventListener && (p as any).addEventListener('scroll', onScroll, { passive: true }));
+    window.addEventListener('resize', onScroll);
+
+    handleFollow();
+
+    return () => {
+      if (rafId != null) cancelAnimationFrame(rafId);
+      scrollParents.forEach(p => (p as any).removeEventListener && (p as any).removeEventListener('scroll', onScroll as EventListener));
+      window.removeEventListener('resize', onScroll);
+      resetTransform();
+    };
+  }, [open, anchorId]);
 
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        if (dropdownRef.current.parentElement?.contains(e.target as Node)) return;
-        onOpenChange(false);
+      const target = e.target as Node;
+
+      if (dropdownRef.current && dropdownRef.current.contains(target)) return;
+
+      if (anchorId) {
+        const anchor = document.getElementById(anchorId);
+        if (anchor && anchor.contains(target)) return;
+      } else {
+        if (dropdownRef.current?.parentElement && dropdownRef.current.parentElement.contains(target)) return;
       }
+
+      onOpenChange(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [open, onOpenChange]);
+  }, [open, onOpenChange, anchorId]);
 
   const handlePrevMonth = () =>
     displayMonth === 0
@@ -109,18 +222,8 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
   ];
 
   const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
   ];
   const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
@@ -129,11 +232,11 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
   const maroon = '#7a1c1c';
   const maroonFaint = `${maroon}20`;
 
-  // ── Exact typography spec for all numbers & labels ──
+  // ── Typography ──────────────────────────────────
   const numberStyle: React.CSSProperties = {
     fontFamily: "'Nunito', sans-serif",
     fontWeight: 500,
-    fontSize: 15.72,
+    fontSize: 13,
     lineHeight: '100%',
     letterSpacing: 0,
     textAlign: 'center',
@@ -149,8 +252,8 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
     d === todayDay && displayMonth === todayMonth && displayYear === todayYear;
 
   const navBtn: React.CSSProperties = {
-    width: 30,
-    height: 30,
+    width: 26,
+    height: 26,
     borderRadius: '50%',
     background: maroon,
     border: 'none',
@@ -165,9 +268,8 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
 
   if (!open) return null;
 
-  return (
+  const dropdownContent = (
     <>
-      {/* Load Nunito from Google Fonts */}
       <link
         href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap"
         rel="stylesheet"
@@ -175,14 +277,17 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
 
       <div
         ref={dropdownRef}
+        data-testid="date-picker-dropdown"
         style={{
-          position: 'absolute',
-          left: 0,
+          position: portalPos ? 'fixed' : 'absolute',
+          left: portalPos ? portalPos.left : 0,
+          top: portalPos && portalPos.top ? portalPos.top : undefined,
+          bottom: portalPos && portalPos.bottom ? portalPos.bottom : undefined,
           zIndex: 50,
-          width: 'min(100vw - 32px, 520px)',
-          maxWidth: '100%',
+          width: 280,
+          maxWidth: 'calc(100vw - 32px)',
           maxHeight: 'calc(100vh - 48px)',
-          minHeight: 320,
+          minHeight: 280,
           borderRadius: 14,
           border: `1px solid ${maroon}30`,
           opacity: 1,
@@ -190,14 +295,18 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
           boxShadow: '0 8px 32px rgba(122,28,28,0.13)',
           overflow: 'hidden',
           boxSizing: 'border-box',
-          ...(positionAbove ? { bottom: '100%', marginBottom: 8 } : { top: '100%', marginTop: 8 }),
+          ...(portalPos
+            ? {}
+            : positionAbove
+            ? { bottom: '100%', marginBottom: 8 }
+            : { top: '100%', marginTop: 8 }),
         }}
       >
         <div
           style={{
             width: '100%',
             height: '100%',
-            padding: '18px 22px 16px',
+            padding: '14px 14px 12px',
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
@@ -212,11 +321,11 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginBottom: 10,
+                  marginBottom: 8,
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                  <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
                     <rect
                       x="1.5"
                       y="3"
@@ -250,18 +359,18 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
                     {monthNames[displayMonth]} {displayYear}
                   </button>
                 </div>
-                <div style={{ display: 'flex', gap: 5 }}>
+                <div style={{ display: 'flex', gap: 4 }}>
                   <button onClick={handlePrevMonth} type="button" style={navBtn}>
-                    <ChevronLeft size={13} />
+                    <ChevronLeft size={11} />
                   </button>
                   <button onClick={handleNextMonth} type="button" style={navBtn}>
-                    <ChevronRight size={13} />
+                    <ChevronRight size={11} />
                   </button>
                 </div>
               </div>
 
               {/* Dashed rule */}
-              <div style={{ borderTop: `1.5px dashed ${maroon}50`, marginBottom: 8 }} />
+              <div style={{ borderTop: `1.5px dashed ${maroon}50`, marginBottom: 6 }} />
 
               {/* Weekday labels */}
               <div
@@ -308,8 +417,8 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
                         border: 'none',
                         borderRadius: '50%',
                         width: '100%',
-                        minHeight: 40,
-                        maxWidth: 54,
+                        minHeight: 32,
+                        maxWidth: 36,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -342,7 +451,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginBottom: 10,
+                  marginBottom: 8,
                 }}
               >
                 <button
@@ -360,21 +469,21 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
                 >
                   {displayYear}
                 </button>
-                <div style={{ display: 'flex', gap: 5 }}>
+                <div style={{ display: 'flex', gap: 4 }}>
                   <button onClick={handlePrevYear} type="button" style={navBtn}>
-                    <ChevronLeft size={13} />
+                    <ChevronLeft size={11} />
                   </button>
                   <button onClick={handleNextYear} type="button" style={navBtn}>
-                    <ChevronRight size={13} />
+                    <ChevronRight size={11} />
                   </button>
                 </div>
               </div>
-              <div style={{ borderTop: `1.5px dashed ${maroon}50`, marginBottom: 12 }} />
+              <div style={{ borderTop: `1.5px dashed ${maroon}50`, marginBottom: 10 }} />
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(68px,1fr))',
-                  gap: 8,
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(58px,1fr))',
+                  gap: 6,
                   flex: 1,
                   alignContent: 'space-evenly',
                 }}
@@ -390,7 +499,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
                       color: idx === displayMonth ? cream : maroon,
                       border: 'none',
                       borderRadius: 8,
-                      padding: '8px 4px',
+                      padding: '7px 4px',
                       fontWeight: idx === displayMonth ? 700 : 500,
                       cursor: 'pointer',
                       transition: 'background 0.12s',
@@ -419,27 +528,27 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginBottom: 10,
+                  marginBottom: 8,
                 }}
               >
                 <span style={{ ...numberStyle, color: maroon, fontWeight: 700 }}>
                   {displayYear - 5} – {displayYear + 4}
                 </span>
-                <div style={{ display: 'flex', gap: 5 }}>
+                <div style={{ display: 'flex', gap: 4 }}>
                   <button onClick={handlePrevYear} type="button" style={navBtn}>
-                    <ChevronLeft size={13} />
+                    <ChevronLeft size={11} />
                   </button>
                   <button onClick={handleNextYear} type="button" style={navBtn}>
-                    <ChevronRight size={13} />
+                    <ChevronRight size={11} />
                   </button>
                 </div>
               </div>
-              <div style={{ borderTop: `1.5px dashed ${maroon}50`, marginBottom: 12 }} />
+              <div style={{ borderTop: `1.5px dashed ${maroon}50`, marginBottom: 10 }} />
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(64px,1fr))',
-                  gap: 8,
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(54px,1fr))',
+                  gap: 6,
                   flex: 1,
                   alignContent: 'space-evenly',
                 }}
@@ -455,7 +564,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
                       color: year === displayYear ? cream : maroon,
                       border: 'none',
                       borderRadius: 8,
-                      padding: '8px 0',
+                      padding: '7px 0',
                       fontWeight: year === displayYear ? 700 : 500,
                       cursor: 'pointer',
                       transition: 'background 0.12s',
@@ -479,6 +588,12 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
       </div>
     </>
   );
+
+  if (portalPos) {
+    return createPortal(dropdownContent, document.body);
+  }
+
+  return dropdownContent;
 };
 
 export default DatePickerDropdown;
