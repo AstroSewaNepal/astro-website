@@ -354,9 +354,7 @@ const DatePickerPill = ({
         error ? 'border-red-500' : 'border-primary',
       )}
     >
-      <span className="flex-1 min-w-0 text-left">
-        {value || 'Select date of birth'}
-      </span>
+      <span className="flex-1 min-w-0 text-left">{value || 'Select date of birth'}</span>
       <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary" />
     </button>
     <input type="hidden" name={name} value={value} />

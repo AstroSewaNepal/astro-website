@@ -86,10 +86,13 @@ export function ZodiacSignCardsGrid<T>({
   const [slidesPerView, setSlidesPerView] = useState(1);
   const isEmpty = cards !== 'loading' && cards.length === 0;
   const showCustomPaginationBar = showCustomPagination && cards !== 'loading' && cards.length > 1;
-  const showCarouselNavButtons = showCarouselNav && !showCustomPaginationBar && cards !== 'loading' && cards.length > 1;
-  const swiperPagination = showCustomPaginationBar ? false : pagination ?? {
-    clickable: true,
-  };
+  const showCarouselNavButtons =
+    showCarouselNav && !showCustomPaginationBar && cards !== 'loading' && cards.length > 1;
+  const swiperPagination = showCustomPaginationBar
+    ? false
+    : (pagination ?? {
+        clickable: true,
+      });
   const showError = Boolean(listError);
   const carouselHideUp = useSmUpGrid ? 'sm:hidden' : 'md:hidden';
   const gridShowFrom = useSmUpGrid ? 'sm:grid' : 'md:grid';

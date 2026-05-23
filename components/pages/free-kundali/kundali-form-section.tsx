@@ -522,9 +522,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                   disabled={isSubmitting}
                   className="mt-3 md:mt-6 lg:-translate-y-3 w-full h-[60px] gap-8 rounded-full bg-[#6d1510] text-[18px] font-mukta font-semibold leading-[30px] text-secondary transition-colors hover:bg-[#8e2f27] flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting
-                    ? 'Preparing Your Kundali…'
-                    : 'Generate Now'}
+                  {isSubmitting ? 'Preparing Your Kundali…' : 'Generate Now'}
                 </button>
 
                 {fieldErrors.general ? (

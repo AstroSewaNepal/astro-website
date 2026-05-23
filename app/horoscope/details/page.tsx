@@ -180,16 +180,10 @@ function HoroscopeDetailsContent() {
           </section>
         ) : (
           <section className="mt-2 min-w-0 py-4 sm:py-5">
-            <h1
-              className="font-sahitya font-bold tracking-[0px] text-[#6f2618] text-[28px] leading-[34px] sm:text-[38px] sm:leading-[42px] md:text-[48px] md:leading-[48px]"
-              style={{ leadingTrim: 'none' }}
-            >
+            <h1 className="font-sahitya font-bold tracking-[0px] text-[#6f2618] text-[28px] leading-[34px] sm:text-[38px] sm:leading-[42px] md:text-[48px] md:leading-[48px]">
               {dict.details.rangeHeading[rangeType]}
             </h1>
-            <p
-              className="mt-2 font-mukta font-medium text-[24px] leading-[30px] tracking-[0px] text-[#D47F2C]"
-              style={{ leadingTrim: 'none' }}
-            >
+            <p className="mt-2 font-mukta font-medium text-[24px] leading-[30px] tracking-[0px] text-[#D47F2C]">
               {dict.details.rangeSub[rangeType]}
             </p>
 
@@ -218,15 +212,9 @@ function HoroscopeDetailsContent() {
               <>
                 <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[1fr_220px] lg:items-start lg:gap-4 lg:max-w-[1016px] lg:h-[272px] lg:opacity-100">
                   <div className="min-w-0 order-2 lg:order-none">
-                    <h2
-                      className="font-sahitya font-bold text-[28px] leading-[38px] tracking-[0%] text-primary"
-                      style={{ leadingTrim: 'none' }}
-                    >
+                    <h2 className="font-sahitya font-bold text-[28px] leading-[38px] tracking-[0%] text-primary">
                       {capitalizeSign(validSign)}{' '}
-                      <span
-                        className="inline font-sahitya font-bold text-[28px] leading-[38px] tracking-[0%] text-primary"
-                        style={{ leadingTrim: 'none' }}
-                      >
+                      <span className="inline font-sahitya font-bold text-[28px] leading-[38px] tracking-[0%] text-primary">
                         (
                         {['today', 'tomorrow', 'yesterday'].includes(
                           detail.horoscope.type?.toLowerCase(),
@@ -251,10 +239,7 @@ function HoroscopeDetailsContent() {
                         )
                       </span>
                     </h2>
-                    <p
-                      className="mt-3 font-mukta text-[24px] font-normal leading-[34px] tracking-[0%] text-[#5e4f45]"
-                      style={{ leadingTrim: 'none' }}
-                    >
+                    <p className="mt-3 font-mukta text-[24px] font-normal leading-[34px] tracking-[0%] text-[#5e4f45]">
                       {detail.horoscope.general}
                     </p>
                   </div>
@@ -272,7 +257,6 @@ function HoroscopeDetailsContent() {
                     <Link
                       href={zodiacDetailHref(validSign, uiLanguage, uiLanguage)}
                       className="inline-flex h-[44px] w-[366px] items-center justify-center gap-[10px] rounded-[32px] bg-[#611508] px-[16px] py-[6px] font-mukta text-[22px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208]"
-                      style={{ leadingTrim: 'none' }}
                     >
                       Know more about {validSign} Zodiac
                       <ArrowRight className="h-6 w-6 text-[#f8f3df]" />

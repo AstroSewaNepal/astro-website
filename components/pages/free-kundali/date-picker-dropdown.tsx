@@ -21,9 +21,11 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
 }) => {
   const today = new Date();
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [portalPos, setPortalPos] = useState<null | { left: number; top?: number; bottom?: number }>(
-    null,
-  );
+  const [portalPos, setPortalPos] = useState<null | {
+    left: number;
+    top?: number;
+    bottom?: number;
+  }>(null);
   const [positionAbove, setPositionAbove] = useState(false);
 
   const [currentDate] = useState(() => {
@@ -64,7 +66,11 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
       const vh = window.innerHeight;
       const preferAbove = vh - ar.bottom < 320 && ar.top > vh - ar.bottom;
       setPositionAbove(preferAbove);
-      setPortalPos({ left: Math.max(16, ar.left), top: preferAbove ? undefined : ar.bottom + 8, bottom: preferAbove ? vh - ar.top + 8 : undefined });
+      setPortalPos({
+        left: Math.max(16, ar.left),
+        top: preferAbove ? undefined : ar.bottom + 8,
+        bottom: preferAbove ? vh - ar.top + 8 : undefined,
+      });
       return;
     }
 
@@ -146,7 +152,10 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
           try {
             const style = getComputedStyle(el);
             const overflowY = style.overflowY;
-            if ((overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay') && el.scrollHeight > el.clientHeight) {
+            if (
+              (overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay') &&
+              el.scrollHeight > el.clientHeight
+            ) {
               scrollParents.push(el);
             }
           } catch (e) {}
@@ -155,14 +164,38 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
       }
     }
 
-    scrollParents.forEach(p => (p as any).addEventListener && (p as any).addEventListener('scroll', onScroll, { passive: true }));
+    type EventTargetWithListeners = {
+      addEventListener: (
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: boolean | AddEventListenerOptions,
+      ) => void;
+      removeEventListener: (
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: boolean | EventListenerOptions,
+      ) => void;
+    };
+    const hasListeners = (target: Element | Window): target is EventTargetWithListeners =>
+      typeof (target as EventTargetWithListeners).addEventListener === 'function' &&
+      typeof (target as EventTargetWithListeners).removeEventListener === 'function';
+
+    scrollParents.forEach(p => {
+      if (hasListeners(p)) {
+        p.addEventListener('scroll', onScroll, { passive: true });
+      }
+    });
     window.addEventListener('resize', onScroll);
 
     handleFollow();
 
     return () => {
       if (rafId != null) cancelAnimationFrame(rafId);
-      scrollParents.forEach(p => (p as any).removeEventListener && (p as any).removeEventListener('scroll', onScroll as EventListener));
+      scrollParents.forEach(p => {
+        if (hasListeners(p)) {
+          p.removeEventListener('scroll', onScroll);
+        }
+      });
       window.removeEventListener('resize', onScroll);
       resetTransform();
     };
@@ -179,7 +212,11 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
         const anchor = document.getElementById(anchorId);
         if (anchor && anchor.contains(target)) return;
       } else {
-        if (dropdownRef.current?.parentElement && dropdownRef.current.parentElement.contains(target)) return;
+        if (
+          dropdownRef.current?.parentElement &&
+          dropdownRef.current.parentElement.contains(target)
+        )
+          return;
       }
 
       onOpenChange(false);
@@ -222,8 +259,18 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
   ];
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
   const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
@@ -298,8 +345,8 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
           ...(portalPos
             ? {}
             : positionAbove
-            ? { bottom: '100%', marginBottom: 8 }
-            : { top: '100%', marginTop: 8 }),
+              ? { bottom: '100%', marginBottom: 8 }
+              : { top: '100%', marginTop: 8 }),
         }}
       >
         <div

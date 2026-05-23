@@ -80,12 +80,13 @@ export default function CompatibilityPage() {
               <p className="font-mukta text-[16px] leading-[28px] tracking-[0%] text-[#4f463f] text-justify sm:text-[24px] sm:leading-[34px]">
                 You may not always click effortlessly with everyone, but when you&apos;re with that
                 special someone, life feels brighter, calmer, and more meaningful. Throughout your
-                journey, you&apos;ll meet many wonderful people — friends, mentors, and companions — but
-                only one will truly be your life partner. Choosing the right person is important,
-                because they should make you feel cherished, supported, and at peace, never lonely
-                or uncared for. Do you ever feel your heart skip a beat when you meet someone? That
-                spark could be a sign of destiny. Discover what the universe has in store for your
-                love life by exploring your zodiac sign compatibility with Astro Sewa.
+                journey, you&apos;ll meet many wonderful people — friends, mentors, and companions —
+                but only one will truly be your life partner. Choosing the right person is
+                important, because they should make you feel cherished, supported, and at peace,
+                never lonely or uncared for. Do you ever feel your heart skip a beat when you meet
+                someone? That spark could be a sign of destiny. Discover what the universe has in
+                store for your love life by exploring your zodiac sign compatibility with Astro
+                Sewa.
               </p>
             </div>
           </div>

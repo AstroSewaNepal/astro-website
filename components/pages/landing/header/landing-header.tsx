@@ -108,10 +108,7 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
 }
 
 function buildMobileNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[] {
-  return [
-    { title: d.header.mobile.home, link: '/' },
-    ...buildLandingNav(uiLanguage, d),
-  ];
+  return [{ title: d.header.mobile.home, link: '/' }, ...buildLandingNav(uiLanguage, d)];
 }
 
 function desktopNavItemActive(pathname: string, item: NavItem): boolean {

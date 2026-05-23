@@ -65,7 +65,6 @@ export function HoroscopeDetailsZodiacNav(props: {
         </div>
         <div className="flex flex-col items-center gap-2">
           <span
-            style={{ leadingTrim: 'none' }}
             className={clsx(
               'text-center transition-colors duration-200',
               selected
@@ -75,9 +74,7 @@ export function HoroscopeDetailsZodiacNav(props: {
           >
             {capitalizeSign(slug)}
           </span>
-          {selected ? (
-            <span className="h-[8px] w-[8px] rounded-full bg-[#611508]" />
-          ) : null}
+          {selected ? <span className="h-[8px] w-[8px] rounded-full bg-[#611508]" /> : null}
         </div>
       </Link>
     );

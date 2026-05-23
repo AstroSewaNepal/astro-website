@@ -390,11 +390,9 @@ export function NorthIndianOpenChartWithPlanets({
           })}
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="relative h-full w-full">
-          
               <span className="absolute left-[15%] top-[30%] -rotate-12 text-[15px] font-semibold uppercase tracking-[0.3em] text-[#7f1808]/18">
                 astrosewa.com
               </span>
-           
             </div>
           </div>
         </div>

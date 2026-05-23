@@ -196,7 +196,7 @@ const TodayHoroscope: React.FC = () => {
         <h2 className="text-4xl md:text-[40px] lg:text-[56px] leading-[47.83px] font-bold text-primary text-center mb-12">
           Today&apos;s Astrology Horoscope
         </h2>
-        
+
         <div className="mt-16 flex gap-5">
           <button
             className={clsx(

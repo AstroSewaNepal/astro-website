@@ -143,7 +143,10 @@ function CompatibilityHoroscopeCardLink({
             </p>
             <div className="flex items-center gap-0.5 relative -top-1 sm:top-0">
               {Array.from({ length: starCount }).map((_, i) => (
-                <StartIcon key={`${card.key}-star-${i}`} className="h-3 w-3 text-[#ef8a20] sm:h-3.5 sm:w-3.5" />
+                <StartIcon
+                  key={`${card.key}-star-${i}`}
+                  className="h-3 w-3 text-[#ef8a20] sm:h-3.5 sm:w-3.5"
+                />
               ))}
             </div>
           </div>
@@ -180,8 +183,9 @@ export function CompatibilityHoroscopeSection({
   onLanguageChange,
   mobileButtonsWrapperClass = '-mt-6 sm:mt-0',
 }: CompatibilityHoroscopeSectionProps) {
-  const swiperKey = `compatibility-horoscope-${horoscopeCardLang}-${cards === 'loading' ? 'loading' : cards.map(card => card.key).join(',')
-    }`;
+  const swiperKey = `compatibility-horoscope-${horoscopeCardLang}-${
+    cards === 'loading' ? 'loading' : cards.map(card => card.key).join(',')
+  }`;
 
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-clip">

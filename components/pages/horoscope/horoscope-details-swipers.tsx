@@ -28,7 +28,6 @@ type RangeTab = { type: VedastroHoroscopeRangeType; label: string };
 
 type SectionPill = { id: 'general' | 'love' | 'career' | 'health'; label: string };
 
-
 /** Mobile: horizontal Swiper; md+: flex wrap row. */
 export function HoroscopeDetailsRangeTabs(props: {
   validSign: HoroscopeSign;
