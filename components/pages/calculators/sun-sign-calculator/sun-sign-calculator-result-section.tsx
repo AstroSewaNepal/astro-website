@@ -7,6 +7,10 @@ import { useRouter } from 'next/navigation';
 
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
 import {
+  formatDobDisplay,
+  formatGenderDisplay,
+} from '@/lib/calculators/calculator-form-types';
+import {
   getReportDisplayName,
   getSunSignMeta,
   type SunSignMeta,
@@ -56,6 +60,9 @@ function SunSignReportCard({ meta, mirrored = false }: SunSignReportCardProps) {
       </h3>
       <p className="mt-1 font-mukta text-[12px] font-normal text-[#141414] md:text-[14px]">
         Sidereal chart from VedAstro at your birth time
+      </p>
+      <p className="mt-5 font-mukta text-[15px] font-medium text-[#3d352f] md:text-[16px]">
+        {meta.description}
       </p>
       <p className="mt-5 font-mukta text-[14px] font-normal text-[#141414] md:text-[16px]">
         Element: <span className={ACCENT_VALUE_CLASS}>{meta.element}</span>
@@ -148,6 +155,11 @@ export default function SunSignCalculatorResultSection() {
 
   const meta = getSunSignMeta(data.sunSign);
   const displayName = getReportDisplayName(data.fullName);
+  const dobDisplay = formatDobDisplay(data.birthDate);
+  const birthTimeDisplay = data.dontKnowTime
+    ? 'Unknown'
+    : `${data.birthTimeHH}:${data.birthTimeMM} ${data.birthTimeAMPM.toUpperCase()}`;
+  const genderDisplay = formatGenderDisplay(data.gender);
 
   if (!meta) {
     return (
@@ -170,22 +182,51 @@ export default function SunSignCalculatorResultSection() {
     <section className="w-full px-3 py-8 md:px-8 md:pb-16">
       <div className="mx-auto max-w-[1440px]">
         <h1 className="font-sahitya text-[28px] font-bold text-[#5D1409] md:text-[34px]">
-          Your Astrological Profile
+          {displayName}'s Vedic Sun Sign Report
         </h1>
-        <p className="mt-2 font-mukta text-[14px] font-normal text-[#141414] md:text-[16px]">
-          Lorem ipsum dolor sit amet, consectetur
-        </p>
-        <p className="mt-4 max-w-[900px] font-mukta text-[14px] font-normal leading-[24px] text-[#141414] md:text-[16px] md:leading-[28px]">
-          {PROFILE_INTRO}
+        <p className="mt-2 font-mukta text-[15px] text-[#141414] md:text-[16px]">
+          Your sun sign is <span className="font-semibold">{meta.englishName}</span>, a {meta.element.toLowerCase()} sign ruled by {meta.rulingPlanet}.
         </p>
 
-        <h2 className="mt-10 text-center font-sahitya text-[22px] font-bold text-[#5D1409] md:mt-12 md:text-[28px]">
-          {displayName}&apos;s Sun Sign Report
-        </h2>
+        <div className="mt-6 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="rounded-[24px] border border-[#e4d5c9] bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+            <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409]">
+              Birth details
+            </h2>
+            <div className="mt-5 space-y-3 text-[14px] text-[#3d352f] md:text-[15px]">
+              <p>
+                <span className="font-semibold">Name:</span> {displayName}
+              </p>
+              <p>
+                <span className="font-semibold">Date of birth:</span> {dobDisplay}
+              </p>
+              <p>
+                <span className="font-semibold">Time of birth:</span> {birthTimeDisplay}
+              </p>
+              <p>
+                <span className="font-semibold">Birth place:</span> {data.birthPlace || '—'}
+              </p>
+              <p>
+                <span className="font-semibold">Gender:</span> {genderDisplay}
+              </p>
+            </div>
+          </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+          <div className="rounded-[24px] border border-[#e4d5c9] bg-[#FFF5E3] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+            <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409]">
+              Sun sign summary
+            </h2>
+            <p className="mt-4 text-[15px] text-[#3d352f] md:text-[16px]">
+              {meta.englishName} is your Vedic sun sign. It is a {meta.element.toLowerCase()} sign ruled by {meta.rulingPlanet}.
+            </p>
+            <p className="mt-3 text-[14px] text-[#3d352f] md:text-[15px]">
+              This sign covers the approximate sidereal period {meta.dateRangeLong}.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 max-w-[1000px] mx-auto">
           <SunSignReportCard meta={meta} />
-          <SunSignReportCard meta={meta} mirrored />
         </div>
 
         <div className="mt-10 flex justify-center lg:mt-12">
