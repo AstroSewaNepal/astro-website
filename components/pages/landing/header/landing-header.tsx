@@ -183,8 +183,6 @@ function LandingHeaderClient() {
 
   useEffect(() => {
     if (isMobileMenuOpen) {
-      // Lock vertical scroll when mobile menu is open.
-      // Do not touch overflowX so global horizontal overflow guard remains effective.
       document.body.style.overflowY = 'hidden';
     } else {
       document.body.style.overflowY = '';
@@ -314,7 +312,9 @@ function LandingHeaderClient() {
             </button>
           </div>
         </div>
-        <nav className="mt-10 bg-primary py-3 px-4 gap-3 rounded-3xl hidden xl:flex xl:flex-wrap xl:justify-between items-center relative z-40 w-full overflow-visible">
+
+        {/* ✅ FIX: responsive padding — grows at xl → 2xl → 3xl screen widths */}
+        <nav className="mt-10 bg-primary py-3 px-6 xl:px-8 2xl:px-14 gap-1 2xl:gap-3 rounded-3xl hidden xl:flex xl:flex-wrap xl:justify-between items-center relative z-40 w-full overflow-visible">
           {landingNav.map(value => {
             const hasChildren = !!value.children?.length;
             const navActive = desktopNavItemActive(pathname, value);
@@ -422,7 +422,6 @@ function LandingHeaderClient() {
                   </div>
                 );
 
-                // Zodiac Signs: navigate directly without dropdown
                 if (isZodiacSigns && item.link) {
                   return (
                     <Link key={`m-${index}`} href={item.link} onClick={closeMobileMenu}>
@@ -560,7 +559,8 @@ function LandingHeaderFallback() {
           </button>
         </div>
       </div>
-      <nav className="mt-10 items-center justify-between bg-primary py-3 px-6 gap-[22px] rounded-3xl hidden xl:flex w-full">
+      {/* ✅ FIX applied to fallback as well */}
+      <nav className="mt-10 items-center justify-between bg-primary py-3 px-6 xl:px-8 2xl:px-14 gap-1 2xl:gap-3 rounded-3xl hidden xl:flex w-full">
         {landingNav.map(value => (
           <Link href={value.link ?? '#'} key={value.title} className="flex-shrink-0">
             <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
