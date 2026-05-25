@@ -22,8 +22,6 @@ const Services = () => {
     return Math.ceil(SERVICES_LIST.length / slidesPerView);
   }, [slidesPerView]);
 
-  const displayPages = useMemo(() => Math.max(5, totalPages), [totalPages]);
-
   const currentPage = useMemo(() => {
     if (slidesPerView >= SERVICES_LIST.length) return 1;
     return Math.floor(activeIndex / slidesPerView) + 1;
@@ -115,14 +113,7 @@ const Services = () => {
                 <div className="flex flex-col items-center gap-2 md:gap-6 w-full md:min-h-[450px] flex-shrink-0 p-5 select-none">
                   <div className="flex flex-col items-center gap-2 w-full">
                     <div className="flex items-center justify-center gap-14 md:gap-0 w-full">
-                      <button
-                        type="button"
-                        onClick={handlePrevious}
-                        aria-label="Previous service"
-                        className="md:hidden w-[40.72px] h-[40.72px] rounded-full flex items-center justify-center border border-[#611508] bg-transparent text-[#611508] hover:bg-[#fff7f4] transition-colors"
-                      >
-                        <ArrowLeft className="w-[12px] h-[12px]" />
-                      </button>
+                      <div className="md:hidden w-[40.72px]" />
                       <div className="flex justify-center items-center w-[123.49827575683594px] h-[144.8117218017578px] md:w-[189px] md:h-[222px]">
                         <div className="w-full h-full flex justify-center items-center rounded-lg">
                           <Image
@@ -134,14 +125,7 @@ const Services = () => {
                           />
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleNext}
-                        aria-label="Next service"
-                        className="md:hidden w-[40.72px] h-[40.72px] rounded-full flex items-center justify-center border border-[#611508] bg-transparent text-[#611508] hover:bg-[#fff7f4] transition-colors"
-                      >
-                        <ArrowRight className="w-[12px] h-[12px]" />
-                      </button>
+                      <div className="md:hidden w-[40.72px]" />
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-4 w-full flex-1 md:justify-between">
@@ -162,39 +146,59 @@ const Services = () => {
                         {service.buttonText}
                       </span>
                     </button>
-                    <div className="flex items-center justify-center gap-[4.16px] mt-4 md:hidden">
-                      {Array.from({ length: displayPages }, (_, index) => (
-                        <button
-                          key={index}
-                          type="button"
-                          aria-label={`Go to page ${index + 1}`}
-                          onClick={() => handlePageChange(index + 1)}
-                          className={`rounded-full transition-colors shadow-sm ${
-                            currentPage === index + 1
-                              ? 'bg-[#611508]'
-                              : 'bg-[#d9bdb7] hover:opacity-80'
-                          }`}
-                          style={{
-                            width: '4.784643650054932px',
-                            height: '4.784643650054932px',
-                            minWidth: '4.784643650054932px',
-                            minHeight: '4.784643650054932px',
-                          }}
-                        />
-                      ))}
-                    </div>
                   </div>
                 </div>
               </SwiperSlide>
             ))}
           </Swiper>
+
+          {/* Fixed overlay arrows for mobile */}
+          <button
+            type="button"
+            onClick={handlePrevious}
+            aria-label="Previous service"
+            className="md:hidden absolute left-0 top-[30%] w-[40.72px] h-[40.72px] rounded-full flex items-center justify-center border border-[#611508] bg-transparent text-[#611508] hover:bg-[#fff7f4] transition-colors z-10"
+          >
+            <ArrowLeft className="w-[12px] h-[12px]" />
+          </button>
+          <button
+            type="button"
+            onClick={handleNext}
+            aria-label="Next service"
+            className="md:hidden absolute right-0 top-[30%] w-[40.72px] h-[40.72px] rounded-full flex items-center justify-center border border-[#611508] bg-transparent text-[#611508] hover:bg-[#fff7f4] transition-colors z-10"
+          >
+            <ArrowRight className="w-[12px] h-[12px]" />
+          </button>
+
+          {/* Fixed pagination dots for mobile */}
+          <div className="md:hidden absolute -bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center gap-[4.16px] z-10">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                type="button"
+                aria-label={`Go to page ${index + 1}`}
+                onClick={() => handlePageChange(index + 1)}
+                className={`rounded-full transition-colors shadow-sm ${
+                  currentPage === index + 1
+                    ? 'bg-[#611508]'
+                    : 'bg-[#d9bdb7] hover:opacity-80'
+                }`}
+                style={{
+                  width: '4.784643650054932px',
+                  height: '4.784643650054932px',
+                  minWidth: '4.784643650054932px',
+                  minHeight: '4.784643650054932px',
+                }}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Pagination */}
         <div className="hidden md:block">
           <Pagination
             currentPage={currentPage}
-            totalPages={displayPages}
+            totalPages={totalPages}
             onPageChange={handlePageChange}
             onPrevious={handlePrevious}
             onNext={handleNext}
