@@ -155,6 +155,7 @@ const Calculators: React.FC = () => {
           <CalculatorCard
             title="Love Calculator"
             description="Discover your compatibility with a partner or potential love interest."
+            mobileHorizontal
             calculateHref="/calculators/love-calculator"
             icon={
               <Image
@@ -170,6 +171,7 @@ const Calculators: React.FC = () => {
           <CalculatorCard
             title="Numerology Calculator"
             description="Discover your life path number and explore numerology insights."
+            mobileHorizontal
             calculateHref="/calculators/numerology-calculator"
             icon={
               <Image
@@ -185,6 +187,7 @@ const Calculators: React.FC = () => {
           <CalculatorCard
             title="Sun Sign Calculator"
             description="Discover your zodiac sign based on birth date and astrology insights."
+            mobileHorizontal
             calculateHref="/calculators/sun-sign-calculator"
             icon={
               <Image
@@ -200,6 +203,7 @@ const Calculators: React.FC = () => {
           <CalculatorCard
             title="Mangal Dosha Calculator"
             description="Check Mangal dosha and marriage effects in your birth chart."
+            mobileHorizontal
             calculateHref="/calculators/mangal-dosha-calculator"
             icon={
               <Image
