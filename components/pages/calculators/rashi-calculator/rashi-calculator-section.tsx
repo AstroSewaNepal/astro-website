@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import CalculatorBirthDetailsForm from '@/components/pages/calculators/shared/calculator-birth-details-form';
+import CalculatorChooserSection from '@/components/pages/calculators/shared/calculator-chooser-section';
 import CalculatorPageIntro from '@/components/pages/calculators/shared/calculator-page-intro';
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
 import { runVedastroBirthCalculator } from '@/lib/calculators/run-vedastro-birth-calculator';
@@ -39,6 +40,7 @@ export default function RashiCalculatorSection() {
       shortDescription="Your Vedic moon sign (Rashi) from VedAstro Panchanga — based on real birth time and location, not a date table."
     >
       <CalculatorBirthDetailsForm submitLabel="Find Your Rashi" onSubmit={handleSubmit} />
+      <CalculatorChooserSection exclude="rashi" />
     </CalculatorPageIntro>
   );
 }

@@ -6,6 +6,7 @@ import CalculatorBirthDetailsForm from '@/components/pages/calculators/shared/ca
 import CalculatorPageIntro from '@/components/pages/calculators/shared/calculator-page-intro';
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
 import { runVedastroBirthCalculator } from '@/lib/calculators/run-vedastro-birth-calculator';
+import CalculatorChooserSection from '../shared/calculator-chooser-section';
 
 const STORAGE_KEY = 'moonPhaseCalculatorResult';
 
@@ -40,6 +41,7 @@ export default function MoonPhaseCalculatorSection() {
       shortDescription="Lunar phase and tithi at your birth from VedAstro Panchanga (real ephemeris, not a formula on the date alone)."
     >
       <CalculatorBirthDetailsForm submitLabel="Check Moon Phase" onSubmit={handleSubmit} />
+      <CalculatorChooserSection exclude="moon-phase" />
     </CalculatorPageIntro>
   );
 }

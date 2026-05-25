@@ -31,10 +31,11 @@ const Calculators: React.FC = () => {
           Choose Your Calculator
         </h2>
 
-        <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+        <div className="mt-5 flex gap-4 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 lg:gap-8 md:overflow-visible md:pb-0">
           <CalculatorCard
             title="Love Calculator"
             description="Discover your compatibility with a partner or potential love interest."
+            mobileHorizontal
             calculateHref="/calculators/love-calculator"
             icon={
               <Image
@@ -50,6 +51,7 @@ const Calculators: React.FC = () => {
           <CalculatorCard
             title="Numerology Calculator"
             description="Discover your life path number and explore numerology insights."
+            mobileHorizontal
             calculateHref="/calculators/numerology-calculator"
             icon={
               <Image
@@ -65,6 +67,7 @@ const Calculators: React.FC = () => {
           <CalculatorCard
             title="Sun Sign Calculator"
             description="Discover your zodiac sign based on birth date and astrology insights."
+            mobileHorizontal
             calculateHref="/calculators/sun-sign-calculator"
             icon={
               <Image
@@ -80,6 +83,7 @@ const Calculators: React.FC = () => {
           <CalculatorCard
             title="Mangal Dosha Calculator"
             description="Check Mangal dosha and marriage effects in your birth chart."
+            mobileHorizontal
             calculateHref="/calculators/mangal-dosha-calculator"
             icon={
               <Image
@@ -91,7 +95,9 @@ const Calculators: React.FC = () => {
               />
             }
           />
+        </div>
 
+        <div className="mt-6 hidden md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 lg:gap-8">
           <CalculatorCard
             title="Dasha Calculator"
             titleClassName="md:text-[22px] md:leading-[32px] text-center"

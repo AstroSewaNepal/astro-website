@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { isoDateToVedastroDate } from '@/lib/calculators/birth-query';
 import { fetchVedastroCalculator } from '@/lib/vedastro/fetch-calculator';
+import CalculatorChooserSection from '@/components/pages/calculators/shared/calculator-chooser-section';
 
 const CALCULATOR_TYPES = [
   { value: 'life-path', label: 'Life Path Number' },
@@ -230,6 +231,7 @@ export default function NumerologyCalculatorSection() {
             </div>
           ))}
         </div>
+        <CalculatorChooserSection exclude="numerology" />
       </div>
     </section>
   );
