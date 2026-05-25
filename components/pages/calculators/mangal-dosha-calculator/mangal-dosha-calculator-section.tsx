@@ -7,6 +7,7 @@ import CalculatorPageIntro from '@/components/pages/calculators/shared/calculato
 import type { MangalDoshaLevel } from '@/lib/calculators/determine-mangal-dosha';
 import { runVedastroBirthCalculator } from '@/lib/calculators/run-vedastro-birth-calculator';
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
+import CalculatorChooserSection from '../shared/calculator-chooser-section';
 
 const STORAGE_KEY = 'mangalDoshaCalculatorResult';
 
@@ -45,6 +46,7 @@ export default function MangalDoshaCalculatorSection() {
       shortDescription="Real chart-based Manglik check using VedAstro planet positions and the AstroSewa dosha engine (not a random date trick)."
     >
       <CalculatorBirthDetailsForm submitLabel="Check Mangal Dosha" onSubmit={handleSubmit} />
+      <CalculatorChooserSection exclude="mangal-dosha" />
     </CalculatorPageIntro>
   );
 }

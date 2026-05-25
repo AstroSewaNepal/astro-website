@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import CalculatorBirthDetailsForm from '@/components/pages/calculators/shared/calculator-birth-details-form';
+import CalculatorChooserSection from '@/components/pages/calculators/shared/calculator-chooser-section';
 import CalculatorPageIntro from '@/components/pages/calculators/shared/calculator-page-intro';
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
 import { runVedastroBirthCalculator } from '@/lib/calculators/run-vedastro-birth-calculator';
@@ -47,6 +48,7 @@ export default function DashaCalculatorSection() {
       shortDescription="Vimshottari mahadasha and antardasha computed instantly on the server from your birth date and time (Lahiri ayanamsa)."
     >
       <CalculatorBirthDetailsForm submitLabel="Calculate Dasha" onSubmit={handleSubmit} />
+      <CalculatorChooserSection exclude="dasha" />
     </CalculatorPageIntro>
   );
 }
