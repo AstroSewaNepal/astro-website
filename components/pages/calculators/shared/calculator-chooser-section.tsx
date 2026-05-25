@@ -32,7 +32,7 @@ const calculators: Array<{
         alt="Love calculator"
         width={84}
         height={84}
-        className="h-[96px] w-[96px] md:h-[84px] md:w-[84px] object-contain"
+        className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
       />
     ),
   },
@@ -47,7 +47,7 @@ const calculators: Array<{
         alt="Numerology calculator"
         width={84}
         height={84}
-        className="h-[96px] w-[96px] md:h-[84px] md:w-[84px] object-contain"
+        className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
       />
     ),
   },
@@ -62,7 +62,7 @@ const calculators: Array<{
         alt="Sun sign calculator"
         width={84}
         height={84}
-        className="h-[96px] w-[96px] md:h-[84px] md:w-[84px] object-contain"
+        className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
       />
     ),
   },
@@ -77,7 +77,7 @@ const calculators: Array<{
         alt="Mangal dosha calculator"
         width={84}
         height={84}
-        className="h-[96px] w-[96px] md:h-[84px] md:w-[84px] object-contain"
+        className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
       />
     ),
   },
