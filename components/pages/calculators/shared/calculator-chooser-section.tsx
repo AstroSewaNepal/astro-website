@@ -84,7 +84,8 @@ const calculators: Array<{
   {
     key: 'dasha',
     title: 'Dasha Calculator',
-    description: 'Calculate planetary dasha periods and analyze timing of life events in Vedic astrology.',
+    description:
+      'Calculate planetary dasha periods and analyze timing of life events in Vedic astrology.',
     href: '/calculators/dasha-calculator',
     icon: (
       <Image
@@ -114,7 +115,8 @@ const calculators: Array<{
   {
     key: 'rashi',
     title: 'Rashi Calculator',
-    description: 'Discover your moon sign and understand your Vedic astrology birth chart insights.',
+    description:
+      'Discover your moon sign and understand your Vedic astrology birth chart insights.',
     href: '/calculators/rashi-calculator',
     icon: (
       <Image

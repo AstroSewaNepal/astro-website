@@ -6,10 +6,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
-import {
-  formatDobDisplay,
-  formatGenderDisplay,
-} from '@/lib/calculators/calculator-form-types';
+import { formatDobDisplay, formatGenderDisplay } from '@/lib/calculators/calculator-form-types';
 import {
   getReportDisplayName,
   getSunSignMeta,
@@ -182,17 +179,16 @@ export default function SunSignCalculatorResultSection() {
     <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
       <div className="max-w-[1454px] mx-auto">
         <h1 className="font-sahitya text-[28px] font-bold text-[#5D1409] md:text-[34px]">
-          {displayName}'s Vedic Sun Sign Report
+          {displayName}&apos;s Vedic Sun Sign Report
         </h1>
         <p className="mt-2 font-mukta text-[15px] text-[#141414] md:text-[16px]">
-          Your sun sign is <span className="font-semibold">{meta.englishName}</span>, a {meta.element.toLowerCase()} sign ruled by {meta.rulingPlanet}.
+          Your sun sign is <span className="font-semibold">{meta.englishName}</span>, a{' '}
+          {meta.element.toLowerCase()} sign ruled by {meta.rulingPlanet}.
         </p>
 
         <div className="mt-6 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="rounded-[24px] border border-[#e4d5c9] bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
-            <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409]">
-              Birth details
-            </h2>
+            <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409]">Birth details</h2>
             <div className="mt-5 space-y-3 text-[14px] text-[#3d352f] md:text-[15px]">
               <p>
                 <span className="font-semibold">Name:</span> {displayName}
@@ -213,11 +209,10 @@ export default function SunSignCalculatorResultSection() {
           </div>
 
           <div className="rounded-[24px] border border-[#e4d5c9] bg-[#FFF5E3] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
-            <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409]">
-              Sun sign summary
-            </h2>
+            <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409]">Sun sign summary</h2>
             <p className="mt-4 text-[15px] text-[#3d352f] md:text-[16px]">
-              {meta.englishName} is your Vedic sun sign. It is a {meta.element.toLowerCase()} sign ruled by {meta.rulingPlanet}.
+              {meta.englishName} is your Vedic sun sign. It is a {meta.element.toLowerCase()} sign
+              ruled by {meta.rulingPlanet}.
             </p>
             <p className="mt-3 text-[14px] text-[#3d352f] md:text-[15px]">
               This sign covers the approximate sidereal period {meta.dateRangeLong}.
