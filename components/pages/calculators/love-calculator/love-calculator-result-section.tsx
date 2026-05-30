@@ -28,6 +28,23 @@ type LoveResult = {
 export default function LoveCalculatorResultSection() {
   const router = useRouter();
   const [result, setResult] = useState<LoveResult | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+
+  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      setPhotoPreview(null);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setPhotoPreview(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     const raw = sessionStorage.getItem('loveCalculatorResult');
@@ -50,7 +67,6 @@ export default function LoveCalculatorResultSection() {
   }, []);
 
   const handleCalculateAnother = () => {
-    sessionStorage.removeItem('loveCalculatorResult');
     router.push('/calculators/love-calculator');
   };
 
@@ -91,16 +107,39 @@ export default function LoveCalculatorResultSection() {
         {/* Result Card */}
         <div className="rounded-[16px] border border-[#d4c4b8] p-4 md:p-6 flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-8">
           {/* Photo */}
-          <div className="shrink-0 relative rounded-[19px] overflow-hidden w-full max-w-[320px] h-[332px] md:w-[318px] md:h-[333px]">
-            <Image
-              src={UploadPhotoImg}
-              alt="Couple photo"
-              className="w-full h-full object-cover"
-              width={318}
-              height={333}
-              priority
+          <label htmlFor="love-photo-upload" className="shrink-0 relative rounded-[19px] overflow-hidden w-full max-w-[320px] h-[332px] md:w-[318px] md:h-[333px] cursor-pointer group">
+            {photoPreview ? (
+              <img
+                src={photoPreview}
+                alt="Uploaded couple photo"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Image
+                src={UploadPhotoImg}
+                alt="Couple photo"
+                className="w-full h-full object-cover"
+                width={318}
+                height={333}
+                priority
+              />
+            )}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/0 text-white transition duration-300 group-hover:bg-black/20">
+              <div className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm opacity-0 transition duration-300 group-hover:opacity-100">
+                <svg viewBox="0 0 24 24" className="h-5 w-5 text-white" fill="currentColor" aria-hidden="true">
+                  <path d="M5 20h14a1 1 0 001-1v-6h-2v5H6v-5H4v6a1 1 0 001 1zm7-15a1 1 0 011 1v5h4l-5 5-5-5h4V6a1 1 0 011-1z" />
+                </svg>
+                <span className="text-sm font-semibold">Upload your photo</span>
+              </div>
+            </div>
+            <input
+              id="love-photo-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handlePhotoChange}
             />
-          </div>
+          </label>
 
           {/* Names + Heart */}
           {/* Mobile: names left/right with heart centered */}
