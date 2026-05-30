@@ -42,9 +42,7 @@ export default function CalculatorCard({
       <div
         className={[
           'h-full justify-between',
-          mobileHorizontal
-            ? 'flex flex-col text-left md:text-center'
-            : 'flex flex-col text-center',
+          mobileHorizontal ? 'flex flex-col text-left md:text-center' : 'flex flex-col text-center',
         ]
           .filter(Boolean)
           .join(' ')}

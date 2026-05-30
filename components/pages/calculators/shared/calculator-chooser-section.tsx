@@ -84,7 +84,8 @@ const calculators: Array<{
   {
     key: 'dasha',
     title: 'Dasha Calculator',
-    description: 'Calculate planetary dasha periods and analyze timing of life events in Vedic astrology.',
+    description:
+      'Calculate planetary dasha periods and analyze timing of life events in Vedic astrology.',
     href: '/calculators/dasha-calculator',
     icon: (
       <Image

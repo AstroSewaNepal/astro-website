@@ -298,7 +298,8 @@ function LandingHeaderClient() {
           </div>
           <div className="flex gap-4">
             <div className="hidden lg:block">{languageControl}</div>
-            <button
+            <Link
+              href="/login"
               className="inline-flex items-center gap-1 rounded-3xl border border-solid border-primary bg-primary text-white px-[15px] py-2 min-w-[93.2794189453125px] h-[40px] lg:min-w-[124px] lg:h-[44px] lg:px-[20px] lg:py-[8px]"
               style={{ borderWidth: '0.36px' }}
             >
@@ -306,7 +307,7 @@ function LandingHeaderClient() {
               <span className="font-mukta text-sm leading-7 md:text-lg lg:text-xl">
                 {d.header.signIn}
               </span>
-            </button>
+            </Link>
             <button className="flex-shrink-0 bg-primary p-2.5 rounded-full text-white max-h-fit">
               <TransparentBellIcon />
             </button>
@@ -545,7 +546,8 @@ function LandingHeaderFallback() {
             </p>
             <ChevronDownIcon />
           </div>
-          <button
+          <Link
+            href="/login"
             className="inline-flex items-center gap-1 rounded-3xl border border-solid border-primary bg-primary text-white px-[15px] py-2 min-w-[93.2794189453125px] h-[40px] lg:min-w-[124px] lg:h-[44px] lg:px-[20px] lg:py-[8px]"
             style={{ borderWidth: '0.36px' }}
           >
@@ -553,7 +555,7 @@ function LandingHeaderFallback() {
             <p className="font-mukta text-sm leading-7 md:text-lg lg:text-xl max-h-fit">
               {d.header.signIn}
             </p>
-          </button>
+          </Link>
           <button className="bg-primary p-2.5 rounded-full text-white max-h-fit">
             <TransparentBellIcon />
           </button>
