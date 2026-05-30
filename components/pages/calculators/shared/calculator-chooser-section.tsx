@@ -99,7 +99,7 @@ const calculators: Array<{
   {
     key: 'moon-phase',
     title: 'Moon Phase Calculator',
-    description: 'Track and explore current moon phases and lunar cycle changes over time.',
+    description: 'Track each moon phase and explore current moon phases and lunar cycle changes over time.',
     href: '/calculators/moon-phase-calculator',
     icon: (
       <Image

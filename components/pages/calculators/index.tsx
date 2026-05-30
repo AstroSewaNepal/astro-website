@@ -118,7 +118,7 @@ const Calculators: React.FC = () => {
             title="Moon Phase Calculator"
             titleClassName="md:text-[22px] md:leading-[32px] text-center"
             descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
-            description="Track and explore current moon phases and lunar cycle changes over time."
+            description="Track each moon phase and explore current moon phases and lunar cycle changes over time."
             mobileHorizontal
             calculateHref="/calculators/moon-phase-calculator"
             icon={
@@ -243,7 +243,7 @@ const Calculators: React.FC = () => {
             title="Moon Phase Calculator"
             titleClassName="md:text-[22px] md:leading-[32px] text-center"
             descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
-            description="Track and explore current moon phases and lunar cycle changes over time."
+            description="Track each moon phase and explore current moon phases and lunar cycle changes over time."
             calculateHref="/calculators/moon-phase-calculator"
             icon={
               <Image
