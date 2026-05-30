@@ -233,10 +233,18 @@ export function ClockTimePicker({
 
   const handleClockCommit = (val: number) => {
     if (mode === 'hour') {
-      setDraft(d => ({ ...d, hh: String(val) }));
+      setDraft(d => {
+        const next = { ...d, hh: String(val), mm: d.mm || '00' };
+        onChange(next);
+        return next;
+      });
       setMode('minute');
     } else {
-      setDraft(d => ({ ...d, mm: pad(val) }));
+      setDraft(d => {
+        const next = { ...d, mm: pad(val) };
+        onChange(next);
+        return next;
+      });
     }
   };
 
@@ -246,7 +254,7 @@ export function ClockTimePicker({
   };
 
   const displayVal =
-    draft.hh || draft.mm
+    draft.hh && draft.mm
       ? `${pad(hour)} : ${pad(minute)} ${draft.ampm.toUpperCase()}`
       : 'hh / mm / am';
 
@@ -321,7 +329,11 @@ export function ClockTimePicker({
                 <button
                   key={ap}
                   type="button"
-                  onClick={() => setDraft(d => ({ ...d, ampm: ap.toLowerCase() }))}
+                  onClick={() => setDraft(d => {
+                    const next = { ...d, ampm: ap.toLowerCase() };
+                    onChange(next);
+                    return next;
+                  })}
                   className={clsx(
                     'w-[44px] h-[22px] rounded-[6px] text-[12px] font-medium border transition-colors',
                     draft.ampm.toUpperCase() === ap

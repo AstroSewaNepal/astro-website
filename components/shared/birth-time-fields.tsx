@@ -18,6 +18,29 @@ export function birthTimePartsToInput(parts: BirthTimeParts): string {
   return `${h}:${m} ${parts.ampm}`;
 }
 
+export function birthTimePartsToHHMM(parts: BirthTimeParts): string | undefined {
+  if (!parts.hh && !parts.mm) return undefined;
+
+  const hour = Number(parts.hh || '12');
+  const minute = Number(parts.mm || '0');
+  if (
+    Number.isNaN(hour) ||
+    Number.isNaN(minute) ||
+    hour < 1 ||
+    hour > 12 ||
+    minute < 0 ||
+    minute > 59
+  ) {
+    return undefined;
+  }
+
+  let hour24 = hour;
+  if (parts.ampm === 'pm' && hour !== 12) hour24 += 12;
+  if (parts.ampm === 'am' && hour === 12) hour24 = 0;
+
+  return `${String(hour24).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
 type BirthTimeFieldsVariant = 'calculator' | 'kundali' | 'matching';
 
 type BirthTimeFieldsProps = {
@@ -156,7 +179,7 @@ export function BirthTimeFields({
         <p
           className={clsx(
             'mt-1.5 font-mukta',
-            variant === 'calculator' && 'text-[13px] text-[#8d1f1f]',
+            variant === 'calculator' && 'text-[13px] text-red-600',
             variant === 'kundali' && 'text-sm text-red-600',
             variant === 'matching' && 'text-[12px] text-red-600',
           )}

@@ -1,4 +1,4 @@
-import { birthTimePartsToInput, type BirthTimeParts } from '@/components/shared/birth-time-fields';
+import { birthTimePartsToHHMM, type BirthTimeParts } from '@/components/shared/birth-time-fields';
 
 import type { CalculatorFormValues } from './calculator-form-types';
 import { geocodePlace } from './geocode-place';
@@ -34,7 +34,7 @@ export function formBirthTimeToHHMM(form: CalculatorFormValues): string {
     mm: form.birthTimeMM,
     ampm: form.birthTimeAMPM,
   };
-  return birthTimePartsToInput(parts) ?? '12:00';
+  return birthTimePartsToHHMM(parts) ?? '12:00';
 }
 
 export type BirthVedastroQuery = {

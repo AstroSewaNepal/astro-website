@@ -54,8 +54,8 @@ export default function CalculatorCard({
             className={[
               'flex items-center justify-center',
               mobileHorizontal
-                ? 'flex-shrink-0 h-[130px] w-[128px] md:h-[120px] md:w-full'
-                : 'h-[120px] w-full',
+                ? 'flex-shrink-0 h-[130px] w-[128px] md:h-[140px] md:w-full md:mb-4'
+                : 'h-[120px] w-full mb-4',
             ]
               .filter(Boolean)
               .join(' ')}
@@ -66,7 +66,7 @@ export default function CalculatorCard({
           <div className={mobileHorizontal ? 'min-w-0 flex-1 md:min-w-0' : ''}>
             <h3
               className={[
-                'font-sahitya font-bold text-[14px] md:text-[15px] text-primary',
+                'font-sahitya font-bold text-[15px] md:text-[17px] lg:text-[19px] text-primary',
                 titleClassName,
               ]
                 .filter(Boolean)
@@ -76,10 +76,10 @@ export default function CalculatorCard({
             </h3>
             <p
               className={[
-                'mt-2 font-mukta text-[12px] md:text-[13px] leading-[1.6] text-[#6d6d6d]',
+                'mt-2 font-mukta text-[12px] md:text-[14px] lg:text-[15px] leading-[1.6] text-[#6d6d6d]',
                 mobileHorizontal
-                  ? 'max-w-full md:max-w-[220px] md:mx-auto'
-                  : 'max-w-[220px] mx-auto',
+                  ? 'max-w-full md:max-w-[320px] lg:max-w-[380px] md:mx-auto'
+                  : 'max-w-full md:max-w-[320px] lg:max-w-[380px] mx-auto',
                 descriptionClassName,
               ]
                 .filter(Boolean)

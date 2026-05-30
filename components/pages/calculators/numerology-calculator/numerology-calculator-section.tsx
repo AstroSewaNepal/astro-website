@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { isoDateToVedastroDate } from '@/lib/calculators/birth-query';
 import { fetchVedastroCalculator } from '@/lib/vedastro/fetch-calculator';
 import CalculatorChooserSection from '@/components/pages/calculators/shared/calculator-chooser-section';
+import CalculatorDatePicker from '@/components/pages/calculators/shared/calculator-date-picker';
 
 const CALCULATOR_TYPES = [
   { value: 'life-path', label: 'Life Path Number' },
@@ -14,14 +15,14 @@ const CALCULATOR_TYPES = [
 ];
 
 const FORM_OUTLINE_CLASS =
-  'box-border mx-auto mt-2 flex w-full max-w-[399px] sm:max-w-[480px] md:max-w-[680px] lg:max-w-[800px] min-h-[360px] sm:min-h-[400px] md:min-h-[480px] lg:min-h-[520px] flex-col gap-8 sm:gap-9 md:gap-10 lg:gap-12 rounded-[14px] sm:rounded-[16px] md:rounded-[24px] lg:rounded-[32px] border border-Trinary bg-transparent py-4 sm:py-5 md:py-7 lg:py-10 px-4 sm:px-5 md:px-8 lg:px-12';
+  'box-border mx-auto mt-2 flex w-full max-w-[399px] sm:max-w-[480px] md:max-w-[680px] lg:max-w-[800px] flex-col gap-4 rounded-[12px] border border-Trinary bg-transparent py-4 px-4 sm:px-5 md:px-6 lg:px-8';
 
 const FIELD_LABEL_CLASS =
-  'mb-1.5 sm:mb-2 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] font-semibold leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[30px] tracking-normal text-[#141414]';
+  'mb-1 sm:mb-1.5 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] font-semibold leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[30px] tracking-normal text-[#141414]';
 
 const FORM_FOOTER_CLASS = '-mt-2 flex flex-col gap-1.5';
 
-const ERROR_SLOT_CLASS = 'min-h-[24px] font-mukta text-sm leading-[24px] text-[#8d1f1f]';
+const ERROR_SLOT_CLASS = 'min-h-[24px] font-mukta text-sm leading-[24px] text-red-600';
 
 const INFO_SECTIONS_CLASS = 'mt-24 w-full space-y-8';
 
@@ -60,8 +61,9 @@ export default function NumerologyCalculatorSection() {
   const router = useRouter();
   const [fullName, setFullName] = useState('');
   const [birthDate, setBirthDate] = useState('');
-  const [calculatorType, setCalculatorType] = useState(CALCULATOR_TYPES[0].value);
+  const [calculatorType, setCalculatorType] = useState('');
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({ fullName: '', birthDate: '', calculatorType: '' });
   const [submitting, setSubmitting] = useState(false);
 
   const resultLabel = useMemo(() => {
@@ -72,10 +74,14 @@ export default function NumerologyCalculatorSection() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!fullName.trim() || !birthDate) {
-      setError('Please enter your full name and birth date.');
-      return;
-    }
+
+    const errors = { fullName: '', birthDate: '', calculatorType: '' };
+    if (!fullName.trim()) errors.fullName = 'Please enter your full name.';
+    if (!birthDate) errors.birthDate = 'Please enter your birth date.';
+    if (!calculatorType) errors.calculatorType = 'Please select a report focus.';
+
+    setFieldErrors(errors);
+    if (Object.values(errors).some(Boolean)) return;
 
     setError('');
     setSubmitting(true);
@@ -83,7 +89,7 @@ export default function NumerologyCalculatorSection() {
     try {
       const vedastroDate = isoDateToVedastroDate(birthDate);
       if (!vedastroDate) {
-        setError('Invalid date of birth.');
+        setFieldErrors(prev => ({ ...prev, birthDate: 'Invalid date of birth.' }));
         return;
       }
 
@@ -128,12 +134,13 @@ export default function NumerologyCalculatorSection() {
   const handleReset = () => {
     setFullName('');
     setBirthDate('');
-    setCalculatorType(CALCULATOR_TYPES[0].value);
+    setCalculatorType('');
+    setFieldErrors({ fullName: '', birthDate: '', calculatorType: '' });
     setError('');
   };
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+    <section className="container mx-auto px-6 lg:px-0 pt-4 md:pt-8 pb-12">
       <div className="max-w-[1454px] mx-auto">
         <div>
           <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-normal text-[#4b1b16] md:text-[40px] md:leading-[1.1] lg:text-[44px]">
@@ -168,21 +175,16 @@ export default function NumerologyCalculatorSection() {
                   onChange={e => setFullName(e.target.value)}
                 />
               </div>
+              <p className="mt-1 text-sm text-red-600 min-h-[20px]">{fieldErrors.fullName || '\u00a0'}</p>
             </div>
 
             <div>
-              <label htmlFor="numerology-dob" className={FIELD_LABEL_CLASS}>
-                Enter date of birth
-              </label>
-              <div className="flex h-[40px] sm:h-[44px] md:h-[48px] lg:h-[56px] items-center gap-2 rounded-[22px] sm:rounded-[26px] md:rounded-[28px] lg:rounded-[32px] border-2 border-[#aa4c44] px-4 sm:px-4.5 md:px-5 lg:px-5 py-2.5 sm:py-3 md:py-3 lg:py-4">
-                <input
-                  id="numerology-dob"
-                  type="date"
-                  className="min-w-0 flex-1 border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none"
-                  value={birthDate}
-                  onChange={e => setBirthDate(e.target.value)}
-                />
-              </div>
+              <CalculatorDatePicker
+                id="numerology-dob"
+                value={birthDate}
+                onChange={setBirthDate}
+              />
+              <p className="mt-1 text-sm text-red-600 min-h-[20px]">{fieldErrors.birthDate || '\u00a0'}</p>
             </div>
 
             <div>
@@ -192,17 +194,26 @@ export default function NumerologyCalculatorSection() {
               <div className="relative flex h-[40px] sm:h-[44px] md:h-[48px] lg:h-[56px] items-center rounded-[22px] sm:rounded-[26px] md:rounded-[28px] lg:rounded-[32px] border-2 border-[#aa4c44] px-4 sm:px-4.5 md:px-5 lg:px-5 py-2.5 sm:py-3 md:py-3 lg:py-4">
                 <select
                   id="numerology-type"
-                  className="min-w-0 flex-1 appearance-none border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none"
+                  className="min-w-0 flex-1 appearance-none border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none pr-10 cursor-pointer"
                   value={calculatorType}
                   onChange={e => setCalculatorType(e.target.value)}
                 >
+                  <option value="" disabled>
+                    Please Select Option
+                  </option>
                   {CALCULATOR_TYPES.map(item => (
                     <option key={item.value} value={item.value}>
                       {item.label}
                     </option>
                   ))}
                 </select>
+                <span className="pointer-events-none absolute right-3 bottom-3 text-[#34211d]">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                    <path d="M6 9l6 6 6-6" stroke="#7a2d2a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
               </div>
+              <p className="mt-1 text-sm text-red-600 min-h-[20px]">{fieldErrors.calculatorType || '\u00a0'}</p>
             </div>
 
             <div className={FORM_FOOTER_CLASS}>

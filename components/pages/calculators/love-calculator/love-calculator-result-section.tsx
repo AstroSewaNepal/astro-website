@@ -303,7 +303,7 @@ export default function LoveCalculatorResultSection() {
             />
             <CalculatorCard
               title="Rashi Calculator"
-              description="Discover your moon sign and understand your Vedic astrology birth chart insights."
+              description="Discover your Vedic Rashi and understand how it shapes your birth chart insights."
               mobileHorizontal
               calculateHref="/calculators/rashi-calculator"
               icon={
