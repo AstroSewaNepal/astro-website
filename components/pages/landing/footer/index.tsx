@@ -164,7 +164,7 @@ const Footer: React.FC = () => {
                 <h4 className="text-[22px] font-normal mb-3">Contact Us</h4>
                 <div className="flex flex-col gap-6">
                   {/* Phone */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center gap-3 lg:justify-start">
                     <div
                       className="flex h-[22px] w-[22px] items-center justify-center rounded"
                       style={{ opacity: 1, transform: 'rotate(0deg)' }}
@@ -180,7 +180,7 @@ const Footer: React.FC = () => {
                   </div>
 
                   {/* Email */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center gap-3 lg:justify-start">
                     <div
                       className="flex h-[22px] w-[22px] items-center justify-center rounded"
                       style={{ opacity: 1, transform: 'rotate(0deg)' }}
