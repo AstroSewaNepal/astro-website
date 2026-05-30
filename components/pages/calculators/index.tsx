@@ -157,6 +157,7 @@ const Calculators: React.FC = () => {
             titleClassName="md:text-[20px] md:leading-[28px] text-center"
             descriptionClassName="text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none"
             description="Discover your compatibility with a partner or potential love interest."
+            mobileHorizontal
             calculateHref="/calculators/love-calculator"
             icon={
               <Image
@@ -174,6 +175,7 @@ const Calculators: React.FC = () => {
             titleClassName="md:text-[20px] md:leading-[28px] text-center"
             descriptionClassName="text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none"
             description="Discover your life path number and explore numerology insights."
+            mobileHorizontal
             calculateHref="/calculators/numerology-calculator"
             icon={
               <Image
@@ -191,6 +193,7 @@ const Calculators: React.FC = () => {
             titleClassName="md:text-[20px] md:leading-[28px] text-center"
             descriptionClassName="text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none"
             description="Discover your zodiac sign based on birth date and astrology insights."
+            mobileHorizontal
             calculateHref="/calculators/sun-sign-calculator"
             icon={
               <Image
@@ -208,6 +211,7 @@ const Calculators: React.FC = () => {
             titleClassName="md:text-[20px] md:leading-[28px] text-center whitespace-nowrap"
             descriptionClassName="text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none"
             description="Check Mangal dosha and marriage effects in your birth chart."
+            mobileHorizontal
             calculateHref="/calculators/mangal-dosha-calculator"
             icon={
               <Image
