@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
@@ -18,6 +18,7 @@ import {
   bundleToStoredResult,
   fetchKundaliMatchingBundle,
 } from '@/lib/vedastro/fetch-kundali-matching-bundle';
+import { searchPlaceSuggestions, type GeocodeResult } from '@/lib/calculators/geocode-place';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -269,7 +270,12 @@ type InputPillProps = {
   rightIcon?: React.ReactNode;
   className?: string;
   disabled?: boolean;
+  value?: string;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onInput?: React.FormEventHandler<HTMLInputElement>;
+  suggestions?: GeocodeResult[];
+  onSuggestionSelect?: (suggestion: GeocodeResult) => void;
+  selected?: boolean;
   error?: string;
 };
 
@@ -282,7 +288,12 @@ const InputPill = ({
   rightIcon,
   className,
   disabled,
+  value,
+  onChange,
   onInput,
+  suggestions,
+  onSuggestionSelect,
+  selected,
   error,
 }: InputPillProps) => (
   <div className={['block', className].filter(Boolean).join(' ')}>
@@ -295,10 +306,13 @@ const InputPill = ({
         name={name}
         type={type}
         placeholder={placeholder}
+        title={placeholder}
         disabled={disabled}
+        value={value}
+        onChange={onChange}
         onInput={onInput}
         className={[
-          'w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 pr-10 font-mukta text-[13px] md:text-[14px] text-[#141414] placeholder:text-[#7b6b69] outline-none focus:ring-2 focus:ring-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors',
+          'w-full min-w-0 h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 pr-16 font-mukta text-[13px] md:text-[14px] text-[#141414] placeholder:text-[#7b6b69] outline-none focus:ring-2 focus:ring-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap',
           error ? 'border-red-500 focus:border-red-500' : 'border-primary focus:border-primary',
         ].join(' ')}
       />
@@ -306,6 +320,20 @@ const InputPill = ({
         <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-primary/70">
           {rightIcon}
         </span>
+      ) : null}
+      {suggestions && suggestions.length > 0 && !selected ? (
+        <div className="absolute left-0 right-0 z-10 mt-2 max-h-44 overflow-auto rounded-2xl border border-Trinary bg-white shadow-lg">
+          {suggestions.map((suggestion, index) => (
+            <button
+              key={`${suggestion.lat}-${suggestion.lon}-${index}`}
+              type="button"
+              onClick={() => onSuggestionSelect?.(suggestion)}
+              className="w-full text-left px-3 py-2 text-[13px] md:text-[14px] text-[#141414] hover:bg-slate-100"
+            >
+              {suggestion.displayName}
+            </button>
+          ))}
+        </div>
       ) : null}
     </span>
     <FieldError message={error} />
@@ -350,12 +378,14 @@ const DatePickerPill = ({
       type="button"
       onClick={() => onOpenChange(true)}
       className={clsx(
-        'w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 pr-10 font-mukta text-[13px] md:text-[14px] text-[#141414] outline-none focus:ring-2 focus:ring-primary/10 transition-colors flex items-center justify-between',
+        'relative w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 pr-10 font-mukta text-[13px] md:text-[14px] text-[#141414] outline-none focus:ring-2 focus:ring-primary/10 transition-colors flex items-center',
         error ? 'border-red-500' : 'border-primary',
       )}
     >
-      <span className="flex-1 min-w-0 text-left">{value || 'Select date of birth'}</span>
-      <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary" />
+      <span className="flex-1 min-w-0 truncate text-left">{value || 'Select date of birth'}</span>
+      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-primary">
+        <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 shrink-0" />
+      </span>
     </button>
     <input type="hidden" name={name} value={value} />
     <DatePickerDropdown
@@ -437,6 +467,11 @@ type PersonSectionProps = {
   isDatePickerOpen: boolean;
   onDateOfBirthChange: (value: string) => void;
   onDatePickerOpenChange: (open: boolean) => void;
+  birthPlaceValue: string;
+  onBirthPlaceChange: (value: string) => void;
+  birthPlaceSuggestions: GeocodeResult[];
+  onBirthPlaceSelect: (suggestion: GeocodeResult) => void;
+  birthPlaceSelected: boolean;
 };
 
 const PersonSection = ({
@@ -452,6 +487,11 @@ const PersonSection = ({
   isDatePickerOpen,
   onDateOfBirthChange,
   onDatePickerOpenChange,
+  birthPlaceValue,
+  onBirthPlaceChange,
+  birthPlaceSuggestions,
+  onBirthPlaceSelect,
+  birthPlaceSelected,
 }: PersonSectionProps) => (
   <div className="space-y-3 md:space-y-3.5">
     <SectionPillHeader
@@ -482,7 +522,7 @@ const PersonSection = ({
       error={errors.fullName}
     />
 
-    <div className="grid grid-cols-2 gap-3 md:gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
       {/* Date of birth */}
       <DatePickerPill
         id={`${prefix}-dob`}
@@ -501,15 +541,23 @@ const PersonSection = ({
         label="Birth place"
         name={`${prefix}BirthPlace`}
         placeholder="Where were you born?"
+        value={birthPlaceValue}
+        onChange={e => {
+          const nextValue = e.currentTarget.value.replace(/[^A-Za-z ,]/g, '');
+          onBirthPlaceChange(nextValue);
+        }}
         onInput={e => {
           e.currentTarget.value = e.currentTarget.value.replace(/[^A-Za-z ,]/g, '');
         }}
+        suggestions={birthPlaceSuggestions}
+        onSuggestionSelect={onBirthPlaceSelect}
+        selected={birthPlaceSelected}
         rightIcon={<LocationIcon />}
         error={errors.birthPlace}
       />
     </div>
 
-    <div className="grid grid-cols-2 gap-3 md:gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
       <ClockTimePicker
         id={`${prefix}-birth-time`}
         label="Birth time"
@@ -550,7 +598,44 @@ const KundaliMatchingFormSection: React.FC = () => {
   const [isManDatePickerOpen, setIsManDatePickerOpen] = useState(false);
   const [isWomanDatePickerOpen, setIsWomanDatePickerOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStage, setSubmitStage] = useState<'idle' | 'generating' | 'almost-complete'>('idle');
   const [formErrors, setFormErrors] = useState<FormErrors>(EMPTY_ERRORS);
+  const [manBirthPlace, setManBirthPlace] = useState('');
+  const [manBirthPlaceSuggestions, setManBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
+  const [manBirthPlaceSelection, setManBirthPlaceSelection] = useState<GeocodeResult | null>(null);
+  const [manBirthPlaceSelected, setManBirthPlaceSelected] = useState(false);
+  const [womanBirthPlace, setWomanBirthPlace] = useState('');
+  const [womanBirthPlaceSuggestions, setWomanBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
+  const [womanBirthPlaceSelection, setWomanBirthPlaceSelection] = useState<GeocodeResult | null>(null);
+  const [womanBirthPlaceSelected, setWomanBirthPlaceSelected] = useState(false);
+
+  useEffect(() => {
+    if (!manBirthPlace.trim() || manBirthPlaceSelected) {
+      setManBirthPlaceSuggestions([]);
+      return;
+    }
+
+    const timeout = window.setTimeout(async () => {
+      const suggestions = await searchPlaceSuggestions(manBirthPlace, 5);
+      setManBirthPlaceSuggestions(suggestions);
+    }, 400);
+
+    return () => window.clearTimeout(timeout);
+  }, [manBirthPlace, manBirthPlaceSelected]);
+
+  useEffect(() => {
+    if (!womanBirthPlace.trim() || womanBirthPlaceSelected) {
+      setWomanBirthPlaceSuggestions([]);
+      return;
+    }
+
+    const timeout = window.setTimeout(async () => {
+      const suggestions = await searchPlaceSuggestions(womanBirthPlace, 5);
+      setWomanBirthPlaceSuggestions(suggestions);
+    }, 400);
+
+    return () => window.clearTimeout(timeout);
+  }, [womanBirthPlace, womanBirthPlaceSelected]);
 
   const nameRegex = /^[A-Za-z ]+$/;
   const placeRegex = /^[A-Za-z ,]+$/;
@@ -562,6 +647,7 @@ const KundaliMatchingFormSection: React.FC = () => {
     birthTimeParts: BirthTimeParts,
     unknownTime: boolean,
     errorsOut: PersonErrors,
+    birthPlaceSelected: boolean,
   ): {
     fullName: string;
     dateOfBirth: string;
@@ -606,6 +692,9 @@ const KundaliMatchingFormSection: React.FC = () => {
     } else if (!placeRegex.test(birthPlace) || !/[A-Za-z]/.test(birthPlace)) {
       errorsOut.birthPlace = 'Only letters and spaces are allowed.';
       valid = false;
+    } else if (!birthPlaceSelected) {
+      errorsOut.birthPlace = 'Please select a valid birth place from the suggestions.';
+      valid = false;
     }
 
     // Birth time
@@ -645,17 +734,29 @@ const KundaliMatchingFormSection: React.FC = () => {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStage('generating');
+    const almostCompleteTimer = window.setTimeout(() => {
+      setSubmitStage('almost-complete');
+    }, 1200);
 
     const newErrors: FormErrors = { man: {}, woman: {} };
     const formData = new FormData(e.currentTarget);
 
-    const man = validatePerson('man', formData, manBirthTime, manUnknownTime, newErrors.man);
+    const man = validatePerson(
+      'man',
+      formData,
+      manBirthTime,
+      manUnknownTime,
+      newErrors.man,
+      manBirthPlaceSelected,
+    );
     const woman = validatePerson(
       'woman',
       formData,
       womanBirthTime,
       womanUnknownTime,
       newErrors.woman,
+      womanBirthPlaceSelected,
     );
 
     // If any field has errors, show them and stop
@@ -669,10 +770,8 @@ const KundaliMatchingFormSection: React.FC = () => {
     setFormErrors(EMPTY_ERRORS);
 
     try {
-      const [manGeo, womanGeo] = await Promise.all([
-        geocodePlace(man.birthPlace),
-        geocodePlace(woman.birthPlace),
-      ]);
+      const manGeo = manBirthPlaceSelection ?? (await geocodePlace(man.birthPlace));
+      const womanGeo = womanBirthPlaceSelection ?? (await geocodePlace(woman.birthPlace));
 
       const manPerson = {
         fullName: man.fullName,
@@ -729,6 +828,8 @@ const KundaliMatchingFormSection: React.FC = () => {
             : 'Failed to process kundali matching.',
       }));
     } finally {
+      window.clearTimeout(almostCompleteTimer);
+      setSubmitStage('idle');
       setIsSubmitting(false);
     }
   };
@@ -771,6 +872,29 @@ const KundaliMatchingFormSection: React.FC = () => {
                 isDatePickerOpen={isManDatePickerOpen}
                 onDateOfBirthChange={setManDateOfBirth}
                 onDatePickerOpenChange={setIsManDatePickerOpen}
+                birthPlaceValue={manBirthPlace}
+                onBirthPlaceChange={value => {
+                  setManBirthPlace(value);
+                  setManBirthPlaceSelected(false);
+                  setManBirthPlaceSelection(null);
+                  setManBirthPlaceSuggestions([]);
+                  setFormErrors(prev => ({
+                    ...prev,
+                    man: { ...prev.man, birthPlace: undefined },
+                  }));
+                }}
+                birthPlaceSuggestions={manBirthPlaceSuggestions}
+                onBirthPlaceSelect={suggestion => {
+                  setManBirthPlace(suggestion.displayName ?? manBirthPlace);
+                  setManBirthPlaceSelection(suggestion);
+                  setManBirthPlaceSelected(true);
+                  setManBirthPlaceSuggestions([]);
+                  setFormErrors(prev => ({
+                    ...prev,
+                    man: { ...prev.man, birthPlace: undefined },
+                  }));
+                }}
+                birthPlaceSelected={manBirthPlaceSelected}
               />
 
               {/* Mobile divider */}
@@ -807,6 +931,29 @@ const KundaliMatchingFormSection: React.FC = () => {
                 isDatePickerOpen={isWomanDatePickerOpen}
                 onDateOfBirthChange={setWomanDateOfBirth}
                 onDatePickerOpenChange={setIsWomanDatePickerOpen}
+                birthPlaceValue={womanBirthPlace}
+                onBirthPlaceChange={value => {
+                  setWomanBirthPlace(value);
+                  setWomanBirthPlaceSelected(false);
+                  setWomanBirthPlaceSelection(null);
+                  setWomanBirthPlaceSuggestions([]);
+                  setFormErrors(prev => ({
+                    ...prev,
+                    woman: { ...prev.woman, birthPlace: undefined },
+                  }));
+                }}
+                birthPlaceSuggestions={womanBirthPlaceSuggestions}
+                onBirthPlaceSelect={suggestion => {
+                  setWomanBirthPlace(suggestion.displayName ?? womanBirthPlace);
+                  setWomanBirthPlaceSelection(suggestion);
+                  setWomanBirthPlaceSelected(true);
+                  setWomanBirthPlaceSuggestions([]);
+                  setFormErrors(prev => ({
+                    ...prev,
+                    woman: { ...prev.woman, birthPlace: undefined },
+                  }));
+                }}
+                birthPlaceSelected={womanBirthPlaceSelected}
               />
 
               {/* Desktop vertical divider — only between Man/Woman columns */}
@@ -823,7 +970,11 @@ const KundaliMatchingFormSection: React.FC = () => {
                 className="inline-flex w-[154.814px] h-[48.61px] items-center justify-center rounded-[25.93px] bg-primary pt-[12.96px] pr-[32.41px] pb-[12.96px] pl-[32.41px] font-mukta text-[14.58px] font-semibold leading-[24.31px] tracking-normal text-secondary shadow-[0_10px_26px_rgba(97,21,8,0.18)] transition-colors hover:bg-[#8e2f27] disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ gap: '8.1px', opacity: isSubmitting ? 0.6 : 1 }}
               >
-                {isSubmitting ? 'Generating…' : 'Generate Now'}
+                {isSubmitting
+                  ? submitStage === 'generating'
+                    ? 'Generating…'
+                    : 'Almost complete...'
+                  : 'Generate Now'}
               </button>
 
               {formErrors.general ? (

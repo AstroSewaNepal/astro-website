@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
@@ -12,6 +12,7 @@ import {
   type BirthTimeParts,
 } from '@/components/shared/birth-time-fields';
 import { ClockTimePicker } from '@/components/shared/clock-time-picker';
+import { searchPlaceSuggestions, type GeocodeResult } from '@/lib/calculators/geocode-place';
 
 import CalendarIcon from '@/components/icons/calendar-icon';
 import UserLineIcon from '@/components/icons/user/user-line';
@@ -163,12 +164,30 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
   const [unknownBirthTime, setUnknownBirthTime] = useState(false);
   const [birthTimeParts, setBirthTimeParts] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStage, setSubmitStage] = useState<'idle' | 'generating' | 'almost-complete'>('idle');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>(EMPTY_ERRORS);
   const [dateOfBirthValue, setDateOfBirthValue] = useState<string>('');
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [birthPlaceValue, setBirthPlaceValue] = useState('');
+  const [birthPlaceSelection, setBirthPlaceSelection] = useState<GeocodeResult | null>(null);
+  const [birthPlaceSelected, setBirthPlaceSelected] = useState(false);
+  const [birthPlaceSuggestions, setBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
+
+  useEffect(() => {
+    if (!birthPlaceValue.trim() || birthPlaceSelected) {
+      setBirthPlaceSuggestions([]);
+      return;
+    }
+
+    const timeout = window.setTimeout(async () => {
+      const suggestions = await searchPlaceSuggestions(birthPlaceValue, 5);
+      setBirthPlaceSuggestions(suggestions);
+    }, 400);
+
+    return () => window.clearTimeout(timeout);
+  }, [birthPlaceValue, birthPlaceSelected]);
 
   const nameRegex = /^[A-Za-z ]+$/;
-  const placeRegex = /^[A-Za-z ]+$/;
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -208,8 +227,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
     if (!birthPlace) {
       errors.birthPlace = 'Birth place is required.';
       valid = false;
-    } else if (!placeRegex.test(birthPlace) || !/[A-Za-z]/.test(birthPlace)) {
-      errors.birthPlace = 'Only letters and spaces are allowed.';
+    } else if (!birthPlaceSelected || !birthPlaceSelection) {
+      errors.birthPlace = 'Please select a valid birth place from the suggestions.';
       valid = false;
     }
 
@@ -240,29 +259,19 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
 
     // Clear field errors on valid submission
     setFieldErrors(EMPTY_ERRORS);
+    setIsSubmitting(true);
+    setSubmitStage('generating');
+    const almostCompleteTimer = window.setTimeout(() => {
+      setSubmitStage('almost-complete');
+    }, 1200);
 
     // ── Network calls ─────────────────────────────────────────────────────────
     try {
-      const geocodeResponse = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(birthPlace)}&limit=1`,
-      );
-      if (!geocodeResponse.ok) {
-        setFieldErrors({ birthPlace: 'Failed to resolve birth place coordinates.' });
-        return;
-      }
-      const geocodeData = (await geocodeResponse.json()) as GeocodeResponseItem[];
-      const firstMatch = geocodeData[0];
-      if (!firstMatch) {
-        setFieldErrors({
-          birthPlace: 'Birth place not found. Please enter a more specific location.',
-        });
-        return;
-      }
-
+      const selectedGeo = birthPlaceSelection!;
       const offset = getLocalOffset(parsedDate!);
       const query = new URLSearchParams({
-        lat: firstMatch.lat,
-        lon: firstMatch.lon,
+        lat: selectedGeo.lat,
+        lon: selectedGeo.lon,
         date: parsedDate!,
         time: parsedTime!,
         offset,
@@ -279,8 +288,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
             dateOfBirth: parsedDate,
             birthTime: parsedTime,
             gender,
-            latitude: firstMatch.lat,
-            longitude: firstMatch.lon,
+            latitude: selectedGeo.lat,
+            longitude: selectedGeo.lon,
             payload: { calculator: 'AllTimeData', payload: bundle.panchanga },
             planetRows: bundle.planetRows,
             doshas: bundle.doshas,
@@ -293,6 +302,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
         general: submitError instanceof Error ? submitError.message : 'Failed to generate kundali.',
       });
     } finally {
+      window.clearTimeout(almostCompleteTimer);
+      setSubmitStage('idle');
       setIsSubmitting(false);
     }
   };
@@ -442,16 +453,39 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                         name="birthPlace"
                         type="text"
                         placeholder="Where were you born?"
-                        onInput={event => {
-                          event.currentTarget.value = event.currentTarget.value.replace(
-                            /[^A-Za-z ]/g,
-                            '',
-                          );
+                        value={birthPlaceValue}
+                        onChange={event => {
+                          const nextValue = event.currentTarget.value;
+                          setBirthPlaceValue(nextValue);
+                          setBirthPlaceSelection(null);
+                          setBirthPlaceSelected(false);
+                          setBirthPlaceSuggestions([]);
+                          setFieldErrors(prev => ({ ...prev, birthPlace: undefined }));
                         }}
                         className="flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none"
                       />
                       <IoLocationOutline className={fieldIconClass} aria-hidden />
                     </div>
+                    {birthPlaceSuggestions.length > 0 && !birthPlaceSelected ? (
+                      <div className="mt-2 max-h-44 overflow-auto rounded-2xl border border-Trinary bg-white shadow-lg z-10">
+                        {birthPlaceSuggestions.map((suggestion, index) => (
+                          <button
+                            key={`${suggestion.lat}-${suggestion.lon}-${index}`}
+                            type="button"
+                            onClick={() => {
+                              setBirthPlaceValue(suggestion.displayName ?? birthPlaceValue);
+                              setBirthPlaceSelection(suggestion);
+                              setBirthPlaceSelected(true);
+                              setBirthPlaceSuggestions([]);
+                              setFieldErrors(prev => ({ ...prev, birthPlace: undefined }));
+                            }}
+                            className="w-full text-left px-3 py-2 text-sm md:text-base text-[#141414] hover:bg-slate-100"
+                          >
+                            {suggestion.displayName}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
                     <FieldError message={fieldErrors.birthPlace} />
                   </div>
 
@@ -522,7 +556,11 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                   disabled={isSubmitting}
                   className="mt-3 md:mt-6 lg:-translate-y-3 w-full h-[60px] gap-8 rounded-full bg-[#6d1510] text-[18px] font-mukta font-semibold leading-[30px] text-secondary transition-colors hover:bg-[#8e2f27] flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Preparing Your Kundali…' : 'Generate Now'}
+                  {isSubmitting
+                    ? submitStage === 'generating'
+                      ? 'Generating your kundali…'
+                      : 'Almost complete...'
+                    : 'Generate Now'}
                 </button>
 
                 {fieldErrors.general ? (

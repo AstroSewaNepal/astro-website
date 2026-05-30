@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -24,17 +24,37 @@ const DatePickerDialog: React.FC<DatePickerDialogProps> = ({
   value,
 }) => {
   const today = new Date();
-  const [currentDate, setCurrentDate] = useState(() => {
-    if (value) {
-      const [day, month, year] = value.split('-').map(Number);
-      return new Date(year, month - 1, day);
-    }
-    return new Date(today.getFullYear() - 20, today.getMonth(), today.getDate());
-  });
 
-  const [displayYear, setDisplayYear] = useState(currentDate.getFullYear());
-  const [displayMonth, setDisplayMonth] = useState(currentDate.getMonth());
+  const parseValueDate = (date?: string) => {
+    if (!date) return null;
+    const [day, month, year] = date.split('-').map(Number);
+    if (!year || !month) return null;
+    return { year, month: month - 1 };
+  };
+
+  const initialDate = parseValueDate(value) ?? {
+    year: today.getFullYear() - 20,
+    month: today.getMonth(),
+  };
+
+  const [displayYear, setDisplayYear] = useState(initialDate.year);
+  const [displayMonth, setDisplayMonth] = useState(initialDate.month);
   const [view, setView] = useState<'day' | 'month' | 'year'>('day');
+
+  useEffect(() => {
+    if (!open) return;
+
+    const selectedDate = parseValueDate(value);
+    if (selectedDate) {
+      setDisplayYear(selectedDate.year);
+      setDisplayMonth(selectedDate.month);
+    } else {
+      const now = new Date();
+      setDisplayYear(now.getFullYear());
+      setDisplayMonth(now.getMonth());
+    }
+    setView('day');
+  }, [open, value]);
 
   const handlePrevMonth = () => {
     if (displayMonth === 0) {

@@ -49,13 +49,22 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
     if (!open) {
       return;
     }
+
     queueMicrotask(() => {
-      const t = new Date();
-      setDisplayYear(t.getFullYear());
-      setDisplayMonth(t.getMonth());
+      if (value) {
+        const [day, month, year] = value.split('-').map(Number);
+        if (year && month) {
+          setDisplayYear(year);
+          setDisplayMonth(month - 1);
+        }
+      } else {
+        const t = new Date();
+        setDisplayYear(t.getFullYear());
+        setDisplayMonth(t.getMonth());
+      }
       setView('day');
     });
-  }, [open]);
+  }, [open, value]);
 
   const computePosition = () => {
     if (!open) return;
@@ -430,7 +439,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
                 {days.map((day, idx) => {
                   const sel = day ? isSelected(day) : false;
                   const td = day ? isToday(day) : false;
-                  const hl = sel || td;
+                  const hl = sel || (!value && td);
                   return (
                     <button
                       key={idx}
