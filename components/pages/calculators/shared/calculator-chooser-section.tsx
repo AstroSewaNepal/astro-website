@@ -30,9 +30,9 @@ const calculators: Array<{
       <Image
         src={LoveCalculatorIcon}
         alt="Love calculator"
-        width={84}
-        height={84}
-        className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
+        width={120}
+        height={120}
+        className="h-[120px] w-[120px] md:h-[120px] md:w-[120px] object-contain"
       />
     ),
   },
@@ -45,9 +45,9 @@ const calculators: Array<{
       <Image
         src={NumerologyCalculatorImage}
         alt="Numerology calculator"
-        width={84}
-        height={84}
-        className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
+        width={120}
+        height={120}
+        className="h-[120px] w-[120px] md:h-[120px] md:w-[120px] object-contain"
       />
     ),
   },
@@ -60,9 +60,9 @@ const calculators: Array<{
       <Image
         src={SunSignCalculatorImage}
         alt="Sun sign calculator"
-        width={84}
-        height={84}
-        className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
+        width={120}
+        height={120}
+        className="h-[120px] w-[120px] md:h-[120px] md:w-[120px] object-contain"
       />
     ),
   },
@@ -75,9 +75,9 @@ const calculators: Array<{
       <Image
         src={MangalDoshaImage}
         alt="Mangal dosha calculator"
-        width={84}
-        height={84}
-        className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
+        width={120}
+        height={120}
+        className="h-[120px] w-[120px] md:h-[120px] md:w-[120px] object-contain"
       />
     ),
   },
@@ -91,40 +91,39 @@ const calculators: Array<{
       <Image
         src={DashaImage}
         alt="Dasha calculator"
-        width={130}
-        height={130}
-        className="h-[130px] w-[128px] object-contain opacity-100"
+        width={120}
+        height={120}
+        className="h-[120px] w-[120px] object-contain opacity-100"
       />
     ),
   },
   {
     key: 'moon-phase',
     title: 'Moon Phase Calculator',
-    description: 'Track and explore current moon phases and lunar cycle changes over time.',
+    description: 'Track each moon phase and explore current moon phases and lunar cycle changes over time.',
     href: '/calculators/moon-phase-calculator',
     icon: (
       <Image
         src={MoonPhaseImage}
         alt="Moon phase calculator"
-        width={130}
-        height={130}
-        className="h-[130px] w-[128px] object-contain opacity-100"
+        width={120}
+        height={120}
+        className="h-[120px] w-[120px] object-contain opacity-100"
       />
     ),
   },
   {
     key: 'rashi',
     title: 'Rashi Calculator',
-    description:
-      'Discover your moon sign and understand your Vedic astrology birth chart insights.',
+    description: 'Discover your Vedic Rashi and understand how it shapes your birth chart insights.',
     href: '/calculators/rashi-calculator',
     icon: (
       <Image
         src={RashiCalculatorImage}
         alt="Rashi calculator"
-        width={130}
-        height={130}
-        className="h-[130px] w-[128px] object-contain opacity-100"
+        width={120}
+        height={120}
+        className="h-[120px] w-[120px] object-contain opacity-100"
       />
     ),
   },

@@ -3,10 +3,11 @@
 import { useState } from 'react';
 
 import {
-  BirthTimeFields,
   UnknownBirthTimeCheckbox,
   type BirthTimeParts,
 } from '@/components/shared/birth-time-fields';
+import { ClockTimePicker } from '@/components/shared/clock-time-picker';
+import CalculatorDatePicker from '@/components/pages/calculators/shared/calculator-date-picker';
 import {
   EMPTY_CALCULATOR_FORM,
   type CalculatorFormValues,
@@ -22,11 +23,22 @@ export default function CalculatorBirthDetailsForm({
   onSubmit,
 }: CalculatorBirthDetailsFormProps) {
   const [form, setForm] = useState<CalculatorFormValues>(EMPTY_CALCULATOR_FORM);
+  const [fieldErrors, setFieldErrors] = useState({
+    fullName: '',
+    gender: '',
+    birthDate: '',
+    birthPlace: '',
+    birthTime: '',
+  });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (field: keyof CalculatorFormValues, value: string | boolean) => {
     setForm(prev => ({ ...prev, [field]: value }));
+
+    if (['fullName', 'gender', 'birthDate', 'birthPlace'].includes(field as string)) {
+      setFieldErrors(prev => ({ ...prev, [field as keyof typeof prev]: '' }));
+    }
   };
 
   const birthTimeParts: BirthTimeParts = {
@@ -42,6 +54,7 @@ export default function CalculatorBirthDetailsForm({
       birthTimeMM: parts.mm,
       birthTimeAMPM: parts.ampm,
     }));
+    setFieldErrors(prev => ({ ...prev, birthTime: '' }));
   };
 
   const handleUnknownBirthTimeChange = (checked: boolean) => {
@@ -50,15 +63,39 @@ export default function CalculatorBirthDetailsForm({
       dontKnowTime: checked,
       ...(checked ? { birthTimeHH: '', birthTimeMM: '', birthTimeAMPM: 'am' } : {}),
     }));
+    if (checked) {
+      setFieldErrors(prev => ({ ...prev, birthTime: '' }));
+    }
   };
 
   const handleSubmit = async () => {
+    const errors = {
+      fullName: '',
+      gender: '',
+      birthDate: '',
+      birthPlace: '',
+      birthTime: '',
+    };
+
+    if (!form.fullName.trim()) {
+      errors.fullName = 'Please enter your full name.';
+    }
+    if (!form.gender) {
+      errors.gender = 'Please select your gender.';
+    }
     if (!form.birthDate) {
-      setError('Please enter your date of birth.');
-      return;
+      errors.birthDate = 'Please enter your date of birth.';
     }
     if (!form.birthPlace.trim()) {
-      setError('Please enter your birth place.');
+      errors.birthPlace = 'Please enter your birth place.';
+    }
+
+    if (!form.dontKnowTime && (!form.birthTimeHH || !form.birthTimeMM)) {
+      errors.birthTime = 'Birth time is required, or check "Don\'t know my exact birth time".';
+    }
+
+    setFieldErrors(errors);
+    if (Object.values(errors).some(Boolean)) {
       return;
     }
 
@@ -67,11 +104,18 @@ export default function CalculatorBirthDetailsForm({
     try {
       await onSubmit(form);
     } catch (submitError) {
-      setError(
-        submitError instanceof Error
-          ? submitError.message
-          : 'Calculation failed. Please try again.',
-      );
+      if (submitError instanceof Error) {
+        const message = submitError.message;
+        if (message.includes('birth place')) {
+          setFieldErrors(prev => ({ ...prev, birthPlace: message }));
+        } else if (message.includes('date of birth')) {
+          setFieldErrors(prev => ({ ...prev, birthDate: message }));
+        } else {
+          setError(message);
+        }
+      } else {
+        setError('Calculation failed. Please try again.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -79,6 +123,7 @@ export default function CalculatorBirthDetailsForm({
 
   const handleReset = () => {
     setForm(EMPTY_CALCULATOR_FORM);
+    setFieldErrors({ fullName: '', gender: '', birthDate: '', birthPlace: '', birthTime: '' });
     setError('');
   };
 
@@ -116,6 +161,9 @@ export default function CalculatorBirthDetailsForm({
                 </svg>
               </span>
             </div>
+            <p className="mt-2 font-mukta text-[12px] text-red-600 min-h-[18px]" role="alert">
+              {fieldErrors.fullName || '\u00a0'}
+            </p>
           </div>
 
           <div>
@@ -148,37 +196,20 @@ export default function CalculatorBirthDetailsForm({
                 </svg>
               </span>
             </div>
+            <p className="mt-2 font-mukta text-[12px] text-red-600 min-h-[18px]" role="alert">
+              {fieldErrors.gender || '\u00a0'}
+            </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:gap-6 mb-4 sm:mb-5 md:mb-6 lg:mb-7">
           <div>
-            <label className="block font-mukta text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-[#2f2f2f] mb-1.5 sm:mb-2">
-              Enter date of birth
-            </label>
-            <div className="relative">
-              <input
-                type="date"
-                value={form.birthDate}
-                onChange={e => handleChange('birthDate', e.target.value)}
-                className="w-full rounded-full border border-[#c9b9aa] bg-white px-3 sm:px-3.5 md:px-4 lg:px-5 py-2 sm:py-2.5 md:py-2.75 lg:py-3.5 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] outline-none focus:border-[#5D1409] transition-colors pr-10 [color-scheme:light]"
-              />
-              <span className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5D1409] opacity-70">
-                <svg
-                  width="15"
-                  height="15"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                >
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-              </span>
-            </div>
+            <CalculatorDatePicker
+              id="calculator-dob"
+              value={form.birthDate}
+              onChange={value => handleChange('birthDate', value)}
+              error={fieldErrors.birthDate}
+            />
           </div>
 
           <div>
@@ -207,17 +238,23 @@ export default function CalculatorBirthDetailsForm({
                 </svg>
               </span>
             </div>
+            <p className="mt-2 font-mukta text-[12px] text-red-600 min-h-[18px]" role="alert">
+              {fieldErrors.birthPlace || '\u00a0'}
+            </p>
           </div>
         </div>
 
         <div className="mb-3 sm:mb-4 md:mb-5 lg:mb-6">
-          <BirthTimeFields
+          <ClockTimePicker
             id="calculator-birth-time"
-            variant="calculator"
+            label="Enter birth time"
             value={birthTimeParts}
             onChange={handleBirthTimeChange}
             disabled={form.dontKnowTime}
           />
+          <p className="mt-2 font-mukta text-[12px] text-red-600 min-h-[18px]" role="alert">
+            {fieldErrors.birthTime || '\u00a0'}
+          </p>
         </div>
 
         <UnknownBirthTimeCheckbox
@@ -228,7 +265,7 @@ export default function CalculatorBirthDetailsForm({
 
         {error ? (
           <p
-            className="mb-3 sm:mb-4 font-mukta text-[11px] sm:text-[12px] md:text-[13px] text-[#8d1f1f]"
+            className="mb-3 sm:mb-4 font-mukta text-[11px] sm:text-[12px] md:text-[13px] text-red-600"
             role="alert"
           >
             {error}

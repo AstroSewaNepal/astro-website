@@ -11,6 +11,7 @@ import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-typ
 
 import CalculatorCard from '../calculator-card';
 import CalculatorChooserSection from '../shared/calculator-chooser-section';
+import CalculatorDatePicker from '../shared/calculator-date-picker';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
 import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
 import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
@@ -29,24 +30,39 @@ export default function LoveCalculatorSection() {
   const [partnerBirthDate, setPartnerBirthDate] = useState('');
   const [partnerBirthPlace, setPartnerBirthPlace] = useState('');
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({
+    yourName: '',
+    partnerName: '',
+    yourBirthDate: '',
+    yourBirthPlace: '',
+    partnerBirthDate: '',
+    partnerBirthPlace: '',
+  });
   const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!yourName.trim() || !partnerName.trim()) {
-        setError('Please enter both names.');
-        return;
-      }
-      if (
-        !yourBirthDate ||
-        !yourBirthPlace.trim() ||
-        !partnerBirthDate ||
-        !partnerBirthPlace.trim()
-      ) {
-        setError(
-          'Please enter birth date and place for both people (used for VedAstro MatchReport).',
-        );
+
+      const errors = {
+        yourName: '',
+        partnerName: '',
+        yourBirthDate: '',
+        yourBirthPlace: '',
+        partnerBirthDate: '',
+        partnerBirthPlace: '',
+      };
+
+      if (!yourName.trim()) errors.yourName = 'Please enter your name.';
+      if (!partnerName.trim()) errors.partnerName = "Please enter your partner's name.";
+      if (!yourBirthDate) errors.yourBirthDate = 'Please enter your birth date.';
+      if (!partnerBirthDate) errors.partnerBirthDate = 'Please enter your partner birth date.';
+      if (!yourBirthPlace.trim()) errors.yourBirthPlace = 'Please enter your birth place.';
+      if (!partnerBirthPlace.trim()) errors.partnerBirthPlace = 'Please enter your partner birth place.';
+
+      setFieldErrors(errors);
+      if (Object.values(errors).some(Boolean)) {
+        setError('');
         return;
       }
 
@@ -141,7 +157,7 @@ export default function LoveCalculatorSection() {
   return (
     <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
       <div className="max-w-[1454px] mx-auto">
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,480px)] lg:gap-14 xl:gap-20">
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,640px)] lg:gap-14 xl:gap-20">
           <div>
             <h1 className="font-sahitya font-bold text-[30px] md:text-[36px] lg:text-[44px] leading-[1.1] text-primary">
               Love Calculator
@@ -202,13 +218,19 @@ export default function LoveCalculatorSection() {
                       className="min-w-0 flex-1 border-none bg-transparent py-2 sm:py-2.5 md:py-3 lg:py-3.5 font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-Paragraph outline-none placeholder:text-Paragraph"
                       placeholder="Rupak"
                       value={yourName}
-                      onChange={e => setYourName(e.target.value)}
+                      onChange={e => {
+                        setYourName(e.target.value);
+                        setFieldErrors(prev => ({ ...prev, yourName: '' }));
+                      }}
                       autoComplete="name"
                     />
                     <span className="shrink-0 self-center pr-2 sm:pr-3 lg:pr-4 font-mukta text-[12px] sm:text-[13px] md:text-[14px] font-medium leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[28px] tracking-[0] text-primary">
                       Man
                     </span>
                   </div>
+                  <p className="mt-1 text-[12px] text-red-600 min-h-[18px]">
+                    {fieldErrors.yourName || '\u00a0'}
+                  </p>
                 </div>
                 <div>
                   <label
@@ -223,37 +245,45 @@ export default function LoveCalculatorSection() {
                       className="min-w-0 flex-1 border-none bg-transparent py-2 sm:py-2.5 md:py-3 lg:py-3.5 font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-Paragraph outline-none placeholder:text-Paragraph"
                       placeholder="Sarah"
                       value={partnerName}
-                      onChange={e => setPartnerName(e.target.value)}
+                      onChange={e => {
+                        setPartnerName(e.target.value);
+                        setFieldErrors(prev => ({ ...prev, partnerName: '' }));
+                      }}
                       autoComplete="off"
                     />
                     <span className="shrink-0 self-center pr-2 sm:pr-3 lg:pr-4 font-mukta text-[12px] sm:text-[13px] md:text-[14px] font-medium leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[28px] tracking-[0] text-primary">
                       Woman
                     </span>
                   </div>
+                  <p className="mt-1 text-[12px] text-red-600 min-h-[18px]">
+                    {fieldErrors.partnerName || '\u00a0'}
+                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
                 <div>
-                  <label className="mb-1.5 sm:mb-2 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#141414]">
-                    Your birth date
-                  </label>
-                  <input
-                    type="date"
+                  <CalculatorDatePicker
+                    id="love-your-dob"
+                    label="Your birth date"
                     value={yourBirthDate}
-                    onChange={e => setYourBirthDate(e.target.value)}
-                    className="w-full rounded-full border border-Trinary px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 md:py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px]"
+                    onChange={value => {
+                      setYourBirthDate(value);
+                      setFieldErrors(prev => ({ ...prev, yourBirthDate: '' }));
+                    }}
+                    error={fieldErrors.yourBirthDate}
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 sm:mb-2 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#141414]">
-                    Partner birth date
-                  </label>
-                  <input
-                    type="date"
+                  <CalculatorDatePicker
+                    id="love-partner-dob"
+                    label="Partner birth date"
                     value={partnerBirthDate}
-                    onChange={e => setPartnerBirthDate(e.target.value)}
-                    className="w-full rounded-full border border-Trinary px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 md:py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px]"
+                    onChange={value => {
+                      setPartnerBirthDate(value);
+                      setFieldErrors(prev => ({ ...prev, partnerBirthDate: '' }));
+                    }}
+                    error={fieldErrors.partnerBirthDate}
                   />
                 </div>
                 <div>
@@ -264,9 +294,15 @@ export default function LoveCalculatorSection() {
                     type="text"
                     placeholder="Where were you born?"
                     value={yourBirthPlace}
-                    onChange={e => setYourBirthPlace(e.target.value)}
+                    onChange={e => {
+                      setYourBirthPlace(e.target.value);
+                      setFieldErrors(prev => ({ ...prev, yourBirthPlace: '' }));
+                    }}
                     className="w-full rounded-full border border-Trinary px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 md:py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px]"
                   />
+                  <p className="mt-1 text-[12px] text-red-600 min-h-[18px]">
+                    {fieldErrors.yourBirthPlace || '\u00a0'}
+                  </p>
                 </div>
                 <div>
                   <label className="mb-1.5 sm:mb-2 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#141414]">
@@ -274,16 +310,22 @@ export default function LoveCalculatorSection() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Pokhara, Nepal"
+                    placeholder="Enter your birth place"
                     value={partnerBirthPlace}
-                    onChange={e => setPartnerBirthPlace(e.target.value)}
+                    onChange={e => {
+                      setPartnerBirthPlace(e.target.value);
+                      setFieldErrors(prev => ({ ...prev, partnerBirthPlace: '' }));
+                    }}
                     className="w-full rounded-full border border-Trinary px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 md:py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px]"
                   />
+                  <p className="mt-1 text-[12px] text-red-600 min-h-[18px]">
+                    {fieldErrors.partnerBirthPlace || '\u00a0'}
+                  </p>
                 </div>
               </div>
 
               {error ? (
-                <p className="font-mukta text-sm text-[#8d1f1f]" role="alert">
+                <p className="font-mukta text-sm text-red-600" role="alert">
                   {error}
                 </p>
               ) : null}
@@ -302,14 +344,14 @@ export default function LoveCalculatorSection() {
             </form>
           </div>
 
-          <div className="relative mx-auto hidden w-full max-w-[480px] lg:block lg:mx-0 lg:max-w-none">
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[20px]">
+          <div className="relative mx-auto hidden w-full lg:block lg:mx-0">
+            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[20px]">
               <Image
                 src={LoveHeroImage}
                 alt="Illustration of a couple embracing"
                 fill
-                className="object-cover object-center"
-                sizes="(max-width: 1024px) 100vw, 480px"
+                className="object-contain object-center"
+                sizes="(max-width: 1024px) 100vw, 640px"
                 priority
               />
             </div>
