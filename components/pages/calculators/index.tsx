@@ -154,74 +154,74 @@ const Calculators: React.FC = () => {
         <div className="mt-5 hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
           <CalculatorCard
             title="Love Calculator"
-            titleClassName="md:text-[22px] md:leading-[32px] text-center"
-            descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
+            titleClassName="md:text-[20px] md:leading-[28px] text-center"
+            descriptionClassName="text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none"
             description="Discover your compatibility with a partner or potential love interest."
             calculateHref="/calculators/love-calculator"
             icon={
               <Image
                 src={LoveCalculatorIcon}
                 alt="Love calculator"
-                width={120}
-                height={120}
-                className="h-[120px] w-[120px] md:h-[120px] md:w-[120px] object-contain"
+                width={100}
+                height={100}
+                className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
               />
             }
           />
 
           <CalculatorCard
             title="Numerology Calculator"
-            titleClassName="md:text-[22px] md:leading-[32px] text-center"
-            descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
+            titleClassName="md:text-[20px] md:leading-[28px] text-center"
+            descriptionClassName="text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none"
             description="Discover your life path number and explore numerology insights."
             calculateHref="/calculators/numerology-calculator"
             icon={
               <Image
                 src={NumerologyCalculatorImage}
                 alt="Numerology calculator"
-                width={120}
-                height={120}
-                className="h-[120px] w-[120px] md:h-[120px] md:w-[120px] object-contain"
+                width={100}
+                height={100}
+                className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
               />
             }
           />
 
           <CalculatorCard
             title="Sun Sign Calculator"
-            titleClassName="md:text-[22px] md:leading-[32px] text-center"
-            descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
+            titleClassName="md:text-[20px] md:leading-[28px] text-center"
+            descriptionClassName="text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none"
             description="Discover your zodiac sign based on birth date and astrology insights."
             calculateHref="/calculators/sun-sign-calculator"
             icon={
               <Image
                 src={SunSignCalculatorImage}
                 alt="Sun sign calculator"
-                width={120}
-                height={120}
-                className="h-[120px] w-[120px] md:h-[120px] md:w-[120px] object-contain"
+                width={100}
+                height={100}
+                className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
               />
             }
           />
 
           <CalculatorCard
             title="Mangal Dosha Calculator"
-            titleClassName="md:text-[22px] md:leading-[32px] text-center"
-            descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
+            titleClassName="md:text-[20px] md:leading-[28px] text-center whitespace-nowrap"
+            descriptionClassName="text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none"
             description="Check Mangal dosha and marriage effects in your birth chart."
             calculateHref="/calculators/mangal-dosha-calculator"
             icon={
               <Image
                 src={MangalDoshaImage}
                 alt="Mangal dosha calculator"
-                width={120}
-                height={120}
-                className="h-[120px] w-[120px] md:h-[120px] md:w-[120px] object-contain"
+                width={100}
+                height={100}
+                className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
               />
             }
           />
         </div>
 
-        <div className="mt-6 hidden md:grid md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+        <div className="mt-5 hidden md:grid md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
           <CalculatorCard
             title="Dasha Calculator"
             titleClassName="md:text-[22px] md:leading-[32px] text-center"
