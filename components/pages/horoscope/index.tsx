@@ -55,8 +55,14 @@ type DisplayCard = {
 export type HoroscopeHeroSignsSectionProps = {
   /** Hide the range hero title (e.g. under details “Read horoscope for other signs”). */
   hideTitle?: boolean;
+  /** Slug of the sign being viewed; matching card gets a selection ring. */
+  highlightSign?: string | null;
   /** Merged onto the outer `<section>` (defaults preserve the main horoscope page). */
   sectionClassName?: string;
+  /** Extra segment in Swiper `key` when multiple instances share one route. */
+  swiperKeySuffix?: string;
+  /** Optional `data-qa-id` for the cards grid wrapper. */
+  dataQaId?: string;
 };
 
 /**
@@ -65,8 +71,14 @@ export type HoroscopeHeroSignsSectionProps = {
  */
 export function HoroscopeHeroSignsSection({
   hideTitle = false,
+  highlightSign = null,
   sectionClassName,
+  swiperKeySuffix = '',
+  dataQaId = 'horoscope-sign-cards-grid',
 }: HoroscopeHeroSignsSectionProps) {
+  void highlightSign;
+  void swiperKeySuffix;
+  void dataQaId;
   const searchParams = useSearchParams();
   const selectedRange = parseHoroscopeRangeFromUrl(searchParams.get('type'));
   const { dict, uiLanguage } = useHoroscopeLocale();
