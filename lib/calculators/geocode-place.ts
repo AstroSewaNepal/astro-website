@@ -30,3 +30,25 @@ export async function geocodePlace(place: string): Promise<GeocodeResult> {
     displayName: first.display_name,
   };
 }
+
+export async function searchPlaceSuggestions(place: string, limit = 5): Promise<GeocodeResult[]> {
+  const trimmed = place.trim();
+  if (!trimmed) {
+    return [];
+  }
+
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(trimmed)}&limit=${limit}`,
+  );
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const data = (await response.json()) as Array<{ lat: string; lon: string; display_name?: string }>;
+  return data.map(item => ({
+    lat: item.lat,
+    lon: item.lon,
+    displayName: item.display_name,
+  }));
+}

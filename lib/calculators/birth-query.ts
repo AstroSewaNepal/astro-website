@@ -44,10 +44,12 @@ export type BirthVedastroQuery = {
   time: string;
   offset: string;
   location: string;
+  resolvedLocation?: string;
 };
 
 export async function buildBirthVedastroQuery(
   form: CalculatorFormValues,
+  selectedPlace?: GeocodeResult,
 ): Promise<BirthVedastroQuery> {
   if (!form.birthDate) {
     throw new Error('Please enter your date of birth.');
@@ -61,7 +63,7 @@ export async function buildBirthVedastroQuery(
     throw new Error('Invalid date of birth.');
   }
 
-  const geo = await geocodePlace(form.birthPlace);
+  const geo = selectedPlace ?? (await geocodePlace(form.birthPlace));
 
   return {
     lat: geo.lat,
@@ -70,6 +72,7 @@ export async function buildBirthVedastroQuery(
     time: formBirthTimeToHHMM(form),
     offset: getLocalOffsetFromIsoDate(form.birthDate),
     location: form.birthPlace.trim(),
+    resolvedLocation: geo.displayName?.trim() ?? form.birthPlace.trim(),
   };
 }
 
