@@ -7,7 +7,7 @@ import DownloadApp from '@/components/pages/landing/download-app';
 export const metadata: Metadata = {
   title: 'Numerology Calculator',
   description:
-    'Calculate your life path and numerology profile with Astro Sewa’s Numerology Calculator. Enter your name and birth date to explore your number insights.',
+    'Discover your numerology profile using your full birth name and date of birth. Receive a detailed Pythagorean reading for life path, expression, and soul urge numbers.',
   alternates: {
     canonical: '/calculators/numerology-calculator',
   },

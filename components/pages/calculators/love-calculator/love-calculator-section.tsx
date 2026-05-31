@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { IoHeart } from 'react-icons/io5';
 
 import { buildBirthVedastroQuery } from '@/lib/calculators/birth-query';
-import { geocodePlace, searchPlaceSuggestions, type GeocodeResult } from '@/lib/calculators/geocode-place';
 import { fetchVedastroCalculator } from '@/lib/vedastro/fetch-calculator';
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
 
@@ -29,15 +28,9 @@ export default function LoveCalculatorSection() {
   const [yourBirthDate, setYourBirthDate] = useState('');
   const [yourBirthPlace, setYourBirthPlace] = useState('');
   const [yourResolvedBirthPlace, setYourResolvedBirthPlace] = useState('');
-  const [yourBirthPlaceSuggestions, setYourBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
-  const [yourBirthPlaceSelection, setYourBirthPlaceSelection] = useState<GeocodeResult | null>(null);
-  const [yourBirthPlaceSelected, setYourBirthPlaceSelected] = useState(false);
   const [partnerBirthDate, setPartnerBirthDate] = useState('');
   const [partnerBirthPlace, setPartnerBirthPlace] = useState('');
   const [partnerResolvedBirthPlace, setPartnerResolvedBirthPlace] = useState('');
-  const [partnerBirthPlaceSuggestions, setPartnerBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
-  const [partnerBirthPlaceSelection, setPartnerBirthPlaceSelection] = useState<GeocodeResult | null>(null);
-  const [partnerBirthPlaceSelected, setPartnerBirthPlaceSelected] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({
     yourName: '',
@@ -48,34 +41,6 @@ export default function LoveCalculatorSection() {
     partnerBirthPlace: '',
   });
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!yourBirthPlace.trim() || yourBirthPlaceSelected) {
-      setYourBirthPlaceSuggestions([]);
-      return;
-    }
-
-    const timeout = window.setTimeout(async () => {
-      const suggestions = await searchPlaceSuggestions(yourBirthPlace, 5);
-      setYourBirthPlaceSuggestions(suggestions);
-    }, 400);
-
-    return () => window.clearTimeout(timeout);
-  }, [yourBirthPlace, yourBirthPlaceSelected]);
-
-  useEffect(() => {
-    if (!partnerBirthPlace.trim() || partnerBirthPlaceSelected) {
-      setPartnerBirthPlaceSuggestions([]);
-      return;
-    }
-
-    const timeout = window.setTimeout(async () => {
-      const suggestions = await searchPlaceSuggestions(partnerBirthPlace, 5);
-      setPartnerBirthPlaceSuggestions(suggestions);
-    }, 400);
-
-    return () => window.clearTimeout(timeout);
-  }, [partnerBirthPlace, partnerBirthPlaceSelected]);
 
   const onSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -96,13 +61,9 @@ export default function LoveCalculatorSection() {
       if (!partnerBirthDate) errors.partnerBirthDate = 'Please enter your partner birth date.';
       if (!yourBirthPlace.trim()) {
         errors.yourBirthPlace = 'Please enter your birth place.';
-      } else if (!yourBirthPlaceSelected || !yourBirthPlaceSelection) {
-        errors.yourBirthPlace = 'Please select a valid birth place from the suggestions.';
       }
       if (!partnerBirthPlace.trim()) {
         errors.partnerBirthPlace = 'Please enter your partner birth place.';
-      } else if (!partnerBirthPlaceSelected || !partnerBirthPlaceSelection) {
-        errors.partnerBirthPlace = 'Please select a valid birth place from the suggestions.';
       }
 
       setFieldErrors(errors);
@@ -136,8 +97,8 @@ export default function LoveCalculatorSection() {
         };
 
         const [yourQ, partnerQ] = await Promise.all([
-          buildBirthVedastroQuery(yourForm, yourBirthPlaceSelection ?? undefined),
-          buildBirthVedastroQuery(partnerForm, partnerBirthPlaceSelection ?? undefined),
+          buildBirthVedastroQuery(yourForm),
+          buildBirthVedastroQuery(partnerForm),
         ]);
 
         setYourResolvedBirthPlace(yourQ.resolvedLocation ?? yourBirthPlace.trim());
@@ -197,10 +158,6 @@ export default function LoveCalculatorSection() {
       yourBirthPlace,
       partnerBirthDate,
       partnerBirthPlace,
-      yourBirthPlaceSelected,
-      yourBirthPlaceSelection,
-      partnerBirthPlaceSelected,
-      partnerBirthPlaceSelection,
       router,
     ],
   );
@@ -292,6 +249,7 @@ export default function LoveCalculatorSection() {
                           setFieldErrors(prev => ({ ...prev, yourBirthDate: '' }));
                         }}
                         error={fieldErrors.yourBirthDate}
+                        fullWidth={true}
                       />
                     </div>
 
@@ -306,33 +264,10 @@ export default function LoveCalculatorSection() {
                         onChange={e => {
                           setYourBirthPlace(e.target.value);
                           setYourResolvedBirthPlace('');
-                          setYourBirthPlaceSelection(null);
-                          setYourBirthPlaceSelected(false);
                           setFieldErrors(prev => ({ ...prev, yourBirthPlace: '' }));
                         }}
                         className="w-full h-[52px] box-border rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] py-[12px] font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#464646]"
                       />
-                      {yourBirthPlaceSuggestions.length > 0 && !yourBirthPlaceSelected ? (
-                        <div className="mt-2 max-h-44 overflow-auto rounded-2xl border border-Trinary bg-white shadow-lg z-10">
-                          {yourBirthPlaceSuggestions.map((suggestion, index) => (
-                            <button
-                              key={`${suggestion.lat}-${suggestion.lon}-${index}`}
-                              type="button"
-                              onClick={() => {
-                                setYourBirthPlace(suggestion.displayName ?? yourBirthPlace);
-                                setYourResolvedBirthPlace(suggestion.displayName ?? '');
-                                setYourBirthPlaceSelection(suggestion);
-                                setYourBirthPlaceSelected(true);
-                                setYourBirthPlaceSuggestions([]);
-                                setFieldErrors(prev => ({ ...prev, yourBirthPlace: '' }));
-                              }}
-                              className="w-full cursor-pointer text-left px-3 py-2 text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] hover:bg-slate-100"
-                            >
-                              {suggestion.displayName}
-                            </button>
-                          ))}
-                        </div>
-                      ) : null}
                       {fieldErrors.yourBirthPlace && (
                         <p className="mt-1 text-[12px] text-red-600">{fieldErrors.yourBirthPlace}</p>
                       )}
@@ -383,6 +318,7 @@ export default function LoveCalculatorSection() {
                           setFieldErrors(prev => ({ ...prev, partnerBirthDate: '' }));
                         }}
                         error={fieldErrors.partnerBirthDate}
+                        fullWidth={true}
                       />
                     </div>
 
@@ -397,33 +333,10 @@ export default function LoveCalculatorSection() {
                         onChange={e => {
                           setPartnerBirthPlace(e.target.value);
                           setPartnerResolvedBirthPlace('');
-                          setPartnerBirthPlaceSelection(null);
-                          setPartnerBirthPlaceSelected(false);
                           setFieldErrors(prev => ({ ...prev, partnerBirthPlace: '' }));
                         }}
                         className="w-full h-[52px] box-border rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] py-[12px] font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#464646]"
                       />
-                      {partnerBirthPlaceSuggestions.length > 0 && !partnerBirthPlaceSelected ? (
-                        <div className="mt-2 max-h-44 overflow-auto rounded-2xl border border-Trinary bg-white shadow-lg z-10">
-                          {partnerBirthPlaceSuggestions.map((suggestion, index) => (
-                            <button
-                              key={`${suggestion.lat}-${suggestion.lon}-${index}`}
-                              type="button"
-                              onClick={() => {
-                                setPartnerBirthPlace(suggestion.displayName ?? partnerBirthPlace);
-                                setPartnerResolvedBirthPlace(suggestion.displayName ?? '');
-                                setPartnerBirthPlaceSelection(suggestion);
-                                setPartnerBirthPlaceSelected(true);
-                                setPartnerBirthPlaceSuggestions([]);
-                                setFieldErrors(prev => ({ ...prev, partnerBirthPlace: '' }));
-                              }}
-                              className="w-full cursor-pointer text-left px-3 py-2 text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] hover:bg-slate-100"
-                            >
-                              {suggestion.displayName}
-                            </button>
-                          ))}
-                        </div>
-                      ) : null}
                       {fieldErrors.partnerBirthPlace && (
                         <p className="mt-1 text-[12px] text-red-600">{fieldErrors.partnerBirthPlace}</p>
                       )}

@@ -14,15 +14,10 @@ const CALCULATOR_TYPES = [
   { value: 'soul-urge', label: 'Soul Urge Number' },
 ];
 
-const FORM_OUTLINE_CLASS =
-  'box-border mx-auto mt-2 flex w-full max-w-[399px] sm:max-w-[480px] md:max-w-[680px] lg:max-w-[800px] flex-col gap-4 rounded-[32px] border border-[#BE7B71] p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.08)]';
-
 const FIELD_LABEL_CLASS =
-  'mb-1 sm:mb-1.5 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] font-semibold leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[30px] tracking-normal text-[#141414]';
+  'mb-1 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] font-semibold leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[30px] tracking-normal text-[#141414]';
 
-const FORM_FOOTER_CLASS = '-mt-2 flex flex-col gap-1.5';
-
-const ERROR_SLOT_CLASS = 'min-h-[24px] font-mukta text-sm leading-[24px] text-red-600';
+const ERROR_TEXT_CLASS = 'mt-0.5 h-[18px] text-xs leading-[18px] text-red-600';
 
 const INFO_SECTIONS_CLASS = 'mt-24 w-full space-y-8';
 
@@ -35,16 +30,7 @@ const HERO_TAGLINE_CLASS =
 const HERO_DESCRIPTION_CLASS =
   'font-mukta text-[16px] font-normal leading-[28px] tracking-normal text-[#4a423d] md:text-[18px] md:leading-[30px]';
 
-const FORM_HEADING_CLASS =
-  'text-left font-sahitya text-[22px] font-bold leading-[32px] tracking-normal text-[#7c211a] md:font-mukta md:text-[24px] md:font-semibold md:leading-[30px]';
-
 const INFO_BODY_CLASS = `mt-3 max-w-none text-left ${MUKTA_BODY_TEXT_CLASS}`;
-
-const CALCULATE_BUTTON_CLASS =
-  'box-border flex h-[40px] sm:h-[48px] md:h-[52px] lg:h-[60px] w-full items-center justify-center gap-[10px] rounded-[24px] sm:rounded-[28px] md:rounded-[30px] lg:rounded-[32px] bg-[#5d1409] py-2.5 sm:py-3 md:py-3 lg:py-4 px-4 sm:px-5 md:px-6 lg:px-8 font-mukta text-[12px] sm:text-[13px] md:text-[15px] lg:text-[17px] font-bold text-white transition hover:opacity-95 disabled:opacity-60';
-
-const RESET_BUTTON_CLASS =
-  'box-border flex h-[40px] sm:h-[48px] md:h-[52px] lg:h-[60px] w-full items-center justify-center gap-[10px] rounded-[24px] sm:rounded-[28px] md:rounded-[30px] lg:rounded-[32px] border-2 border-[#5d1409] bg-[#fff5e3] py-2.5 sm:py-3 md:py-3 lg:py-4 px-4 sm:px-5 md:px-6 lg:px-8 font-mukta text-[12px] sm:text-[13px] md:text-[15px] lg:text-[17px] font-bold text-[#5d1409] transition hover:bg-[#f7e7d2]';
 
 const INFO_SECTIONS = [
   {
@@ -140,61 +126,72 @@ export default function NumerologyCalculatorSection() {
   };
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-4 md:pt-8 pb-12">
+    <section className="container mx-auto px-4 sm:px-6 lg:px-0 pt-4 md:pt-8 pb-12">
       <div className="max-w-[1454px] mx-auto">
-        <div>
+
+        {/* Hero */}
+        <div className="mb-12">
           <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-normal text-[#4b1b16] md:text-[40px] md:leading-[1.1] lg:text-[44px]">
             Numerology Calculator
           </h1>
           <p className={`mt-3 w-full text-left ${HERO_TAGLINE_CLASS}`}>
-            Pythagorean numerology from your name and birth date.
+            Discover your personal numerology profile from your full birth name and date of birth.
           </p>
           <p className={`mt-4 mb-8 w-full text-left ${HERO_DESCRIPTION_CLASS}`}>
-            Enter your full name and date of birth — birth place is not required.
+            Enter your full name and date of birth to receive a detailed Pythagorean numerology
+            reading that explains your life path, expression, soul urge, and more.
           </p>
         </div>
 
-        <div className="mx-auto mt-6 sm:mt-7 md:mt-8 lg:mt-10 w-full max-w-[399px] sm:max-w-[480px] md:max-w-[680px] lg:max-w-[800px]">
-          <div className="mb-3 sm:mb-4 md:mb-5 px-0 sm:px-0 md:px-0">
-            <p className="font-sahitya text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px] font-bold leading-[24px] sm:leading-[26px] md:leading-[28px] lg:leading-[30px] text-primary">
+        {/* Form wrapper */}
+        <div className="mx-auto mt-8 w-full flex flex-col items-center">
+          <div className="mb-5 text-center">
+            <p className="font-mukta text-[24px] font-semibold leading-[30px] tracking-normal text-primary">
               Fill up the Details
             </p>
           </div>
-
-          <form onSubmit={handleSubmit} className={FORM_OUTLINE_CLASS}>
-            <div>
+          <form
+            onSubmit={handleSubmit}
+            className="flex w-full sm:w-[684px] flex-col gap-4 items-center rounded-[20px] sm:rounded-[40px] border pt-6 sm:pt-10 pr-5 sm:pr-[50px] pb-6 sm:pb-10 pl-5 sm:pl-[50px] shadow-[0_10px_30px_rgba(105,23,9,0.08)]"
+            noValidate
+          >
+            {/* Full Name */}
+            <div className="w-full">
               <label htmlFor="numerology-fullname" className={FIELD_LABEL_CLASS}>
                 Enter full name
               </label>
-              <div className="relative rounded-[32px] border border-[#BE7B71] bg-white px-4 py-3 sm:px-4.5 md:px-5 lg:px-5">
+              <div className="relative h-[48px] sm:h-[56px] w-full rounded-[32px] border-2 border-[#BE7B71] px-4 sm:px-5 py-3 sm:py-4">
                 <input
                   id="numerology-fullname"
-                  className="min-w-0 w-full border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none"
+                  className="h-full w-full border-none bg-transparent font-mukta text-[13px] sm:text-[15px] md:text-[18px] md:leading-[30px] text-[#34211d] placeholder:text-[#464646] placeholder:font-mukta placeholder:font-semibold md:placeholder:text-[18px] md:placeholder:leading-[30px] placeholder:tracking-normal outline-none"
                   placeholder="Enter name"
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
                 />
               </div>
-              <p className="mt-1 text-sm text-red-600 min-h-[20px]">{fieldErrors.fullName || '\u00a0'}</p>
+              <p className={ERROR_TEXT_CLASS}>{fieldErrors.fullName}</p>
             </div>
 
-            <div>
+            {/* Date of Birth */}
+            <div className="w-full">
               <CalculatorDatePicker
                 id="numerology-dob"
                 value={birthDate}
                 onChange={setBirthDate}
+                fullWidth={true}
               />
-              <p className="mt-1 text-sm text-red-600 min-h-[20px]">{fieldErrors.birthDate || '\u00a0'}</p>
+              <p className={ERROR_TEXT_CLASS}>{fieldErrors.birthDate}</p>
             </div>
 
-            <div>
+            {/* Report Focus */}
+            <div className="w-full">
               <label htmlFor="numerology-type" className={FIELD_LABEL_CLASS}>
                 Report focus
               </label>
-              <div className="relative rounded-[32px] border border-[#BE7B71] bg-white px-4 py-3 sm:px-4.5 md:px-5 lg:px-5">
+              <div className="relative h-[48px] sm:h-[56px] w-full rounded-[32px] border-2 border-[#BE7B71] px-4 sm:px-5 py-3 sm:py-4 overflow-visible">
                 <select
                   id="numerology-type"
-                  className="min-w-0 w-full appearance-none border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none pr-10 cursor-pointer"
+                  className="h-full min-w-full w-full appearance-none border-none bg-transparent pr-10 font-mukta text-[13px] sm:text-[15px] md:text-[18px] md:leading-[30px] text-[#34211d] outline-none cursor-pointer"
                   value={calculatorType}
                   onChange={e => setCalculatorType(e.target.value)}
                 >
@@ -207,31 +204,54 @@ export default function NumerologyCalculatorSection() {
                     </option>
                   ))}
                 </select>
-                <span className="pointer-events-none absolute right-3 bottom-3 text-[#34211d]">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                    <path d="M6 9l6 6 6-6" stroke="#7a2d2a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                <span className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M6 9l6 6 6-6"
+                      stroke="#7a2d2a"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </span>
               </div>
-              <p className="mt-1 text-sm text-red-600 min-h-[20px]">{fieldErrors.calculatorType || '\u00a0'}</p>
+              <p className={ERROR_TEXT_CLASS}>{fieldErrors.calculatorType}</p>
             </div>
 
-            <div className={FORM_FOOTER_CLASS}>
-              <p className={ERROR_SLOT_CLASS} role="alert">
-                {error || '\u00a0'}
+            {/* Error */}
+            {error && (
+              <p className="text-sm text-red-600">
+                {error}
               </p>
-              <div className="flex flex-col gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 sm:flex-row sm:items-center sm:justify-between">
-                <button type="submit" disabled={submitting} className={CALCULATE_BUTTON_CLASS}>
-                  {submitting ? 'Calculating…' : 'Calculate'}
-                </button>
-                <button type="button" onClick={handleReset} className={RESET_BUTTON_CLASS}>
-                  Reset
-                </button>
-              </div>
+            )}
+
+            {/* Buttons */}
+            <div className="w-full flex flex-row gap-[10px] md:gap-[75px] justify-center">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex h-[48px] sm:h-[60px] w-[175.5px] sm:w-[250px] items-center justify-center rounded-[32px] bg-[#5d1409] font-mukta text-[18px] font-semibold leading-[30px] tracking-normal text-white transition hover:opacity-95 disabled:opacity-60 pt-4 pb-4 px-2.5"
+              >
+                {submitting ? 'Calculating...' : 'Calculate'}
+              </button>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="flex h-[48px] sm:h-[60px] w-[175.5px] sm:w-[250px] items-center justify-center rounded-[32px] border-2 border-[#5d1409] bg-[#fff5e3] font-mukta text-[18px] font-semibold leading-[30px] tracking-normal text-[#5d1409] transition hover:bg-[#f7e7d2] pt-4 pb-4 px-2.5"
+              >
+                Reset
+              </button>
             </div>
           </form>
         </div>
 
+        {/* Info sections */}
         <div className={INFO_SECTIONS_CLASS}>
           {INFO_SECTIONS.map(section => (
             <div key={section.title}>
@@ -242,6 +262,7 @@ export default function NumerologyCalculatorSection() {
             </div>
           ))}
         </div>
+
         <CalculatorChooserSection exclude="numerology" />
       </div>
     </section>

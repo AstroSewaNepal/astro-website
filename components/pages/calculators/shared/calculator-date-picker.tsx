@@ -10,6 +10,7 @@ type CalculatorDatePickerProps = {
   value: string;
   onChange: (value: string) => void;
   error?: string;
+  fullWidth?: boolean;
 };
 
 function isoDateToDdMmYyyy(iso: string): string {
@@ -32,6 +33,7 @@ export default function CalculatorDatePicker({
   value,
   onChange,
   error,
+  fullWidth = false,
 }: CalculatorDatePickerProps) {
   const [open, setOpen] = useState(false);
 
@@ -39,15 +41,15 @@ export default function CalculatorDatePicker({
   const calendarValue = isoDateToDdMmYyyy(value);
 
   return (
-    <div className="relative">
-      <label htmlFor={id} className="block font-mukta text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-[#141414] mb-1 sm:mb-1.5">
+    <div className={`relative ${fullWidth ? 'w-full' : 'w-[532px]'}`}>
+      <label htmlFor={id} className="mb-1 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] font-semibold leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[30px] tracking-normal text-[#141414]">
         {label}
       </label>
       <button
         id={id}
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full cursor-pointer flex items-center justify-between h-[52px] box-border rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] py-[12px] text-left font-mukta text-sm md:text-base text-[#2f2f2f] transition-colors duration-200 focus-within:border-[#BE7B71] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BE7B71]/20"
+        className={`${fullWidth ? 'w-full' : 'w-[532px]'} cursor-pointer flex items-center justify-between h-[56px] box-border rounded-[32px] border-2 border-[#BE7B71] bg-transparent px-[20px] py-[16px] text-left font-mukta text-sm sm:text-[15px] md:text-[18px] md:leading-[30px] text-[#2f2f2f] transition-colors duration-200 focus-within:border-[#BE7B71] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BE7B71]/20`}
         aria-haspopup="dialog"
         aria-expanded={open}
       >

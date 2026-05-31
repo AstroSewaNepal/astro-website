@@ -12,7 +12,7 @@ import {
   type BirthTimeParts,
 } from '@/components/shared/birth-time-fields';
 import { ClockTimePicker } from '@/components/shared/clock-time-picker';
-import { searchPlaceSuggestions, type GeocodeResult } from '@/lib/calculators/geocode-place';
+import { geocodePlace } from '@/lib/calculators/geocode-place';
 
 import CalendarIcon from '@/components/icons/calendar-icon';
 import UserLineIcon from '@/components/icons/user/user-line';
@@ -169,25 +169,9 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
   const [dateOfBirthValue, setDateOfBirthValue] = useState<string>('');
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [birthPlaceValue, setBirthPlaceValue] = useState('');
-  const [birthPlaceSelection, setBirthPlaceSelection] = useState<GeocodeResult | null>(null);
-  const [birthPlaceSelected, setBirthPlaceSelected] = useState(false);
-  const [birthPlaceSuggestions, setBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
-
-  useEffect(() => {
-    if (!birthPlaceValue.trim() || birthPlaceSelected) {
-      setBirthPlaceSuggestions([]);
-      return;
-    }
-
-    const timeout = window.setTimeout(async () => {
-      const suggestions = await searchPlaceSuggestions(birthPlaceValue, 5);
-      setBirthPlaceSuggestions(suggestions);
-    }, 400);
-
-    return () => window.clearTimeout(timeout);
-  }, [birthPlaceValue, birthPlaceSelected]);
 
   const nameRegex = /^[A-Za-z ]+$/;
+  const placeRegex = /^[A-Za-z\s,.'-]+$/;
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -227,8 +211,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
     if (!birthPlace) {
       errors.birthPlace = 'Birth place is required.';
       valid = false;
-    } else if (!birthPlaceSelected || !birthPlaceSelection) {
-      errors.birthPlace = 'Please select a valid birth place from the suggestions.';
+    } else if (!placeRegex.test(birthPlace) || !/[A-Za-z]/.test(birthPlace)) {
+      errors.birthPlace = 'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       valid = false;
     }
 
@@ -267,7 +251,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
 
     // ── Network calls ─────────────────────────────────────────────────────────
     try {
-      const selectedGeo = birthPlaceSelection!;
+      const selectedGeo = await geocodePlace(birthPlace);
       const offset = getLocalOffset(parsedDate!);
       const query = new URLSearchParams({
         lat: selectedGeo.lat,
@@ -298,9 +282,13 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
       }
       router.push('/free-kundali/result');
     } catch (submitError) {
-      setFieldErrors({
-        general: submitError instanceof Error ? submitError.message : 'Failed to generate kundali.',
-      });
+      if (submitError instanceof Error && /Failed to resolve coordinates|Place not found/.test(submitError.message)) {
+        setFieldErrors({ birthPlace: submitError.message });
+      } else {
+        setFieldErrors({
+          general: submitError instanceof Error ? submitError.message : 'Failed to generate kundali.',
+        });
+      }
     } finally {
       window.clearTimeout(almostCompleteTimer);
       setSubmitStage('idle');
@@ -455,37 +443,17 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                         placeholder="Where were you born?"
                         value={birthPlaceValue}
                         onChange={event => {
-                          const nextValue = event.currentTarget.value;
+                          const nextValue = event.currentTarget.value.replace(/[^A-Za-z\s,.'-]/g, '');
                           setBirthPlaceValue(nextValue);
-                          setBirthPlaceSelection(null);
-                          setBirthPlaceSelected(false);
-                          setBirthPlaceSuggestions([]);
                           setFieldErrors(prev => ({ ...prev, birthPlace: undefined }));
+                        }}
+                        onInput={event => {
+                          event.currentTarget.value = event.currentTarget.value.replace(/[^A-Za-z\s,.'-]/g, '');
                         }}
                         className="flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none"
                       />
                       <IoLocationOutline className={fieldIconClass} aria-hidden />
                     </div>
-                    {birthPlaceSuggestions.length > 0 && !birthPlaceSelected ? (
-                      <div className="mt-2 max-h-44 overflow-auto rounded-2xl border border-Trinary bg-white shadow-lg z-10">
-                        {birthPlaceSuggestions.map((suggestion, index) => (
-                          <button
-                            key={`${suggestion.lat}-${suggestion.lon}-${index}`}
-                            type="button"
-                            onClick={() => {
-                              setBirthPlaceValue(suggestion.displayName ?? birthPlaceValue);
-                              setBirthPlaceSelection(suggestion);
-                              setBirthPlaceSelected(true);
-                              setBirthPlaceSuggestions([]);
-                              setFieldErrors(prev => ({ ...prev, birthPlace: undefined }));
-                            }}
-                            className="w-full text-left px-3 py-2 text-sm md:text-base text-[#141414] hover:bg-slate-100"
-                          >
-                            {suggestion.displayName}
-                          </button>
-                        ))}
-                      </div>
-                    ) : null}
                     <FieldError message={fieldErrors.birthPlace} />
                   </div>
 

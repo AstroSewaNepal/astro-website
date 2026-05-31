@@ -18,7 +18,6 @@ import {
   bundleToStoredResult,
   fetchKundaliMatchingBundle,
 } from '@/lib/vedastro/fetch-kundali-matching-bundle';
-import { searchPlaceSuggestions, type GeocodeResult } from '@/lib/calculators/geocode-place';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -273,9 +272,6 @@ type InputPillProps = {
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onInput?: React.FormEventHandler<HTMLInputElement>;
-  suggestions?: GeocodeResult[];
-  onSuggestionSelect?: (suggestion: GeocodeResult) => void;
-  selected?: boolean;
   error?: string;
 };
 
@@ -291,9 +287,6 @@ const InputPill = ({
   value,
   onChange,
   onInput,
-  suggestions,
-  onSuggestionSelect,
-  selected,
   error,
 }: InputPillProps) => (
   <div className={['block', className].filter(Boolean).join(' ')}>
@@ -320,20 +313,6 @@ const InputPill = ({
         <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-primary/70">
           {rightIcon}
         </span>
-      ) : null}
-      {suggestions && suggestions.length > 0 && !selected ? (
-        <div className="absolute left-0 right-0 z-10 mt-2 max-h-44 overflow-auto rounded-2xl border border-Trinary bg-white shadow-lg">
-          {suggestions.map((suggestion, index) => (
-            <button
-              key={`${suggestion.lat}-${suggestion.lon}-${index}`}
-              type="button"
-              onClick={() => onSuggestionSelect?.(suggestion)}
-              className="w-full text-left px-3 py-2 text-[13px] md:text-[14px] text-[#141414] hover:bg-slate-100"
-            >
-              {suggestion.displayName}
-            </button>
-          ))}
-        </div>
       ) : null}
     </span>
     <FieldError message={error} />
@@ -469,9 +448,6 @@ type PersonSectionProps = {
   onDatePickerOpenChange: (open: boolean) => void;
   birthPlaceValue: string;
   onBirthPlaceChange: (value: string) => void;
-  birthPlaceSuggestions: GeocodeResult[];
-  onBirthPlaceSelect: (suggestion: GeocodeResult) => void;
-  birthPlaceSelected: boolean;
 };
 
 const PersonSection = ({
@@ -489,9 +465,6 @@ const PersonSection = ({
   onDatePickerOpenChange,
   birthPlaceValue,
   onBirthPlaceChange,
-  birthPlaceSuggestions,
-  onBirthPlaceSelect,
-  birthPlaceSelected,
 }: PersonSectionProps) => (
   <div className="space-y-3 md:space-y-3.5">
     <SectionPillHeader
@@ -543,15 +516,12 @@ const PersonSection = ({
         placeholder="Where were you born?"
         value={birthPlaceValue}
         onChange={e => {
-          const nextValue = e.currentTarget.value.replace(/[^A-Za-z ,]/g, '');
+          const nextValue = e.currentTarget.value.replace(/[^A-Za-z\s,.'-]/g, '');
           onBirthPlaceChange(nextValue);
         }}
         onInput={e => {
-          e.currentTarget.value = e.currentTarget.value.replace(/[^A-Za-z ,]/g, '');
+          e.currentTarget.value = e.currentTarget.value.replace(/[^A-Za-z\s,.'-]/g, '');
         }}
-        suggestions={birthPlaceSuggestions}
-        onSuggestionSelect={onBirthPlaceSelect}
-        selected={birthPlaceSelected}
         rightIcon={<LocationIcon />}
         error={errors.birthPlace}
       />
@@ -601,44 +571,11 @@ const KundaliMatchingFormSection: React.FC = () => {
   const [submitStage, setSubmitStage] = useState<'idle' | 'generating' | 'almost-complete'>('idle');
   const [formErrors, setFormErrors] = useState<FormErrors>(EMPTY_ERRORS);
   const [manBirthPlace, setManBirthPlace] = useState('');
-  const [manBirthPlaceSuggestions, setManBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
-  const [manBirthPlaceSelection, setManBirthPlaceSelection] = useState<GeocodeResult | null>(null);
-  const [manBirthPlaceSelected, setManBirthPlaceSelected] = useState(false);
   const [womanBirthPlace, setWomanBirthPlace] = useState('');
-  const [womanBirthPlaceSuggestions, setWomanBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
-  const [womanBirthPlaceSelection, setWomanBirthPlaceSelection] = useState<GeocodeResult | null>(null);
-  const [womanBirthPlaceSelected, setWomanBirthPlaceSelected] = useState(false);
 
-  useEffect(() => {
-    if (!manBirthPlace.trim() || manBirthPlaceSelected) {
-      setManBirthPlaceSuggestions([]);
-      return;
-    }
-
-    const timeout = window.setTimeout(async () => {
-      const suggestions = await searchPlaceSuggestions(manBirthPlace, 5);
-      setManBirthPlaceSuggestions(suggestions);
-    }, 400);
-
-    return () => window.clearTimeout(timeout);
-  }, [manBirthPlace, manBirthPlaceSelected]);
-
-  useEffect(() => {
-    if (!womanBirthPlace.trim() || womanBirthPlaceSelected) {
-      setWomanBirthPlaceSuggestions([]);
-      return;
-    }
-
-    const timeout = window.setTimeout(async () => {
-      const suggestions = await searchPlaceSuggestions(womanBirthPlace, 5);
-      setWomanBirthPlaceSuggestions(suggestions);
-    }, 400);
-
-    return () => window.clearTimeout(timeout);
-  }, [womanBirthPlace, womanBirthPlaceSelected]);
 
   const nameRegex = /^[A-Za-z ]+$/;
-  const placeRegex = /^[A-Za-z ,]+$/;
+  const placeRegex = /^[A-Za-z\s,.'-]+$/;
 
   /** Validate one person's fields. Returns parsed data or null, populates errorsOut. */
   const validatePerson = (
@@ -647,7 +584,6 @@ const KundaliMatchingFormSection: React.FC = () => {
     birthTimeParts: BirthTimeParts,
     unknownTime: boolean,
     errorsOut: PersonErrors,
-    birthPlaceSelected: boolean,
   ): {
     fullName: string;
     dateOfBirth: string;
@@ -690,10 +626,7 @@ const KundaliMatchingFormSection: React.FC = () => {
       errorsOut.birthPlace = 'Birth place is required.';
       valid = false;
     } else if (!placeRegex.test(birthPlace) || !/[A-Za-z]/.test(birthPlace)) {
-      errorsOut.birthPlace = 'Only letters and spaces are allowed.';
-      valid = false;
-    } else if (!birthPlaceSelected) {
-      errorsOut.birthPlace = 'Please select a valid birth place from the suggestions.';
+      errorsOut.birthPlace = 'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       valid = false;
     }
 
@@ -748,7 +681,6 @@ const KundaliMatchingFormSection: React.FC = () => {
       manBirthTime,
       manUnknownTime,
       newErrors.man,
-      manBirthPlaceSelected,
     );
     const woman = validatePerson(
       'woman',
@@ -756,7 +688,6 @@ const KundaliMatchingFormSection: React.FC = () => {
       womanBirthTime,
       womanUnknownTime,
       newErrors.woman,
-      womanBirthPlaceSelected,
     );
 
     // If any field has errors, show them and stop
@@ -770,8 +701,8 @@ const KundaliMatchingFormSection: React.FC = () => {
     setFormErrors(EMPTY_ERRORS);
 
     try {
-      const manGeo = manBirthPlaceSelection ?? (await geocodePlace(man.birthPlace));
-      const womanGeo = womanBirthPlaceSelection ?? (await geocodePlace(woman.birthPlace));
+      const manGeo = await geocodePlace(man.birthPlace);
+      const womanGeo = await geocodePlace(woman.birthPlace);
 
       const manPerson = {
         fullName: man.fullName,
@@ -875,29 +806,13 @@ const KundaliMatchingFormSection: React.FC = () => {
                 birthPlaceValue={manBirthPlace}
                 onBirthPlaceChange={value => {
                   setManBirthPlace(value);
-                  setManBirthPlaceSelected(false);
-                  setManBirthPlaceSelection(null);
-                  setManBirthPlaceSuggestions([]);
                   setFormErrors(prev => ({
                     ...prev,
                     man: { ...prev.man, birthPlace: undefined },
                   }));
                 }}
-                birthPlaceSuggestions={manBirthPlaceSuggestions}
-                onBirthPlaceSelect={suggestion => {
-                  setManBirthPlace(suggestion.displayName ?? manBirthPlace);
-                  setManBirthPlaceSelection(suggestion);
-                  setManBirthPlaceSelected(true);
-                  setManBirthPlaceSuggestions([]);
-                  setFormErrors(prev => ({
-                    ...prev,
-                    man: { ...prev.man, birthPlace: undefined },
-                  }));
-                }}
-                birthPlaceSelected={manBirthPlaceSelected}
               />
 
-              {/* Mobile divider */}
               <div
                 aria-hidden
                 className="md:hidden h-0 opacity-100 w-[calc(100%+32px)] -mx-4 mt-2"
@@ -934,32 +849,11 @@ const KundaliMatchingFormSection: React.FC = () => {
                 birthPlaceValue={womanBirthPlace}
                 onBirthPlaceChange={value => {
                   setWomanBirthPlace(value);
-                  setWomanBirthPlaceSelected(false);
-                  setWomanBirthPlaceSelection(null);
-                  setWomanBirthPlaceSuggestions([]);
                   setFormErrors(prev => ({
                     ...prev,
                     woman: { ...prev.woman, birthPlace: undefined },
                   }));
                 }}
-                birthPlaceSuggestions={womanBirthPlaceSuggestions}
-                onBirthPlaceSelect={suggestion => {
-                  setWomanBirthPlace(suggestion.displayName ?? womanBirthPlace);
-                  setWomanBirthPlaceSelection(suggestion);
-                  setWomanBirthPlaceSelected(true);
-                  setWomanBirthPlaceSuggestions([]);
-                  setFormErrors(prev => ({
-                    ...prev,
-                    woman: { ...prev.woman, birthPlace: undefined },
-                  }));
-                }}
-                birthPlaceSelected={womanBirthPlaceSelected}
-              />
-
-              {/* Desktop vertical divider — only between Man/Woman columns */}
-              <div
-                aria-hidden
-                className="pointer-events-none hidden md:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 border-l border-dashed border-primary"
               />
             </div>
 
