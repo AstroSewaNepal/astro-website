@@ -580,7 +580,9 @@ const KundaliMatchingFormSection: React.FC = () => {
   const [manBirthPlaceSelected, setManBirthPlaceSelected] = useState(false);
   const [womanBirthPlace, setWomanBirthPlace] = useState('');
   const [womanBirthPlaceSuggestions, setWomanBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
-  const [womanBirthPlaceSelection, setWomanBirthPlaceSelection] = useState<GeocodeResult | null>(null);
+  const [womanBirthPlaceSelection, setWomanBirthPlaceSelection] = useState<GeocodeResult | null>(
+    null,
+  );
   const [womanBirthPlaceSelected, setWomanBirthPlaceSelected] = useState(false);
 
   useEffect(() => {

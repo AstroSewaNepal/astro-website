@@ -40,7 +40,10 @@ export default function CalculatorDatePicker({
 
   return (
     <div className="relative">
-      <label htmlFor={id} className="block font-mukta text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-[#2f2f2f] mb-1.5 sm:mb-2">
+      <label
+        htmlFor={id}
+        className="block font-mukta text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-[#2f2f2f] mb-1.5 sm:mb-2"
+      >
         {label}
       </label>
       <button

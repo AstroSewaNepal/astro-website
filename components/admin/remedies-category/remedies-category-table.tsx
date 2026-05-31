@@ -67,7 +67,10 @@ export default function RemediesCategoryTable({
                 <span className="font-mukta font-medium text-neutral-800">{row.title}</span>
               </TableCell>
               <TableCell>
-                <span className="font-mukta text-neutral-600 block max-w-xs truncate" title={row.description}>
+                <span
+                  className="font-mukta text-neutral-600 block max-w-xs truncate"
+                  title={row.description}
+                >
                   {row.description}
                 </span>
               </TableCell>
@@ -121,10 +124,7 @@ export default function RemediesCategoryTable({
 
         {!isLoading && data.length === 0 && (
           <TableRow>
-            <TableCell
-              colSpan={5}
-              className="py-8 text-center font-mukta text-neutral-400"
-            >
+            <TableCell colSpan={5} className="py-8 text-center font-mukta text-neutral-400">
               No remedies categories found
             </TableCell>
           </TableRow>

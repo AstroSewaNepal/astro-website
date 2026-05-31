@@ -21,12 +21,17 @@ export default function LoveCalculatorSection() {
   const [yourBirthDate, setYourBirthDate] = useState('');
   const [yourBirthPlace, setYourBirthPlace] = useState('');
   const [yourBirthPlaceSuggestions, setYourBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
-  const [yourBirthPlaceSelection, setYourBirthPlaceSelection] = useState<GeocodeResult | null>(null);
+  const [yourBirthPlaceSelection, setYourBirthPlaceSelection] = useState<GeocodeResult | null>(
+    null,
+  );
   const [yourBirthPlaceSelected, setYourBirthPlaceSelected] = useState(false);
   const [partnerBirthDate, setPartnerBirthDate] = useState('');
   const [partnerBirthPlace, setPartnerBirthPlace] = useState('');
-  const [partnerBirthPlaceSuggestions, setPartnerBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
-  const [partnerBirthPlaceSelection, setPartnerBirthPlaceSelection] = useState<GeocodeResult | null>(null);
+  const [partnerBirthPlaceSuggestions, setPartnerBirthPlaceSuggestions] = useState<GeocodeResult[]>(
+    [],
+  );
+  const [partnerBirthPlaceSelection, setPartnerBirthPlaceSelection] =
+    useState<GeocodeResult | null>(null);
   const [partnerBirthPlaceSelected, setPartnerBirthPlaceSelected] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({

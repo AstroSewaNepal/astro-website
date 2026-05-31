@@ -60,7 +60,11 @@ export default function NumerologyCalculatorSection() {
   const [birthDate, setBirthDate] = useState('');
   const [calculatorType, setCalculatorType] = useState('');
   const [error, setError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({ fullName: '', birthDate: '', calculatorType: '' });
+  const [fieldErrors, setFieldErrors] = useState({
+    fullName: '',
+    birthDate: '',
+    calculatorType: '',
+  });
   const [submitting, setSubmitting] = useState(false);
 
   const resultLabel = useMemo(() => {
@@ -172,16 +176,16 @@ export default function NumerologyCalculatorSection() {
                   onChange={e => setFullName(e.target.value)}
                 />
               </div>
-              <p className="mt-1 text-sm text-red-600 min-h-[20px]">{fieldErrors.fullName || '\u00a0'}</p>
+              <p className="mt-1 text-sm text-red-600 min-h-[20px]">
+                {fieldErrors.fullName || '\u00a0'}
+              </p>
             </div>
 
             <div>
-              <CalculatorDatePicker
-                id="numerology-dob"
-                value={birthDate}
-                onChange={setBirthDate}
-              />
-              <p className="mt-1 text-sm text-red-600 min-h-[20px]">{fieldErrors.birthDate || '\u00a0'}</p>
+              <CalculatorDatePicker id="numerology-dob" value={birthDate} onChange={setBirthDate} />
+              <p className="mt-1 text-sm text-red-600 min-h-[20px]">
+                {fieldErrors.birthDate || '\u00a0'}
+              </p>
             </div>
 
             <div>
@@ -205,12 +209,27 @@ export default function NumerologyCalculatorSection() {
                   ))}
                 </select>
                 <span className="pointer-events-none absolute right-3 bottom-3 text-[#34211d]">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                    <path d="M6 9l6 6 6-6" stroke="#7a2d2a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden
+                  >
+                    <path
+                      d="M6 9l6 6 6-6"
+                      stroke="#7a2d2a"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </span>
               </div>
-              <p className="mt-1 text-sm text-red-600 min-h-[20px]">{fieldErrors.calculatorType || '\u00a0'}</p>
+              <p className="mt-1 text-sm text-red-600 min-h-[20px]">
+                {fieldErrors.calculatorType || '\u00a0'}
+              </p>
             </div>
 
             <div className={FORM_FOOTER_CLASS}>

@@ -323,7 +323,6 @@ const IndividualBasicDetails: React.FC<{
   );
 };
 
-
 const IndividualPlanetsTable: React.FC<{ rows: string[][]; title: string }> = ({ rows, title }) => (
   <div className="mt-8 rounded-[20px] bg-[#f9f4dd] p-5 md:p-7 w-full shadow-sm">
     <h3 className="font-sahitya text-primary text-[28px] font-bold mb-4 border-b border-[#f5e9c6] pb-2">
@@ -384,7 +383,6 @@ const IndividualPlanetsTable: React.FC<{ rows: string[][]; title: string }> = ({
     </div>
   </div>
 );
-
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
