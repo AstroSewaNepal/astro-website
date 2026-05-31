@@ -133,7 +133,7 @@ export default function CalculatorBirthDetailsForm({
         Fill up the Details
       </h2>
 
-      <div className="rounded-[14px] sm:rounded-[16px] md:rounded-[18px] lg:rounded-[20px] border border-[#d3c2b4] bg-[#fdf8f2] p-3 sm:p-4 md:p-5 lg:p-8 shadow-[0_2px_8px_rgba(0,0,0,0.04)] sm:shadow-[0_4px_12px_rgba(0,0,0,0.05)] lg:shadow-[0_6px_30px_rgba(0,0,0,0.08)]">
+      <div className="rounded-[32px] border border-[#BE7B71] bg-[#fdf5ec] p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.08)]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:gap-6 mb-4 sm:mb-5 md:mb-6 lg:mb-7">
           <div>
             <label className="block font-mukta text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-[#2f2f2f] mb-1.5 sm:mb-2">
@@ -145,7 +145,7 @@ export default function CalculatorBirthDetailsForm({
                 placeholder="Enter name"
                 value={form.fullName}
                 onChange={e => handleChange('fullName', e.target.value)}
-                className="w-full rounded-full border border-[#c9b9aa] bg-white px-3 sm:px-3.5 md:px-4 lg:px-5 py-2 sm:py-2.5 md:py-2.75 lg:py-3.5 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#b0a098] outline-none focus:border-[#5D1409] transition-colors pr-10"
+                className="w-full rounded-[32px] border border-[#BE7B71] bg-white px-4 py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#9a8f87] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
               />
               <span className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[#5D1409] opacity-60">
                 <svg
@@ -174,7 +174,7 @@ export default function CalculatorBirthDetailsForm({
               <select
                 value={form.gender}
                 onChange={e => handleChange('gender', e.target.value)}
-                className="w-full appearance-none rounded-full border border-[#c9b9aa] bg-white px-3 sm:px-3.5 md:px-4 lg:px-5 py-2 sm:py-2.5 md:py-2.75 lg:py-3.5 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] outline-none focus:border-[#5D1409] transition-colors pr-10"
+                className="w-full appearance-none rounded-[32px] border border-[#BE7B71] bg-white px-4 py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
               >
                 <option value="" disabled>
                   Select
@@ -222,7 +222,7 @@ export default function CalculatorBirthDetailsForm({
                 placeholder="Where were you born?"
                 value={form.birthPlace}
                 onChange={e => handleChange('birthPlace', e.target.value)}
-                className="w-full rounded-full border border-[#c9b9aa] bg-white px-3 sm:px-3.5 md:px-4 lg:px-5 py-2 sm:py-2.5 md:py-2.75 lg:py-3.5 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#b0a098] outline-none focus:border-[#5D1409] transition-colors pr-10"
+                className="w-full rounded-[32px] border border-[#BE7B71] bg-white px-4 py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#9a8f87] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
               />
               <span className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[#5D1409] opacity-60">
                 <svg

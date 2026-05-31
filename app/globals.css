@@ -95,6 +95,24 @@ body {
   overflow-x: hidden;
 }
 
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+a,
+[role="button"] {
+  cursor: pointer;
+}
+
+button *,
+input[type="button"] *,
+input[type="submit"] *,
+input[type="reset"] *,
+a *,
+[role="button"] * {
+  cursor: inherit;
+}
+
 /* Custom font utilities for Tailwind CSS v4 */
 @utility font-tiro-devanagari {
   font-family: var(--font-tiro-devanagari);

@@ -40,14 +40,14 @@ export default function CalculatorDatePicker({
 
   return (
     <div className="relative">
-      <label htmlFor={id} className="block font-mukta text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-[#2f2f2f] mb-1.5 sm:mb-2">
+      <label htmlFor={id} className="block font-mukta text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-[#141414] mb-1 sm:mb-1.5">
         {label}
       </label>
       <button
         id={id}
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full flex items-center rounded-full border border-[#c9b9aa] bg-transparent px-4 py-3 text-left font-mukta text-sm md:text-base text-[#2f2f2f] transition-colors duration-200 focus-within:border-[#5D1409] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5D1409]/20"
+        className="w-full cursor-pointer flex items-center justify-between h-[52px] box-border rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] py-[12px] text-left font-mukta text-sm md:text-base text-[#2f2f2f] transition-colors duration-200 focus-within:border-[#BE7B71] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BE7B71]/20"
         aria-haspopup="dialog"
         aria-expanded={open}
       >

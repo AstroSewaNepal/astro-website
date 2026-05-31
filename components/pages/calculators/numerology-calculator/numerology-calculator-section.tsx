@@ -15,7 +15,7 @@ const CALCULATOR_TYPES = [
 ];
 
 const FORM_OUTLINE_CLASS =
-  'box-border mx-auto mt-2 flex w-full max-w-[399px] sm:max-w-[480px] md:max-w-[680px] lg:max-w-[800px] flex-col gap-4 rounded-[12px] border border-Trinary bg-transparent py-4 px-4 sm:px-5 md:px-6 lg:px-8';
+  'box-border mx-auto mt-2 flex w-full max-w-[399px] sm:max-w-[480px] md:max-w-[680px] lg:max-w-[800px] flex-col gap-4 rounded-[32px] border border-[#BE7B71] p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.08)]';
 
 const FIELD_LABEL_CLASS =
   'mb-1 sm:mb-1.5 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] font-semibold leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[30px] tracking-normal text-[#141414]';
@@ -166,10 +166,10 @@ export default function NumerologyCalculatorSection() {
               <label htmlFor="numerology-fullname" className={FIELD_LABEL_CLASS}>
                 Enter full name
               </label>
-              <div className="flex h-[40px] sm:h-[44px] md:h-[48px] lg:h-[56px] items-center gap-2 rounded-[22px] sm:rounded-[26px] md:rounded-[28px] lg:rounded-[32px] border-2 border-[#aa4c44] px-4 sm:px-4.5 md:px-5 lg:px-5 py-2.5 sm:py-3 md:py-3 lg:py-4">
+              <div className="relative rounded-[32px] border border-[#BE7B71] bg-white px-4 py-3 sm:px-4.5 md:px-5 lg:px-5">
                 <input
                   id="numerology-fullname"
-                  className="min-w-0 flex-1 border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none"
+                  className="min-w-0 w-full border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none"
                   placeholder="Enter name"
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
@@ -191,10 +191,10 @@ export default function NumerologyCalculatorSection() {
               <label htmlFor="numerology-type" className={FIELD_LABEL_CLASS}>
                 Report focus
               </label>
-              <div className="relative flex h-[40px] sm:h-[44px] md:h-[48px] lg:h-[56px] items-center rounded-[22px] sm:rounded-[26px] md:rounded-[28px] lg:rounded-[32px] border-2 border-[#aa4c44] px-4 sm:px-4.5 md:px-5 lg:px-5 py-2.5 sm:py-3 md:py-3 lg:py-4">
+              <div className="relative rounded-[32px] border border-[#BE7B71] bg-white px-4 py-3 sm:px-4.5 md:px-5 lg:px-5">
                 <select
                   id="numerology-type"
-                  className="min-w-0 flex-1 appearance-none border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none pr-10 cursor-pointer"
+                  className="min-w-0 w-full appearance-none border-none bg-transparent text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-mukta text-[#34211d] outline-none pr-10 cursor-pointer"
                   value={calculatorType}
                   onChange={e => setCalculatorType(e.target.value)}
                 >
