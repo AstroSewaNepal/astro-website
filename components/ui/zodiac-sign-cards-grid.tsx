@@ -2,7 +2,6 @@
 
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import clsx from 'clsx';
-import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination as SwiperPagination } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
@@ -84,10 +83,10 @@ export function ZodiacSignCardsGrid<T>({
   const swiperRef = useRef<SwiperType | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [slidesPerView, setSlidesPerView] = useState(1);
+  const cardsCount = cards === 'loading' ? 0 : cards.length;
   const isEmpty = cards !== 'loading' && cards.length === 0;
-  const showCustomPaginationBar = showCustomPagination && cards !== 'loading' && cards.length > 1;
-  const showCarouselNavButtons =
-    showCarouselNav && !showCustomPaginationBar && cards !== 'loading' && cards.length > 1;
+  const showCustomPaginationBar = showCustomPagination && cardsCount > 1;
+  const showCarouselNavButtons = showCarouselNav && showCustomPaginationBar && cardsCount > 1;
   const swiperPagination = showCustomPaginationBar
     ? false
     : (pagination ?? {
@@ -166,7 +165,7 @@ export function ZodiacSignCardsGrid<T>({
               carouselHideUp,
             )}
           >
-            {showCustomPaginationBar ? (
+            {showCarouselNavButtons ? (
               <>
                 <button
                   type="button"

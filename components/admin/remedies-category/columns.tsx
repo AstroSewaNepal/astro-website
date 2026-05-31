@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -38,10 +39,13 @@ export function createColumns({ onEdit, onDelete }: ColumnActions): ColumnDef<Re
         const image = row.original.image;
         if (!image) return <span className="font-mukta text-sm text-neutral-400">—</span>;
         return (
-          <img
+          <Image
             src={image.url}
             alt={row.original.title}
+            width={40}
+            height={40}
             className="h-10 w-10 rounded-lg object-cover"
+            unoptimized
           />
         );
       },

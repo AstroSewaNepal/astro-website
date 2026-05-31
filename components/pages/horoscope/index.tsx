@@ -2,26 +2,19 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
-import Image from 'next/image';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-import ArrowRight from '@/components/icons/arrow-right';
-import StartIcon from '@/components/icons/start-icon';
 import { CompatibilityHoroscopeSection } from '@/app/compatibility/compatibilityMatch/compatibility-horoscope-section';
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
 import { fetchVedastroHoroscopeList } from '@/lib/api/vedastro/horoscope';
-import {
-  horoscopeDetailPageHref,
-  parseHoroscopeRangeFromUrl,
-} from '@/lib/constants/horoscope-range-nav';
+import { parseHoroscopeRangeFromUrl } from '@/lib/constants/horoscope-range-nav';
 import {
   persistCardDisplayLanguage,
   readCardDisplayLanguage,
   useHoroscopeLocale,
 } from '@/lib/i18n';
-import type { HoroscopeSummaryRow, VedastroHoroscopeRangeType } from '@/lib/types/vedastro';
+import type { HoroscopeSummaryRow } from '@/lib/types/vedastro';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -59,8 +52,6 @@ type DisplayCard = {
   stars: number;
 };
 
-type SignCardLayout = 'grid' | 'carousel';
-
 export type HoroscopeHeroSignsSectionProps = {
   /** Hide the range hero title (e.g. under details “Read horoscope for other signs”). */
   hideTitle?: boolean;
@@ -85,6 +76,9 @@ export function HoroscopeHeroSignsSection({
   swiperKeySuffix = '',
   dataQaId = 'horoscope-sign-cards-grid',
 }: HoroscopeHeroSignsSectionProps) {
+  void highlightSign;
+  void swiperKeySuffix;
+  void dataQaId;
   const searchParams = useSearchParams();
   const selectedRange = parseHoroscopeRangeFromUrl(searchParams.get('type'));
   const { dict, uiLanguage } = useHoroscopeLocale();
@@ -178,8 +172,6 @@ export function HoroscopeHeroSignsSection({
       };
     });
   }, [signLanguage, listError, listLoading, rows]);
-
-  const swiperKeyExtra = swiperKeySuffix ? `${swiperKeySuffix}-` : '';
 
   return (
     <section

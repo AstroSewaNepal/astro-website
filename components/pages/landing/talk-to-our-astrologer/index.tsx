@@ -12,7 +12,6 @@ import ChatIcon from '@/components/icons/chat-icon';
 import PhoneIcon from '@/components/icons/phone-icon';
 import StartIcon from '@/components/icons/start-icon';
 import { ASTROLOGER_LIST } from './astrologer-data.const';
-import { ChevronLeftIcon } from '@/components/images/icons';
 import CalendarIcon from '@/components/icons/calendar-icon';
 
 import 'swiper/css';

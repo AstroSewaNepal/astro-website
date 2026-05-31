@@ -205,32 +205,6 @@ const LocationIcon = ({ className }: IconProps) => (
   </svg>
 );
 
-const ClockIcon = ({ className }: IconProps) => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    aria-hidden="true"
-    className={className}
-  >
-    <path
-      d="M12 22a10 10 0 100-20 10 10 0 000 20z"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M12 6v6l4 2"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
 const ChevronIcon = ({ className }: IconProps) => (
   <svg
     width="18"
@@ -606,7 +580,9 @@ const KundaliMatchingFormSection: React.FC = () => {
   const [manBirthPlaceSelected, setManBirthPlaceSelected] = useState(false);
   const [womanBirthPlace, setWomanBirthPlace] = useState('');
   const [womanBirthPlaceSuggestions, setWomanBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
-  const [womanBirthPlaceSelection, setWomanBirthPlaceSelection] = useState<GeocodeResult | null>(null);
+  const [womanBirthPlaceSelection, setWomanBirthPlaceSelection] = useState<GeocodeResult | null>(
+    null,
+  );
   const [womanBirthPlaceSelected, setWomanBirthPlaceSelected] = useState(false);
 
   useEffect(() => {

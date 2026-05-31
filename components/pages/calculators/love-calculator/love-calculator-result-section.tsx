@@ -9,9 +9,7 @@ import { FiRefreshCcw } from 'react-icons/fi';
 
 import UploadPhotoImg from '@/components/images/uploadyourphoto.png';
 import LoveMatchIcon from '@/components/images/icons/lovematch.png';
-import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
 import CalculatorCard from '@/components/pages/calculators/calculator-card';
-import LoveHeroImage from '@/components/images/lovecalculator.png';
 import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
 import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
 import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
@@ -94,7 +92,8 @@ export default function LoveCalculatorResultSection() {
         />
       ),
       titleClassName: 'md:text-[20px] md:leading-[28px] text-center',
-      descriptionClassName: 'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
+      descriptionClassName:
+        'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
     },
     {
       title: 'Sun Sign Calculator',
@@ -119,7 +118,8 @@ export default function LoveCalculatorResultSection() {
         />
       ),
       titleClassName: 'md:text-[20px] md:leading-[28px] text-center',
-      descriptionClassName: 'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
+      descriptionClassName:
+        'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
     },
     {
       title: 'Mangal Dosha Calculator',
@@ -144,11 +144,13 @@ export default function LoveCalculatorResultSection() {
         />
       ),
       titleClassName: 'md:text-[20px] md:leading-[28px] text-center whitespace-nowrap',
-      descriptionClassName: 'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
+      descriptionClassName:
+        'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
     },
     {
       title: 'Dasha Calculator',
-      description: 'Calculate planetary dasha periods and analyze timing of life events in Vedic astrology.',
+      description:
+        'Calculate planetary dasha periods and analyze timing of life events in Vedic astrology.',
       calculateHref: '/calculators/dasha-calculator',
       mobileIcon: (
         <Image
@@ -169,7 +171,8 @@ export default function LoveCalculatorResultSection() {
         />
       ),
       titleClassName: 'md:text-[22px] md:leading-[32px] text-center',
-      descriptionClassName: 'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
+      descriptionClassName:
+        'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
     },
     {
       title: 'Moon Phase Calculator',
@@ -194,11 +197,13 @@ export default function LoveCalculatorResultSection() {
         />
       ),
       titleClassName: 'md:text-[22px] md:leading-[32px] text-center',
-      descriptionClassName: 'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
+      descriptionClassName:
+        'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
     },
     {
       title: 'Rashi Calculator',
-      description: 'Discover your Vedic Rashi and understand how it shapes your birth chart insights.',
+      description:
+        'Discover your Vedic Rashi and understand how it shapes your birth chart insights.',
       calculateHref: '/calculators/rashi-calculator',
       mobileIcon: (
         <Image
@@ -219,7 +224,8 @@ export default function LoveCalculatorResultSection() {
         />
       ),
       titleClassName: 'md:text-[22px] md:leading-[32px] text-center',
-      descriptionClassName: 'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
+      descriptionClassName:
+        'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
     },
   ];
 
@@ -260,12 +266,17 @@ export default function LoveCalculatorResultSection() {
         {/* Result Card */}
         <div className="rounded-[16px] border border-[#d4c4b8] p-4 md:p-6 flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-8">
           {/* Photo */}
-          <label htmlFor="love-photo-upload" className="shrink-0 relative rounded-[19px] overflow-hidden w-full max-w-[320px] h-[332px] md:w-[318px] md:h-[333px] cursor-pointer group">
+          <label
+            htmlFor="love-photo-upload"
+            className="shrink-0 relative rounded-[19px] overflow-hidden w-full max-w-[320px] h-[332px] md:w-[318px] md:h-[333px] cursor-pointer group"
+          >
             {photoPreview ? (
-              <img
+              <Image
                 src={photoPreview}
                 alt="Uploaded couple photo"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                unoptimized
               />
             ) : (
               <Image
@@ -279,7 +290,12 @@ export default function LoveCalculatorResultSection() {
             )}
             <div className="absolute inset-0 flex items-center justify-center bg-black/0 text-white transition duration-300 group-hover:bg-black/20">
               <div className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm opacity-0 transition duration-300 group-hover:opacity-100">
-                <svg viewBox="0 0 24 24" className="h-5 w-5 text-white" fill="currentColor" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5 text-white"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
                   <path d="M5 20h14a1 1 0 001-1v-6h-2v5H6v-5H4v6a1 1 0 001 1zm7-15a1 1 0 011 1v5h4l-5 5-5-5h4V6a1 1 0 011-1z" />
                 </svg>
                 <span className="text-sm font-semibold">Upload your photo</span>
@@ -403,7 +419,7 @@ export default function LoveCalculatorResultSection() {
           </h2>
 
           <div className="mt-5 md:hidden flex flex-nowrap gap-4 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
-            {otherCalculators.map((card) => (
+            {otherCalculators.map(card => (
               <CalculatorCard
                 key={card.calculateHref}
                 title={card.title}
@@ -416,7 +432,7 @@ export default function LoveCalculatorResultSection() {
           </div>
 
           <div className="mt-5 hidden md:grid md:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-            {otherCalculators.map((card) => (
+            {otherCalculators.map(card => (
               <CalculatorCard
                 key={card.calculateHref}
                 title={card.title}

@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Nunito } from 'next/font/google';
 import { createPortal } from 'react-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+const nunito = Nunito({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
 interface DatePickerDropdownProps {
   open: boolean;
@@ -52,7 +55,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
 
     queueMicrotask(() => {
       if (value) {
-        const [day, month, year] = value.split('-').map(Number);
+        const [, month, year] = value.split('-').map(Number);
         if (year && month) {
           setDisplayYear(year);
           setDisplayMonth(month - 1);
@@ -66,7 +69,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
     });
   }, [open, value]);
 
-  const computePosition = () => {
+  const computePosition = useCallback(() => {
     if (!open) return;
     if (anchorId) {
       const anchor = document.getElementById(anchorId);
@@ -90,13 +93,13 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
     const dr = el.getBoundingClientRect();
     const vh = window.innerHeight;
     setPositionAbove(vh - pr.bottom < dr.height && pr.top > vh - pr.bottom);
-  };
+  }, [open, anchorId]);
 
   useEffect(() => {
     if (!open) return;
     const t = setTimeout(computePosition, 0);
     return () => clearTimeout(t);
-  }, [open, anchorId]);
+  }, [open, anchorId, computePosition]);
 
   useEffect(() => {
     if (!open) return;
@@ -167,7 +170,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
             ) {
               scrollParents.push(el);
             }
-          } catch (e) {}
+          } catch {}
           el = el.parentElement;
         }
       }
@@ -188,7 +191,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
       window.removeEventListener('resize', onScroll);
       resetTransform();
     };
-  }, [open, anchorId]);
+  }, [open, anchorId, computePosition]);
 
   useEffect(() => {
     if (!open) return;
@@ -306,11 +309,6 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
 
   const dropdownContent = (
     <>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-      />
-
       <div
         ref={dropdownRef}
         data-testid="date-picker-dropdown"
@@ -339,6 +337,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
         }}
       >
         <div
+          className={nunito.className}
           style={{
             width: '100%',
             height: '100%',

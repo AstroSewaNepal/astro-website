@@ -1,6 +1,4 @@
 import { redirect } from 'next/navigation';
-import type { Metadata } from 'next';
-import { Suspense } from 'react';
 
 import { ELanguage } from '@/components/enums/language.enum';
 
