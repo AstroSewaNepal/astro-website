@@ -340,7 +340,6 @@ export default function LoveCalculatorSection() {
                     value={yourBirthPlace}
                     onChange={e => {
                       setYourBirthPlace(e.target.value);
-                      setYourResolvedBirthPlace('');
                       setYourBirthPlaceSelection(null);
                       setYourBirthPlaceSelected(false);
                       setFieldErrors(prev => ({ ...prev, yourBirthPlace: '' }));
@@ -355,7 +354,6 @@ export default function LoveCalculatorSection() {
                           type="button"
                           onClick={() => {
                             setYourBirthPlace(suggestion.displayName ?? yourBirthPlace);
-                            setYourResolvedBirthPlace(suggestion.displayName ?? '');
                             setYourBirthPlaceSelection(suggestion);
                             setYourBirthPlaceSelected(true);
                             setYourBirthPlaceSuggestions([]);
@@ -382,7 +380,6 @@ export default function LoveCalculatorSection() {
                     value={partnerBirthPlace}
                     onChange={e => {
                       setPartnerBirthPlace(e.target.value);
-                      setPartnerResolvedBirthPlace('');
                       setPartnerBirthPlaceSelection(null);
                       setPartnerBirthPlaceSelected(false);
                       setFieldErrors(prev => ({ ...prev, partnerBirthPlace: '' }));
@@ -397,7 +394,6 @@ export default function LoveCalculatorSection() {
                           type="button"
                           onClick={() => {
                             setPartnerBirthPlace(suggestion.displayName ?? partnerBirthPlace);
-                            setPartnerResolvedBirthPlace(suggestion.displayName ?? '');
                             setPartnerBirthPlaceSelection(suggestion);
                             setPartnerBirthPlaceSelected(true);
                             setPartnerBirthPlaceSuggestions([]);
