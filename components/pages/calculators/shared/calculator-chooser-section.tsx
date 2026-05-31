@@ -100,7 +100,8 @@ const calculators: Array<{
   {
     key: 'moon-phase',
     title: 'Moon Phase Calculator',
-    description: 'Track each moon phase and explore current moon phases and lunar cycle changes over time.',
+    description:
+      'Track each moon phase and explore current moon phases and lunar cycle changes over time.',
     href: '/calculators/moon-phase-calculator',
     icon: (
       <Image
@@ -115,7 +116,8 @@ const calculators: Array<{
   {
     key: 'rashi',
     title: 'Rashi Calculator',
-    description: 'Discover your Vedic Rashi and understand how it shapes your birth chart insights.',
+    description:
+      'Discover your Vedic Rashi and understand how it shapes your birth chart insights.',
     href: '/calculators/rashi-calculator',
     icon: (
       <Image

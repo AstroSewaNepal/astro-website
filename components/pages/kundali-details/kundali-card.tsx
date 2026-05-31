@@ -1,8 +1,6 @@
 import Image, { type StaticImageData } from 'next/image';
 import Link from 'next/link';
 
-import { AstrologyPrimaryColor } from '@/components/images';
-
 export type KundaliCardProps = {
   title: string;
   subtitle: string;

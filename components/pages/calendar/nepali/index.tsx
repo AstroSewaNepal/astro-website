@@ -48,19 +48,6 @@ const getAdjacentNepaliMonth = (year: number, month: number, offset: number) => 
   return { year: dateRef.getYear(), month: dateRef.getMonth() };
 };
 
-const getFestivalLabel = (cell: CalendarCell) => {
-  const weekdayFestivalMap: Record<number, string> = {
-    0: 'Surya Aradhana',
-    1: 'Shiv Puja',
-    2: 'Hanuman Puja',
-    3: 'Budha Smaran',
-    4: 'Guru Puja',
-    5: 'Laxmi Puja',
-    6: 'Shani Aradhana',
-  };
-  return weekdayFestivalMap[cell.weekDay] ?? 'Auspicious Day';
-};
-
 const getCellDisplayDay = (cell: CalendarCell) => {
   const dateRef = new NepaliDate(cell.year, cell.month, cell.day);
   return dateRef.format('DD', 'np');

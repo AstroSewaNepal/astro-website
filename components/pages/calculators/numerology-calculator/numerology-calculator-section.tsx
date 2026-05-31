@@ -49,7 +49,11 @@ export default function NumerologyCalculatorSection() {
   const [birthDate, setBirthDate] = useState('');
   const [calculatorType, setCalculatorType] = useState('');
   const [error, setError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({ fullName: '', birthDate: '', calculatorType: '' });
+  const [fieldErrors, setFieldErrors] = useState({
+    fullName: '',
+    birthDate: '',
+    calculatorType: '',
+  });
   const [submitting, setSubmitting] = useState(false);
 
   const resultLabel = useMemo(() => {

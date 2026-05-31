@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -27,7 +27,7 @@ const DatePickerDialog: React.FC<DatePickerDialogProps> = ({
 
   const parseValueDate = (date?: string) => {
     if (!date) return null;
-    const [day, month, year] = date.split('-').map(Number);
+    const [, month, year] = date.split('-').map(Number);
     if (!year || !month) return null;
     return { year, month: month - 1 };
   };
@@ -37,24 +37,9 @@ const DatePickerDialog: React.FC<DatePickerDialogProps> = ({
     month: today.getMonth(),
   };
 
-  const [displayYear, setDisplayYear] = useState(initialDate.year);
-  const [displayMonth, setDisplayMonth] = useState(initialDate.month);
-  const [view, setView] = useState<'day' | 'month' | 'year'>('day');
-
-  useEffect(() => {
-    if (!open) return;
-
-    const selectedDate = parseValueDate(value);
-    if (selectedDate) {
-      setDisplayYear(selectedDate.year);
-      setDisplayMonth(selectedDate.month);
-    } else {
-      const now = new Date();
-      setDisplayYear(now.getFullYear());
-      setDisplayMonth(now.getMonth());
-    }
-    setView('day');
-  }, [open, value]);
+  const [displayYear, setDisplayYear] = useState(() => initialDate.year);
+  const [displayMonth, setDisplayMonth] = useState(() => initialDate.month);
+  const [view, setView] = useState<'day' | 'month' | 'year'>(() => 'day');
 
   const handlePrevMonth = () => {
     if (displayMonth === 0) {
@@ -83,7 +68,6 @@ const DatePickerDialog: React.FC<DatePickerDialogProps> = ({
   };
 
   const handleDayClick = (day: number) => {
-    const date = new Date(displayYear, displayMonth, day);
     const formattedDate = `${String(day).padStart(2, '0')}-${String(displayMonth + 1).padStart(2, '0')}-${displayYear}`;
     onDateSelect(formattedDate);
     onOpenChange(false);
@@ -140,7 +124,10 @@ const DatePickerDialog: React.FC<DatePickerDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[min(100vw-2rem,20rem)] fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:!left-8 md:!top-1/2 md:!translate-x-0 md:!translate-y-[-50%] md:!right-auto !p-3">
+      <DialogContent
+        key={`${open ? 'open' : 'closed'}-${value ?? 'empty'}`}
+        className="w-[min(100vw-2rem,20rem)] fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:!left-8 md:!top-1/2 md:!translate-x-0 md:!translate-y-[-50%] md:!right-auto !p-3"
+      >
         <DialogHeader>
           <DialogTitle className="text-base">Select Date of Birth</DialogTitle>
           <DialogClose />

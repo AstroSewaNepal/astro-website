@@ -28,13 +28,6 @@ const cardShell = clsx(
   'lg:px-[52px] lg:py-9',
 );
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type GeocodeResponseItem = {
-  lat: string;
-  lon: string;
-};
-
 type FieldErrors = {
   fullName?: string;
   dateOfBirth?: string;
@@ -120,20 +113,6 @@ function getLocalOffset(dateInput: string): string {
   const hours = Math.floor(abs / 60);
   const minutes = abs % 60;
   return `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-}
-
-// Simple timezone lookup based on coordinates (you can expand this)
-function getTimezoneFromCoords(lat: number, lon: number): string {
-  // Nepal coordinates roughly
-  if (lat >= 26.0 && lat <= 30.5 && lon >= 80.0 && lon <= 88.2) {
-    return 'Asia/Kathmandu';
-  }
-  // India coordinates roughly
-  if (lat >= 8.0 && lat <= 37.0 && lon >= 68.0 && lon <= 97.0) {
-    return 'Asia/Kolkata';
-  }
-  // Default fallback
-  return 'UTC';
 }
 
 // ─── FieldError helper ────────────────────────────────────────────────────────

@@ -1,6 +1,5 @@
 'use server';
 
-import { AuthError } from 'next-auth';
 import { redirect } from 'next/navigation';
 
 import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';

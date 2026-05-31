@@ -1,6 +1,7 @@
 import { birthTimePartsToHHMM, type BirthTimeParts } from '@/components/shared/birth-time-fields';
 
 import type { CalculatorFormValues } from './calculator-form-types';
+import type { GeocodeResult } from './geocode-place';
 import { geocodePlace } from './geocode-place';
 
 /** ISO yyyy-mm-dd → VedAstro DD-MM-YYYY */

@@ -1,23 +1,15 @@
 'use client';
 
-import { Fragment, useCallback } from 'react';
+import { Fragment } from 'react';
 import clsx from 'clsx';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
-import type { Swiper as SwiperType } from 'swiper';
 
 import { ELanguage } from '@/components/enums/language.enum';
 import { horoscopeDetailPageHref } from '@/lib/constants/horoscope-range-nav';
-import { HOROSCOPE_SIGNS, type HoroscopeSign } from '@/lib/types/horoscope';
+import type { HoroscopeSign } from '@/lib/types/horoscope';
 import type { VedastroHoroscopeRangeType } from '@/lib/types/vedastro';
-
-import {
-  capitalizeSign,
-  SIGN_COLOR_IMAGE,
-  SIGN_LIGHT_IMAGE,
-} from './horoscope-details-sign-assets';
 export { HoroscopeDetailsZodiacNav } from './horoscope-details-zodiac-nav';
 import { useSwiperScrollToIndex } from './horoscope-details-swiper-utils';
 
