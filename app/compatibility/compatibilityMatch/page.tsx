@@ -3,11 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
-import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import ArrowRight from '@/components/icons/arrow-right';
-import StartIcon from '@/components/icons/start-icon';
 import { ELanguage } from '@/components/enums/language.enum';
 
 import Services from '@/components/pages/landing/services';
@@ -52,7 +49,6 @@ import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 import type { HoroscopeSign } from '@/lib/types/horoscope';
 import { postZodiacCompatibility } from '@/lib/api/compatibility';
 import type { HoroscopeSummaryRow, ZodiacCompatibilityData } from '@/lib/types/vedastro';
-import type { TodayHoroscopeDisplayCard } from '@/lib/horoscope/build-today-horoscope-display-cards';
 
 const zodiacImageMap = {
   aries: { color: EnglishAriesColor, light: EnglishAriesLight },

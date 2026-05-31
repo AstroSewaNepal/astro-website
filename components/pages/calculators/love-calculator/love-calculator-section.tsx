@@ -6,21 +6,13 @@ import { useRouter } from 'next/navigation';
 import { IoHeart } from 'react-icons/io5';
 
 import { buildBirthVedastroQuery } from '@/lib/calculators/birth-query';
-import { geocodePlace, searchPlaceSuggestions, type GeocodeResult } from '@/lib/calculators/geocode-place';
+import { searchPlaceSuggestions, type GeocodeResult } from '@/lib/calculators/geocode-place';
 import { fetchVedastroCalculator } from '@/lib/vedastro/fetch-calculator';
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
 
-import CalculatorCard from '../calculator-card';
 import CalculatorChooserSection from '../shared/calculator-chooser-section';
 import CalculatorDatePicker from '../shared/calculator-date-picker';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
-import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
-import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
-import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
-import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
-import DashaImage from '@/components/images/calculator/dasha.png';
-import MoonPhaseImage from '@/components/images/calculator/moonphase.png';
-import RashiCalculatorImage from '@/components/images/calculator/rashicalculator.png';
 
 export default function LoveCalculatorSection() {
   const router = useRouter();
@@ -28,13 +20,11 @@ export default function LoveCalculatorSection() {
   const [partnerName, setPartnerName] = useState('');
   const [yourBirthDate, setYourBirthDate] = useState('');
   const [yourBirthPlace, setYourBirthPlace] = useState('');
-  const [yourResolvedBirthPlace, setYourResolvedBirthPlace] = useState('');
   const [yourBirthPlaceSuggestions, setYourBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
   const [yourBirthPlaceSelection, setYourBirthPlaceSelection] = useState<GeocodeResult | null>(null);
   const [yourBirthPlaceSelected, setYourBirthPlaceSelected] = useState(false);
   const [partnerBirthDate, setPartnerBirthDate] = useState('');
   const [partnerBirthPlace, setPartnerBirthPlace] = useState('');
-  const [partnerResolvedBirthPlace, setPartnerResolvedBirthPlace] = useState('');
   const [partnerBirthPlaceSuggestions, setPartnerBirthPlaceSuggestions] = useState<GeocodeResult[]>([]);
   const [partnerBirthPlaceSelection, setPartnerBirthPlaceSelection] = useState<GeocodeResult | null>(null);
   const [partnerBirthPlaceSelected, setPartnerBirthPlaceSelected] = useState(false);
@@ -139,9 +129,6 @@ export default function LoveCalculatorSection() {
           buildBirthVedastroQuery(yourForm, yourBirthPlaceSelection ?? undefined),
           buildBirthVedastroQuery(partnerForm, partnerBirthPlaceSelection ?? undefined),
         ]);
-
-        setYourResolvedBirthPlace(yourQ.resolvedLocation ?? yourBirthPlace.trim());
-        setPartnerResolvedBirthPlace(partnerQ.resolvedLocation ?? partnerBirthPlace.trim());
 
         // UI labels: you = Man (groom), partner = Woman (bride) for VedAstro MatchReport.
         const params = new URLSearchParams({

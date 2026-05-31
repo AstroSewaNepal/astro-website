@@ -35,9 +35,6 @@ const HERO_TAGLINE_CLASS =
 const HERO_DESCRIPTION_CLASS =
   'font-mukta text-[16px] font-normal leading-[28px] tracking-normal text-[#4a423d] md:text-[18px] md:leading-[30px]';
 
-const FORM_HEADING_CLASS =
-  'text-left font-sahitya text-[22px] font-bold leading-[32px] tracking-normal text-[#7c211a] md:font-mukta md:text-[24px] md:font-semibold md:leading-[30px]';
-
 const INFO_BODY_CLASS = `mt-3 max-w-none text-left ${MUKTA_BODY_TEXT_CLASS}`;
 
 const CALCULATE_BUTTON_CLASS =

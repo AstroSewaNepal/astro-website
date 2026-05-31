@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import OpenChart from '@/components/images/openchart.png';
 
@@ -313,8 +314,6 @@ export function NorthIndianOpenChartWithPlanets({
   const fzHouse = Math.max(10, Math.round(fitH * 0.034));
   const fzSign = Math.max(9, Math.round(fitH * 0.032));
   const fzPlanet = Math.max(11, Math.round(fitH * 0.044));
-  const fzNak = Math.max(8, Math.round(fitH * 0.032));
-  const fzLh = Math.max(8, Math.round(fitH * 0.03));
 
   return (
     <div
@@ -322,13 +321,16 @@ export function NorthIndianOpenChartWithPlanets({
       className={`${OPEN_CHART_FRAME_CLASS}`}
       style={minHeight ? { height: `${minHeight}px` } : undefined}
     >
-      <img
+      <Image
         ref={imgRef}
         src={src}
         alt="North Indian D1 chart template"
+        width={OPEN_CHART_NATURAL_SIZE.w}
+        height={OPEN_CHART_NATURAL_SIZE.h}
         className="block h-full w-full select-none object-contain"
         draggable={false}
         onLoad={recalcImgFit}
+        unoptimized
       />
       {imgFit ? (
         <div

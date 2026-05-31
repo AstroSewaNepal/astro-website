@@ -9,9 +9,7 @@ import { FiRefreshCcw } from 'react-icons/fi';
 
 import UploadPhotoImg from '@/components/images/uploadyourphoto.png';
 import LoveMatchIcon from '@/components/images/icons/lovematch.png';
-import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
 import CalculatorCard from '@/components/pages/calculators/calculator-card';
-import LoveHeroImage from '@/components/images/lovecalculator.png';
 import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
 import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
 import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
@@ -262,10 +260,12 @@ export default function LoveCalculatorResultSection() {
           {/* Photo */}
           <label htmlFor="love-photo-upload" className="shrink-0 relative rounded-[19px] overflow-hidden w-full max-w-[320px] h-[332px] md:w-[318px] md:h-[333px] cursor-pointer group">
             {photoPreview ? (
-              <img
+              <Image
                 src={photoPreview}
                 alt="Uploaded couple photo"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                unoptimized
               />
             ) : (
               <Image

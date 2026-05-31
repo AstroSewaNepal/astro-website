@@ -40,17 +40,6 @@ type MatchPredictionRow = {
   Score?: number;
 };
 
-type MatchReportPayload = {
-  KutaScore?: number;
-  Notes?: string;
-  Summary?: {
-    HeartIcon?: string;
-    ScoreColor?: string;
-    ScoreSummary?: string;
-  };
-  PredictionList?: MatchPredictionRow[];
-};
-
 type TabButtonProps = {
   id: KundaliMatchingTab;
   label: string;
@@ -153,19 +142,6 @@ function clampPercent(v: number | undefined): number {
   return Math.max(0, Math.min(100, Math.round(v)));
 }
 
-function natureColor(nature: string | undefined): string {
-  switch (nature) {
-    case 'Good':
-      return 'text-green-600';
-    case 'Bad':
-      return 'text-red-600';
-    case 'Neutral':
-      return 'text-amber-600';
-    default:
-      return 'text-gray-500';
-  }
-}
-
 function natureBadge(nature: string | undefined): React.ReactNode {
   const label = nature ?? 'Unknown';
   return (
@@ -175,20 +151,6 @@ function natureBadge(nature: string | undefined): React.ReactNode {
   );
 }
 
-function scoreRingColor(score: number): string {
-  if (score >= 75) return '#22c55e';
-  if (score >= 50) return '#f59e0b';
-  return '#ef4444';
-}
-
-function scoreLabel(score: number): string {
-  if (score >= 80) return 'Excellent Match';
-  if (score >= 65) return 'Good Match';
-  if (score >= 50) return 'Average Match';
-  if (score >= 35) return 'Below Average';
-  return 'Low Compatibility';
-}
-
 function planetHouseBullets(planetRows: string[][]): string[] {
   return planetRows.map(row => {
     const planet = row[0] ?? '—';
@@ -196,121 +158,6 @@ function planetHouseBullets(planetRows: string[][]): string[] {
     return `${planet} is in ${house} in your birth chart.`;
   });
 }
-
-const RING_R = 52;
-const RING_CIRC = 2 * Math.PI * RING_R;
-
-const ScoreRing: React.FC<{ score: number }> = ({ score }) => {
-  const stroke = scoreRingColor(score);
-  const dash = (score / 100) * RING_CIRC;
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <svg width="140" height="140" viewBox="0 0 120 120">
-        <circle cx="60" cy="60" r={RING_R} fill="none" stroke="#f3e8de" strokeWidth="10" />
-        <circle
-          cx="60"
-          cy="60"
-          r={RING_R}
-          fill="none"
-          stroke={stroke}
-          strokeWidth="10"
-          strokeLinecap="round"
-          strokeDasharray={`${dash} ${RING_CIRC}`}
-          strokeDashoffset={RING_CIRC / 4}
-          style={{ transition: 'stroke-dasharray 1s ease' }}
-        />
-        <text
-          x="60"
-          y="56"
-          textAnchor="middle"
-          fill={stroke}
-          fontSize="22"
-          fontWeight="bold"
-          fontFamily="Mukta"
-        >
-          {score}%
-        </text>
-        <text x="60" y="72" textAnchor="middle" fill="#7c3a2d" fontSize="9" fontFamily="Mukta">
-          KutaScore
-        </text>
-      </svg>
-      <span className="font-sahitya font-bold text-[16px]" style={{ color: stroke }}>
-        {scoreLabel(score)}
-      </span>
-    </div>
-  );
-};
-
-const CATEGORIES = [
-  {
-    label: 'Love & Marriage',
-    icon: '❤️',
-    names: [
-      'Marriage Stability',
-      'Mahendra',
-      'Stree Deergha',
-      'Rasi Kuta',
-      'Vasya Kuta',
-      'Rajju',
-      'Nadi Kuta',
-      'Guna Kuta',
-      'Dosha Samya',
-      'Kuja Dosa',
-    ],
-  },
-  {
-    label: 'Intimacy',
-    icon: '🔥',
-    names: ['Yoni Kuta', 'Sex Energy', 'Sun-Moon-Mars-Venus 12th', 'Partners Death'],
-  },
-  {
-    label: 'Friendship',
-    icon: '🤝',
-    names: ['Graha Maitram', 'Dina Kuta', 'Planetary Trine Harmony', 'Varna', 'Vedha'],
-  },
-  {
-    label: 'Communication',
-    icon: '💬',
-    names: ['Sun-Moon Harmony', 'Mental Health', 'Bad Constellation'],
-  },
-];
-
-function categoryPercent(names: string[], predictions: MatchPredictionRow[]): number {
-  const subset = predictions.filter(p => names.includes((p.Name ?? '').trim()));
-  if (!subset.length) return 50;
-  let sum = 0,
-    count = 0;
-  for (const r of subset) {
-    if (!r.Nature || r.Nature === 'Empty') continue;
-    sum += r.Nature === 'Good' ? 100 : r.Nature === 'Neutral' ? 62 : 28;
-    count++;
-  }
-  return count ? Math.round(sum / count) : 50;
-}
-
-const CategoryBar: React.FC<{ label: string; icon: string; percent: number }> = ({
-  label,
-  icon,
-  percent,
-}) => {
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center justify-between">
-        <span className="font-mukta text-sm font-medium text-[#3d1a14] flex items-center gap-1.5">
-          <span>{icon}</span>
-          {label}
-        </span>
-        <span className="font-mukta text-sm font-bold text-[#3a3a3a]">{percent}%</span>
-      </div>
-      <div className="w-full h-2 rounded-full bg-transparent overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all duration-700 bg-primary"
-          style={{ width: `${percent}%` }}
-        />
-      </div>
-    </div>
-  );
-};
 
 const PersonCard: React.FC<{ person: PersonInput; role: string; symbol: string }> = () => {
   return null;
@@ -476,136 +323,6 @@ const IndividualBasicDetails: React.FC<{
   );
 };
 
-const IndividualDoshaDetails: React.FC<{ payload: unknown; title: string }> = ({
-  payload,
-  title,
-}) => {
-  const pData = unwrapVedastroPayload(payload);
-  const panchanga = isRecord(pData) && pData['PanchangaTable'] ? pData['PanchangaTable'] : pData;
-  const panchangaRecord = isRecord(panchanga) ? panchanga : undefined;
-
-  const doshaCards = [
-    ['Yoga', getPanchangaValue(panchangaRecord, ['Yoga', 'Name'], ['YogaName'], ['Yoga'])],
-    ['Karana', getPanchangaValue(panchangaRecord, ['Karana'], ['KaranaName'])],
-    ['Disha Shool', getPanchangaValue(panchangaRecord, ['DishaShool'])],
-    ['Lagna', getPanchangaValue(panchangaRecord, ['Lagna'], ['LagnaSign'])],
-    ['Nakshatra', getPanchangaValue(panchangaRecord, ['Nakshatra'])],
-    ['Tithi', getPanchangaValue(panchangaRecord, ['Tithi', 'Name'], ['TithiName'], ['Tithi'])],
-    ['Paksha', getPanchangaValue(panchangaRecord, ['Tithi', 'Paksha'])],
-    ['Ayanamsa', getPanchangaValue(panchangaRecord, ['Ayanamsa'])],
-  ];
-  const tableRows = [
-    ['Yoga Description', getPanchangaValue(panchangaRecord, ['Yoga', 'Description'])],
-    ['Hora Lord', getPanchangaValue(panchangaRecord, ['HoraLord', 'Name'], ['HoraLord'])],
-    ['Sunrise', getPanchangaValue(panchangaRecord, ['Sunrise', 'StdTime'], ['Sunrise'])],
-    ['Sunset', getPanchangaValue(panchangaRecord, ['Sunset', 'StdTime'], ['Sunset'])],
-    ['Ishta Kaala', getPanchangaValue(panchangaRecord, ['IshtaKaala', 'DegreeMinuteSecond'])],
-    ['Moon Phase', getPanchangaValue(panchangaRecord, ['MoonPhase'])],
-    ['Day of Week', getPanchangaValue(panchangaRecord, ['DayOfWeek'])],
-  ];
-
-  return (
-    <div className="flex-1 min-w-0">
-      <div className="rounded-[20px] bg-[#f9f4dd] p-5 shadow-sm h-full">
-        <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold border-b border-[#f5e9c6] pb-2 mb-4">
-          {title}
-        </h3>
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          {doshaCards.map(([lbl, val]) => (
-            <div
-              key={lbl}
-              className="rounded-lg bg-[#fffdf6] p-3 text-center shadow-sm border border-[#f5e9c6]"
-            >
-              <p className="font-sahitya text-primary text-[16px] font-bold">{lbl}</p>
-              <p className="font-mukta text-[14px] text-[#2d2d2d] truncate" title={val}>
-                {val}
-              </p>
-            </div>
-          ))}
-        </div>
-        <div className="overflow-x-auto rounded-lg border border-[#f5e9c6]">
-          <table className="w-full text-sm font-mukta">
-            <tbody>
-              {tableRows.map(([lbl, val]) => (
-                <tr key={lbl} className="border-b border-[#f5e9c6] last:border-0 bg-[#faf8f5]">
-                  <td className="px-3 py-2 font-medium text-[#2d2d2d] bg-[#fffdf6] border-r border-[#f5e9c6]">
-                    {lbl}
-                  </td>
-                  <td className="px-3 py-2 text-[#4a4a4a]">{val}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const DoshaSummary: React.FC<{ report: MatchReportPayload }> = ({ report }) => {
-  const scoreText =
-    report.KutaScore != null
-      ? `${Math.round(((Math.max(0, Math.min(100, report.KutaScore)) * 36) / 100) * 10) / 10}/36`
-      : '-';
-  const yesNo = 'Yes';
-  const cards: Array<[string, string]> = [
-    ['Ashtakoot', scoreText],
-    ['Ashtakoot', yesNo],
-    ['Vedha Dosha', yesNo],
-    ['Manglik Match', yesNo],
-  ];
-
-  return (
-    <div className="space-y-10">
-      <div>
-        <h2 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold mb-3">
-          What Is Dosha?
-        </h2>
-        <p className="font-mukta text-[#464646] text-[16px] leading-[28px] tracking-[0] text-justify">
-          In Vedic astrology, a Dosha means an imbalance or flaw in a person&apos;s horoscope caused
-          by the placement of certain planets in specific houses. These planetary positions are
-          believed to create challenges or obstacles in areas like marriage, health, career, or
-          relationships.
-        </p>
-      </div>
-
-      <div>
-        <h2 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold mb-3">
-          What Is Ashtakoot Points?
-        </h2>
-        <p className="font-mukta text-[#464646] text-[16px] leading-[28px] tracking-[0] text-justify">
-          Ashtakoot Points, also known as Guna Milan, are used in Vedic astrology to check marriage
-          compatibility between two individuals. The word “Ashta” means eight and “Koot” means
-          categories, so Ashtakoot refers to eight aspects of life that are compared in the
-          horoscopes of the bride and groom. These eight aspects are Varna (temperament), Vashya
-          (attraction), Tara (luck), Yoni (nature and intimacy), Graha Maitri (planetary
-          friendship), Gana (behavior), Bhakoot (family life), and Nadi (health and progeny). Each
-          aspect carries certain points, making a total of 36 points. A higher score indicates
-          better compatibility — 28 or more points is considered excellent, 23 to 27 good, 18 to 22
-          average, and less than 18 not recommended for marriage. In simple terms, Ashtakoot Points
-          help determine harmony in love, health, family, and overall married life.
-        </p>
-      </div>
-
-      <div>
-        <h3 className="font-sahitya text-primary text-[28px] leading-[38px] font-bold mb-6">
-          Match Ashtakoot Points
-        </h3>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {cards.map(([label, value]) => (
-            <div
-              key={label + value}
-              className="rounded-[18px] bg-[#f7f1dd] p-6 text-center shadow-sm border border-[#f5e9c6]"
-            >
-              <p className="font-sahitya text-primary text-[18px] font-bold mb-3">{label}</p>
-              <p className="font-mukta text-[20px] font-semibold text-[#7F1808]">{value}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const IndividualPlanetsTable: React.FC<{ rows: string[][]; title: string }> = ({ rows, title }) => (
   <div className="mt-8 rounded-[20px] bg-[#f9f4dd] p-5 md:p-7 w-full shadow-sm">
@@ -668,35 +385,6 @@ const IndividualPlanetsTable: React.FC<{ rows: string[][]; title: string }> = ({
   </div>
 );
 
-const IndividualLagnaChart: React.FC<{ svg: string | undefined; title: string }> = ({
-  svg,
-  title,
-}) => {
-  const dataUrl =
-    svg && svg.includes('<svg')
-      ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
-      : null;
-  return (
-    <div className="flex-1 min-w-0">
-      <div className="rounded-[20px] bg-[#f9f4dd] p-5 border-2 border-[#f5e9c6] shadow-sm h-full flex flex-col items-center">
-        <h3 className="font-sahitya text-primary text-[28px] font-bold mb-4 border-b border-[#f5e9c6] pb-2 w-full text-center">
-          {title}
-        </h3>
-        {dataUrl ? (
-          <img
-            src={dataUrl}
-            alt={`${title} D1 Chart`}
-            className="w-full max-w-[400px] object-contain flex-1"
-          />
-        ) : (
-          <div className="flex-1 flex items-center justify-center font-mukta text-gray-500">
-            No chart available
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -748,10 +436,7 @@ const KundaliMatchingResultSection: React.FC = () => {
   }
 
   const report = result.matchReport;
-  const kutaScore = clampPercent(report.KutaScore);
   const predictions = report.PredictionList ?? [];
-  const goodCount = predictions.filter(p => p.Nature === 'Good').length;
-  const badCount = predictions.filter(p => p.Nature === 'Bad').length;
   const manName = result.man.fullName?.trim();
   const womanName = result.woman.fullName?.trim();
   const manChartUrl = chartDataUrl(result.manLagnaSvg);
@@ -823,10 +508,12 @@ const KundaliMatchingResultSection: React.FC = () => {
                       />
                     </div>
                   ) : manChartUrl ? (
-                    <img
+                    <Image
                       src={manChartUrl}
                       alt="Man Kundali chart"
-                      className="h-full w-full object-contain object-center"
+                      fill
+                      className="object-contain object-center"
+                      unoptimized
                     />
                   ) : (
                     <Image
@@ -855,10 +542,12 @@ const KundaliMatchingResultSection: React.FC = () => {
                       />
                     </div>
                   ) : womanChartUrl ? (
-                    <img
+                    <Image
                       src={womanChartUrl}
                       alt="Woman Kundali chart"
-                      className="h-full w-full object-contain object-center"
+                      fill
+                      className="object-contain object-center"
+                      unoptimized
                     />
                   ) : (
                     <Image
