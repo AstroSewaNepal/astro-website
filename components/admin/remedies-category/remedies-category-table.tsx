@@ -61,8 +61,11 @@ export default function RemediesCategoryTable({
           ))}
 
         {!isLoading &&
-          data.map(row => (
-            <TableRow key={row.id ?? row.title} className="border-neutral-100 hover:bg-neutral-50">
+          data.map((row, index) => (
+            <TableRow
+              key={`${row.title}-${row.createdAt ?? 'no-date'}-${index}`}
+              className="border-neutral-100 hover:bg-neutral-50"
+            >
               <TableCell>
                 <span className="font-mukta font-medium text-neutral-800">{row.title}</span>
               </TableCell>
