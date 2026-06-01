@@ -72,75 +72,91 @@ export default function NumerologyCalculatorResultSection() {
   return (
     <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
       <div className="max-w-[1454px] mx-auto">
-        <div className="pt-8 pb-4">
-          <h1 className="font-sahitya text-[28px] font-bold text-[#5D1409] md:text-[34px]">
+
+        {/* Header */}
+        <div className="pt-8 pb-6">
+          <h1 className="font-sahitya text-[28px] font-bold text-[#5D1409] md:text-[40px]">
             Numerology Calculator
           </h1>
-          <p className="mt-2 font-mukta text-[15px] text-[#6d6d6d]">
-            Focus: {data.resultLabel}
-            {data.result !== undefined ? ` (${data.result})` : ''}.{' '}
-            {data.note ?? 'Pythagorean numerology from name and birth date.'}
+          <p className="mt-2 font-mukta text-sm md:text-lg text-[#141414]">
+            Discover your numerology profile and unlock insights about your life path, expression, and soul urge
           </p>
         </div>
 
-        <div className="rounded-[20px] border border-[#d3c2b4] overflow-hidden shadow-sm">
-          <div className="px-6 pt-6 pb-4 border-b border-[#e8ddd4]">
-            <h2 className="font-sahitya text-[18px] font-bold text-[#5D1409] mb-4">
-              Personal Information
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mukta text-[15px] text-[#2f2f2f]">
-              <div>
-                <p className="text-[#9a8f87] text-sm">Name</p>
-                <p>{data.fullName}</p>
-              </div>
-              <div>
-                <p className="text-[#9a8f87] text-sm">Date of Birth</p>
-                <p>{data.birthDate}</p>
-              </div>
-              {data.birthPlace ? (
-                <div className="sm:col-span-2">
-                  <p className="text-[#9a8f87] text-sm">Birth place</p>
-                  <p>{data.birthPlace}</p>
-                </div>
-              ) : null}
+        {/* Personal Information — no card border */}
+        <div className="mb-6">
+          <h2
+            className="text-[#5D1409] mb-4"
+            style={{ fontFamily: 'Sahitya', fontWeight: 700, fontSize: '28px', lineHeight: '38px', letterSpacing: 0 }}
+          >
+            Personal Information
+          </h2>
+          <div className="flex flex-col gap-y-4">
+            <div>
+              <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#9a8f87' }}>Name</p>
+              <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#2f2f2f' }}>{data.fullName}</p>
             </div>
-          </div>
-
-          <div className="px-6 py-6">
-            <h2 className="font-sahitya text-[18px] font-bold text-[#5D1409] mb-4">
-              Numerology Analysis
-            </h2>
-            {rows.length === 0 ? (
-              <p className="font-mukta text-[#4a4a4a]">
-                No detail rows returned. Try adding birth place and time on the form.
-              </p>
-            ) : (
-              <div className="rounded-[12px] border border-[#e0d6cc] overflow-hidden">
-                {rows.map((row, idx) => (
-                  <div
-                    key={`${row.label}-${idx}`}
-                    className={`flex justify-between gap-4 px-4 py-3 font-mukta text-[14px] ${
-                      idx < rows.length - 1 ? 'border-b border-[#ede5dc]' : ''
-                    }`}
-                  >
-                    <span className="text-[#5d5047] capitalize">{row.label}</span>
-                    <span className="text-[#2f2f2f] text-right">{row.value}</span>
-                  </div>
-                ))}
+            <div>
+              <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#9a8f87' }}>Date of Birth</p>
+              <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#2f2f2f' }}>{data.birthDate}</p>
+            </div>
+            {data.birthPlace ? (
+              <div>
+                <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#9a8f87' }}>Birth place</p>
+                <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#2f2f2f' }}>{data.birthPlace}</p>
               </div>
-            )}
-          </div>
-
-          <div className="px-6 pb-7">
-            <button
-              type="button"
-              onClick={() => router.push('/calculators/numerology-calculator')}
-              className="rounded-full border border-[#5D1409] px-7 py-3 font-mukta text-[15px] font-bold text-[#5D1409]"
-            >
-              Calculate Again
-            </button>
+            ) : null}
           </div>
         </div>
+
+        {/* Divider */}
+        <div className="border-t border-[#e0d6cc] mb-6" />
+
+        {/* Numerology Analysis — flat two-column table, no outer card border */}
+        <div className="mb-8">
+          <h2
+            className="text-[#5D1409] mb-4"
+            style={{ fontFamily: 'Sahitya', fontWeight: 700, fontSize: '28px', lineHeight: '38px', letterSpacing: 0 }}
+          >
+            Numerology Analysis
+          </h2>
+          {rows.length === 0 ? (
+            <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', color: '#4a4a4a' }}>
+              No detail rows returned. Try adding birth place and time on the form.
+            </p>
+          ) : (
+            <div>
+              {rows.map((row, idx) => (
+                <div
+                  key={`${row.label}-${idx}`}
+                  className={`grid w-full grid-cols-[300px_minmax(0,1fr)] items-center gap-x-4 py-3 ${idx < rows.length - 1 ? 'border-b border-[#ede5dc]' : ''
+                    }`}
+                >
+                  <span style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#9a8f87' }} className="capitalize">{row.label}</span>
+                  <span style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#2f2f2f' }} className="text-left">{row.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="flex flex-wrap gap-[10px]">
+          <button
+            type="button"
+            className="inline-flex w-[240px] h-[50px] items-center justify-center rounded-[32px] bg-[#5D1409] px-[10px] py-[16px] font-mukta text-[18px] leading-[30px] font-semibold text-white transition-opacity hover:opacity-95"
+          >
+            Share Your Report
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push('/calculators/numerology-calculator')}
+            className="inline-flex w-[240px] h-[50px] items-center justify-center rounded-[32px] border border-[#5D1409] bg-[#FFF5E3] px-[10px] py-[16px] font-mukta text-[18px] leading-[30px] font-semibold text-[#5D1409] transition-colors hover:bg-[#f7e7d2]"
+          >
+            Calculate Again
+          </button>
+        </div>
+
       </div>
     </section>
   );
