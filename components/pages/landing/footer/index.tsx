@@ -13,7 +13,6 @@ import {
   FacebookIcon,
   LinkedinIcon,
   TiktokIcon,
-  TwitterIcon,
   YoutubeIcon,
 } from '@/components/images/icons';
 

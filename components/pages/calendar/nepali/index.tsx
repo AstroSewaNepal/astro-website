@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import NepaliDate from 'nepali-date-converter';
 import { fetchPanchangData, type PanchangData } from '@/lib/api/panchang';
@@ -71,7 +71,7 @@ const NepaliCalendarPageContent: React.FC = () => {
   const clickRectRef = useRef<DOMRect | null>(null);
   const clickTargetRef = useRef<HTMLElement | null>(null);
   const calendarRef = useRef<HTMLElement | null>(null);
-  const computePlacement = () => {
+  const computePlacement = useCallback(() => {
     if (!selectedDate || !dialogRef.current || !clickRectRef.current) return;
 
     const rect = clickRectRef.current as DOMRect;
@@ -147,7 +147,7 @@ const NepaliCalendarPageContent: React.FC = () => {
         rafRef.current = null;
       });
     }
-  };
+  }, [selectedDate]);
   const lastDialogPosRef = useRef<{ top: number; left: number } | null>(null);
   const rafRef = useRef<number | null>(null);
 
@@ -278,7 +278,7 @@ const NepaliCalendarPageContent: React.FC = () => {
       rafRef.current = null;
       lastDialogPosRef.current = null;
     };
-  }, [selectedDate]);
+  }, [selectedDate, computePlacement]);
 
   // Fetch panchang data when a date is selected
   useEffect(() => {

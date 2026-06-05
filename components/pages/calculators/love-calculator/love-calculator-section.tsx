@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IoHeart } from 'react-icons/io5';
 
@@ -9,17 +9,9 @@ import { buildBirthVedastroQuery } from '@/lib/calculators/birth-query';
 import { fetchVedastroCalculator } from '@/lib/vedastro/fetch-calculator';
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
 
-import CalculatorCard from '../calculator-card';
 import CalculatorChooserSection from '../shared/calculator-chooser-section';
 import CalculatorDatePicker from '../shared/calculator-date-picker';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
-import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
-import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
-import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
-import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
-import DashaImage from '@/components/images/calculator/dasha.png';
-import MoonPhaseImage from '@/components/images/calculator/moonphase.png';
-import RashiCalculatorImage from '@/components/images/calculator/rashicalculator.png';
 
 export default function LoveCalculatorSection() {
   const router = useRouter();
@@ -27,10 +19,8 @@ export default function LoveCalculatorSection() {
   const [partnerName, setPartnerName] = useState('');
   const [yourBirthDate, setYourBirthDate] = useState('');
   const [yourBirthPlace, setYourBirthPlace] = useState('');
-  const [yourResolvedBirthPlace, setYourResolvedBirthPlace] = useState('');
   const [partnerBirthDate, setPartnerBirthDate] = useState('');
   const [partnerBirthPlace, setPartnerBirthPlace] = useState('');
-  const [partnerResolvedBirthPlace, setPartnerResolvedBirthPlace] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({
     yourName: '',
@@ -187,7 +177,7 @@ export default function LoveCalculatorSection() {
             </div>
 
             <p className="mt-6 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
-              A love calculator is a fun, easy way to discover your "love score" and see how well you connect. Simply enter your names and let the results surprise you!
+              A love calculator is a fun, easy way to discover your &quot;love score&quot; and see how well you connect. Simply enter your names and let the results surprise you!
             </p>
 
             <p className="mt-4 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
