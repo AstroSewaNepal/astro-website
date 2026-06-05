@@ -13,15 +13,10 @@ const KundaliMatching: React.FC = () => {
         </p>
       </header>
 
-      <section className="max-w-7xl mx-auto  py-4">
+      <section className="max-w-7xl mx-auto py-4 ml-4 md:ml-8 lg:ml-0">
         {/* <h2 className="font-sahitya font-bold text-[20px] md:text-[20px] lg:text-[30px] xl:text-[20px] leading-[1.15] text-primary mb-3">What is Kundali?</h2> */}
-        <p className="font-mukta font-normal text-gray-500 text-[14px] leading-[24px] md:text-[18px] md:leading-[28px] text-justify py-4">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-          ut labore et dolore magna aliqua.Ut enim ad minim veniam, quis nostrud exercitation
-          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
-          sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-          est laborum.
+        <p className="font-mukta font-normal text-gray-500 text-[14px] leading-[24px] md:text-[18px] md:leading-[28px] py-4">
+          Kundali matching is an ancient practice that analyzes the compatibility between two individuals based on their astrological birth charts. By examining the positions of planets and stars at the time of birth, our Kundali matching system provides insights into emotional connection, life goals, and long-term relationship potential. Whether you're exploring marriage compatibility or seeking deeper understanding of your connection with someone special, our comprehensive matching report evaluates essential factors like Guna Milan, Mangal Dosha, and planetary influences to guide you on your journey.
         </p>
       </section>
 
