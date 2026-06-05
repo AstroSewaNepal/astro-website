@@ -18,7 +18,7 @@ function getAppDownloadUrl(): string {
     return DESKTOP_DOWNLOAD_PAGE;
   }
 
-  const platform = navigator.userAgentData?.platform || navigator.platform || '';
+  const platform = (navigator as any).userAgentData?.platform || navigator.platform || '';
   const userAgent = navigator.userAgent || '';
   const isAndroid = /android/i.test(userAgent) || /android/i.test(platform);
   const isIos =

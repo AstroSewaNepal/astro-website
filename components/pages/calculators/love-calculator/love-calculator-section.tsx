@@ -21,6 +21,8 @@ export default function LoveCalculatorSection() {
   const [yourBirthPlace, setYourBirthPlace] = useState('');
   const [partnerBirthDate, setPartnerBirthDate] = useState('');
   const [partnerBirthPlace, setPartnerBirthPlace] = useState('');
+  const [yourResolvedBirthPlace, setYourResolvedBirthPlace] = useState('');
+  const [partnerResolvedBirthPlace, setPartnerResolvedBirthPlace] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({
     yourName: '',
