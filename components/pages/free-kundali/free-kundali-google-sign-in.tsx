@@ -18,8 +18,9 @@ function getAppDownloadUrl(): string {
     return DESKTOP_DOWNLOAD_PAGE;
   }
 
-  const platform = (navigator as any).userAgentData?.platform || navigator.platform || '';
-  const userAgent = navigator.userAgent || '';
+  const nav = navigator as Navigator & { userAgentData?: { platform?: string } };
+  const platform = nav.userAgentData?.platform || nav.platform || '';
+  const userAgent = nav.userAgent || '';
   const isAndroid = /android/i.test(userAgent) || /android/i.test(platform);
   const isIos =
     /iphone|ipad|ipod/i.test(userAgent) ||

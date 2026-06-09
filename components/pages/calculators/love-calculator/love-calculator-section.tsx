@@ -13,6 +13,8 @@ import CalculatorChooserSection from '../shared/calculator-chooser-section';
 import CalculatorDatePicker from '../shared/calculator-date-picker';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
 
+const placeRegex = /^[A-Za-z\s,.'-]+$/;
+
 export default function LoveCalculatorSection() {
   const router = useRouter();
   const [yourName, setYourName] = useState('');
@@ -21,8 +23,6 @@ export default function LoveCalculatorSection() {
   const [yourBirthPlace, setYourBirthPlace] = useState('');
   const [partnerBirthDate, setPartnerBirthDate] = useState('');
   const [partnerBirthPlace, setPartnerBirthPlace] = useState('');
-  const [yourResolvedBirthPlace, setYourResolvedBirthPlace] = useState('');
-  const [partnerResolvedBirthPlace, setPartnerResolvedBirthPlace] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({
     yourName: '',
@@ -51,11 +51,19 @@ export default function LoveCalculatorSection() {
       if (!partnerName.trim()) errors.partnerName = "Please enter your partner's name.";
       if (!yourBirthDate) errors.yourBirthDate = 'Please enter your birth date.';
       if (!partnerBirthDate) errors.partnerBirthDate = 'Please enter your partner birth date.';
-      if (!yourBirthPlace.trim()) {
+      const yourBirthPlaceValue = yourBirthPlace.trim();
+      const partnerBirthPlaceValue = partnerBirthPlace.trim();
+
+      if (!yourBirthPlaceValue) {
         errors.yourBirthPlace = 'Please enter your birth place.';
+      } else if (!placeRegex.test(yourBirthPlaceValue) || !/[A-Za-z]/.test(yourBirthPlaceValue)) {
+        errors.yourBirthPlace = 'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       }
-      if (!partnerBirthPlace.trim()) {
+
+      if (!partnerBirthPlaceValue) {
         errors.partnerBirthPlace = 'Please enter your partner birth place.';
+      } else if (!placeRegex.test(partnerBirthPlaceValue) || !/[A-Za-z]/.test(partnerBirthPlaceValue)) {
+        errors.partnerBirthPlace = 'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       }
 
       setFieldErrors(errors);
@@ -92,9 +100,6 @@ export default function LoveCalculatorSection() {
           buildBirthVedastroQuery(yourForm),
           buildBirthVedastroQuery(partnerForm),
         ]);
-
-        setYourResolvedBirthPlace(yourQ.resolvedLocation ?? yourBirthPlace.trim());
-        setPartnerResolvedBirthPlace(partnerQ.resolvedLocation ?? partnerBirthPlace.trim());
 
         const params = new URLSearchParams({
           groomName: yourName.trim(),
@@ -255,7 +260,6 @@ export default function LoveCalculatorSection() {
                         value={yourBirthPlace}
                         onChange={e => {
                           setYourBirthPlace(e.target.value);
-                          setYourResolvedBirthPlace('');
                           setFieldErrors(prev => ({ ...prev, yourBirthPlace: '' }));
                         }}
                         className="w-full h-[52px] box-border rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] py-[12px] font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#464646]"
@@ -324,7 +328,6 @@ export default function LoveCalculatorSection() {
                         value={partnerBirthPlace}
                         onChange={e => {
                           setPartnerBirthPlace(e.target.value);
-                          setPartnerResolvedBirthPlace('');
                           setFieldErrors(prev => ({ ...prev, partnerBirthPlace: '' }));
                         }}
                         className="w-full h-[52px] box-border rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] py-[12px] font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#464646]"
