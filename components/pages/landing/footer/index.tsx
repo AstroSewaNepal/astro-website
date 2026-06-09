@@ -134,7 +134,7 @@ const Footer: React.FC = () => {
                     href="/kundali-matching"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    Kundali Matching
+                    Free Kundali Matching
                   </Link>
                   <Link
                     href="/horoscope"
