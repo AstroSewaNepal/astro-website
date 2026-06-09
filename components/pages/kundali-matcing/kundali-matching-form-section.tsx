@@ -547,7 +547,6 @@ const KundaliMatchingFormSection: React.FC = () => {
   const [manBirthPlace, setManBirthPlace] = useState('');
   const [womanBirthPlace, setWomanBirthPlace] = useState('');
 
-
   const nameRegex = /^[A-Za-z ]+$/;
   const placeRegex = /^[A-Za-z\s,.'-]+$/;
 
@@ -600,7 +599,8 @@ const KundaliMatchingFormSection: React.FC = () => {
       errorsOut.birthPlace = 'Birth place is required.';
       valid = false;
     } else if (!placeRegex.test(birthPlace) || !/[A-Za-z]/.test(birthPlace)) {
-      errorsOut.birthPlace = 'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
+      errorsOut.birthPlace =
+        'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       valid = false;
     }
 
@@ -649,13 +649,7 @@ const KundaliMatchingFormSection: React.FC = () => {
     const newErrors: FormErrors = { man: {}, woman: {} };
     const formData = new FormData(e.currentTarget);
 
-    const man = validatePerson(
-      'man',
-      formData,
-      manBirthTime,
-      manUnknownTime,
-      newErrors.man,
-    );
+    const man = validatePerson('man', formData, manBirthTime, manUnknownTime, newErrors.man);
     const woman = validatePerson(
       'woman',
       formData,

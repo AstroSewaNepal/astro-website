@@ -72,14 +72,14 @@ export default function NumerologyCalculatorResultSection() {
   return (
     <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
       <div className="max-w-[1454px] mx-auto">
-
         {/* Header */}
         <div className="pt-8 pb-6">
           <h1 className="font-sahitya text-[28px] font-bold text-[#5D1409] md:text-[40px]">
             Numerology Calculator
           </h1>
           <p className="mt-2 font-mukta text-sm md:text-lg text-[#141414]">
-            Discover your numerology profile and unlock insights about your life path, expression, and soul urge
+            Discover your numerology profile and unlock insights about your life path, expression,
+            and soul urge
           </p>
         </div>
 
@@ -87,23 +87,95 @@ export default function NumerologyCalculatorResultSection() {
         <div className="mb-6">
           <h2
             className="text-[#5D1409] mb-4"
-            style={{ fontFamily: 'Sahitya', fontWeight: 700, fontSize: '28px', lineHeight: '38px', letterSpacing: 0 }}
+            style={{
+              fontFamily: 'Sahitya',
+              fontWeight: 700,
+              fontSize: '28px',
+              lineHeight: '38px',
+              letterSpacing: 0,
+            }}
           >
             Personal Information
           </h2>
           <div className="flex flex-col gap-y-4">
             <div>
-              <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#9a8f87' }}>Name</p>
-              <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#2f2f2f' }}>{data.fullName}</p>
+              <p
+                style={{
+                  fontFamily: 'Sahitya',
+                  fontWeight: 400,
+                  fontSize: '22px',
+                  lineHeight: '32px',
+                  letterSpacing: 0,
+                  color: '#9a8f87',
+                }}
+              >
+                Name
+              </p>
+              <p
+                style={{
+                  fontFamily: 'Sahitya',
+                  fontWeight: 400,
+                  fontSize: '22px',
+                  lineHeight: '32px',
+                  letterSpacing: 0,
+                  color: '#2f2f2f',
+                }}
+              >
+                {data.fullName}
+              </p>
             </div>
             <div>
-              <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#9a8f87' }}>Date of Birth</p>
-              <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#2f2f2f' }}>{data.birthDate}</p>
+              <p
+                style={{
+                  fontFamily: 'Sahitya',
+                  fontWeight: 400,
+                  fontSize: '22px',
+                  lineHeight: '32px',
+                  letterSpacing: 0,
+                  color: '#9a8f87',
+                }}
+              >
+                Date of Birth
+              </p>
+              <p
+                style={{
+                  fontFamily: 'Sahitya',
+                  fontWeight: 400,
+                  fontSize: '22px',
+                  lineHeight: '32px',
+                  letterSpacing: 0,
+                  color: '#2f2f2f',
+                }}
+              >
+                {data.birthDate}
+              </p>
             </div>
             {data.birthPlace ? (
               <div>
-                <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#9a8f87' }}>Birth place</p>
-                <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#2f2f2f' }}>{data.birthPlace}</p>
+                <p
+                  style={{
+                    fontFamily: 'Sahitya',
+                    fontWeight: 400,
+                    fontSize: '22px',
+                    lineHeight: '32px',
+                    letterSpacing: 0,
+                    color: '#9a8f87',
+                  }}
+                >
+                  Birth place
+                </p>
+                <p
+                  style={{
+                    fontFamily: 'Sahitya',
+                    fontWeight: 400,
+                    fontSize: '22px',
+                    lineHeight: '32px',
+                    letterSpacing: 0,
+                    color: '#2f2f2f',
+                  }}
+                >
+                  {data.birthPlace}
+                </p>
               </div>
             ) : null}
           </div>
@@ -116,12 +188,26 @@ export default function NumerologyCalculatorResultSection() {
         <div className="mb-8">
           <h2
             className="text-[#5D1409] mb-4"
-            style={{ fontFamily: 'Sahitya', fontWeight: 700, fontSize: '28px', lineHeight: '38px', letterSpacing: 0 }}
+            style={{
+              fontFamily: 'Sahitya',
+              fontWeight: 700,
+              fontSize: '28px',
+              lineHeight: '38px',
+              letterSpacing: 0,
+            }}
           >
             Numerology Analysis
           </h2>
           {rows.length === 0 ? (
-            <p style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', color: '#4a4a4a' }}>
+            <p
+              style={{
+                fontFamily: 'Sahitya',
+                fontWeight: 400,
+                fontSize: '22px',
+                lineHeight: '32px',
+                color: '#4a4a4a',
+              }}
+            >
               No detail rows returned. Try adding birth place and time on the form.
             </p>
           ) : (
@@ -129,11 +215,36 @@ export default function NumerologyCalculatorResultSection() {
               {rows.map((row, idx) => (
                 <div
                   key={`${row.label}-${idx}`}
-                  className={`grid w-full grid-cols-[300px_minmax(0,1fr)] items-center gap-x-4 py-3 ${idx < rows.length - 1 ? 'border-b border-[#ede5dc]' : ''
-                    }`}
+                  className={`grid w-full grid-cols-[300px_minmax(0,1fr)] items-center gap-x-4 py-3 ${
+                    idx < rows.length - 1 ? 'border-b border-[#ede5dc]' : ''
+                  }`}
                 >
-                  <span style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#9a8f87' }} className="capitalize">{row.label}</span>
-                  <span style={{ fontFamily: 'Sahitya', fontWeight: 400, fontSize: '22px', lineHeight: '32px', letterSpacing: 0, color: '#2f2f2f' }} className="text-left">{row.value}</span>
+                  <span
+                    style={{
+                      fontFamily: 'Sahitya',
+                      fontWeight: 400,
+                      fontSize: '22px',
+                      lineHeight: '32px',
+                      letterSpacing: 0,
+                      color: '#9a8f87',
+                    }}
+                    className="capitalize"
+                  >
+                    {row.label}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: 'Sahitya',
+                      fontWeight: 400,
+                      fontSize: '22px',
+                      lineHeight: '32px',
+                      letterSpacing: 0,
+                      color: '#2f2f2f',
+                    }}
+                    className="text-left"
+                  >
+                    {row.value}
+                  </span>
                 </div>
               ))}
             </div>
@@ -156,7 +267,6 @@ export default function NumerologyCalculatorResultSection() {
             Calculate Again
           </button>
         </div>
-
       </div>
     </section>
   );

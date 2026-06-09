@@ -191,7 +191,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
       errors.birthPlace = 'Birth place is required.';
       valid = false;
     } else if (!placeRegex.test(birthPlace) || !/[A-Za-z]/.test(birthPlace)) {
-      errors.birthPlace = 'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
+      errors.birthPlace =
+        'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       valid = false;
     }
 
@@ -261,11 +262,15 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
       }
       router.push('/free-kundali/result');
     } catch (submitError) {
-      if (submitError instanceof Error && /Failed to resolve coordinates|Place not found/.test(submitError.message)) {
+      if (
+        submitError instanceof Error &&
+        /Failed to resolve coordinates|Place not found/.test(submitError.message)
+      ) {
         setFieldErrors({ birthPlace: submitError.message });
       } else {
         setFieldErrors({
-          general: submitError instanceof Error ? submitError.message : 'Failed to generate kundali.',
+          general:
+            submitError instanceof Error ? submitError.message : 'Failed to generate kundali.',
         });
       }
     } finally {
@@ -422,12 +427,18 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                         placeholder="Where were you born?"
                         value={birthPlaceValue}
                         onChange={event => {
-                          const nextValue = event.currentTarget.value.replace(/[^A-Za-z\s,.'-]/g, '');
+                          const nextValue = event.currentTarget.value.replace(
+                            /[^A-Za-z\s,.'-]/g,
+                            '',
+                          );
                           setBirthPlaceValue(nextValue);
                           setFieldErrors(prev => ({ ...prev, birthPlace: undefined }));
                         }}
                         onInput={event => {
-                          event.currentTarget.value = event.currentTarget.value.replace(/[^A-Za-z\s,.'-]/g, '');
+                          event.currentTarget.value = event.currentTarget.value.replace(
+                            /[^A-Za-z\s,.'-]/g,
+                            '',
+                          );
                         }}
                         className="flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none"
                       />

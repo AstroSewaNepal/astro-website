@@ -42,7 +42,10 @@ export default function CalculatorDatePicker({
 
   return (
     <div className={`relative ${fullWidth ? 'w-full' : 'w-[532px]'}`}>
-      <label htmlFor={id} className="mb-1 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] font-semibold leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[30px] tracking-normal text-[#141414]">
+      <label
+        htmlFor={id}
+        className="mb-1 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] font-semibold leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[30px] tracking-normal text-[#141414]"
+      >
         {label}
       </label>
       <button
