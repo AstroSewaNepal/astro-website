@@ -92,7 +92,6 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
     { title: d.header.nav.blog, link: '/blogs' },
     {
       title: uiLanguage === ELanguage.NEPALI ? 'क्यालेन्डर' : 'Calendar',
-      link: '/calendar',
       children: [
         {
           title: uiLanguage === ELanguage.NEPALI ? 'नेपाली पात्रो' : 'Nepali Calendar',
