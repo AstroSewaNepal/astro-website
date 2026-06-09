@@ -187,8 +187,8 @@ export default function LoveCalculatorSection() {
             </div>
 
             <p className="mt-6 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
-              A love calculator is a fun, easy way to discover your &quot;love score&quot; and see how well
-              you connect. Simply enter your names and let the results surprise you!
+              A love calculator is a fun, easy way to discover your &quot;love score&quot; and see
+              how well you connect. Simply enter your names and let the results surprise you!
             </p>
 
             <p className="mt-4 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
