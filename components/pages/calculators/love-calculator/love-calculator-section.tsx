@@ -187,11 +187,16 @@ export default function LoveCalculatorSection() {
             </div>
 
             <p className="mt-6 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
-              A love calculator is a fun, easy way to discover your "love score" and see how well you connect. Simply enter your names and let the results surprise you!
+              A love calculator is a fun, easy way to discover your &quot;love score&quot; and see
+              how well you connect. Simply enter your names and let the results surprise you!
             </p>
 
             <p className="mt-4 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
-              Finding love can be challenging, but tools like the love calculator add excitement to the journey. They give you a playful peek into your feelings and compatibility before taking the next step. Many people use it just for fun, while others explore it to understand their bond better. Try it now and see what the stars reveal about your connection!
+              Finding love can be challenging, but tools like the love calculator add excitement to
+              the journey. They give you a playful peek into your feelings and compatibility before
+              taking the next step. Many people use it just for fun, while others explore it to
+              understand their bond better. Try it now and see what the stars reveal about your
+              connection!
             </p>
 
             <form
@@ -269,7 +274,9 @@ export default function LoveCalculatorSection() {
                         className="w-full h-[52px] box-border rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] py-[12px] font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#464646]"
                       />
                       {fieldErrors.yourBirthPlace && (
-                        <p className="mt-1 text-[12px] text-red-600">{fieldErrors.yourBirthPlace}</p>
+                        <p className="mt-1 text-[12px] text-red-600">
+                          {fieldErrors.yourBirthPlace}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -338,7 +345,9 @@ export default function LoveCalculatorSection() {
                         className="w-full h-[52px] box-border rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] py-[12px] font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#464646]"
                       />
                       {fieldErrors.partnerBirthPlace && (
-                        <p className="mt-1 text-[12px] text-red-600">{fieldErrors.partnerBirthPlace}</p>
+                        <p className="mt-1 text-[12px] text-red-600">
+                          {fieldErrors.partnerBirthPlace}
+                        </p>
                       )}
                     </div>
                   </div>
