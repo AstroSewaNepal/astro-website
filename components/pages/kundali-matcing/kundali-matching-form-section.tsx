@@ -5,13 +5,14 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { ServiceReport } from '@/components/images/services';
-import GoogleGIcon from '@/components/images/icons/google_G.png';
 import DatePickerDropdown from '@/components/pages/free-kundali/date-picker-dropdown';
+import { FreeKundaliGoogleSignIn } from '@/components/pages/free-kundali/free-kundali-google-sign-in';
 import { ClockTimePicker } from '@/components/shared/clock-time-picker';
 import { CityAutocompleteInput } from '@/components/shared/city-autocomplete-input';
 import { cityToGeocodeResult, type CitySearchResult } from '@/lib/city-search-api';
 import {
   EMPTY_BIRTH_TIME,
+  DEFAULT_UNKNOWN_BIRTH_TIME,
   UnknownBirthTimeCheckbox,
   birthTimePartsToInput,
   type BirthTimeParts,
@@ -67,17 +68,8 @@ function parseBirthDate(input: string): string | null {
   const parts = value.split(separator).map(p => p.trim());
   if (parts.length !== 3) return null;
 
-  const [first, second, third] = parts.map(Number);
-  if ([first, second, third].some(Number.isNaN)) return null;
-
-  let day = first;
-  let month = second;
-  const year = third;
-
-  if (first <= 12 && second <= 12 && third > 999) {
-    month = first;
-    day = second;
-  }
+  const [day, month, year] = parts.map(Number);
+  if ([day, month, year].some(Number.isNaN)) return null;
 
   if (year < 1000 || year > 9999) return null;
   if (month < 1 || month > 12) return null;
@@ -568,7 +560,7 @@ const KundaliMatchingFormSection: React.FC = () => {
     } else {
       parsedDate = parseBirthDate(dateOfBirthInput);
       if (!parsedDate) {
-        errorsOut.dateOfBirth = 'Invalid date. Use MM/DD/YYYY or select from calendar.';
+        errorsOut.dateOfBirth = 'Invalid date. Use DD-MM-YYYY or select from calendar.';
         valid = false;
       }
     }
@@ -763,7 +755,7 @@ const KundaliMatchingFormSection: React.FC = () => {
                 onToggleUnknownTime={v => {
                   setManUnknownTime(v);
                   if (v) {
-                    setManBirthTime(EMPTY_BIRTH_TIME);
+                    setManBirthTime(DEFAULT_UNKNOWN_BIRTH_TIME);
                     setFormErrors(prev => ({
                       ...prev,
                       man: { ...prev.man, birthTime: undefined },
@@ -809,7 +801,7 @@ const KundaliMatchingFormSection: React.FC = () => {
                 onToggleUnknownTime={v => {
                   setWomanUnknownTime(v);
                   if (v) {
-                    setWomanBirthTime(EMPTY_BIRTH_TIME);
+                    setWomanBirthTime(DEFAULT_UNKNOWN_BIRTH_TIME);
                     setFormErrors(prev => ({
                       ...prev,
                       woman: { ...prev.woman, birthTime: undefined },
@@ -874,31 +866,10 @@ const KundaliMatchingFormSection: React.FC = () => {
           </div>
 
           <h3 className="font-sahitya font-bold text-[28px] leading-[38px] text-center">
-            View your saved Kundali
+            Get Lifetime Access to Your Kundali Matchmaking
           </h3>
 
-          <button
-            type="button"
-            className="w-full max-w-[320px] inline-flex items-center justify-center gap-3 rounded-full bg-[#fbf5ec] px-5 py-2.5 md:py-3 font-mukta text-[14px] md:text-[15px] font-semibold text-primary shadow-[0_10px_24px_rgba(0,0,0,0.18)] hover:bg-white transition-colors"
-          >
-            <span
-              aria-hidden
-              className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white"
-            >
-              <Image src={GoogleGIcon} alt="" width={24} height={24} />
-            </span>
-            <span
-              style={{
-                fontFamily: 'Raleway',
-                fontWeight: 600,
-                fontSize: 20,
-                lineHeight: '26px',
-                letterSpacing: '0%',
-              }}
-            >
-              Continue with Google
-            </span>
-          </button>
+          <FreeKundaliGoogleSignIn buttonClassName="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-[#f8f1e7] px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60" />
         </aside>
       </div>
     </section>

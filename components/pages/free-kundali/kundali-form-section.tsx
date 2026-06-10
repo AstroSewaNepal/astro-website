@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import {
   EMPTY_BIRTH_TIME,
+  DEFAULT_UNKNOWN_BIRTH_TIME,
   UnknownBirthTimeCheckbox,
   birthTimePartsToInput,
   type BirthTimeParts,
@@ -321,7 +322,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                 />
               </div>
               <p className="font-sahitya text-[22px] md:text-[24px] leading-snug font-bold">
-                Sign in to pre-fill your name
+                Get Lifetime Access to Your Kundali
               </p>
               <FreeKundaliGoogleSignIn buttonClassName="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-secondary px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white -translate-y-2 disabled:cursor-not-allowed disabled:opacity-60" />
             </div>
@@ -501,7 +502,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                   onChange={checked => {
                     setUnknownBirthTime(checked);
                     if (checked) {
-                      setBirthTimeParts(EMPTY_BIRTH_TIME);
+                      setBirthTimeParts(DEFAULT_UNKNOWN_BIRTH_TIME);
                       setFieldErrors(prev => ({ ...prev, birthTime: undefined }));
                     }
                   }}
@@ -544,7 +545,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                   />
                 </div>
                 <p className="font-sahitya text-[28px] md:text-[26px] leading-snug font-bold">
-                  Sign in to pre-fill your name
+                  Get Lifetime Access to Your Kundali
                 </p>
                 <FreeKundaliGoogleSignIn buttonClassName="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-[#f8f1e7] px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white lg:rotate-0 lg:opacity-100 disabled:cursor-not-allowed disabled:opacity-60" />
               </div>
