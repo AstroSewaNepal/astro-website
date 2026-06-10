@@ -4,11 +4,7 @@ import React, { useEffect, useId, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { IoLocationOutline } from 'react-icons/io5';
 
-import {
-  formatCityLabel,
-  searchCities,
-  type CitySearchResult,
-} from '@/lib/city-search-api';
+import { formatCityLabel, searchCities, type CitySearchResult } from '@/lib/city-search-api';
 
 export type CityAutocompleteInputProps = {
   id?: string;
@@ -166,9 +162,7 @@ export const CityAutocompleteInput = ({
           aria-expanded={showDropdown}
           aria-controls={listId}
           aria-autocomplete="list"
-          aria-activedescendant={
-            activeIndex >= 0 ? `${listId}-item-${activeIndex}` : undefined
-          }
+          aria-activedescendant={activeIndex >= 0 ? `${listId}-item-${activeIndex}` : undefined}
           autoComplete="off"
           className="flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         />

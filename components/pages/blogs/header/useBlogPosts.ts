@@ -31,9 +31,7 @@ type UseBlogPostsReturn = {
 };
 
 async function mapPostsWithViews(posts: GhostBlogPost[]): Promise<BlogPost[]> {
-  const viewCounts = await fetchBlogViewCounts(
-    posts.map(post => post.slug ?? '').filter(Boolean),
-  );
+  const viewCounts = await fetchBlogViewCounts(posts.map(post => post.slug ?? '').filter(Boolean));
   return posts.map(post => mapGhostBlogPost(post, viewCounts));
 }
 

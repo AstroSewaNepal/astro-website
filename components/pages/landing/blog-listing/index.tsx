@@ -6,7 +6,11 @@ import BlogComponents from '@/components/common/blog-components';
 import { BlogPlaceholderImage } from '@/components/images';
 import ChevronRight from '@/components/icons/chevron-right';
 import { fetchBlogViewCounts } from '@/lib/blog-view-api';
-import { mapGhostBlogPost, type GhostBlogPost, type MappedBlogPost } from '@/lib/map-ghost-blog-post';
+import {
+  mapGhostBlogPost,
+  type GhostBlogPost,
+  type MappedBlogPost,
+} from '@/lib/map-ghost-blog-post';
 
 const AstrologerBlogListing: React.FC = () => {
   const [posts, setPosts] = useState<MappedBlogPost[]>([]);

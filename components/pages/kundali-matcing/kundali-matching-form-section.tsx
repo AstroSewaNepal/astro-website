@@ -9,10 +9,7 @@ import GoogleGIcon from '@/components/images/icons/google_G.png';
 import DatePickerDropdown from '@/components/pages/free-kundali/date-picker-dropdown';
 import { ClockTimePicker } from '@/components/shared/clock-time-picker';
 import { CityAutocompleteInput } from '@/components/shared/city-autocomplete-input';
-import {
-  cityToGeocodeResult,
-  type CitySearchResult,
-} from '@/lib/city-search-api';
+import { cityToGeocodeResult, type CitySearchResult } from '@/lib/city-search-api';
 import {
   EMPTY_BIRTH_TIME,
   UnknownBirthTimeCheckbox,

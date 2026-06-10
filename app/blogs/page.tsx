@@ -57,9 +57,7 @@ async function getBlogPosts() {
     order: 'published_at desc',
   });
 
-  const viewCounts = await fetchBlogViewCounts(
-    posts.map(post => post.slug ?? '').filter(Boolean),
-  );
+  const viewCounts = await fetchBlogViewCounts(posts.map(post => post.slug ?? '').filter(Boolean));
 
   return posts.map(post => mapGhostBlogPost(post, viewCounts));
 }

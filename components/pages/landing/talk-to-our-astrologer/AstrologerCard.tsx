@@ -56,10 +56,7 @@ const AstrologerCard = memo(function AstrologerCard({
       };
     }
 
-    const originalLabel = formatCurrency(
-      lowestPackage.cost?.currency,
-      lowestPackage.cost?.value,
-    );
+    const originalLabel = formatCurrency(lowestPackage.cost?.currency, lowestPackage.cost?.value);
     const discountedLabel = formatCurrency(
       lowestPackage.discountedPrice?.currency ?? lowestPackage.cost?.currency,
       lowestPackage.discountedPrice?.value,

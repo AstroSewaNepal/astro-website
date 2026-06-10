@@ -13,10 +13,7 @@ export async function GET(request: NextRequest) {
 
   const backendBase = tryGetPublicBackendBaseUrl();
   if (!backendBase) {
-    return NextResponse.json(
-      { message: 'NEXT_PUBLIC_BACKEND_URL is not set' },
-      { status: 503 },
-    );
+    return NextResponse.json({ message: 'NEXT_PUBLIC_BACKEND_URL is not set' }, { status: 503 });
   }
 
   const timezone = request.headers.get('x-timezone') ?? CITY_API_TIMEZONE;

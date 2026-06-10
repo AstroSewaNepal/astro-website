@@ -76,7 +76,8 @@ export function isAstrologerOnline(astrologer: Astrologer): boolean {
 export function sortTopAstrologers(astrologers: Astrologer[]): Astrologer[] {
   return [...astrologers]
     .sort((a, b) => {
-      const activeDiff = Number(Boolean(b.isAstrologerActive)) - Number(Boolean(a.isAstrologerActive));
+      const activeDiff =
+        Number(Boolean(b.isAstrologerActive)) - Number(Boolean(a.isAstrologerActive));
       if (activeDiff !== 0) return activeDiff;
 
       const ratingDiff = (b.averageRating ?? 0) - (a.averageRating ?? 0);

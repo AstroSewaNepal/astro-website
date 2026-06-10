@@ -39,9 +39,7 @@ const TopAstrologers: React.FC<TopAstrologersProps> = ({ onChat, onCall, onSched
       } catch (loadError) {
         if (cancelled) return;
         setAstrologers([]);
-        setError(
-          loadError instanceof Error ? loadError.message : 'Failed to load astrologers.',
-        );
+        setError(loadError instanceof Error ? loadError.message : 'Failed to load astrologers.');
       } finally {
         if (!cancelled) {
           setIsLoading(false);
