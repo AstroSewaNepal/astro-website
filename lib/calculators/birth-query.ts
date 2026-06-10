@@ -1,8 +1,37 @@
 import { birthTimePartsToHHMM, type BirthTimeParts } from '@/components/shared/birth-time-fields';
 
+import {
+  cityToGeocodeResult,
+  formatCityLabel,
+  type CitySearchResult,
+} from '@/lib/city-search-api';
+
 import type { CalculatorFormValues } from './calculator-form-types';
-import type { GeocodeResult } from './geocode-place';
 import { geocodePlace } from './geocode-place';
+
+const CALCULATOR_SELECTED_CITY_KEY = 'astroBirthSelectedCity';
+
+/** Stash selected city for shared calculator forms that call `buildBirthVedastroQuery` indirectly. */
+export function setCalculatorSelectedCity(city: CitySearchResult | null): void {
+  if (typeof window === 'undefined') return;
+  if (city) {
+    window.sessionStorage.setItem(CALCULATOR_SELECTED_CITY_KEY, JSON.stringify(city));
+  } else {
+    window.sessionStorage.removeItem(CALCULATOR_SELECTED_CITY_KEY);
+  }
+}
+
+function takeCalculatorSelectedCity(): CitySearchResult | undefined {
+  if (typeof window === 'undefined') return undefined;
+  const raw = window.sessionStorage.getItem(CALCULATOR_SELECTED_CITY_KEY);
+  window.sessionStorage.removeItem(CALCULATOR_SELECTED_CITY_KEY);
+  if (!raw) return undefined;
+  try {
+    return JSON.parse(raw) as CitySearchResult;
+  } catch {
+    return undefined;
+  }
+}
 
 /** ISO yyyy-mm-dd → VedAstro DD-MM-YYYY */
 export function isoDateToVedastroDate(iso: string): string | null {
@@ -50,7 +79,7 @@ export type BirthVedastroQuery = {
 
 export async function buildBirthVedastroQuery(
   form: CalculatorFormValues,
-  selectedPlace?: GeocodeResult,
+  selectedCity?: CitySearchResult | null,
 ): Promise<BirthVedastroQuery> {
   if (!form.birthDate) {
     throw new Error('Please enter your date of birth.');
@@ -64,7 +93,22 @@ export async function buildBirthVedastroQuery(
     throw new Error('Invalid date of birth.');
   }
 
-  const geo = selectedPlace ?? (await geocodePlace(form.birthPlace));
+  const city =
+    selectedCity !== undefined ? (selectedCity ?? undefined) : takeCalculatorSelectedCity();
+  if (city) {
+    const geo = cityToGeocodeResult(city);
+    return {
+      lat: geo.lat,
+      lon: geo.lon,
+      date: vedastroDate,
+      time: formBirthTimeToHHMM(form),
+      offset: geo.timezoneOffset,
+      location: formatCityLabel(city),
+      resolvedLocation: geo.displayName,
+    };
+  }
+
+  const geo = await geocodePlace(form.birthPlace);
 
   return {
     lat: geo.lat,

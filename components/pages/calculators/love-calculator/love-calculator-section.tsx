@@ -1,25 +1,19 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IoHeart } from 'react-icons/io5';
 
 import { buildBirthVedastroQuery } from '@/lib/calculators/birth-query';
 import { fetchVedastroCalculator } from '@/lib/vedastro/fetch-calculator';
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
+import type { CitySearchResult } from '@/lib/city-search-api';
+import { CityAutocompleteInput } from '@/components/shared/city-autocomplete-input';
 
-import CalculatorCard from '../calculator-card';
 import CalculatorChooserSection from '../shared/calculator-chooser-section';
 import CalculatorDatePicker from '../shared/calculator-date-picker';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
-import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
-import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
-import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
-import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
-import DashaImage from '@/components/images/calculator/dasha.png';
-import MoonPhaseImage from '@/components/images/calculator/moonphase.png';
-import RashiCalculatorImage from '@/components/images/calculator/rashicalculator.png';
 
 export default function LoveCalculatorSection() {
   const router = useRouter();
@@ -27,10 +21,10 @@ export default function LoveCalculatorSection() {
   const [partnerName, setPartnerName] = useState('');
   const [yourBirthDate, setYourBirthDate] = useState('');
   const [yourBirthPlace, setYourBirthPlace] = useState('');
-  const [yourResolvedBirthPlace, setYourResolvedBirthPlace] = useState('');
+  const [yourSelectedCity, setYourSelectedCity] = useState<CitySearchResult | null>(null);
   const [partnerBirthDate, setPartnerBirthDate] = useState('');
   const [partnerBirthPlace, setPartnerBirthPlace] = useState('');
-  const [partnerResolvedBirthPlace, setPartnerResolvedBirthPlace] = useState('');
+  const [partnerSelectedCity, setPartnerSelectedCity] = useState<CitySearchResult | null>(null);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({
     yourName: '',
@@ -97,12 +91,9 @@ export default function LoveCalculatorSection() {
         };
 
         const [yourQ, partnerQ] = await Promise.all([
-          buildBirthVedastroQuery(yourForm),
-          buildBirthVedastroQuery(partnerForm),
+          buildBirthVedastroQuery(yourForm, yourSelectedCity),
+          buildBirthVedastroQuery(partnerForm, partnerSelectedCity),
         ]);
-
-        setYourResolvedBirthPlace(yourQ.resolvedLocation ?? yourBirthPlace.trim());
-        setPartnerResolvedBirthPlace(partnerQ.resolvedLocation ?? partnerBirthPlace.trim());
 
         const params = new URLSearchParams({
           groomName: yourName.trim(),
@@ -158,6 +149,8 @@ export default function LoveCalculatorSection() {
       yourBirthPlace,
       partnerBirthDate,
       partnerBirthPlace,
+      yourSelectedCity,
+      partnerSelectedCity,
       router,
     ],
   );
@@ -259,25 +252,21 @@ export default function LoveCalculatorSection() {
                     </div>
 
                     <div>
-                      <label className="mb-1.5 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#141414]">
-                        Your birth place
-                      </label>
-                      <input
-                        type="text"
+                      <CityAutocompleteInput
+                        label="Your birth place"
                         placeholder="Where were you born?"
                         value={yourBirthPlace}
-                        onChange={e => {
-                          setYourBirthPlace(e.target.value);
-                          setYourResolvedBirthPlace('');
+                        onChange={value => {
+                          setYourBirthPlace(value);
+                          setYourSelectedCity(null);
                           setFieldErrors(prev => ({ ...prev, yourBirthPlace: '' }));
                         }}
-                        className="w-full h-[52px] box-border rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] py-[12px] font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#464646]"
+                        onCitySelect={city => {
+                          setYourSelectedCity(city);
+                          setFieldErrors(prev => ({ ...prev, yourBirthPlace: '' }));
+                        }}
+                        error={fieldErrors.yourBirthPlace}
                       />
-                      {fieldErrors.yourBirthPlace && (
-                        <p className="mt-1 text-[12px] text-red-600">
-                          {fieldErrors.yourBirthPlace}
-                        </p>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -330,25 +319,21 @@ export default function LoveCalculatorSection() {
                     </div>
 
                     <div>
-                      <label className="mb-1.5 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#141414]">
-                        Partner birth place
-                      </label>
-                      <input
-                        type="text"
+                      <CityAutocompleteInput
+                        label="Partner birth place"
                         placeholder="Where were you born?"
                         value={partnerBirthPlace}
-                        onChange={e => {
-                          setPartnerBirthPlace(e.target.value);
-                          setPartnerResolvedBirthPlace('');
+                        onChange={value => {
+                          setPartnerBirthPlace(value);
+                          setPartnerSelectedCity(null);
                           setFieldErrors(prev => ({ ...prev, partnerBirthPlace: '' }));
                         }}
-                        className="w-full h-[52px] box-border rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] py-[12px] font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#464646]"
+                        onCitySelect={city => {
+                          setPartnerSelectedCity(city);
+                          setFieldErrors(prev => ({ ...prev, partnerBirthPlace: '' }));
+                        }}
+                        error={fieldErrors.partnerBirthPlace}
                       />
-                      {fieldErrors.partnerBirthPlace && (
-                        <p className="mt-1 text-[12px] text-red-600">
-                          {fieldErrors.partnerBirthPlace}
-                        </p>
-                      )}
                     </div>
                   </div>
                 </div>
