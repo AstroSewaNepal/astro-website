@@ -132,7 +132,6 @@ export default function NumerologyCalculatorSection() {
   return (
     <section className="container mx-auto px-4 sm:px-6 lg:px-0 pt-4 md:pt-8 pb-12">
       <div className="max-w-[1454px] mx-auto">
-
         {/* Hero */}
         <div className="mb-12">
           <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-normal text-[#4b1b16] md:text-[40px] md:leading-[1.1] lg:text-[44px]">
@@ -209,12 +208,7 @@ export default function NumerologyCalculatorSection() {
                   ))}
                 </select>
                 <span className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M6 9l6 6 6-6"
                       stroke="#7a2d2a"
@@ -229,11 +223,7 @@ export default function NumerologyCalculatorSection() {
             </div>
 
             {/* Error */}
-            {error && (
-              <p className="text-sm text-red-600">
-                {error}
-              </p>
-            )}
+            {error && <p className="text-sm text-red-600">{error}</p>}
 
             {/* Buttons */}
             <div className="w-full flex flex-row gap-[10px] md:gap-[75px] justify-center">
