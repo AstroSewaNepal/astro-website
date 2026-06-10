@@ -30,12 +30,12 @@ type GhostAuthor = {
 
 export type GhostBlogPost = {
   id?: string;
-  title?: string;
-  slug?: string;
-  excerpt?: string;
-  html?: string;
-  feature_image?: string;
-  published_at?: string;
+  title?: string | null;
+  slug?: string | null;
+  excerpt?: string | null;
+  html?: string | null;
+  feature_image?: string | null;
+  published_at?: string | null;
   reading_time?: number | null;
   authors?: GhostAuthor[];
   tags?: GhostTag[];
