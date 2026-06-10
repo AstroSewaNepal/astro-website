@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IoHeart } from 'react-icons/io5';
 
@@ -11,17 +11,9 @@ import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-typ
 import type { CitySearchResult } from '@/lib/city-search-api';
 import { CityAutocompleteInput } from '@/components/shared/city-autocomplete-input';
 
-import CalculatorCard from '../calculator-card';
 import CalculatorChooserSection from '../shared/calculator-chooser-section';
 import CalculatorDatePicker from '../shared/calculator-date-picker';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
-import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
-import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
-import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
-import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
-import DashaImage from '@/components/images/calculator/dasha.png';
-import MoonPhaseImage from '@/components/images/calculator/moonphase.png';
-import RashiCalculatorImage from '@/components/images/calculator/rashicalculator.png';
 
 export default function LoveCalculatorSection() {
   const router = useRouter();
@@ -30,11 +22,9 @@ export default function LoveCalculatorSection() {
   const [yourBirthDate, setYourBirthDate] = useState('');
   const [yourBirthPlace, setYourBirthPlace] = useState('');
   const [yourSelectedCity, setYourSelectedCity] = useState<CitySearchResult | null>(null);
-  const [yourResolvedBirthPlace, setYourResolvedBirthPlace] = useState('');
   const [partnerBirthDate, setPartnerBirthDate] = useState('');
   const [partnerBirthPlace, setPartnerBirthPlace] = useState('');
   const [partnerSelectedCity, setPartnerSelectedCity] = useState<CitySearchResult | null>(null);
-  const [partnerResolvedBirthPlace, setPartnerResolvedBirthPlace] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({
     yourName: '',
@@ -104,9 +94,6 @@ export default function LoveCalculatorSection() {
           buildBirthVedastroQuery(yourForm, yourSelectedCity),
           buildBirthVedastroQuery(partnerForm, partnerSelectedCity),
         ]);
-
-        setYourResolvedBirthPlace(yourQ.resolvedLocation ?? yourBirthPlace.trim());
-        setPartnerResolvedBirthPlace(partnerQ.resolvedLocation ?? partnerBirthPlace.trim());
 
         const params = new URLSearchParams({
           groomName: yourName.trim(),
@@ -272,7 +259,6 @@ export default function LoveCalculatorSection() {
                         onChange={value => {
                           setYourBirthPlace(value);
                           setYourSelectedCity(null);
-                          setYourResolvedBirthPlace('');
                           setFieldErrors(prev => ({ ...prev, yourBirthPlace: '' }));
                         }}
                         onCitySelect={city => {
@@ -340,7 +326,6 @@ export default function LoveCalculatorSection() {
                         onChange={value => {
                           setPartnerBirthPlace(value);
                           setPartnerSelectedCity(null);
-                          setPartnerResolvedBirthPlace('');
                           setFieldErrors(prev => ({ ...prev, partnerBirthPlace: '' }));
                         }}
                         onCitySelect={city => {
