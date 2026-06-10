@@ -7,11 +7,14 @@ import {
   type BirthTimeParts,
 } from '@/components/shared/birth-time-fields';
 import { ClockTimePicker } from '@/components/shared/clock-time-picker';
+import { CityAutocompleteInput } from '@/components/shared/city-autocomplete-input';
 import CalculatorDatePicker from '@/components/pages/calculators/shared/calculator-date-picker';
 import {
   EMPTY_CALCULATOR_FORM,
   type CalculatorFormValues,
 } from '@/lib/calculators/calculator-form-types';
+import { setCalculatorSelectedCity } from '@/lib/calculators/birth-query';
+import type { CitySearchResult } from '@/lib/city-search-api';
 
 type CalculatorBirthDetailsFormProps = {
   submitLabel: string;
@@ -32,12 +35,16 @@ export default function CalculatorBirthDetailsForm({
   });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [selectedBirthCity, setSelectedBirthCity] = useState<CitySearchResult | null>(null);
 
   const handleChange = (field: keyof CalculatorFormValues, value: string | boolean) => {
     setForm(prev => ({ ...prev, [field]: value }));
 
     if (['fullName', 'gender', 'birthDate', 'birthPlace'].includes(field as string)) {
       setFieldErrors(prev => ({ ...prev, [field as keyof typeof prev]: '' }));
+    }
+    if (field === 'birthPlace') {
+      setSelectedBirthCity(null);
     }
   };
 
@@ -102,6 +109,7 @@ export default function CalculatorBirthDetailsForm({
     setError('');
     setSubmitting(true);
     try {
+      setCalculatorSelectedCity(selectedBirthCity);
       await onSubmit(form);
     } catch (submitError) {
       if (submitError instanceof Error) {
@@ -124,6 +132,8 @@ export default function CalculatorBirthDetailsForm({
   const handleReset = () => {
     setForm(EMPTY_CALCULATOR_FORM);
     setFieldErrors({ fullName: '', gender: '', birthDate: '', birthPlace: '', birthTime: '' });
+    setSelectedBirthCity(null);
+    setCalculatorSelectedCity(null);
     setError('');
   };
 
@@ -213,34 +223,17 @@ export default function CalculatorBirthDetailsForm({
           </div>
 
           <div>
-            <label className="block font-mukta text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-[#2f2f2f] mb-1.5 sm:mb-2">
-              Enter birth place
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Where were you born?"
-                value={form.birthPlace}
-                onChange={e => handleChange('birthPlace', e.target.value)}
-                className="w-full rounded-[32px] border border-[#BE7B71] bg-white px-4 py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#9a8f87] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
-              />
-              <span className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[#5D1409] opacity-60">
-                <svg
-                  width="15"
-                  height="15"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                >
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-              </span>
-            </div>
-            <p className="mt-2 font-mukta text-[12px] text-red-600 min-h-[18px]" role="alert">
-              {fieldErrors.birthPlace || '\u00a0'}
-            </p>
+            <CityAutocompleteInput
+              label="Enter birth place"
+              placeholder="Where were you born?"
+              value={form.birthPlace}
+              onChange={value => handleChange('birthPlace', value)}
+              onCitySelect={city => {
+                setSelectedBirthCity(city);
+                setFieldErrors(prev => ({ ...prev, birthPlace: '' }));
+              }}
+              error={fieldErrors.birthPlace}
+            />
           </div>
         </div>
 

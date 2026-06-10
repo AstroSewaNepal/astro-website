@@ -66,6 +66,7 @@ export default function RemedyOrdersTable({
 
   const columns = createColumns({ onStatusChange, pendingId });
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table returns non-memoizable helpers
   const table = useReactTable({
     data,
     columns,

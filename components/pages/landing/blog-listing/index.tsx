@@ -5,64 +5,15 @@ import Link from 'next/link';
 import BlogComponents from '@/components/common/blog-components';
 import { BlogPlaceholderImage } from '@/components/images';
 import ChevronRight from '@/components/icons/chevron-right';
-
-type GhostTag = {
-  name?: string;
-  slug?: string;
-};
-
-type GhostAuthor = {
-  name?: string;
-};
-
-type GhostPost = {
-  id?: string;
-  title?: string;
-  slug?: string;
-  excerpt?: string;
-  feature_image?: string;
-  published_at?: string;
-  reading_time?: number;
-  authors?: GhostAuthor[];
-  tags?: GhostTag[];
-};
-
-type BlogPost = {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  image: string;
-  date: string;
-  author: string;
-  duration: string;
-  views: string;
-  feature: string[];
-  link: string;
-};
-
-const transformPost = (post: GhostPost): BlogPost => ({
-  id: post.id ?? '',
-  title: post.title ?? '',
-  slug: post.slug ?? '',
-  description: post.excerpt ?? '',
-  image: post.feature_image ?? '',
-  date: post.published_at
-    ? new Date(post.published_at).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : '',
-  author: post.authors?.[0]?.name ?? 'Unknown Author',
-  duration: post.reading_time ? `${post.reading_time} Min` : '1 Min',
-  views: '0',
-  feature: post.tags?.map((tag: GhostTag) => tag.name ?? '').filter(Boolean) ?? [],
-  link: `/blogs/${post.slug ?? ''}`,
-});
+import { fetchBlogViewCounts } from '@/lib/blog-view-api';
+import {
+  mapGhostBlogPost,
+  type GhostBlogPost,
+  type MappedBlogPost,
+} from '@/lib/map-ghost-blog-post';
 
 const AstrologerBlogListing: React.FC = () => {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [posts, setPosts] = useState<MappedBlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -72,15 +23,18 @@ const AstrologerBlogListing: React.FC = () => {
       setError(null);
       try {
         const url =
-          '/api/ghost/posts?include=tags,authors&fields=id,title,slug,excerpt,feature_image,published_at,reading_time&limit=3&order=published_at%20desc';
+          '/api/ghost/posts?include=tags,authors&fields=id,title,slug,excerpt,html,feature_image,published_at,reading_time&limit=3&order=published_at%20desc';
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Failed to fetch posts');
         }
 
         const data = await response.json();
-        const fetchedPosts = Array.isArray(data.posts) ? data.posts : [];
-        const transformedPosts = fetchedPosts.map(transformPost);
+        const fetchedPosts = Array.isArray(data.posts) ? (data.posts as GhostBlogPost[]) : [];
+        const viewCounts = await fetchBlogViewCounts(
+          fetchedPosts.map(post => post.slug ?? '').filter(Boolean),
+        );
+        const transformedPosts = fetchedPosts.map(post => mapGhostBlogPost(post, viewCounts));
         setPosts(transformedPosts);
       } catch (err) {
         console.error('Error fetching blog posts:', err);
