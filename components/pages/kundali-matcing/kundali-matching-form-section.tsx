@@ -8,6 +8,11 @@ import { ServiceReport } from '@/components/images/services';
 import GoogleGIcon from '@/components/images/icons/google_G.png';
 import DatePickerDropdown from '@/components/pages/free-kundali/date-picker-dropdown';
 import { ClockTimePicker } from '@/components/shared/clock-time-picker';
+import { CityAutocompleteInput } from '@/components/shared/city-autocomplete-input';
+import {
+  cityToGeocodeResult,
+  type CitySearchResult,
+} from '@/lib/city-search-api';
 import {
   EMPTY_BIRTH_TIME,
   UnknownBirthTimeCheckbox,
@@ -422,6 +427,7 @@ type PersonSectionProps = {
   onDatePickerOpenChange: (open: boolean) => void;
   birthPlaceValue: string;
   onBirthPlaceChange: (value: string) => void;
+  onBirthCitySelect: (city: CitySearchResult | null) => void;
 };
 
 const PersonSection = ({
@@ -439,6 +445,7 @@ const PersonSection = ({
   onDatePickerOpenChange,
   birthPlaceValue,
   onBirthPlaceChange,
+  onBirthCitySelect,
 }: PersonSectionProps) => (
   <div className="space-y-3 md:space-y-3.5">
     <SectionPillHeader
@@ -483,20 +490,19 @@ const PersonSection = ({
       />
 
       {/* Birth place */}
-      <InputPill
+      <CityAutocompleteInput
         id={`${prefix}-birth-place`}
-        label="Birth place"
         name={`${prefix}BirthPlace`}
+        label="Birth place"
         placeholder="Where were you born?"
         value={birthPlaceValue}
-        onChange={e => {
-          const nextValue = e.currentTarget.value.replace(/[^A-Za-z\s,.'-]/g, '');
+        onChange={nextValue => {
           onBirthPlaceChange(nextValue);
+          onBirthCitySelect(null);
         }}
-        onInput={e => {
-          e.currentTarget.value = e.currentTarget.value.replace(/[^A-Za-z\s,.'-]/g, '');
+        onCitySelect={city => {
+          onBirthCitySelect(city);
         }}
-        rightIcon={<LocationIcon />}
         error={errors.birthPlace}
       />
     </div>
@@ -546,6 +552,8 @@ const KundaliMatchingFormSection: React.FC = () => {
   const [formErrors, setFormErrors] = useState<FormErrors>(EMPTY_ERRORS);
   const [manBirthPlace, setManBirthPlace] = useState('');
   const [womanBirthPlace, setWomanBirthPlace] = useState('');
+  const [manSelectedCity, setManSelectedCity] = useState<CitySearchResult | null>(null);
+  const [womanSelectedCity, setWomanSelectedCity] = useState<CitySearchResult | null>(null);
 
   const nameRegex = /^[A-Za-z ]+$/;
   const placeRegex = /^[A-Za-z\s,.'-]+$/;
@@ -669,8 +677,33 @@ const KundaliMatchingFormSection: React.FC = () => {
     setFormErrors(EMPTY_ERRORS);
 
     try {
-      const manGeo = await geocodePlace(man.birthPlace);
-      const womanGeo = await geocodePlace(woman.birthPlace);
+      const resolvePersonGeo = async (
+        birthPlace: string,
+        dateOfBirth: string,
+        selectedCity: CitySearchResult | null,
+      ) => {
+        if (selectedCity) {
+          const geo = cityToGeocodeResult(selectedCity);
+          return {
+            lat: geo.lat,
+            lon: geo.lon,
+            offset: geo.timezoneOffset,
+            location: geo.displayName,
+          };
+        }
+        const geo = await geocodePlace(birthPlace);
+        return {
+          lat: geo.lat,
+          lon: geo.lon,
+          offset: getLocalOffset(dateOfBirth),
+          location: birthPlace,
+        };
+      };
+
+      const [manGeo, womanGeo] = await Promise.all([
+        resolvePersonGeo(man.birthPlace, man.dateOfBirth, manSelectedCity),
+        resolvePersonGeo(woman.birthPlace, woman.dateOfBirth, womanSelectedCity),
+      ]);
 
       const manPerson = {
         fullName: man.fullName,
@@ -696,16 +729,16 @@ const KundaliMatchingFormSection: React.FC = () => {
         manLon: manGeo.lon,
         manDate: man.dateOfBirth,
         manTime: man.birthTime,
-        manOffset: getLocalOffset(man.dateOfBirth),
-        manLocation: man.birthPlace,
+        manOffset: manGeo.offset,
+        manLocation: manGeo.location,
         manName: man.fullName,
         manGender: man.gender,
         womanLat: womanGeo.lat,
         womanLon: womanGeo.lon,
         womanDate: woman.dateOfBirth,
         womanTime: woman.birthTime,
-        womanOffset: getLocalOffset(woman.dateOfBirth),
-        womanLocation: woman.birthPlace,
+        womanOffset: womanGeo.offset,
+        womanLocation: womanGeo.location,
         womanName: woman.fullName,
         womanGender: woman.gender,
       });
@@ -779,6 +812,9 @@ const KundaliMatchingFormSection: React.FC = () => {
                     man: { ...prev.man, birthPlace: undefined },
                   }));
                 }}
+                onBirthCitySelect={city => {
+                  setManSelectedCity(city);
+                }}
               />
 
               <div
@@ -821,6 +857,9 @@ const KundaliMatchingFormSection: React.FC = () => {
                     ...prev,
                     woman: { ...prev.woman, birthPlace: undefined },
                   }));
+                }}
+                onBirthCitySelect={city => {
+                  setWomanSelectedCity(city);
                 }}
               />
             </div>

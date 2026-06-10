@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import React from 'react';
 
 import { ghostClient } from '@/lib/ghostClient';
+import { fetchBlogViewCounts } from '@/lib/blog-view-api';
+import { mapGhostBlogPost } from '@/lib/map-ghost-blog-post';
 
 export const metadata: Metadata = {
   title: 'Astrology Blog',
@@ -45,6 +47,7 @@ async function getBlogPosts() {
       'title',
       'slug',
       'excerpt',
+      'html',
       'feature_image',
       'published_at',
       'reading_time',
@@ -54,26 +57,11 @@ async function getBlogPosts() {
     order: 'published_at desc',
   });
 
-  return posts.map(post => ({
-    id: post.id ?? '',
-    title: post.title ?? '',
-    slug: post.slug ?? '',
-    description: post.excerpt ?? '',
-    image: post.feature_image ?? '',
-    date: post.published_at
-      ? new Date(post.published_at).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })
-      : '',
-    author: post.authors?.[0]?.name ?? 'Unknown Author',
-    duration: post.reading_time ? `${post.reading_time} Min` : '1 Min',
-    views: '0', // Ghost doesn't provide views by default
-    feature: post.tags?.map(tag => tag.name ?? '').filter(Boolean) ?? [],
-    tagSlugs: post.tags?.map(tag => tag.slug ?? '').filter(Boolean) ?? [],
-    link: `/blogs/${post.slug}`,
-  }));
+  const viewCounts = await fetchBlogViewCounts(
+    posts.map(post => post.slug ?? '').filter(Boolean),
+  );
+
+  return posts.map(post => mapGhostBlogPost(post, viewCounts));
 }
 
 const BlogPage = async () => {
