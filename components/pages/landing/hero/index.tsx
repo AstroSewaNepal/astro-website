@@ -1,8 +1,12 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { HeroSectionImage } from '@/components/images';
 import ArrowRight from '@/components/icons/arrow-right';
+import { openAppStore } from '@/lib/constants/app-store';
 
 const LandingHero: React.FC = () => {
   return (
@@ -19,13 +23,20 @@ const LandingHero: React.FC = () => {
           </p>
         </div>
         <div className="mt-11 flex flex-col lg:flex-row items-center gap-6 min-w-max">
-          <button className="border border-solid border-moonlight-600 rounded-3xl px-6 md:px-8 py-2 md:py-3 flex items-center cursor-pointer w-full lg:w-auto justify-center gap-2">
+          <Link
+            href="/login"
+            className="border border-solid border-moonlight-600 rounded-3xl px-6 md:px-8 py-2 md:py-3 flex items-center cursor-pointer w-full lg:w-auto justify-center gap-2"
+          >
             <p className="font-mukta text-base md:text-lg lg:text-2xl leading-7 text-moonlight-600 font-normal">
               Book Consultation
             </p>
             <ArrowRight />
-          </button>
-          <button className="font-mukta text-base md:text-lg lg:text-2xl leading-7 text-white bg-primary rounded-3xl px-6 md:px-8 py-2 md:py-3 cursor-pointer w-full lg:w-auto justify-center gap-2">
+          </Link>
+          <button
+            type="button"
+            onClick={openAppStore}
+            className="font-mukta text-base md:text-lg lg:text-2xl leading-7 text-white bg-primary rounded-3xl px-6 md:px-8 py-2 md:py-3 cursor-pointer w-full lg:w-auto justify-center gap-2"
+          >
             Download App
           </button>
         </div>
@@ -37,6 +48,7 @@ const LandingHero: React.FC = () => {
           width={516}
           height={516}
           priority
+          className="w-full max-w-[420px] lg:max-w-[516px] h-auto object-contain object-bottom lg:object-right-bottom"
         />
       </div>
     </section>

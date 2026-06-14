@@ -286,7 +286,7 @@ function LandingHeaderClient() {
 
   return (
     <>
-      <header className="container mx-auto px-6 lg:px-0 py-10 pb-0">
+      <header className="sticky top-0 z-50 bg-white container mx-auto px-6 lg:px-0 py-10 pb-0">
         <div className="flex justify-between">
           <div className="flex gap-2">
             <div className="block xl:hidden">
@@ -434,13 +434,37 @@ function LandingHeaderClient() {
                 if (hasChildren) {
                   return (
                     <div key={`${item.title}-${index}`} className="w-full">
-                      <button
-                        type="button"
-                        className="w-full text-left"
-                        onClick={() => setOpenMobileDropdown(isExpanded ? null : item.title)}
-                      >
-                        {content}
-                      </button>
+                      <div className="flex items-center justify-between w-full gap-2">
+                        {item.link ? (
+                          <Link
+                            href={item.link}
+                            onClick={closeMobileMenu}
+                            className="flex-1 min-w-0"
+                          >
+                            <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709]">
+                              {item.title}
+                            </p>
+                          </Link>
+                        ) : (
+                          <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709] flex-1">
+                            {item.title}
+                          </p>
+                        )}
+                        {!isZodiacSigns ? (
+                          <button
+                            type="button"
+                            aria-label={`Toggle ${item.title} submenu`}
+                            className="shrink-0 p-1"
+                            onClick={() => setOpenMobileDropdown(isExpanded ? null : item.title)}
+                          >
+                            <ChevronDownIcon
+                              className={`text-[#691709] w-[18px] h-[18px] transition-transform duration-200 ${
+                                isExpanded ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </button>
+                        ) : null}
+                      </div>
                       {isExpanded ? (
                         <div className="mt-2 ml-4 flex flex-col gap-2">
                           {item.children?.map((child, childIndex) => {

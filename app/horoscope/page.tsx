@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { HoroscopeHeroSignsSection } from '@/components/pages/horoscope';
 import Services from '@/components/pages/landing/services';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
+import Clarity from '@/components/pages/landing/clarity';
 import DownloadApp from '@/components/pages/landing/download-app';
 import { useHoroscopeLocale } from '@/lib/i18n';
 
@@ -51,6 +52,7 @@ function HoroscopePageContent() {
           </section>
 
           <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+          <Clarity />
         </div>
       </div>
 

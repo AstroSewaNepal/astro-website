@@ -210,7 +210,7 @@ export function ZodiacSignCardsGrid<T>({
               spaceBetween={oneSlidePerView ? 0 : compact ? 8 : 10}
               centeredSlides={!alignStart}
               slidesOffsetBefore={oneSlidePerView ? 0 : compact ? 30 : alignStart ? 0 : 4}
-              slidesOffsetAfter={oneSlidePerView || alignStart ? 0 : compact ? 0 : 4}
+              slidesOffsetAfter={oneSlidePerView || alignStart ? 40 : compact ? 40 : 4}
               breakpoints={
                 oneSlidePerView
                   ? {}

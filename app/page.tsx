@@ -81,15 +81,15 @@ export default function Home() {
       </div>
       {/* <TodayHoroscope /> */}
       {/* <EventsPage /> */}
+      <Services />
       <Clarity />
       <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
-      <Services />
-      <DownloadApp />
-      {/* <CustomerFeedback /> */}
       <AstrologerBlogListing />
       <WhoWeAre />
       <LandingFAQ />
       <HotTopics />
+      <DownloadApp />
+      {/* <CustomerFeedback /> */}
     </main>
   );
 }

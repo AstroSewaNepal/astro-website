@@ -4,7 +4,7 @@ import { ELanguage } from '@/components/enums/language.enum';
 export const zodiacListingCopy = {
   [ELanguage.ENGLISH]: {
     heroTitle: 'Zodiac Sign',
-    heroSub: 'Find Your Zodiac Sign',
+    heroSub: 'Find your Zodiac Sign',
     insightAside: 'Zodiac Insight',
     whatIsTitle: 'What is Zodiac Sign?',
     whatIsLead:
@@ -14,7 +14,7 @@ export const zodiacListingCopy = {
     whyBody:
       'Zodiac signs are important because they help you understand your personality and relationships on a deeper level. They uncover your natural strengths, challenges, and compatibility with others, offering insights into your personal growth and life path.',
     whyMore: '',
-    otherSignsTitle: 'Read Horoscope For Other Zodiac Signs',
+    otherSignsTitle: 'Read Horoscope by Zodiac Sign',
     readMore: 'Read More',
     cardBlurb: 'Your spark can move mountains, start bold today',
     nepaliHubIntro1:

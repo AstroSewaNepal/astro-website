@@ -120,7 +120,7 @@ export function HoroscopeDetailsSectionPills(props: {
           ))}
         </Swiper>
       </div>
-      <div className="hidden flex-wrap gap-2 md:flex">
+      <div className="hidden flex-wrap gap-2 md:flex md:overflow-x-auto md:pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {sectionPills.map(pill => (
           <Fragment key={pill.id}>{pillBtn(pill)}</Fragment>
         ))}

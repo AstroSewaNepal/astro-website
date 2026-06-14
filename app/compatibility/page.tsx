@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
+import Clarity from '@/components/pages/landing/clarity';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 import ChevronDownIcon from '@/components/icons/chevron-down';
@@ -52,8 +53,10 @@ export default function CompatibilityPage() {
   const [partnerSign, setPartnerSign] = useState<HoroscopeSign>(signOptions[1] ?? 'taurus');
   const [yourGender, setYourGender] = useState<'male' | 'female'>('male');
   const [partnerGender, setPartnerGender] = useState<'male' | 'female'>('female');
+  const [isFinding, setIsFinding] = useState(false);
 
   const findNow = useCallback(() => {
+    setIsFinding(true);
     const searchParams = new URLSearchParams({
       your_sign: yourSign,
       partner_sign: partnerSign,
@@ -72,7 +75,7 @@ export default function CompatibilityPage() {
             <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-[0%] text-[#6b2417] sm:text-[36px] sm:leading-[48px]">
               {copy.title}
             </h1>
-            <p className="mt-2 font-mukta font-normal text-[14px] leading-[24px] tracking-[0%] text-[#111111] text-justify max-sm:!text-[14px] max-sm:!leading-[24px] sm:text-[22px] sm:leading-[30px]">
+            <p className="mt-2 font-mukta font-normal text-[14px] leading-[24px] tracking-[0%] text-[#111111] text-center max-sm:!text-[14px] max-sm:!leading-[24px] sm:text-[22px] sm:leading-[30px]">
               {copy.subtitle}
             </p>
 
@@ -95,9 +98,8 @@ export default function CompatibilityPage() {
             <h2 className="text-left sm:text-center font-mukta text-[24px] leading-[34px] font-bold tracking-[0%] text-[#611508] -ml-4 sm:ml-0 sm:font-sahitya sm:text-[28px] sm:leading-[38px] break-words">
               {copy.cardTitle}
             </h2>
-            <p className="mt-1 text-left sm:text-center font-mukta text-[18px] sm:text-[20px] leading-[24px] sm:leading-[26px] tracking-[0%] text-[#141414] -ml-4 sm:ml-0">
-              <span className="block">Choose your and your partner&apos;s zodiac sign</span>
-              <span className="block">to check compatibility</span>
+            <p className="mt-1 text-center font-mukta text-[18px] sm:text-[20px] leading-[24px] sm:leading-[26px] tracking-[0%] text-[#141414]">
+              Choose your and your partner&apos;s zodiac sign to check compatibility
             </p>
 
             {/* ✅ FIX: reduced sm:max-w from [560px] to [380px] to close the gap between the two columns */}
@@ -330,7 +332,8 @@ export default function CompatibilityPage() {
             <div className="mx-auto mt-8 flex justify-center sm:max-w-[560px]">
               <button
                 onClick={findNow}
-                className="inline-flex w-[369.302px] h-[44px] items-center justify-center gap-2 rounded-[24px] bg-[#611508] px-8 py-2 font-mukta text-base font-semibold leading-7 text-[#F8F3DF] disabled:opacity-60"
+                disabled={isFinding}
+                className="inline-flex min-w-[160px] max-w-full items-center justify-center gap-2 rounded-[24px] bg-[#611508] px-6 py-2 font-mukta text-base font-semibold leading-7 text-[#F8F3DF] disabled:opacity-60"
               >
                 <span className="flex h-[18.3px] w-[20.2px] items-center justify-center">
                   <Image
@@ -341,7 +344,7 @@ export default function CompatibilityPage() {
                     className="h-[18.3px] w-[20.2px] object-contain"
                   />
                 </span>
-                <span>{copy.findNow}</span>
+                <span>{isFinding ? 'Generating…' : copy.findNow}</span>
               </button>
             </div>
           </div>
@@ -352,6 +355,10 @@ export default function CompatibilityPage() {
         </section>
 
         <TalkToOurAstrologer className="mx-auto mt-14 max-w-[1180px]" />
+
+        <div className="mt-14">
+          <Clarity />
+        </div>
 
         <div className="mt-14">
           <Services />

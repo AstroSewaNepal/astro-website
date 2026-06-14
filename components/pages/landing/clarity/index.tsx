@@ -1,11 +1,15 @@
+'use client';
+
 import React from 'react';
 
 import clsx from 'clsx';
 
 import ClarityCSS from './clarity.module.css';
 import Image from 'next/image';
+import Link from 'next/link';
 import { AstrologyImage } from '@/components/images';
 import ChevronRight from '@/components/icons/chevron-right';
+import { openAppStore } from '@/lib/constants/app-store';
 
 const Clarity: React.FC = () => {
   return (
@@ -28,12 +32,19 @@ const Clarity: React.FC = () => {
             Discover insights through Vedic astrology.
           </p>
           <div className="mt-6 md:mt-8 flex flex-row flex-nowrap items-center justify-center lg:justify-start gap-4 md:gap-6">
-            <button className="flex items-center justify-center gap-1 border border-[#F8F3DF] border-[1px] rounded-[24px] h-[34px] min-w-[111px] py-2 px-8 text-[#F8F3DF] text-sm transition-all duration-300 hover:bg-[#F8F3DF]/10 whitespace-nowrap sm:rounded-3xl sm:h-auto sm:w-auto sm:px-6 sm:py-2.5 sm:text-base md:px-7 lg:px-8">
+            <Link
+              href="/login"
+              className="flex items-center justify-center gap-1 border border-[#F8F3DF] border-[1px] rounded-[24px] h-[34px] min-w-[111px] py-2 px-8 text-[#F8F3DF] text-sm transition-all duration-300 hover:bg-[#F8F3DF]/10 whitespace-nowrap sm:rounded-3xl sm:h-auto sm:w-auto sm:px-6 sm:py-2.5 sm:text-base md:px-7 lg:px-8"
+            >
               <span className="font-mukta text-sm sm:text-base whitespace-nowrap">Chat Now</span>
               <ChevronRight className="!h-6 !w-6 shrink-0" />
-            </button>
-            <button className="bg-[#F8F3DF] rounded-[24px] h-[34px] min-w-[116px] px-8 py-2 text-black font-mukta text-sm flex items-center justify-center transition-all duration-300 hover:bg-[#F8F3DF]/90 whitespace-nowrap sm:rounded-3xl sm:h-auto sm:w-auto sm:px-6 sm:py-2.5 sm:text-base">
-              <span className="whitespace-nowrap">Download app</span>
+            </Link>
+            <button
+              type="button"
+              onClick={openAppStore}
+              className="bg-[#F8F3DF] rounded-[24px] h-[34px] min-w-[116px] px-8 py-2 text-black font-mukta text-sm flex items-center justify-center transition-all duration-300 hover:bg-[#F8F3DF]/90 whitespace-nowrap sm:rounded-3xl sm:h-auto sm:w-auto sm:px-6 sm:py-2.5 sm:text-base"
+            >
+              <span className="whitespace-nowrap">Download App</span>
             </button>
           </div>
         </div>

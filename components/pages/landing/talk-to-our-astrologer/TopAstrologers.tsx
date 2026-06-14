@@ -127,12 +127,12 @@ const TopAstrologers: React.FC<TopAstrologersProps> = ({ onChat, onCall, onSched
       >
         {isLoading
           ? Array.from({ length: SKELETON_COUNT }).map((_, index) => (
-              <SwiperSlide key={`skeleton-${index}`}>
+              <SwiperSlide key={`skeleton-${index}`} className="!h-auto">
                 <AstrologerCardSkeleton />
               </SwiperSlide>
             ))
           : astrologers.map((astrologer, index) => (
-              <SwiperSlide key={astrologer._id}>
+              <SwiperSlide key={astrologer._id} className="!h-auto">
                 <AstrologerCard
                   astrologer={astrologer}
                   priorityImage={index === 0}
