@@ -43,9 +43,7 @@ function CompatibilityHoroscopeCardLink({
     params.set('lang', uiLanguage);
   }
 
-  const href =
-    card.href ??
-    `/horoscope/details?${params.toString()}`;
+  const href = card.href ?? `/horoscope/details?${params.toString()}`;
   const starCount = layout === 'carousel' ? 3 : card.stars;
   const cleanSummary = card.summary
     ? card.summary.replace(/^(Across\s+)?\d{4}-\d{2}-\d{2}[.\s\u2026]*/i, '').trim()
