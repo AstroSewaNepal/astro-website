@@ -124,7 +124,7 @@ export function CompatibilitySignsGrid({
                       height="44"
                       viewBox="0 0 44 44"
                       fill="none"
-                      class="flex-shrink-0"
+                      className="flex-shrink-0"
                       aria-hidden="true"
                     >
                       <path
