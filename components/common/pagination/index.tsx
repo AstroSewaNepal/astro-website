@@ -26,7 +26,14 @@ const Pagination: React.FC<PaginationProps> = ({
   dotGap = '4.16px',
 }) => {
   const dots = Array.from({ length: totalPages }, (_, index) => index + 1);
-  const visibleDots = dots.slice(0, 5);
+  const visibleDots =
+    totalPages <= 3
+      ? dots
+      : currentPage <= 2
+        ? [1, 2, 3]
+        : currentPage >= totalPages - 1
+          ? [totalPages - 2, totalPages - 1, totalPages]
+          : [currentPage - 1, currentPage, currentPage + 1];
 
   return (
     <div className={`flex items-center gap-6 ${className}`} aria-label="services-pagination">

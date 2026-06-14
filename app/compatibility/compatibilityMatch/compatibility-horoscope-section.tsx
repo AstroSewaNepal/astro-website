@@ -43,7 +43,7 @@ function CompatibilityHoroscopeCardLink({
     params.set('lang', uiLanguage);
   }
 
-  const href = `/horoscope/details?${params.toString()}`;
+  const href = card.href ?? `/horoscope/details?${params.toString()}`;
   const starCount = layout === 'carousel' ? 3 : card.stars;
   const cleanSummary = card.summary
     ? card.summary.replace(/^(Across\s+)?\d{4}-\d{2}-\d{2}[.\s\u2026]*/i, '').trim()
@@ -77,7 +77,7 @@ function CompatibilityHoroscopeCardLink({
           {/* FIX: changed from justify-start + mt-auto to a tight top-aligned column */}
           <div className="flex flex-col items-center text-center gap-0 min-w-0 flex-1 px-0 justify-start">
             <div className="flex items-center gap-1 justify-center">
-              <p className="font-mukta font-bold text-[16px] leading-[32px] text-[#742718] text-center -mt-2 sm:mt-0 sm:text-[18px] sm:leading-[26px] sm:text-left">
+              <p className="font-mukta font-bold text-[14px] leading-[120%] text-[#742718] text-center sm:text-[15px] sm:leading-snug sm:text-left md:text-[14px]">
                 {card.name}
               </p>
               <div className="flex items-center gap-0.5 relative -top-1 sm:top-0">
@@ -138,7 +138,7 @@ function CompatibilityHoroscopeCardLink({
 
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <div className="flex flex-wrap items-center justify-center gap-1 md:justify-start">
-            <p className="font-mukta font-bold text-[16px] leading-[32px] text-[#742718] text-center -mt-2 sm:mt-0 sm:text-[15px] sm:leading-snug sm:text-left">
+            <p className="font-mukta font-bold text-[14px] leading-[120%] text-[#742718] text-center sm:text-[15px] sm:leading-snug sm:text-left md:text-[14px]">
               {card.name}
             </p>
             <div className="flex items-center gap-0.5 relative -top-1 sm:top-0">

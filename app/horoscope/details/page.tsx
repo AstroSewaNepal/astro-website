@@ -16,6 +16,7 @@ import {
 import {
   capitalizeSign,
   SIGN_COLOR_IMAGE,
+  SIGN_LIGHT_IMAGE,
 } from '@/components/pages/horoscope/horoscope-details-sign-assets';
 import { CompatibilitySignsGrid } from '@/components/ui/compatibility-signs-grid';
 import { fetchVedastroHoroscopeDetail } from '@/lib/api/vedastro/horoscope';
@@ -142,7 +143,7 @@ function HoroscopeDetailsContent() {
 
   return (
     <main className="min-h-screen">
-      <div className="container mx-auto min-w-0 px-3 pb-16 pt-4 sm:px-4 overflow-x-hidden">
+      <div className="container mx-auto min-w-0 px-3 pb-16 pt-2 sm:px-4 overflow-x-hidden">
         {!validSign ? (
           <section className="mt-7 px-2 py-10 text-center sm:px-6">
             <h1 className="font-sahitya text-[26px] text-[#6f2618] sm:text-[28px]">
@@ -179,13 +180,33 @@ function HoroscopeDetailsContent() {
             </div>
           </section>
         ) : (
-          <section className="mt-2 min-w-0 py-4 sm:py-5">
+          <section className="mt-2 min-w-0 py-2 sm:py-3">
             <h1 className="font-sahitya font-bold tracking-[0px] text-[#6f2618] text-[28px] leading-[34px] sm:text-[38px] sm:leading-[42px] md:text-[48px] md:leading-[48px]">
               {dict.details.rangeHeading[rangeType]}
             </h1>
-            <p className="mt-2 font-mukta font-medium text-[24px] leading-[30px] tracking-[0px] text-[#D47F2C]">
-              {dict.details.rangeSub[rangeType]}
-            </p>
+            {detail?.horoscope?.start_date ? (
+              <h2 className="mt-2 font-sahitya text-[22px] font-bold leading-[30px] text-[#D47F2C] sm:text-[26px] sm:leading-[34px]">
+                {['today', 'tomorrow', 'yesterday'].includes(detail.horoscope.type?.toLowerCase())
+                  ? new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })
+                  : `${new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })} - ${new Date(detail.horoscope.end_date).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}`}
+              </h2>
+            ) : (
+              <p className="mt-2 font-mukta font-medium text-[24px] leading-[30px] tracking-[0px] text-[#D47F2C]">
+                {dict.details.rangeSub[rangeType]}
+              </p>
+            )}
 
             {error ? (
               <p className="mt-6 font-mukta text-[14px] text-[#a94442]" role="alert">
@@ -211,10 +232,10 @@ function HoroscopeDetailsContent() {
             ) : detail ? (
               <>
                 <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[1fr_220px] lg:items-start lg:gap-4 lg:max-w-[1016px] lg:h-[272px] lg:opacity-100">
-                  <div className="min-w-0 order-2 lg:order-none">
-                    <h2 className="font-sahitya font-bold text-[28px] leading-[38px] tracking-[0%] text-primary">
+                  <div className="min-w-0 order-2 lg:order-none sm:mt-6">
+                    <h2 className="font-sahitya font-bold text-[24px] leading-[32px] tracking-[0%] text-primary whitespace-nowrap sm:text-[28px] sm:leading-[38px]">
                       {capitalizeSign(validSign)}{' '}
-                      <span className="inline font-sahitya font-bold text-[28px] leading-[38px] tracking-[0%] text-primary">
+                      <span className="inline font-sahitya font-bold text-[24px] leading-[32px] tracking-[0%] text-primary sm:text-[28px] sm:leading-[38px]">
                         (
                         {['today', 'tomorrow', 'yesterday'].includes(
                           detail.horoscope.type?.toLowerCase(),
@@ -239,12 +260,12 @@ function HoroscopeDetailsContent() {
                         )
                       </span>
                     </h2>
-                    <p className="mt-3 font-mukta text-[24px] font-normal leading-[34px] tracking-[0%] text-[#5e4f45]">
+                    <p className="mt-3 font-mukta text-[16px] font-normal leading-[28px] tracking-[0%] text-[#5e4f45] sm:text-[18px] sm:leading-[30px]">
                       {detail.horoscope.general}
                     </p>
                   </div>
                   <div
-                    className="order-1 mx-auto shrink-0 lg:order-none lg:mx-0 lg:justify-self-end lg:translate-x-40"
+                    className="order-1 mx-auto shrink-0 lg:order-none lg:mx-0 lg:justify-self-end lg:translate-x-40 mb-6"
                     style={{ width: '308.29px', height: '297.18px', opacity: 1 }}
                   >
                     <Image
@@ -256,10 +277,10 @@ function HoroscopeDetailsContent() {
                     />
                     <Link
                       href={zodiacDetailHref(validSign, uiLanguage, uiLanguage)}
-                      className="inline-flex h-[44px] w-[366px] items-center justify-center gap-[10px] rounded-[32px] bg-[#611508] px-[16px] py-[6px] font-mukta text-[22px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208]"
+                      className="inline-flex h-[44px] max-w-full items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
                     >
-                      Know more about {validSign} Zodiac
-                      <ArrowRight className="h-6 w-6 text-[#f8f3df]" />
+                      {capitalizeSign(validSign)} Horoscope Insights
+                      <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
                     </Link>
                   </div>
                 </div>
@@ -289,9 +310,11 @@ function HoroscopeDetailsContent() {
                   })}
                   currentSignLabel={capitalizeSign(validSign)}
                   currentSignImage={SIGN_COLOR_IMAGE[validSign]}
+                  currentSignImageLight={SIGN_LIGHT_IMAGE[validSign]}
                   variant="figma"
                   items={compatibilitySigns.map(item => ({
                     ...item,
+                    imageLight: SIGN_LIGHT_IMAGE[item.slug],
                     href: compatibilityMatchHref(validSign, item.slug),
                   }))}
                 />

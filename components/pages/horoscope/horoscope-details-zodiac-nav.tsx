@@ -42,7 +42,7 @@ export function HoroscopeDetailsZodiacNav(props: {
               : 'border-[#d5d3d0] bg-[#f2f0ee] group-hover:border-[#611508] group-hover:bg-[#faf2f2] group-hover:shadow-sm',
           )}
         >
-          <div className="relative h-[57.83684px] w-[60px]">
+          <div className="relative h-[72px] w-[72px] sm:h-[80px] sm:w-[80px]">
             <Image
               src={SIGN_LIGHT_IMAGE[slug]}
               alt={capitalizeSign(slug)}
@@ -82,14 +82,14 @@ export function HoroscopeDetailsZodiacNav(props: {
 
   return (
     <div className="mt-6 min-w-0">
-      <div className="horoscope-details-zodiac-mob -mx-1 min-w-0 md:hidden">
+      <div className="horoscope-details-zodiac-mob -mx-1 min-w-0 overflow-x-auto md:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <Swiper
           modules={[FreeMode]}
           freeMode={{ enabled: true, momentumRatio: 0.85 }}
           slidesPerView="auto"
           spaceBetween={10}
           slidesOffsetBefore={4}
-          slidesOffsetAfter={4}
+          slidesOffsetAfter={50}
           className="!overflow-visible pb-1"
           onSwiper={onSwiperZodiac}
         >

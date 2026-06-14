@@ -35,7 +35,12 @@ export function ZodiacSignStripNav({
   className,
 }: Props) {
   return (
-    <div className={clsx('flex gap-3 overflow-x-auto pb-3', className)}>
+    <div
+      className={clsx(
+        'flex gap-3 overflow-x-auto pb-3 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden',
+        className,
+      )}
+    >
       {HOROSCOPE_SIGNS.map((sign, i) => {
         const label = HOROSCOPE_DATA[language][i]!.name;
         const active = sign === activeSign;
@@ -58,8 +63,8 @@ export function ZodiacSignStripNav({
                 compact
                   ? 'h-[48px] w-[48px] p-1'
                   : large
-                    ? 'h-[64px] w-[64px] p-1.5 sm:h-[72px] sm:w-[72px] lg:h-[88px] lg:w-[88px]'
-                    : 'h-[52px] w-[52px] p-1.5',
+                    ? 'h-[72px] w-[72px] p-1.5 sm:h-[80px] sm:w-[80px] lg:h-[88px] lg:w-[88px]'
+                    : 'h-[64px] w-[64px] p-1.5 sm:h-[72px] sm:w-[72px]',
                 active
                   ? 'border-[#c9a063] bg-[#faf6f0] ring-2 ring-[#e8c47a]/35'
                   : 'border-[#d5d3d0] bg-[#f2f0ee] group-hover:border-[#c9a88a] group-hover:bg-[#faf8f6] group-hover:shadow-sm',

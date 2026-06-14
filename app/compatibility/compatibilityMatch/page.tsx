@@ -327,6 +327,7 @@ export default function CompatibilityMatchPage() {
 
   const handleCompatibilityCardClick = useCallback(
     (secondSign: HoroscopeSign) => {
+      window.scrollTo(0, 0);
       const params = new URLSearchParams({
         your_sign: yourSign,
         partner_sign: secondSign,

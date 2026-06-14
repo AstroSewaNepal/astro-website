@@ -720,6 +720,16 @@ a *,
 }
 
 /* Talk to astrologer — bullets on cream background */
+.talk-to-our-astrologer-swiper .swiper-wrapper {
+  align-items: stretch;
+}
+.talk-to-our-astrologer-swiper .swiper-slide {
+  display: flex;
+  height: auto;
+}
+.talk-to-our-astrologer-swiper .swiper-slide > * {
+  width: 100%;
+}
 .talk-to-our-astrologer-section .swiper-pagination-bullet {
   background: rgba(97, 21, 8, 0.22) !important;
 }

@@ -35,7 +35,6 @@ const AboutUsHero: React.FC = () => {
               approaches, offering you not just answers, but deep insights that empower confident
               and meaningful decisions.
             </p>
-
           </div>
         </div>
       </div>

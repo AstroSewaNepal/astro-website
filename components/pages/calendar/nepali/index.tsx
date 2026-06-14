@@ -373,7 +373,10 @@ const NepaliCalendarPageContent: React.FC = () => {
           traditional timings while staying aligned with astrological guidance.
         </p>
 
-        <section ref={calendarRef} className="rounded-xl sm:rounded-2xl md:rounded-3xl border border-[#ead9cf] bg-white shadow-[0_10px_24px_rgba(97,21,8,0.1)] sm:shadow-[0_14px_32px_rgba(97,21,8,0.12)] md:shadow-[0_18px_40px_rgba(97,21,8,0.12)] overflow-hidden">
+        <section
+          ref={calendarRef}
+          className="rounded-xl sm:rounded-2xl md:rounded-3xl border border-[#ead9cf] bg-white shadow-[0_10px_24px_rgba(97,21,8,0.1)] sm:shadow-[0_14px_32px_rgba(97,21,8,0.12)] md:shadow-[0_18px_40px_rgba(97,21,8,0.12)] overflow-hidden"
+        >
           <div className="bg-[linear-gradient(135deg,#611508_0%,#7a2516_45%,#b04832_100%)] text-secondary px-2 sm:px-3 md:px-4 lg:px-6 py-2 sm:py-3 md:py-4 lg:py-6">
             {/* One-line Header Layout */}
             <div className="grid grid-cols-[auto_1fr_auto] gap-1 sm:gap-2 md:gap-3 lg:gap-4 items-center">
@@ -461,22 +464,25 @@ const NepaliCalendarPageContent: React.FC = () => {
               {cells.map((date, idx) => (
                 <div
                   key={`${date.key}-${idx}`}
-                  onClick={(e) => handleDateClick(date, e)}
-                  className={`min-h-[72px] sm:min-h-[88px] md:min-h-[110px] lg:min-h-[120px] border-r border-b border-[#efe1d7] last:border-r-0 p-1 sm:p-1.5 md:p-2 lg:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${!date.isToday ? 'hover:bg-[#fff6ee]' : ''} ${date.isToday
+                  onClick={e => handleDateClick(date, e)}
+                  className={`min-h-[72px] sm:min-h-[88px] md:min-h-[110px] lg:min-h-[120px] border-r border-b border-[#efe1d7] last:border-r-0 p-1 sm:p-1.5 md:p-2 lg:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${!date.isToday ? 'hover:bg-[#fff6ee]' : ''} ${
+                    date.isToday
                       ? 'bg-primary border border-[#611508] text-secondary shadow-[0_6px_14px_rgba(97,21,8,0.12)] sm:shadow-[0_8px_18px_rgba(97,21,8,0.15)] md:shadow-[0_10px_24px_rgba(97,21,8,0.18)]'
                       : date.monthOffset === 0
                         ? 'bg-white'
                         : 'bg-[rgba(31,108,31,0.04)] text-[#7d7d7d]'
-                    }`}>
+                  }`}
+                >
                   <span
-                    className={`font-mukta text-[24px] sm:text-[32px] md:text-[40px] lg:text-[46px] leading-none font-bold ${date.isToday
+                    className={`font-mukta text-[24px] sm:text-[32px] md:text-[40px] lg:text-[46px] leading-none font-bold ${
+                      date.isToday
                         ? 'text-white'
                         : date.monthOffset === 0 && date.weekDay === 6
                           ? 'text-[#611508]'
                           : date.monthOffset === 0
                             ? 'text-[#101010]'
                             : 'text-[#7d7d7d] opacity-30'
-                      }`}
+                    }`}
                   >
                     {getCellDisplayDay(date)}
                   </span>
@@ -493,63 +499,115 @@ const NepaliCalendarPageContent: React.FC = () => {
       </div>
 
       {/* Date Info Card Dialog */}
-      {selectedDate && typeof document !== 'undefined' && createPortal(
-        <div
-          className="absolute z-50 pointer-events-none"
-          style={{
-            top: `${dialogPosition.top}px`,
-            left: `${dialogPosition.left}px`,
-            visibility: dialogVisible ? 'visible' : 'hidden',
-          }}
-          onClick={handleCloseDialog}
-        >
+      {selectedDate &&
+        typeof document !== 'undefined' &&
+        createPortal(
           <div
-            ref={(el) => { dialogRef.current = el; if (el) computePlacement(); }}
-            className="bg-[#f8f3df] rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg sm:shadow-xl md:shadow-2xl w-[300px] sm:w-[340px] md:w-[380px] h-auto max-w-[85vw] sm:max-w-[90vw] max-h-[75vh] sm:max-h-[80vh] p-3 sm:p-4 md:p-5 relative border border-[#ead9cf] pointer-events-auto overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
+            className="absolute z-50 pointer-events-none"
+            style={{
+              top: `${dialogPosition.top}px`,
+              left: `${dialogPosition.left}px`,
+              visibility: dialogVisible ? 'visible' : 'hidden',
+            }}
+            onClick={handleCloseDialog}
           >
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={handleCloseDialog}
-              className="absolute top-2 sm:top-3 right-2 sm:right-3 text-[#611508] bg-transparent rounded-full w-8 sm:w-9 h-8 sm:h-9 flex items-center justify-center transition-colors hover:bg-[#f0f0f0]"
+            <div
+              ref={el => {
+                dialogRef.current = el;
+                if (el) computePlacement();
+              }}
+              className="bg-[#f8f3df] rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg sm:shadow-xl md:shadow-2xl w-[300px] sm:w-[340px] md:w-[380px] h-auto max-w-[85vw] sm:max-w-[90vw] max-h-[75vh] sm:max-h-[80vh] p-3 sm:p-4 md:p-5 relative border border-[#ead9cf] pointer-events-auto overflow-y-auto"
+              onClick={e => e.stopPropagation()}
             >
-              <svg className="w-3.5 sm:w-4 h-3.5 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={handleCloseDialog}
+                className="absolute top-2 sm:top-3 right-2 sm:right-3 text-[#611508] bg-transparent rounded-full w-8 sm:w-9 h-8 sm:h-9 flex items-center justify-center transition-colors hover:bg-[#f0f0f0]"
+              >
+                <svg
+                  className="w-3.5 sm:w-4 h-3.5 sm:h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
 
-            <div className="text-center flex flex-col justify-start items-center gap-2 sm:gap-3 md:gap-3.5 w-full">
-              <div className="font-sahitya text-[24px] sm:text-[28px] md:text-[36px] lg:text-[40px] font-extrabold text-[#611508] leading-snug">
-                {new NepaliDate(selectedDate.year, selectedDate.month, selectedDate.day).format('DD MMMM YYYY', 'np')}
-              </div>
-              <div className="text-[12px] sm:text-[13px] md:text-[15px] lg:text-[16px] text-[#7b1c1c] font-semibold leading-tight sm:leading-snug flex items-center justify-center gap-2 flex-wrap">
-                <div className="font-sahitya">{getWeekDayName(selectedDate.weekDay).np}</div>
-                <span className="text-[#999]">•</span>
-                <div className="text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px]">{selectedDate.adDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
-              </div>
-
-              <div className="my-1.5 sm:my-2 md:my-2.5 h-px w-4/5 bg-[#e8d4c8]" />
-
-              <div className="text-[11px] sm:text-[12px] md:text-[14px] lg:text-[15px] text-[#222] w-full px-1 sm:px-2 font-mukta">
-                {panchangLoading && <span className="text-[#666] opacity-75 animate-pulse text-center block">Loading...</span>}
-                {panchangError && <span className="text-red-600 text-center text-[10px] sm:text-xs block">{panchangError}</span>}
-
-                {panchangData && !panchangLoading && (
-                  <div className="text-center text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] leading-relaxed sm:leading-loose flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
-                    {panchangData.table.Tithi?.Name && <span><span className="font-semibold text-[#611508]">Tithi:</span> {panchangData.table.Tithi.Name}</span>}
-                    {panchangData.table.Tithi?.Name && (panchangData.table.Yoga?.Name || panchangData.moonSign) && <span className="text-[#999]">|</span>}
-                    {panchangData.table.Yoga?.Name && <span><span className="font-semibold text-[#611508]">Yoga:</span> {panchangData.table.Yoga.Name}</span>}
-                    {panchangData.table.Yoga?.Name && panchangData.moonSign && <span className="text-[#999]">|</span>}
-                    {panchangData.moonSign && <span><span className="font-semibold text-[#611508]">Rashi:</span> {panchangData.moonSign}</span>}
+              <div className="text-center flex flex-col justify-start items-center gap-2 sm:gap-3 md:gap-3.5 w-full">
+                <div className="font-sahitya text-[24px] sm:text-[28px] md:text-[36px] lg:text-[40px] font-extrabold text-[#611508] leading-snug">
+                  {new NepaliDate(selectedDate.year, selectedDate.month, selectedDate.day).format(
+                    'DD MMMM YYYY',
+                    'np',
+                  )}
+                </div>
+                <div className="text-[12px] sm:text-[13px] md:text-[15px] lg:text-[16px] text-[#7b1c1c] font-semibold leading-tight sm:leading-snug flex items-center justify-center gap-2 flex-wrap">
+                  <div className="font-sahitya">{getWeekDayName(selectedDate.weekDay).np}</div>
+                  <span className="text-[#999]">•</span>
+                  <div className="text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px]">
+                    {selectedDate.adDate.toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
                   </div>
-                )}
+                </div>
+
+                <div className="my-1.5 sm:my-2 md:my-2.5 h-px w-4/5 bg-[#e8d4c8]" />
+
+                <div className="text-[11px] sm:text-[12px] md:text-[14px] lg:text-[15px] text-[#222] w-full px-1 sm:px-2 font-mukta">
+                  {panchangLoading && (
+                    <span className="text-[#666] opacity-75 animate-pulse text-center block">
+                      Loading...
+                    </span>
+                  )}
+                  {panchangError && (
+                    <span className="text-red-600 text-center text-[10px] sm:text-xs block">
+                      {panchangError}
+                    </span>
+                  )}
+
+                  {panchangData && !panchangLoading && (
+                    <div className="text-center text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] leading-relaxed sm:leading-loose flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+                      {panchangData.table.Tithi?.Name && (
+                        <span>
+                          <span className="font-semibold text-[#611508]">Tithi:</span>{' '}
+                          {panchangData.table.Tithi.Name}
+                        </span>
+                      )}
+                      {panchangData.table.Tithi?.Name &&
+                        (panchangData.table.Yoga?.Name || panchangData.moonSign) && (
+                          <span className="text-[#999]">|</span>
+                        )}
+                      {panchangData.table.Yoga?.Name && (
+                        <span>
+                          <span className="font-semibold text-[#611508]">Yoga:</span>{' '}
+                          {panchangData.table.Yoga.Name}
+                        </span>
+                      )}
+                      {panchangData.table.Yoga?.Name && panchangData.moonSign && (
+                        <span className="text-[#999]">|</span>
+                      )}
+                      {panchangData.moonSign && (
+                        <span>
+                          <span className="font-semibold text-[#611508]">Rashi:</span>{' '}
+                          {panchangData.moonSign}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };

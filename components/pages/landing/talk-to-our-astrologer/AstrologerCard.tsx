@@ -100,8 +100,8 @@ const AstrologerCard = memo(function AstrologerCard({
   const isRemoteProfileImage = Boolean(profileImage?.startsWith('http'));
 
   return (
-    <article className="h-full overflow-hidden rounded-4xl border border-solid border-[#0000007D] shadow-[0_8px_32px_rgba(97,21,8,0.08)]">
-      <div className="flex flex-col p-6 pt-11 sm:p-7 sm:pt-12">
+    <article className="flex h-full flex-col overflow-hidden rounded-4xl border border-solid border-[#0000007D] shadow-[0_8px_32px_rgba(97,21,8,0.08)]">
+      <div className="flex flex-1 flex-col p-6 pt-11 sm:p-7 sm:pt-12">
         <div className="flex flex-col items-center">
           <div className="relative shrink-0">
             <div className="relative h-[132px] w-[132px] overflow-hidden rounded-full ring-2 ring-[#e8dcc8] sm:h-[148px] sm:w-[148px] md:h-[156px] md:w-[156px]">
@@ -126,7 +126,7 @@ const AstrologerCard = memo(function AstrologerCard({
 
           <div className="mt-4 flex flex-col items-center text-center sm:mt-5">
             <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
-              <h3 className="font-mukta text-[19px] font-semibold leading-tight text-[#5a6a8a] sm:text-[22px] md:text-[24px]">
+              <h3 className="line-clamp-2 font-mukta text-[19px] font-semibold leading-tight text-[#5a6a8a] sm:text-[22px] md:text-[24px]">
                 {name}
               </h3>
               {isVerified ? (
@@ -181,10 +181,10 @@ const AstrologerCard = memo(function AstrologerCard({
           </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-2 sm:mt-5 sm:gap-3">
+        <div className="mt-auto grid grid-cols-2 gap-2 pt-4 sm:gap-3 sm:pt-5">
           {features.map(feature => (
             <div
-              className="flex min-h-[48px] items-center gap-1.5 rounded-3xl border border-solid border-[#79787A]/70 bg-white/40 px-2 py-2 sm:min-h-[52px] sm:gap-2 sm:px-2.5 sm:py-2.5 md:px-3"
+              className="flex min-h-[56px] items-center gap-1.5 rounded-3xl border border-solid border-[#79787A]/70 bg-white/40 px-2 py-2 sm:min-h-[60px] sm:gap-2 sm:px-2.5 sm:py-2.5 md:px-3"
               key={feature.title}
             >
               <Image
@@ -194,7 +194,7 @@ const AstrologerCard = memo(function AstrologerCard({
                 width={24}
                 height={24}
               />
-              <p className="min-w-0 font-mukta text-[10px] leading-snug text-[#5b5b5b] sm:text-[11px] md:text-sm">
+              <p className="min-w-0 line-clamp-2 font-mukta text-[10px] leading-snug text-[#5b5b5b] sm:text-[11px] md:text-sm">
                 {feature.title}
               </p>
             </div>
@@ -203,7 +203,7 @@ const AstrologerCard = memo(function AstrologerCard({
       </div>
 
       {(showChat || showCall || showSchedule) && (
-        <div className="flex items-center justify-between gap-2 bg-primary px-4 py-3.5 sm:gap-3 sm:px-6 sm:py-4">
+        <div className="mt-auto flex shrink-0 items-center justify-between gap-2 bg-primary px-4 py-3.5 sm:gap-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-2.5 sm:gap-4 md:gap-5">
             {showChat ? (
               <button
