@@ -9,12 +9,7 @@ import {
   GoogleDownloadImage,
 } from '@/components/images';
 import { BsInstagram, BsTwitterX } from 'react-icons/bs';
-import {
-  FacebookIcon,
-  LinkedinIcon,
-  TiktokIcon,
-  YoutubeIcon,
-} from '@/components/images/icons';
+import { FacebookIcon, LinkedinIcon, TiktokIcon, YoutubeIcon } from '@/components/images/icons';
 
 const Footer: React.FC = () => {
   return (

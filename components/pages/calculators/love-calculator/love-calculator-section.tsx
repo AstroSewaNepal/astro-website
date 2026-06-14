@@ -61,13 +61,18 @@ export default function LoveCalculatorSection() {
       if (!yourBirthPlaceValue) {
         errors.yourBirthPlace = 'Please enter your birth place.';
       } else if (!placeRegex.test(yourBirthPlaceValue) || !/[A-Za-z]/.test(yourBirthPlaceValue)) {
-        errors.yourBirthPlace = 'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
+        errors.yourBirthPlace =
+          'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       }
 
       if (!partnerBirthPlaceValue) {
         errors.partnerBirthPlace = 'Please enter your partner birth place.';
-      } else if (!placeRegex.test(partnerBirthPlaceValue) || !/[A-Za-z]/.test(partnerBirthPlaceValue)) {
-        errors.partnerBirthPlace = 'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
+      } else if (
+        !placeRegex.test(partnerBirthPlaceValue) ||
+        !/[A-Za-z]/.test(partnerBirthPlaceValue)
+      ) {
+        errors.partnerBirthPlace =
+          'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       }
 
       setFieldErrors(errors);
@@ -190,7 +195,8 @@ export default function LoveCalculatorSection() {
             </div>
 
             <p className="mt-6 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
-              A love calculator is a fun, easy way to discover your &quot;love score&quot; and see how well you connect. Simply enter your names and let the results surprise you!
+              A love calculator is a fun, easy way to discover your &quot;love score&quot; and see
+              how well you connect. Simply enter your names and let the results surprise you!
             </p>
 
             <p className="mt-4 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
