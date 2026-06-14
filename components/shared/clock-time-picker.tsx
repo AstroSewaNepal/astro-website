@@ -245,7 +245,13 @@ export function ClockTimePicker({
   };
 
   const handleApply = () => {
-    onChange({ ...draft, mm: pad(minute) });
+    const next = {
+      ...draft,
+      hh: draft.hh || '12',
+      mm: draft.mm || '00',
+    };
+    setDraft(next);
+    onChange(next);
     setOpen(false);
   };
 
@@ -326,7 +332,12 @@ export function ClockTimePicker({
                   key={ap}
                   type="button"
                   onClick={() => {
-                    const next = { ...draft, ampm: ap.toLowerCase() };
+                    const next = {
+                      ...draft,
+                      ampm: ap.toLowerCase(),
+                      hh: draft.hh || '12',
+                      mm: draft.mm || '00',
+                    };
                     setDraft(next);
                     onChange(next);
                   }}

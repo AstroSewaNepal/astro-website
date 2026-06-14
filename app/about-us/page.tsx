@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import AboutUsHero from '@/components/pages/about-us/hero';
+import DownloadApp from '@/components/pages/landing/download-app';
 import AboutUsVision from '@/components/pages/about-us/vision';
 import AboutUsWhatWeDo from '@/components/pages/about-us/what-we-do';
 import Services from '@/components/pages/landing/services';
@@ -38,6 +39,7 @@ const AboutUsPage = () => {
       <AboutUsWhyUs />
       {/* <TalkToOurAstrologer /> */}
       <Services />
+      <DownloadApp className="pb-8 md:pb-12" />
     </main>
   );
 };

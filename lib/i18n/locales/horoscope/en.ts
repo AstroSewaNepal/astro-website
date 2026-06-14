@@ -155,7 +155,7 @@ const horoscope = {
       rights: '|| All Rights Reserved',
       links: {
         freeKundali: 'Free Kundali',
-        kundaliMatching: 'Kundali Matching',
+        kundaliMatching: 'Free Kundali Matching',
         horoscope: 'Horoscope',
         talkToAstrologer: 'Talk to Astrologer',
         pujaBidhi: 'Puja Bidhi',

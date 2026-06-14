@@ -9,6 +9,7 @@ export type BirthTimeParts = {
 };
 
 export const EMPTY_BIRTH_TIME: BirthTimeParts = { hh: '', mm: '', ampm: 'am' };
+export const DEFAULT_UNKNOWN_BIRTH_TIME: BirthTimeParts = { hh: '12', mm: '00', ampm: 'pm' };
 
 /** Build `hh:mm am/pm` string for existing parseBirthTime helpers. */
 export function birthTimePartsToInput(parts: BirthTimeParts): string {

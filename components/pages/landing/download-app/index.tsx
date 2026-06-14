@@ -7,6 +7,9 @@ type DownloadAppProps = {
   className?: string;
 };
 
+const GOOGLE_PLAY_URL = 'https://play.google.com/store/search?q=Astro%20Sewa&c=apps';
+const APPLE_STORE_URL = 'https://apps.apple.com/us/search?term=Astro%20Sewa';
+
 const DownloadApp: React.FC<DownloadAppProps> = ({ className }) => {
   return (
     <section className={clsx(className)}>
@@ -30,24 +33,38 @@ const DownloadApp: React.FC<DownloadAppProps> = ({ className }) => {
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 lg:gap-5 mt-4 md:mt-5 lg:mt-6 justify-center lg:justify-start">
             {/* Apple Download Button */}
             <div className="flex-shrink-0 w-full sm:w-auto">
-              <Image
-                src={AppleDownloadImage}
-                alt="Apple Download"
-                width={205}
-                height={68}
-                className="w-full sm:w-auto h-auto max-w-[180px] md:max-w-[205px] mx-auto sm:mx-0"
-              />
+              <a
+                href={APPLE_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Download AstroSewa from the Apple App Store"
+              >
+                <Image
+                  src={AppleDownloadImage}
+                  alt="Apple Download"
+                  width={205}
+                  height={68}
+                  className="w-full sm:w-auto h-auto max-w-[180px] md:max-w-[205px] mx-auto sm:mx-0"
+                />
+              </a>
             </div>
 
             {/* Google Play Download Button */}
             <div className="flex-shrink-0 w-full sm:w-auto">
-              <Image
-                src={GoogleDownloadImage}
-                alt="Google Download"
-                width={205}
-                height={68}
-                className="w-full sm:w-auto h-auto max-w-[180px] md:max-w-[205px] mx-auto sm:mx-0"
-              />
+              <a
+                href={GOOGLE_PLAY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Download AstroSewa from Google Play"
+              >
+                <Image
+                  src={GoogleDownloadImage}
+                  alt="Google Download"
+                  width={205}
+                  height={68}
+                  className="w-full sm:w-auto h-auto max-w-[180px] md:max-w-[205px] mx-auto sm:mx-0"
+                />
+              </a>
             </div>
           </div>
         </div>
