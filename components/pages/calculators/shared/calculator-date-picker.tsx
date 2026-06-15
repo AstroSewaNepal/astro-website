@@ -10,7 +10,6 @@ type CalculatorDatePickerProps = {
   value: string;
   onChange: (value: string) => void;
   error?: string;
-  fullWidth?: boolean;
 };
 
 function isoDateToDdMmYyyy(iso: string): string {
@@ -33,11 +32,10 @@ export default function CalculatorDatePicker({
   value,
   onChange,
   error,
-  fullWidth = false,
 }: CalculatorDatePickerProps) {
   const [open, setOpen] = useState(false);
 
-  const displayValue = value ? formatDobDisplay(value) : 'Select date of birth';
+  const displayValue = value ? formatDobDisplay(value) : 'M / D / Y';
   const calendarValue = isoDateToDdMmYyyy(value);
 
   return (
@@ -52,11 +50,11 @@ export default function CalculatorDatePicker({
         id={id}
         type="button"
         onClick={() => setOpen(true)}
-        className={`${fullWidth ? 'w-full' : 'w-[532px]'} cursor-pointer flex items-center justify-between h-[56px] box-border rounded-[32px] border-2 border-[#BE7B71] bg-transparent px-[20px] py-[16px] text-left font-mukta text-sm sm:text-[15px] md:text-[18px] md:leading-[30px] text-[#2f2f2f] transition-colors duration-200 focus-within:border-[#BE7B71] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BE7B71]/20`}
+        className={`w-full cursor-pointer flex items-center justify-between box-border rounded-[32px] border-2 sm:border border-[#BE7B71] bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 text-left font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] transition-colors duration-200 focus-within:border-[#A13924] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A13924]/20`}
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        <span className="flex-1 min-w-0">{displayValue}</span>
+        <span className={`flex-1 min-w-0 ${value ? 'text-[#2f2f2f]' : 'text-[#464646]'}`}>{displayValue}</span>
         <svg
           className="w-5 h-5 shrink-0 text-primary"
           viewBox="0 0 24 24"

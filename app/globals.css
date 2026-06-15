@@ -6,6 +6,7 @@
   --font-sahitya: 'Sahitya', serif;
   --font-mukta: 'Mukta', serif;
   --font-raleway: 'Raleway', sans-serif;
+  --font-lato: 'Lato', sans-serif;
 
   /* Deep Saffron Color Palette */
   --saffron-50: #fff2e5;
@@ -128,6 +129,10 @@ a *,
 
 @utility font-raleway {
   font-family: var(--font-raleway);
+}
+
+@utility font-lato {
+  font-family: var(--font-lato);
 }
 
 @utility text-primary {

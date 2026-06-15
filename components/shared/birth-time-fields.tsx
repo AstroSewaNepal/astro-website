@@ -84,7 +84,7 @@ export function BirthTimeFields({
   const containerClass = clsx(
     'relative flex items-center overflow-hidden transition-colors',
     variant === 'calculator' &&
-      'rounded-full border border-[#c9b9aa] bg-white focus-within:border-[#5D1409]',
+      'rounded-full border-2 sm:border border-[#BE7B71] bg-transparent focus-within:border-[#A13924] focus-within:ring-2 focus-within:ring-[#A13924]/10 px-4 h-[48px] sm:h-auto',
     variant === 'kundali' &&
       clsx(
         'gap-0.5 rounded-full border px-4 py-3 focus-within:border-primary',
@@ -101,7 +101,7 @@ export function BirthTimeFields({
   const inputClass = clsx(
     'text-center bg-transparent outline-none disabled:cursor-not-allowed',
     variant === 'calculator' &&
-      'w-12 px-2 py-3 font-mukta text-[15px] text-[#2f2f2f] placeholder:text-[#b0a098]',
+      'w-8 h-[44px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] placeholder:font-mukta placeholder:text-[18px] placeholder:font-normal placeholder:leading-[30px] placeholder:tracking-normal placeholder:text-[#464646]',
     variant === 'kundali' &&
       'w-7 py-0 font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph',
     variant === 'matching' &&
@@ -109,14 +109,14 @@ export function BirthTimeFields({
   );
 
   const separatorClass = clsx(
-    variant === 'calculator' && 'font-mukta text-[15px] text-[#b0a098]',
+    variant === 'calculator' && 'font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#464646] mx-1',
     variant === 'kundali' && 'font-mukta text-sm md:text-base text-[#4f2620]',
     variant === 'matching' && 'font-mukta text-[13px] text-[#7b6b69]',
   );
 
   const selectClass = clsx(
     'bg-transparent outline-none disabled:cursor-not-allowed cursor-pointer appearance-none',
-    variant === 'calculator' && 'px-2 py-3 font-mukta text-[15px] text-[#2f2f2f]',
+    variant === 'calculator' && 'h-[44px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] w-10 text-center',
     variant === 'kundali' && 'font-mukta text-sm md:text-base text-[#4f2620] w-8',
     variant === 'matching' && 'font-mukta text-[13px] md:text-[14px] text-[#141414]',
   );
@@ -129,7 +129,7 @@ export function BirthTimeFields({
   );
 
   const labelClass = clsx(
-    variant === 'calculator' && 'block font-mukta text-[14px] text-[#2f2f2f] mb-1.5',
+    variant === 'calculator' && 'block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]',
     variant === 'kundali' && 'block font-mukta text-sm text-Trinary mb-2',
     variant === 'matching' && 'block font-mukta text-[12px] md:text-[13px] text-primary mb-1.5',
   );
