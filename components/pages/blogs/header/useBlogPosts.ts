@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { fetchBlogViewCounts } from '@/lib/blog-view-api';
+import { mapGhostBlogPost, type GhostBlogPost } from '@/lib/map-ghost-blog-post';
+
 const POSTS_PER_PAGE = 9;
 
 export type BlogPost = {
@@ -17,48 +20,6 @@ export type BlogPost = {
   tagSlugs?: string[];
 };
 
-type GhostTag = {
-  name?: string;
-  slug?: string;
-};
-
-type GhostAuthor = {
-  name?: string;
-};
-
-type GhostPost = {
-  id?: string;
-  title?: string;
-  slug?: string;
-  excerpt?: string;
-  feature_image?: string;
-  published_at?: string;
-  reading_time?: number;
-  authors?: GhostAuthor[];
-  tags?: GhostTag[];
-};
-
-const transformPost = (post: GhostPost): BlogPost => ({
-  id: post.id ?? '',
-  title: post.title ?? '',
-  slug: post.slug ?? '',
-  description: post.excerpt ?? '',
-  image: post.feature_image ?? '',
-  date: post.published_at
-    ? new Date(post.published_at).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : '',
-  author: post.authors?.[0]?.name ?? 'Unknown Author',
-  duration: post.reading_time ? `${post.reading_time} Min` : '1 Min',
-  views: '0',
-  feature: post.tags?.map((tag: GhostTag) => tag.name ?? '').filter(Boolean) ?? [],
-  tagSlugs: post.tags?.map((tag: GhostTag) => tag.slug ?? '').filter(Boolean) ?? [],
-  link: `/blogs/${post.slug ?? ''}`,
-});
-
 type UseBlogPostsReturn = {
   activeCategory: string;
   setActiveCategory: (category: string) => void;
@@ -68,6 +29,11 @@ type UseBlogPostsReturn = {
   hasMorePosts: boolean;
   handleShowMore: () => void;
 };
+
+async function mapPostsWithViews(posts: GhostBlogPost[]): Promise<BlogPost[]> {
+  const viewCounts = await fetchBlogViewCounts(posts.map(post => post.slug ?? '').filter(Boolean));
+  return posts.map(post => mapGhostBlogPost(post, viewCounts));
+}
 
 export const useBlogPosts = (initialPosts: BlogPost[]): UseBlogPostsReturn => {
   const [activeCategory, setActiveCategory] = useState<string>('');
@@ -80,7 +46,7 @@ export const useBlogPosts = (initialPosts: BlogPost[]): UseBlogPostsReturn => {
       setIsLoading(true);
       try {
         let url =
-          '/api/ghost/posts?include=tags,authors&fields=id,title,slug,excerpt,feature_image,published_at,reading_time&limit=all&order=published_at%20desc';
+          '/api/ghost/posts?include=tags,authors&fields=id,title,slug,excerpt,html,feature_image,published_at,reading_time&limit=all&order=published_at%20desc';
         if (activeCategory) {
           url += `&filter=tag:${activeCategory}`;
         }
@@ -90,8 +56,8 @@ export const useBlogPosts = (initialPosts: BlogPost[]): UseBlogPostsReturn => {
         }
 
         const data = await response.json();
-        const fetchedPosts = Array.isArray(data.posts) ? data.posts : [];
-        const transformedPosts = fetchedPosts.map(transformPost);
+        const fetchedPosts = Array.isArray(data.posts) ? (data.posts as GhostBlogPost[]) : [];
+        const transformedPosts = await mapPostsWithViews(fetchedPosts);
         setPosts(transformedPosts);
         setVisiblePostsCount(POSTS_PER_PAGE);
       } catch (error) {

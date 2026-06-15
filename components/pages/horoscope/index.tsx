@@ -176,7 +176,7 @@ export function HoroscopeHeroSignsSection({
   return (
     <section
       className={
-        sectionClassName != null ? clsx(sectionClassName) : clsx('mt-2 bg-transparent py-4 sm:mt-4')
+        sectionClassName != null ? clsx(sectionClassName) : clsx('mt-0 bg-transparent py-4 sm:mt-2')
       }
     >
       {hideTitle ? null : (

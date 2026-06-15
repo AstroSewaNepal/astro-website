@@ -8,6 +8,8 @@ import { IoHeart } from 'react-icons/io5';
 import { buildBirthVedastroQuery } from '@/lib/calculators/birth-query';
 import { fetchVedastroCalculator } from '@/lib/vedastro/fetch-calculator';
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
+import type { CitySearchResult } from '@/lib/city-search-api';
+import { CityAutocompleteInput } from '@/components/shared/city-autocomplete-input';
 
 import CalculatorChooserSection from '../shared/calculator-chooser-section';
 import CalculatorDatePicker from '../shared/calculator-date-picker';
@@ -21,8 +23,10 @@ export default function LoveCalculatorSection() {
   const [partnerName, setPartnerName] = useState('');
   const [yourBirthDate, setYourBirthDate] = useState('');
   const [yourBirthPlace, setYourBirthPlace] = useState('');
+  const [yourSelectedCity, setYourSelectedCity] = useState<CitySearchResult | null>(null);
   const [partnerBirthDate, setPartnerBirthDate] = useState('');
   const [partnerBirthPlace, setPartnerBirthPlace] = useState('');
+  const [partnerSelectedCity, setPartnerSelectedCity] = useState<CitySearchResult | null>(null);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({
     yourName: '',
@@ -57,13 +61,18 @@ export default function LoveCalculatorSection() {
       if (!yourBirthPlaceValue) {
         errors.yourBirthPlace = 'Please enter your birth place.';
       } else if (!placeRegex.test(yourBirthPlaceValue) || !/[A-Za-z]/.test(yourBirthPlaceValue)) {
-        errors.yourBirthPlace = 'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
+        errors.yourBirthPlace =
+          'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       }
 
       if (!partnerBirthPlaceValue) {
         errors.partnerBirthPlace = 'Please enter your partner birth place.';
-      } else if (!placeRegex.test(partnerBirthPlaceValue) || !/[A-Za-z]/.test(partnerBirthPlaceValue)) {
-        errors.partnerBirthPlace = 'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
+      } else if (
+        !placeRegex.test(partnerBirthPlaceValue) ||
+        !/[A-Za-z]/.test(partnerBirthPlaceValue)
+      ) {
+        errors.partnerBirthPlace =
+          'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       }
 
       setFieldErrors(errors);
@@ -97,8 +106,8 @@ export default function LoveCalculatorSection() {
         };
 
         const [yourQ, partnerQ] = await Promise.all([
-          buildBirthVedastroQuery(yourForm),
-          buildBirthVedastroQuery(partnerForm),
+          buildBirthVedastroQuery(yourForm, yourSelectedCity),
+          buildBirthVedastroQuery(partnerForm, partnerSelectedCity),
         ]);
 
         const params = new URLSearchParams({
@@ -155,6 +164,8 @@ export default function LoveCalculatorSection() {
       yourBirthPlace,
       partnerBirthDate,
       partnerBirthPlace,
+      yourSelectedCity,
+      partnerSelectedCity,
       router,
     ],
   );
@@ -184,11 +195,16 @@ export default function LoveCalculatorSection() {
             </div>
 
             <p className="mt-6 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
-              A love calculator is a fun, easy way to discover your &quot;love score&quot; and see how well you connect. Simply enter your names and let the results surprise you!
+              A love calculator is a fun, easy way to discover your &quot;love score&quot; and see
+              how well you connect. Simply enter your names and let the results surprise you!
             </p>
 
             <p className="mt-4 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
-              Finding love can be challenging, but tools like the love calculator add excitement to the journey. They give you a playful peek into your feelings and compatibility before taking the next step. Many people use it just for fun, while others explore it to understand their bond better. Try it now and see what the stars reveal about your connection!
+              Finding love can be challenging, but tools like the love calculator add excitement to
+              the journey. They give you a playful peek into your feelings and compatibility before
+              taking the next step. Many people use it just for fun, while others explore it to
+              understand their bond better. Try it now and see what the stars reveal about your
+              connection!
             </p>
 
             <form
@@ -251,22 +267,21 @@ export default function LoveCalculatorSection() {
                     </div>
 
                     <div>
-                      <label className="mb-1.5 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#141414]">
-                        Your birth place
-                      </label>
-                      <input
-                        type="text"
+                      <CityAutocompleteInput
+                        label="Your birth place"
                         placeholder="Where were you born?"
                         value={yourBirthPlace}
-                        onChange={e => {
-                          setYourBirthPlace(e.target.value);
+                        onChange={value => {
+                          setYourBirthPlace(value);
+                          setYourSelectedCity(null);
                           setFieldErrors(prev => ({ ...prev, yourBirthPlace: '' }));
                         }}
-                        className="w-full h-[52px] box-border rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] py-[12px] font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#464646]"
+                        onCitySelect={city => {
+                          setYourSelectedCity(city);
+                          setFieldErrors(prev => ({ ...prev, yourBirthPlace: '' }));
+                        }}
+                        error={fieldErrors.yourBirthPlace}
                       />
-                      {fieldErrors.yourBirthPlace && (
-                        <p className="mt-1 text-[12px] text-red-600">{fieldErrors.yourBirthPlace}</p>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -319,22 +334,21 @@ export default function LoveCalculatorSection() {
                     </div>
 
                     <div>
-                      <label className="mb-1.5 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#141414]">
-                        Partner birth place
-                      </label>
-                      <input
-                        type="text"
+                      <CityAutocompleteInput
+                        label="Partner birth place"
                         placeholder="Where were you born?"
                         value={partnerBirthPlace}
-                        onChange={e => {
-                          setPartnerBirthPlace(e.target.value);
+                        onChange={value => {
+                          setPartnerBirthPlace(value);
+                          setPartnerSelectedCity(null);
                           setFieldErrors(prev => ({ ...prev, partnerBirthPlace: '' }));
                         }}
-                        className="w-full h-[52px] box-border rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] py-[12px] font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#464646]"
+                        onCitySelect={city => {
+                          setPartnerSelectedCity(city);
+                          setFieldErrors(prev => ({ ...prev, partnerBirthPlace: '' }));
+                        }}
+                        error={fieldErrors.partnerBirthPlace}
                       />
-                      {fieldErrors.partnerBirthPlace && (
-                        <p className="mt-1 text-[12px] text-red-600">{fieldErrors.partnerBirthPlace}</p>
-                      )}
                     </div>
                   </div>
                 </div>

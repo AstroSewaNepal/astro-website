@@ -11,6 +11,7 @@ export type TodayHoroscopeDisplayCard = {
   imageLight?: string | StaticImageData;
   summary: string;
   stars: number;
+  href?: string;
 };
 
 type HoroscopeCardMeta = {

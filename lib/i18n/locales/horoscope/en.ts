@@ -84,9 +84,9 @@ const horoscope = {
         career: 'Career & Finance',
         health: 'Health & Wellness',
       },
-      moreFor: 'More for {sign}',
-      compatibility: '{sign} compatibility',
-      readOtherSigns: 'Read horoscope for other signs',
+      moreFor: '{sign} Horoscope Insights',
+      compatibility: '{sign} Sign Compatibility',
+      readOtherSigns: 'Read Horoscope for Other Signs',
       traitsTitle: 'Traits — {sign}',
       combinedHeading: '{range} — {sign}',
       astro: {

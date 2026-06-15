@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
-import { IoLocationOutline } from 'react-icons/io5';
 import {
   EMPTY_BIRTH_TIME,
   DEFAULT_UNKNOWN_BIRTH_TIME,
@@ -13,7 +12,9 @@ import {
   type BirthTimeParts,
 } from '@/components/shared/birth-time-fields';
 import { ClockTimePicker } from '@/components/shared/clock-time-picker';
+import { CityAutocompleteInput } from '@/components/shared/city-autocomplete-input';
 import { geocodePlace } from '@/lib/calculators/geocode-place';
+import { cityToGeocodeResult, type CitySearchResult } from '@/lib/city-search-api';
 
 import CalendarIcon from '@/components/icons/calendar-icon';
 import UserLineIcon from '@/components/icons/user/user-line';
@@ -149,6 +150,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
   const [dateOfBirthValue, setDateOfBirthValue] = useState<string>('');
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [birthPlaceValue, setBirthPlaceValue] = useState('');
+  const [selectedBirthCity, setSelectedBirthCity] = useState<CitySearchResult | null>(null);
 
   const nameRegex = /^[A-Za-z ]+$/;
   const placeRegex = /^[A-Za-z\s,.'-]+$/;
@@ -192,7 +194,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
       errors.birthPlace = 'Birth place is required.';
       valid = false;
     } else if (!placeRegex.test(birthPlace) || !/[A-Za-z]/.test(birthPlace)) {
-      errors.birthPlace = 'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
+      errors.birthPlace =
+        'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       valid = false;
     }
 
@@ -231,15 +234,31 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
 
     // ── Network calls ─────────────────────────────────────────────────────────
     try {
-      const selectedGeo = await geocodePlace(birthPlace);
-      const offset = getLocalOffset(parsedDate!);
+      let lat: string;
+      let lon: string;
+      let offset: string;
+      let location = birthPlace;
+
+      if (selectedBirthCity) {
+        const geo = cityToGeocodeResult(selectedBirthCity);
+        lat = geo.lat;
+        lon = geo.lon;
+        offset = geo.timezoneOffset;
+        location = geo.displayName;
+      } else {
+        const selectedGeo = await geocodePlace(birthPlace);
+        lat = selectedGeo.lat;
+        lon = selectedGeo.lon;
+        offset = getLocalOffset(parsedDate!);
+      }
+
       const query = new URLSearchParams({
-        lat: selectedGeo.lat,
-        lon: selectedGeo.lon,
+        lat,
+        lon,
         date: parsedDate!,
         time: parsedTime!,
         offset,
-        location: birthPlace,
+        location,
       });
 
       const bundle = await fetchFreeKundaliBundle(query);
@@ -252,8 +271,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
             dateOfBirth: parsedDate,
             birthTime: parsedTime,
             gender,
-            latitude: selectedGeo.lat,
-            longitude: selectedGeo.lon,
+            latitude: lat,
+            longitude: lon,
             payload: { calculator: 'AllTimeData', payload: bundle.panchanga },
             planetRows: bundle.planetRows,
             doshas: bundle.doshas,
@@ -262,11 +281,15 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
       }
       router.push('/free-kundali/result');
     } catch (submitError) {
-      if (submitError instanceof Error && /Failed to resolve coordinates|Place not found/.test(submitError.message)) {
+      if (
+        submitError instanceof Error &&
+        /Failed to resolve coordinates|Place not found/.test(submitError.message)
+      ) {
         setFieldErrors({ birthPlace: submitError.message });
       } else {
         setFieldErrors({
-          general: submitError instanceof Error ? submitError.message : 'Failed to generate kundali.',
+          general:
+            submitError instanceof Error ? submitError.message : 'Failed to generate kundali.',
         });
       }
     } finally {
@@ -404,37 +427,23 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
 
                   {/* Birth Place */}
                   <div>
-                    <label
-                      htmlFor="kundali-birth-place"
-                      className="block font-mukta text-sm text-Trinary mb-2"
-                    >
-                      Enter birth place
-                    </label>
-                    <div
-                      className={clsx(
-                        'flex items-center gap-3 rounded-full border px-4 py-3 focus-within:border-primary transition-colors',
-                        fieldErrors.birthPlace ? 'border-red-500' : 'border-Trinary',
-                      )}
-                    >
-                      <input
-                        id="kundali-birth-place"
-                        name="birthPlace"
-                        type="text"
-                        placeholder="Where were you born?"
-                        value={birthPlaceValue}
-                        onChange={event => {
-                          const nextValue = event.currentTarget.value.replace(/[^A-Za-z\s,.'-]/g, '');
-                          setBirthPlaceValue(nextValue);
-                          setFieldErrors(prev => ({ ...prev, birthPlace: undefined }));
-                        }}
-                        onInput={event => {
-                          event.currentTarget.value = event.currentTarget.value.replace(/[^A-Za-z\s,.'-]/g, '');
-                        }}
-                        className="flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none"
-                      />
-                      <IoLocationOutline className={fieldIconClass} aria-hidden />
-                    </div>
-                    <FieldError message={fieldErrors.birthPlace} />
+                    <CityAutocompleteInput
+                      id="kundali-birth-place"
+                      name="birthPlace"
+                      label="Enter birth place"
+                      placeholder="Where were you born?"
+                      value={birthPlaceValue}
+                      onChange={nextValue => {
+                        setBirthPlaceValue(nextValue);
+                        setSelectedBirthCity(null);
+                        setFieldErrors(prev => ({ ...prev, birthPlace: undefined }));
+                      }}
+                      onCitySelect={city => {
+                        setSelectedBirthCity(city);
+                        setFieldErrors(prev => ({ ...prev, birthPlace: undefined }));
+                      }}
+                      error={fieldErrors.birthPlace}
+                    />
                   </div>
 
                   <div>
