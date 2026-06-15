@@ -57,6 +57,34 @@ export default function RashiCalculatorResultSection() {
     router.push('/calculators/rashi-calculator');
   };
 
+  const handleShareReport = async () => {
+    if (typeof window === 'undefined') return;
+
+    const shareData = {
+      title: document.title || 'AstroSewa Rashi Result',
+      text: 'Check out my Rashi result on AstroSewa.',
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareData.url);
+        return;
+      }
+
+      window.prompt('Copy this result link:', shareData.url);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+    }
+  };
+
   if (!loaded) {
     return (
       <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
@@ -176,17 +204,18 @@ export default function RashiCalculatorResultSection() {
             ))}
           </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="mt-8 flex flex-row items-center gap-3">
             <button
               type="button"
-              className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#5D1409] px-8 font-mukta text-[16px] font-bold text-white transition-opacity hover:opacity-95"
+              onClick={handleShareReport}
+              className="inline-flex min-h-[52px] w-[calc(50%-0.375rem)] items-center justify-center rounded-full bg-[#5D1409] px-4 font-mukta text-[15px] font-bold text-white transition-opacity hover:opacity-95 sm:w-auto sm:px-8 sm:text-[16px]"
             >
               Share Your Report
             </button>
             <button
               type="button"
               onClick={handleCalculateAgain}
-              className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[#5D1409] bg-[#FFF5E3] px-8 font-mukta text-[16px] font-bold text-[#5D1409] transition-colors hover:bg-[#f7e7d2]"
+              className="inline-flex min-h-[52px] w-[calc(50%-0.375rem)] items-center justify-center rounded-full border border-[#5D1409] bg-[#FFF5E3] px-4 font-mukta text-[15px] font-bold text-[#5D1409] transition-colors hover:bg-[#f7e7d2] sm:w-auto sm:px-8 sm:text-[16px]"
             >
               Calculate Again
             </button>
