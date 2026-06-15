@@ -7,7 +7,7 @@ import {
   UnknownBirthTimeCheckbox,
   type BirthTimeParts,
 } from '@/components/shared/birth-time-fields';
-import { ClockTimePicker } from '@/components/shared/clock-time-picker';
+
 import CalculatorDatePicker from '@/components/pages/calculators/shared/calculator-date-picker';
 import {
   EMPTY_CALCULATOR_FORM,

@@ -285,7 +285,7 @@ function LandingHeaderClient() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white container mx-auto px-6 lg:px-0 py-10 pb-0">
+      <header className="sticky top-0 z-50 bg-transparent container mx-auto px-6 lg:px-0 py-10 pb-0">
         <div className="flex justify-between">
           <div className="flex gap-2">
             <div className="block xl:hidden">

@@ -78,7 +78,7 @@
   --dark-gray: #252525;
   --white: #ffffff;
 
-  --primary: #720A0B;
+  --primary: 359 84% 24%;
   --secondary: #FFFAE6;
   --Trinary: #be7b71;
   --Paragraph: #464646;
@@ -739,7 +739,7 @@ a *,
   background: rgba(97, 21, 8, 0.22) !important;
 }
 .talk-to-our-astrologer-section .swiper-pagination-bullet-active {
-  background: var(--primary) !important;
+  background: hsl(var(--primary)) !important;
 }
 .talk-to-our-astrologer-section .swiper-pagination-bullet:hover {
   background: rgba(97, 21, 8, 0.45) !important;

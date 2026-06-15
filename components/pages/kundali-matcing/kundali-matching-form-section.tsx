@@ -784,9 +784,9 @@ const KundaliMatchingFormSection: React.FC = () => {
                 aria-hidden
                 className="md:hidden h-0 opacity-100 w-[calc(100%+32px)] -mx-4 mt-2"
                 style={{
-                  borderTop: '1.62px dashed var(--primary)',
+                  borderTop: '1.62px dashed hsl(359 84% 24%)',
                   borderImage:
-                    'repeating-linear-gradient(to right, var(--primary) 0 4.861026287078857px, transparent 4.861026287078857px 9.722052574157714px) 1',
+                    'repeating-linear-gradient(to right, hsl(359 84% 24%) 0 4.861026287078857px, transparent 4.861026287078857px 9.722052574157714px) 1',
                 }}
               />
 

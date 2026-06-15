@@ -157,7 +157,7 @@ function ClockFace({ hour, minute, mode, onCommit }: ClockFaceProps) {
             dominantBaseline="central"
             fontSize={18}
             fontFamily="inherit"
-            fill="var(--primary)"
+            fill="#720A0B"
           >
             {n}
           </text>
@@ -168,12 +168,12 @@ function ClockFace({ hour, minute, mode, onCommit }: ClockFaceProps) {
         y1={CY}
         x2={ex.toFixed(1)}
         y2={ey.toFixed(1)}
-        style={{ stroke: 'var(--primary)' }}
+        style={{ stroke: 'hsl(359 84% 24%)' }}
         strokeWidth={2.2}
         strokeLinecap="round"
       />
-      <circle cx={CX} cy={CY} r={5} style={{ fill: 'var(--primary)' }} />
-      <circle cx={ex.toFixed(1)} cy={ey.toFixed(1)} r={11} style={{ fill: 'var(--primary)' }} />
+      <circle cx={CX} cy={CY} r={5} style={{ fill: 'hsl(359 84% 24%)' }} />
+      <circle cx={ex.toFixed(1)} cy={ey.toFixed(1)} r={11} style={{ fill: 'hsl(359 84% 24%)' }} />
     </svg>
   );
 }
@@ -280,7 +280,7 @@ export function ClockTimePicker({
           height="17"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="var(--primary)"
+          stroke="#720A0B"
           strokeWidth="1.8"
           className="opacity-60"
           aria-hidden="true"
