@@ -3,10 +3,11 @@
 import { useState } from 'react';
 
 import {
-  BirthTimeFields,
+
   UnknownBirthTimeCheckbox,
   type BirthTimeParts,
 } from '@/components/shared/birth-time-fields';
+import { ClockTimePicker } from '@/components/shared/clock-time-picker';
 
 import CalculatorDatePicker from '@/components/pages/calculators/shared/calculator-date-picker';
 import {
@@ -217,11 +218,12 @@ export default function CalculatorBirthDetailsForm({
               value={form.birthDate}
               onChange={value => handleChange('birthDate', value)}
               error={fieldErrors.birthDate}
+              fullWidth
             />
           </div>
 
           <div>
-            <label className="block font-mukta text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-[#2f2f2f] mb-1.5 sm:mb-2">
+            <label className="block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]">
               Enter birth place
             </label>
             <div className="relative">
@@ -230,7 +232,7 @@ export default function CalculatorBirthDetailsForm({
                 placeholder="Where were you born?"
                 value={form.birthPlace}
                 onChange={e => handleChange('birthPlace', e.target.value)}
-                className="w-full rounded-[32px] border border-[#BE7B71] bg-white px-4 py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#9a8f87] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
+                className="w-full rounded-[32px] border-2 sm:border border-[#BE7B71] bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] placeholder:font-mukta placeholder:text-[18px] placeholder:font-normal placeholder:leading-[30px] placeholder:tracking-normal placeholder:text-[#464646] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
               />
               <span className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[#5D1409] opacity-60">
                 <svg
@@ -246,12 +248,12 @@ export default function CalculatorBirthDetailsForm({
                 </svg>
               </span>
             </div>
-            <p className="mt-2 font-mukta text-[12px] text-red-600 min-h-[18px]" role="alert">
+            <p className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]" role="alert">
               {fieldErrors.birthPlace || '\u00a0'}
             </p>
           </div>
           <div className="col-span-2">
-            <BirthTimeFields
+            <ClockTimePicker
               id="calculator-birth-time"
               label="Enter birth time"
               value={birthTimeParts}
