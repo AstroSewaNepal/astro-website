@@ -71,7 +71,6 @@ export default function CalculatorReportResult<T extends CalculatorReportResultD
   }, [storageKey]);
 
   const handleCalculateAgain = () => {
-    sessionStorage.removeItem(storageKey);
     router.push(calculatorPath);
   };
 

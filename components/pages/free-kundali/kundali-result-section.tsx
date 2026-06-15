@@ -88,7 +88,7 @@ function formatPanchangaValue(value: unknown): string {
 }
 
 function doshaStrengthClass(strength: DoshaStrength): string {
-  if (strength === 'Strong') return 'text-[#7F1808]';
+  if (strength === 'Strong') return 'text-[#720A0B]';
   if (strength === 'Mild') return 'text-[#a16207]';
   return 'text-[#2d6a4f]';
 }
@@ -339,6 +339,12 @@ function readFreeKundaliResult(): StoredKundaliResult | null {
 
 const subscribeFreeKundaliResult = () => () => {};
 
+function freeKundaliTabButtonClass(active: boolean): string {
+  return `inline-flex items-center justify-center h-[34px] min-w-[118px] max-w-full rounded-[32px] border border-[#720A0B] px-4 py-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 whitespace-nowrap md:h-[46px] md:min-w-[334.25px] md:px-2 ${
+    active ? 'bg-[#720A0B] text-white' : 'bg-[#FFFAE6] text-[#720A0B]'
+  } hover:bg-[#720A0B] hover:text-white`;
+}
+
 const KundaliResultSection: React.FC = () => {
   const result = useSyncExternalStore(
     subscribeFreeKundaliResult,
@@ -411,7 +417,7 @@ const KundaliResultSection: React.FC = () => {
         <h1 className="font-sahitya text-primary text-[28px] md:text-[40px] leading-tight font-bold">
           Kundali Details
         </h1>
-        <p className="mt-2 font-mukta text-[#141414] text-sm md:text-lg">
+        <p className="mt-2 font-mukta text-[#141414] text-base md:text-[22px] leading-snug">
           Discover your detailed Janam Kundli instantly
         </p>
         {result?.planetRows && result.planetRows.length > 0 ? (
@@ -428,43 +434,38 @@ const KundaliResultSection: React.FC = () => {
             </p>
           </div>
         )}
-        <div className="mt-6 flex flex-nowrap items-center justify-center gap-3 overflow-x-auto">
-          <button
-            type="button"
-            onClick={() => setActiveTab('basic')}
-            className={`h-[46px] w-[334.25px] max-w-full rounded-[32px] border border-[#A13924] p-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 ${
-              activeTab === 'basic' ? 'bg-[#7F1808] text-white' : 'bg-[#ede9d9] text-[#7F1808]'
-            } hover:bg-[#7F1808] hover:text-white`}
-          >
-            Basic Details
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('dosha')}
-            className={`h-[46px] w-[334.25px] max-w-full rounded-[32px] border border-[#A13924] p-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 ${
-              activeTab === 'dosha' ? 'bg-[#7F1808] text-white' : 'bg-[#ede9d9] text-[#7F1808]'
-            } hover:bg-[#7F1808] hover:text-white`}
-          >
-            Dosha
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('planets')}
-            className={`h-[46px] w-[334.25px] max-w-full rounded-[32px] border border-[#A13924] p-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 ${
-              activeTab === 'planets' ? 'bg-[#7F1808] text-white' : 'bg-[#ede9d9] text-[#7F1808]'
-            } hover:bg-[#7F1808] hover:text-white`}
-          >
-            Planets Detail
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('lagna')}
-            className={`h-[46px] w-[334.25px] max-w-full rounded-[32px] border border-[#A13924] p-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 ${
-              activeTab === 'lagna' ? 'bg-[#7F1808] text-white' : 'bg-[#ede9d9] text-[#7F1808]'
-            } hover:bg-[#7F1808] hover:text-white`}
-          >
-            Lagna Chart
-          </button>
+        {/* Tabs — horizontal scroll on mobile with hidden scrollbar */}
+        <div className="mt-6 w-full overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex min-w-max gap-3">
+            <button
+              type="button"
+              onClick={() => setActiveTab('basic')}
+              className={freeKundaliTabButtonClass(activeTab === 'basic')}
+            >
+              Basic Details
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('dosha')}
+              className={freeKundaliTabButtonClass(activeTab === 'dosha')}
+            >
+              Dosha
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('planets')}
+              className={freeKundaliTabButtonClass(activeTab === 'planets')}
+            >
+              Planets Detail
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('lagna')}
+              className={freeKundaliTabButtonClass(activeTab === 'lagna')}
+            >
+              Lagna Chart
+            </button>
+          </div>
         </div>
 
         {result ? (
@@ -612,7 +613,7 @@ const KundaliResultSection: React.FC = () => {
                                 key={`planet-cell-${rowIdx}-${cellIdx}`}
                                 className={`border-b border-r border-[#f0e6d0] px-2 py-1.5 align-top font-mukta text-xs leading-snug last:border-r-0 sm:px-3 sm:py-2 sm:text-sm md:leading-normal ${
                                   cellIdx === 0
-                                    ? `sticky left-0 z-10 min-w-[4.5rem] whitespace-nowrap font-semibold text-[#7F1808] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] ${
+                                    ? `sticky left-0 z-10 min-w-[4.5rem] whitespace-nowrap font-semibold text-[#720A0B] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] ${
                                         rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
                                       }`
                                     : `max-w-[8.5rem] break-words text-[#2d2d2d] sm:max-w-[11rem] md:max-w-none tabular-nums ${
@@ -639,13 +640,13 @@ const KundaliResultSection: React.FC = () => {
                     <h3 className="font-sahitya text-primary text-[34px] leading-[44px] font-bold">
                       Basic Details
                     </h3>
-                    <div className="mt-2">
+                    <div className="mt-2 flex flex-col gap-2">
                       {basicRows.map(([label, value]) => (
-                        <div key={`basic-${label}`} className="grid grid-cols-1 sm:grid-cols-2">
-                          <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[24px] leading-[34px] sm:text-[28px] sm:leading-[40px] font-medium text-[#3a3a3a]">
+                        <div key={`basic-${label}`} className="grid grid-cols-2 gap-2">
+                          <div className="border border-[#C8A9A0] rounded-[6px] bg-transparent px-3 py-2 font-mukta text-[15px] leading-[22px] sm:text-[18px] sm:leading-[30px] font-medium text-[#3a3a3a]">
                             {label}
                           </div>
-                          <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[24px] leading-[34px] sm:text-[28px] sm:leading-[40px] font-normal text-[#4a4a4a]">
+                          <div className="border border-[#C8A9A0] rounded-[6px] bg-transparent px-3 py-2 font-mukta text-[15px] leading-[22px] sm:text-[18px] sm:leading-[30px] font-normal text-[#4a4a4a]">
                             {value}
                           </div>
                         </div>
@@ -657,13 +658,13 @@ const KundaliResultSection: React.FC = () => {
                     <h3 className="font-sahitya text-primary text-[34px] leading-[44px] font-bold">
                       Kundali Details
                     </h3>
-                    <div className="mt-2">
+                    <div className="mt-2 flex flex-col gap-2">
                       {kundaliRows.map(([label, value]) => (
-                        <div key={`kundali-${label}`} className="grid grid-cols-1 sm:grid-cols-2">
-                          <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[24px] leading-[34px] sm:text-[28px] sm:leading-[40px] font-medium text-[#3a3a3a]">
+                        <div key={`kundali-${label}`} className="grid grid-cols-2 gap-2">
+                          <div className="border border-[#C8A9A0] rounded-[6px] bg-transparent px-3 py-2 font-mukta text-[15px] leading-[22px] sm:text-[18px] sm:leading-[30px] font-medium text-[#3a3a3a]">
                             {label}
                           </div>
-                          <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[24px] leading-[34px] sm:text-[28px] sm:leading-[40px] font-normal text-[#4a4a4a]">
+                          <div className="border border-[#C8A9A0] rounded-[6px] bg-transparent px-3 py-2 font-mukta text-[15px] leading-[22px] sm:text-[18px] sm:leading-[30px] font-normal text-[#4a4a4a]">
                             {value}
                           </div>
                         </div>
@@ -676,13 +677,13 @@ const KundaliResultSection: React.FC = () => {
                   <h3 className="font-sahitya text-primary text-[34px] leading-[44px] font-bold">
                     Favourable
                   </h3>
-                  <div className="mt-2 max-w-[760px]">
+                  <div className="mt-2 max-w-[760px] flex flex-col gap-2">
                     {favourableRows.map(([label, value]) => (
-                      <div key={`favourable-${label}`} className="grid grid-cols-1 sm:grid-cols-2">
-                        <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[24px] leading-[34px] sm:text-[28px] sm:leading-[40px] font-medium text-[#3a3a3a]">
+                      <div key={`favourable-${label}`} className="grid grid-cols-2 gap-2">
+                        <div className="border border-[#C8A9A0] rounded-[6px] bg-transparent px-3 py-2 font-mukta text-[15px] leading-[22px] sm:text-[18px] sm:leading-[30px] font-medium text-[#3a3a3a]">
                           {label}
                         </div>
-                        <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[24px] leading-[34px] sm:text-[28px] sm:leading-[40px] font-normal text-[#4a4a4a]">
+                        <div className="border border-[#C8A9A0] rounded-[6px] bg-transparent px-3 py-2 font-mukta text-[15px] leading-[22px] sm:text-[18px] sm:leading-[30px] font-normal text-[#4a4a4a]">
                           {value}
                         </div>
                       </div>

@@ -8,7 +8,7 @@ import PanchangCircleImage from '@/components/images/panchang_circle.png';
 import ArrowLeft from '@/components/icons/arrow-left';
 import ArrowRight from '@/components/icons/arrow-right';
 import PanchangTimingStrip, { type PanchangTimingEntry } from './panchang-timing-strip';
-import { MOON_RISE_SET_SOURCE_NOTE, moonRiseSetForPlace } from './panchang-moon-times';
+import { moonRiseSetForPlace } from './panchang-moon-times';
 import {
   PANCHANG_DEFAULT_GEO,
   buildPanchangaTitleLine,
@@ -173,26 +173,8 @@ const PanchangTodaySection: React.FC = () => {
       <section className="w-full max-w-full box-border min-h-[580px] min-w-0 flex flex-col lg:flex-row items-start gap-8 md:gap-10 opacity-100">
         <div className="w-full min-w-0 min-h-[580px] flex flex-col gap-7 md:gap-10 opacity-100">
           <div className="w-full md:max-w-none">
-            <div className="md:hidden">
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <input
-                  type="date"
-                  value={dateInputIsoValue(calendarDay)}
-                  onChange={e => onDateInputChange(e.target.value)}
-                  className={`date-input ${roundedInputChrome} w-full`}
-                  aria-label="Select date"
-                />
-                <input
-                  type="text"
-                  placeholder="City (label only)"
-                  value={city}
-                  onChange={e => setCity(e.target.value)}
-                  onBlur={() => void reload()}
-                  className={`city-input ${roundedInputChrome} w-full`}
-                />
-              </div>
-
-              <div className="mt-3 flex items-center justify-center gap-2">
+            <div className="md:hidden flex flex-col gap-2">
+              <div className="flex items-center justify-center gap-2">
                 <button
                   type="button"
                   onClick={() => shiftDay(-1)}
@@ -226,6 +208,24 @@ const PanchangTodaySection: React.FC = () => {
                 >
                   <ArrowRight className="w-6 h-6" />
                 </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 mt-3">
+                <input
+                  type="date"
+                  value={dateInputIsoValue(calendarDay)}
+                  onChange={e => onDateInputChange(e.target.value)}
+                  className={`date-input ${roundedInputChrome} w-full`}
+                  aria-label="Select date"
+                />
+                <input
+                  type="text"
+                  placeholder="City (label only)"
+                  value={city}
+                  onChange={e => setCity(e.target.value)}
+                  onBlur={() => void reload()}
+                  className={`city-input ${roundedInputChrome} w-full`}
+                />
               </div>
             </div>
 
@@ -287,7 +287,7 @@ const PanchangTodaySection: React.FC = () => {
                 <ArrowRight className="w-6 h-6" />
               </button>
             </div>
-            <p className="mt-2 font-mukta text-[13px] leading-[18px] text-[#666]">
+            <p className="mt-1 md:mt-2 font-mukta text-[13px] leading-[18px] text-[#666]">
               Positions use VedAstro at {PANCHANG_DEFAULT_GEO.lat}°N, {PANCHANG_DEFAULT_GEO.lon}°E (
               {PANCHANG_DEFAULT_GEO.label}). City updates the place name only; coordinates stay
               fixed.
@@ -383,9 +383,6 @@ const PanchangTodaySection: React.FC = () => {
       </section>
 
       <PanchangTimingStrip timings={timings} />
-      <p className="mt-3 max-w-[1454px] font-mukta text-[13px] leading-[19px] text-[#5c4a42]">
-        {MOON_RISE_SET_SOURCE_NOTE}
-      </p>
     </>
   );
 };

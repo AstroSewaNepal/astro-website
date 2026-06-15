@@ -53,7 +53,6 @@ export default function RashiCalculatorResultSection() {
   }, []);
 
   const handleCalculateAgain = () => {
-    sessionStorage.removeItem(STORAGE_KEY);
     router.push('/calculators/rashi-calculator');
   };
 

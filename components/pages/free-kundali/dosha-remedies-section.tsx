@@ -21,13 +21,7 @@ export default function DoshaRemediesSection({ doshas }: DoshaRemediesSectionPro
     [doshas],
   );
 
-  const [expanded, setExpanded] = useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {};
-    for (const { key } of DOSHA_DISPLAY_ORDER) {
-      initial[key] = doshas[key].present;
-    }
-    return initial;
-  });
+  const [openKey, setOpenKey] = useState<string | null>('manglik');
 
   return (
     <div className="mt-10 p-5 md:p-7">
@@ -64,14 +58,16 @@ export default function DoshaRemediesSection({ doshas }: DoshaRemediesSectionPro
           return (
             <details
               key={`remedy-${key}`}
-              open={expanded[key]}
-              onToggle={e => {
-                const isOpen = e.currentTarget.open;
-                setExpanded(prev => ({ ...prev, [key]: isOpen }));
-              }}
+              open={openKey === key}
               className="group overflow-hidden rounded-xl"
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-mukta text-base font-semibold text-[#2d2d2d] marker:content-none [&::-webkit-details-marker]:hidden">
+              <summary
+                onClick={e => {
+                  e.preventDefault();
+                  setOpenKey(openKey === key ? null : key);
+                }}
+                className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-mukta text-base font-semibold text-[#2d2d2d] marker:content-none [&::-webkit-details-marker]:hidden"
+              >
                 <span className="flex flex-wrap items-center gap-2">
                   <span className="font-sahitya text-primary">{label}</span>
                   <span
@@ -81,7 +77,7 @@ export default function DoshaRemediesSection({ doshas }: DoshaRemediesSectionPro
                         : 'bg-[#2d6a4f]/10 text-[#2d6a4f]'
                     }`}
                   >
-                    {entry.present ? `Present${strengthLabel}` : 'Not indicated'}
+                    {entry.present ? `Present${strengthLabel}` : 'None'}
                   </span>
                 </span>
                 <span

@@ -3,12 +3,14 @@
 import React, { useState, useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import clsx from 'clsx';
 import OpenChart from '@/components/images/openchart.png';
 import {
   NorthIndianOpenChartWithPlanets,
   OPEN_CHART_FRAME_CLASS,
 } from '@/components/pages/free-kundali/north-indian-open-chart';
 import PersonDoshaResults from '@/components/shared/person-dosha-results';
+import ChevronRight from '@/components/icons/chevron-right';
 import type { StoredKundaliMatchingResult } from '@/lib/vedastro/fetch-kundali-matching-bundle';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -49,9 +51,8 @@ type TabButtonProps = {
 
 /** Same pill classes as `free-kundali/kundali-result-section.tsx` tab buttons. */
 function freeKundaliTabButtonClass(active: boolean): string {
-  return `inline-flex items-center justify-center h-[34px] min-w-[118px] max-w-full rounded-[32px] border border-[#A13924] px-4 py-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 whitespace-nowrap md:h-[46px] md:min-w-[334.25px] md:px-2 ${
-    active ? 'bg-[#7F1808] text-white' : 'bg-[#ede9d9] text-[#7F1808]'
-  } hover:bg-[#7F1808] hover:text-white`;
+  return `inline-flex items-center justify-center h-[34px] min-w-[118px] max-w-full rounded-[32px] border border-[#720A0B] px-4 py-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 whitespace-nowrap md:h-[46px] md:min-w-[334.25px] md:px-2 ${active ? 'bg-[#720A0B] text-white' : 'bg-[#FFFAE6] text-[#720A0B]'
+    } hover:bg-[#720A0B] hover:text-white`;
 }
 
 function TabButton({ id, label, activeTab, onSelect }: TabButtonProps) {
@@ -144,8 +145,19 @@ function clampPercent(v: number | undefined): number {
 
 function natureBadge(nature: string | undefined): React.ReactNode {
   const label = nature ?? 'Unknown';
+  const lower = label.toLowerCase();
+  const colorClass =
+    lower === 'good' || lower === 'excellent'
+      ? 'bg-green-50 border-green-300 text-green-700'
+      : lower === 'bad' || lower === 'worst' || lower === 'very bad'
+        ? 'bg-red-50 border-red-300 text-red-700'
+        : lower === 'neutral' || lower === 'average'
+          ? 'bg-amber-50 border-amber-300 text-amber-700'
+          : 'bg-[#fffdf6] border-[#C8A9A0] text-[#3a3a3a]';
   return (
-    <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border border-[#C8A9A0] bg-[#fffdf6] text-[#3a3a3a] font-mukta">
+    <span
+      className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full border font-mukta ${colorClass}`}
+    >
       {label}
     </span>
   );
@@ -170,73 +182,163 @@ const KutaTable: React.FC<{
   kutaRaw?: number | null;
 }> = ({ predictions, man, woman, kutaRaw = null }) => {
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
+
+  const manFirstName = man.fullName.split(' ')[0];
+  const womanFirstName = woman.fullName.split(' ')[0];
+
+  const totalScore =
+    kutaRaw != null
+      ? `Total Kuta Score: ${clampPercent(kutaRaw)}% — ${Math.round(((Math.max(0, Math.min(100, kutaRaw)) * 36) / 100) * 10) / 10}/36`
+      : 'Total Kuta Score: -';
+
   return (
-    <div className="rounded-[20px] border border-[#e5d9bc] bg-transparent p-3 overflow-x-auto">
-      <table className="w-full min-w-[640px] border-separate border-spacing-0 font-mukta">
-        <thead>
-          <tr>
-            <th className="border-b border-[#C8A9A0] bg-transparent px-3 py-3 text-left font-sahitya text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
-              Kuta / Factor
-            </th>
-            <th className="border-b border-[#C8A9A0] bg-transparent px-3 py-3 text-center font-sahitya text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
-              Nature
-            </th>
-            <th className="border-b border-[#C8A9A0] bg-transparent px-3 py-3 text-center font-sahitya text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
-              For {man.fullName.split(' ')[0]}
-            </th>
-            <th className="border-b border-[#C8A9A0] bg-transparent px-3 py-3 text-center font-sahitya text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
-              For {woman.fullName.split(' ')[0]}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {predictions.map((row, i) => {
-            const name = row.Name ?? `Row ${i + 1}`;
-            const rowKey = `${i}-${name}`;
-            const isOpen = expandedKey === rowKey;
-            const info = row.Info?.trim() || row.Description?.trim();
-            return (
-              <React.Fragment key={rowKey}>
-                <tr
-                  className="border-t border-[#C8A9A0] cursor-pointer transition-colors hover:bg-[#f3e8de]"
-                  onClick={() => setExpandedKey(isOpen ? null : rowKey)}
-                >
-                  <td className="border border-[#C8A9A0] px-3 py-2 text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
-                    <span className="flex items-center gap-1.5">
-                      {info && (
-                        <span className="text-primary/50 text-xs">{isOpen ? '▾' : '▸'}</span>
-                      )}
-                      {name}
-                    </span>
-                  </td>
-                  <td className="border border-[#C8A9A0] px-3 py-2 text-center text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
-                    {natureBadge(row.Nature)}
-                  </td>
-                  <td className="border border-[#C8A9A0] px-3 py-2 text-center text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
-                    {row.MaleInfo?.trim() || (row.Nature ?? '-')}
-                  </td>
-                  <td className="border border-[#C8A9A0] px-3 py-2 text-center text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
-                    {row.FemaleInfo?.trim() || (row.Nature ?? '-')}
-                  </td>
-                </tr>
-                {isOpen && info && (
-                  <tr>
-                    <td colSpan={4} className="px-3 py-3">
-                      <div className="rounded-[16px] bg-transparent p-3 text-[18px] leading-[30px] font-normal text-[#3a3a3a]">
-                        {info}
-                      </div>
+    <div className="space-y-0">
+      {/* ── Mobile: FAQ-style accordion (hidden on md+) ── */}
+      <div className="md:hidden space-y-3">
+        {predictions.map((row, i) => {
+          const name = row.Name ?? `Row ${i + 1}`;
+          const rowKey = `${i}-${name}`;
+          const isOpen = expandedKey === rowKey;
+          const info = row.Info?.trim() || row.Description?.trim();
+          const maleInfo = row.MaleInfo?.trim() || (row.Nature ?? '-');
+          const femaleInfo = row.FemaleInfo?.trim() || (row.Nature ?? '-');
+
+          return (
+            <div
+              key={rowKey}
+              className="border border-solid border-[#C8A9A0] rounded-xl px-4 py-4"
+            >
+              {/* Header row — identical layout to QNASComponent */}
+              <button
+                type="button"
+                aria-expanded={isOpen}
+                onClick={() => setExpandedKey(isOpen ? null : rowKey)}
+                className="flex w-full cursor-pointer justify-between gap-4 text-left items-center"
+              >
+                <span className="font-mukta text-base font-bold text-primary leading-snug">
+                  {name}
+                </span>
+                <div className="flex items-center gap-2 shrink-0">
+                  {natureBadge(row.Nature)}
+                  <ChevronRight
+                    aria-hidden="true"
+                    className={clsx(
+                      'w-4 h-4 text-primary flex-shrink-0',
+                      'transition-all duration-300',
+                      isOpen ? '-rotate-90' : 'rotate-0',
+                    )}
+                  />
+                </div>
+              </button>
+
+              {/* Collapsible panel — grid trick from QNASComponent */}
+              <div
+                className={clsx(
+                  'grid overflow-hidden transition-all duration-300',
+                  isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+                )}
+              >
+                <div className="min-h-0">
+                  {/* Per-person info pills */}
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <div className="rounded-[10px] border border-[#e5d9bc] bg-[#fffdf6] px-3 py-2">
+                      <p className="font-mukta text-[10px] font-semibold uppercase tracking-wide text-[#720A0B] mb-1">
+                        {manFirstName}
+                      </p>
+                      <p className="font-mukta text-[13px] leading-snug text-[#3a3a3a]">{maleInfo}</p>
+                    </div>
+                    <div className="rounded-[10px] border border-[#e5d9bc] bg-[#fffdf6] px-3 py-2">
+                      <p className="font-mukta text-[10px] font-semibold uppercase tracking-wide text-[#720A0B] mb-1">
+                        {womanFirstName}
+                      </p>
+                      <p className="font-mukta text-[13px] leading-snug text-[#3a3a3a]">{femaleInfo}</p>
+                    </div>
+                  </div>
+                  {/* Detailed info */}
+                  {info && (
+                    <p className="font-mukta text-sm text-[#5B5B5B] mt-3">{info}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Desktop: full table (hidden below md) ── */}
+      <div className="hidden md:block rounded-[20px] border border-[#e5d9bc] bg-transparent overflow-x-auto p-3">
+        <table className="w-full min-w-[640px] border-collapse font-mukta">
+          <thead>
+            <tr>
+              <th className="border-b border-[#C8A9A0] bg-transparent px-3 py-3 text-left font-sahitya text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
+                Kuta / Factor
+              </th>
+              <th className="border-b border-[#C8A9A0] bg-transparent px-3 py-3 text-center font-sahitya text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
+                Nature
+              </th>
+              <th className="border-b border-[#C8A9A0] bg-transparent px-3 py-3 text-center font-sahitya text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
+                For {manFirstName}
+              </th>
+              <th className="border-b border-[#C8A9A0] bg-transparent px-3 py-3 text-center font-sahitya text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
+                For {womanFirstName}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {predictions.map((row, i) => {
+              const name = row.Name ?? `Row ${i + 1}`;
+              const rowKey = `${i}-${name}`;
+              const isOpen = expandedKey === rowKey;
+              const info = row.Info?.trim() || row.Description?.trim();
+              return (
+                <React.Fragment key={rowKey}>
+                  <tr
+                    className="border-t border-[#C8A9A0] cursor-pointer transition-colors hover:bg-[#f3e8de]"
+                    onClick={() => setExpandedKey(isOpen ? null : rowKey)}
+                  >
+                    <td className="border border-[#C8A9A0] px-3 py-2 text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
+                      <span className="flex items-center gap-2">
+                        <ChevronRight
+                          aria-hidden="true"
+                          className={clsx(
+                            'w-3.5 h-3.5 text-primary/50 flex-shrink-0 transition-all duration-300',
+                            isOpen ? '-rotate-90' : 'rotate-0',
+                          )}
+                        />
+                        {name}
+                      </span>
+                    </td>
+                    <td className="border border-[#C8A9A0] px-3 py-2 text-center">
+                      {natureBadge(row.Nature)}
+                    </td>
+                    <td className="border border-[#C8A9A0] px-3 py-2 text-center text-[16px] leading-[28px] text-[#3a3a3a]">
+                      {row.MaleInfo?.trim() || (row.Nature ?? '-')}
+                    </td>
+                    <td className="border border-[#C8A9A0] px-3 py-2 text-center text-[16px] leading-[28px] text-[#3a3a3a]">
+                      {row.FemaleInfo?.trim() || (row.Nature ?? '-')}
                     </td>
                   </tr>
-                )}
-              </React.Fragment>
-            );
-          })}
-        </tbody>
-      </table>
-      <div className="mt-3 px-3 text-right font-mukta text-[16px] font-semibold text-[#3a3a3a]">
-        {kutaRaw != null
-          ? `Total Kuta Score: ${clampPercent(kutaRaw)}% — ${Math.round(((Math.max(0, Math.min(100, kutaRaw)) * 36) / 100) * 10) / 10}/36`
-          : 'Total Kuta Score: -'}
+                  {isOpen && info && (
+                    <tr>
+                      <td colSpan={4} className="px-4 py-3 border border-[#C8A9A0]">
+                        <p className="font-mukta text-[16px] leading-[28px] text-[#5B5B5B]">{info}</p>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+        {/* Total score on desktop */}
+        <div className="mt-3 px-3 text-right font-mukta text-[16px] font-semibold text-[#3a3a3a]">
+          {totalScore}
+        </div>
+      </div>
+
+      {/* Total score on mobile */}
+      <div className="md:hidden pt-3 text-right font-mukta text-[14px] font-semibold text-[#3a3a3a]">
+        {totalScore}
       </div>
     </div>
   );
@@ -286,13 +388,13 @@ const IndividualBasicDetails: React.FC<{
             <h3 className="font-sahitya text-primary text-[22px] leading-[32px] font-bold md:text-[34px] md:leading-[44px]">
               Basic Details
             </h3>
-            <div className="mt-2">
+            <div className="mt-2 flex flex-col gap-2">
               {basicRows.map(([label, value]) => (
-                <div key={`basic-${label}`} className="grid grid-cols-1 sm:grid-cols-2">
-                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
+                <div key={`basic-${label}`} className="grid grid-cols-2 gap-2">
+                  <div className="border border-[#C8A9A0] rounded-[6px] bg-transparent px-3 py-2 font-mukta text-[15px] leading-[22px] sm:text-[18px] sm:leading-[30px] font-semibold text-[#3a3a3a]">
                     {label}
                   </div>
-                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[18px] leading-[30px] font-semibold text-[#4a4a4a]">
+                  <div className="border border-[#C8A9A0] rounded-[6px] bg-transparent px-3 py-2 font-mukta text-[15px] leading-[22px] sm:text-[18px] sm:leading-[30px] font-normal text-[#4a4a4a]">
                     {value}
                   </div>
                 </div>
@@ -304,13 +406,13 @@ const IndividualBasicDetails: React.FC<{
             <h3 className="font-sahitya text-primary text-[22px] leading-[32px] font-bold md:text-[34px] md:leading-[44px]">
               Kundali Details
             </h3>
-            <div className="mt-2">
+            <div className="mt-2 flex flex-col gap-2">
               {kundaliRows.map(([label, value]) => (
-                <div key={`kundali-${label}`} className="grid grid-cols-1 sm:grid-cols-2">
-                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[18px] leading-[30px] font-semibold text-[#3a3a3a]">
+                <div key={`kundali-${label}`} className="grid grid-cols-2 gap-2">
+                  <div className="border border-[#C8A9A0] rounded-[6px] bg-transparent px-3 py-2 font-mukta text-[15px] leading-[22px] sm:text-[18px] sm:leading-[30px] font-semibold text-[#3a3a3a]">
                     {label}
                   </div>
-                  <div className="border border-[#C8A9A0] px-3 py-2 font-mukta text-[18px] leading-[30px] font-semibold text-[#4a4a4a]">
+                  <div className="border border-[#C8A9A0] rounded-[6px] bg-transparent px-3 py-2 font-mukta text-[15px] leading-[22px] sm:text-[18px] sm:leading-[30px] font-normal text-[#4a4a4a]">
                     {value}
                   </div>
                 </div>
@@ -346,11 +448,10 @@ const IndividualPlanetsTable: React.FC<{ rows: string[][]; title: string }> = ({
               <th
                 key={`planet-header-${header}`}
                 scope="col"
-                className={`border-b border-r border-[#f0e6d0] bg-[#fff9ed] px-2 py-2.5 align-bottom font-mukta text-[10px] font-semibold uppercase leading-tight tracking-wide text-[#5c4033] last:border-r-0 sm:px-3 sm:py-3 sm:text-[11px] md:text-xs ${
-                  hi === 0
+                className={`border-b border-r border-[#f0e6d0] bg-[#fff9ed] px-2 py-2.5 align-bottom font-mukta text-[10px] font-semibold uppercase leading-tight tracking-wide text-[#5c4033] last:border-r-0 sm:px-3 sm:py-3 sm:text-[11px] md:text-xs ${hi === 0
                     ? 'sticky left-0 z-10 min-w-[4.5rem] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.12)]'
                     : ''
-                }`}
+                  }`}
               >
                 {header}
               </th>
@@ -363,15 +464,12 @@ const IndividualPlanetsTable: React.FC<{ rows: string[][]; title: string }> = ({
               {row.map((cell, cellIdx) => (
                 <td
                   key={`planet-cell-${rowIdx}-${cellIdx}`}
-                  className={`border-b border-r border-[#f0e6d0] px-2 py-1.5 align-top font-mukta text-xs leading-snug last:border-r-0 sm:px-3 sm:py-2 sm:text-sm md:leading-normal ${
-                    cellIdx === 0
-                      ? `sticky left-0 z-10 min-w-[4.5rem] whitespace-nowrap font-semibold text-[#7F1808] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] ${
-                          rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
-                        }`
-                      : `max-w-[8.5rem] break-words text-[#2d2d2d] sm:max-w-[11rem] md:max-w-none tabular-nums ${
-                          rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
-                        }`
-                  }`}
+                  className={`border-b border-r border-[#f0e6d0] px-2 py-1.5 align-top font-mukta text-xs leading-snug last:border-r-0 sm:px-3 sm:py-2 sm:text-sm md:leading-normal ${cellIdx === 0
+                      ? `sticky left-0 z-10 min-w-[4.5rem] whitespace-nowrap font-semibold text-[#720A0B] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] ${rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
+                      }`
+                      : `max-w-[8.5rem] break-words text-[#2d2d2d] sm:max-w-[11rem] md:max-w-none tabular-nums ${rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
+                      }`
+                    }`}
                 >
                   {cell}
                 </td>
@@ -407,7 +505,7 @@ function readKundaliMatchingResult(): StoredKundaliMatchingResult | null {
   return __lastKundaliParsed;
 }
 
-const subscribeKundaliMatchingResult = () => () => {};
+const subscribeKundaliMatchingResult = () => () => { };
 
 const KundaliMatchingResultSection: React.FC = () => {
   const result = useSyncExternalStore(
@@ -483,7 +581,7 @@ const KundaliMatchingResultSection: React.FC = () => {
             <h1 className="font-mukta font-semibold text-[18px] leading-[28px] tracking-[0] md:font-sahitya md:font-bold md:text-[36px] md:leading-[48px] text-primary mb-1">
               Kundali Matching Result
             </h1>
-            <p className="font-mukta font-normal text-[12px] leading-[20px] tracking-[0] capitalize md:text-[24px] md:leading-[34px] text-[#141414] mb-3">
+            <p className="font-mukta font-normal text-[15px] leading-[22px] tracking-[0] capitalize md:text-[22px] md:leading-[34px] text-[#141414] mb-3">
               {resultSubtitle}
             </p>
             <p className="font-mukta font-normal text-[16px] leading-6 tracking-[0] md:text-[24px] md:leading-[34px] text-[#464646] text-justify">
@@ -607,7 +705,7 @@ const KundaliMatchingResultSection: React.FC = () => {
               {/* match content removed per request */}
               {predictions.length > 0 && (
                 <div className="space-y-3">
-                  <h2 className="font-sahitya font-bold text-xl text-primary">
+                  <h2 className="font-sahitya font-bold text-[28px] leading-[38px] md:text-[34px] md:leading-[44px] text-primary">
                     Guna Milan — Detailed Kuta Analysis
                   </h2>
                   <KutaTable
@@ -729,9 +827,6 @@ const KundaliMatchingResultSection: React.FC = () => {
           )}
         </div>
 
-        <p className="font-mukta text-xs text-center text-gray-400 pb-4 mt-12">
-          Results are powered by VedAstro. Information is for reference only.
-        </p>
       </div>
     </section>
   );
