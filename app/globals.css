@@ -77,11 +77,11 @@
   --dark-gray: #252525;
   --white: #ffffff;
 
-  --primary: 5 84% 22%;
-  --secondary: #f8f3df;
+  --primary: #720A0B;
+  --secondary: #FFFAE6;
   --Trinary: #be7b71;
   --Paragraph: #464646;
-  --hoverColor: #f8f3df26;
+  --hoverColor: #FFFAE626;
 }
 
 body {
@@ -823,12 +823,12 @@ a *,
     --card-foreground: 20 14.3% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 20 14.3% 4.1%;
-    /* Primary mapped to brand #611508 (burgundy/maroon) — HSL 5 84% 22% */
-    --primary: 5 84% 22%;
-    --primary-foreground: 46 72% 92%;
-    --secondary: 60 4.8% 95.9%;
+    /* Primary mapped to brand #720A0B (burgundy/maroon) — HSL 359 84% 24% */
+    --primary: 359 84% 24%;
+    --primary-foreground: 48 100% 95%;
+    --secondary: 48 100% 95%;
     --secondary-foreground: 24 9.8% 10%;
-    --muted: 60 4.8% 95.9%;
+    --muted: 48 100% 95%;
     --muted-foreground: 25 5.3% 44.7%;
     --accent: 60 4.8% 95.9%;
     --accent-foreground: 24 9.8% 10%;

@@ -112,7 +112,6 @@ export default function SunSignCalculatorResultSection() {
   }, []);
 
   const handleCalculateAgain = () => {
-    sessionStorage.removeItem(STORAGE_KEY);
     router.push('/calculators/sun-sign-calculator');
   };
 

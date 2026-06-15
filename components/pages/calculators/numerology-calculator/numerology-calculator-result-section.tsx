@@ -69,6 +69,34 @@ export default function NumerologyCalculatorResultSection() {
 
   const rows = data.rows ?? [];
 
+  const handleShareReport = async () => {
+    if (typeof window === 'undefined') return;
+
+    const shareData = {
+      title: document.title || 'AstroSewa Numerology Result',
+      text: 'Check out my Numerology result on AstroSewa.',
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareData.url);
+        return;
+      }
+
+      window.prompt('Copy this result link:', shareData.url);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+    }
+  };
+
   return (
     <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
       <div className="max-w-[1454px] mx-auto">
@@ -252,17 +280,18 @@ export default function NumerologyCalculatorResultSection() {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-wrap gap-[10px]">
+        <div className="flex flex-row items-center gap-[10px]">
           <button
             type="button"
-            className="inline-flex w-[240px] h-[50px] items-center justify-center rounded-[32px] bg-[#5D1409] px-[10px] py-[16px] font-mukta text-[18px] leading-[30px] font-semibold text-white transition-opacity hover:opacity-95"
+            onClick={handleShareReport}
+            className="inline-flex h-[50px] w-[calc(50%-0.3125rem)] items-center justify-center rounded-[32px] bg-[#5D1409] px-[10px] py-[16px] font-mukta text-[16px] leading-[30px] font-semibold text-white transition-opacity hover:opacity-95 sm:w-[240px] sm:text-[18px]"
           >
             Share Your Report
           </button>
           <button
             type="button"
             onClick={() => router.push('/calculators/numerology-calculator')}
-            className="inline-flex w-[240px] h-[50px] items-center justify-center rounded-[32px] border border-[#5D1409] bg-[#FFF5E3] px-[10px] py-[16px] font-mukta text-[18px] leading-[30px] font-semibold text-[#5D1409] transition-colors hover:bg-[#f7e7d2]"
+            className="inline-flex h-[50px] w-[calc(50%-0.3125rem)] items-center justify-center rounded-[32px] border border-[#5D1409] bg-[#FFF5E3] px-[10px] py-[16px] font-mukta text-[16px] leading-[30px] font-semibold text-[#5D1409] transition-colors hover:bg-[#f7e7d2] sm:w-[240px] sm:text-[18px]"
           >
             Calculate Again
           </button>
