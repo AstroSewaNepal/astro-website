@@ -5,8 +5,11 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
+import Clarity from '@/components/pages/landing/clarity';
 import Services from '@/components/pages/landing/services';
+import DownloadApp from '@/components/pages/landing/download-app';
 import ChevronDownIcon from '@/components/icons/chevron-down';
+import FindNowIcon from '@/components/icons/findnow_love_icon.png';
 import {
   EnglishAquariusColor,
   EnglishAriesColor,
@@ -50,8 +53,10 @@ export default function CompatibilityPage() {
   const [partnerSign, setPartnerSign] = useState<HoroscopeSign>(signOptions[1] ?? 'taurus');
   const [yourGender, setYourGender] = useState<'male' | 'female'>('male');
   const [partnerGender, setPartnerGender] = useState<'male' | 'female'>('female');
+  const [isFinding, setIsFinding] = useState(false);
 
   const findNow = useCallback(() => {
+    setIsFinding(true);
     const searchParams = new URLSearchParams({
       your_sign: yourSign,
       partner_sign: partnerSign,
@@ -63,29 +68,45 @@ export default function CompatibilityPage() {
   }, [partnerGender, partnerSign, router, yourGender, yourSign]);
 
   return (
-    <main className="min-h-screen">
-      <div className="mx-auto max-w-[1240px] px-4 py-4 sm:px-6 lg:px-8">
-        <section className="mx-auto mt-8 max-w-[1180px]">
-          <h1 className="font-mukta text-[36px] font-bold leading-none text-[#6b2417] sm:text-[44px]">
-            {copy.title}
-          </h1>
-          <p className="mt-2 font-mukta text-[22px] text-[#111111]">{copy.subtitle}</p>
-          <hr className="mt-5 border-[#dcc7b6]" />
-
-          <p className="mt-8 font-mukta text-[14px] leading-8 text-[#4f463f]">{copy.intro}</p>
-
-          <div className="mt-8 rounded-[20px] border border-[#BE7B71] bg-[#F8F3DF] px-4 py-11 sm:px-8 sm:py-11">
-            <h2 className="text-center font-mukta text-[28px] font-bold leading-[38px] text-[#611508] sm:text-[42px] sm:leading-none">
-              {copy.cardTitle}
-            </h2>
-            <p className="mt-1 text-center font-mukta text-base font-normal leading-6 text-[#141414] sm:text-xl">
-              {copy.cardSubtitle}
+    <main className="min-h-screen pt-6 sm:pt-8 lg:pt-10">
+      <div className="container mx-auto px-6 lg:px-0">
+        <section>
+          <div className="w-full">
+            <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-[0%] text-[#6b2417] sm:text-[36px] sm:leading-[48px]">
+              {copy.title}
+            </h1>
+            <p className="mt-2 font-mukta font-normal text-[14px] leading-[24px] tracking-[0%] text-[#111111] text-center max-sm:!text-[14px] max-sm:!leading-[24px] sm:text-[22px] sm:leading-[30px]">
+              {copy.subtitle}
             </p>
 
-            <div className="mx-auto mt-6 grid grid-cols-2 gap-6 sm:mt-8 sm:max-w-[560px] sm:gap-10">
+            <div className="mt-4">
+              <p className="font-mukta text-[16px] leading-[28px] tracking-[0%] text-[#4f463f] text-justify sm:text-[24px] sm:leading-[34px]">
+                You may not always click effortlessly with everyone, but when you&apos;re with that
+                special someone, life feels brighter, calmer, and more meaningful. Throughout your
+                journey, you&apos;ll meet many wonderful people — friends, mentors, and companions —
+                but only one will truly be your life partner. Choosing the right person is
+                important, because they should make you feel cherished, supported, and at peace,
+                never lonely or uncared for. Do you ever feel your heart skip a beat when you meet
+                someone? That spark could be a sign of destiny. Discover what the universe has in
+                store for your love life by exploring your zodiac sign compatibility with Astro
+                Sewa.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 rounded-[20px] px-4 py-6 sm:border sm:border-[#BE7B71] sm:bg-[#F8F3DF] sm:px-8 sm:py-11">
+            <h2 className="text-left sm:text-center font-mukta text-[24px] leading-[34px] font-bold tracking-[0%] text-[#611508] -ml-4 sm:ml-0 sm:font-sahitya sm:text-[28px] sm:leading-[38px] break-words">
+              {copy.cardTitle}
+            </h2>
+            <p className="mt-1 text-center font-mukta text-[18px] sm:text-[20px] leading-[24px] sm:leading-[26px] tracking-[0%] text-[#141414]">
+              Choose your and your partner&apos;s zodiac sign to check compatibility
+            </p>
+
+            {/* ✅ FIX: reduced sm:max-w from [560px] to [380px] to close the gap between the two columns */}
+            <div className="mx-auto mt-6 grid grid-cols-2 gap-x-12 gap-y-2 sm:mt-8 sm:max-w-[380px] sm:gap-x-0 sm:gap-y-2">
               {/* Your Sign */}
-              <div className="flex flex-col items-center gap-2 sm:gap-4">
-                <div className="flex h-[120px] w-[120px] items-center justify-center rounded-full border border-[#BE7B71] bg-[#F8F3DF] p-7 sm:h-40 sm:w-40 sm:p-10">
+              <div className="flex flex-col items-center gap-[19.59px] sm:gap-4">
+                <div className="flex h-[161.4238739013672px] w-[164.65234375px] items-center justify-center rounded-[102.91px] border border-[#BE7B71] bg-[#F8F3DF] p-[39.17px] sm:h-40 sm:w-40 sm:p-10">
                   <Image
                     src={zodiacImageMap[yourSign]}
                     alt={yourSign}
@@ -96,11 +117,14 @@ export default function CompatibilityPage() {
                   <p className="font-mukta text-sm font-medium text-[#BE7B71] sm:text-base">
                     {copy.yourSignLabel}
                   </p>
-                  <div className="relative w-full">
+                  <div className="relative w-[172.65234375px]">
+                    <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+                      <ChevronDownIcon className="h-3 w-3 text-[#611508] sm:h-4 sm:w-4" />
+                    </span>
                     <select
                       value={yourSign}
                       onChange={e => setYourSign(e.target.value as HoroscopeSign)}
-                      className="w-full appearance-none rounded-[32px] border border-[#BE7B71] bg-white px-3 py-1.5 pr-8 font-mukta text-sm font-medium uppercase leading-7 text-[#611508] sm:px-4 sm:pr-10 sm:text-xl"
+                      className="appearance-none w-full h-[40px] rounded-[32px] border border-[#BE7B71] bg-white px-4 text-center font-mukta text-[20px] font-medium uppercase leading-[28px] text-[#611508]"
                     >
                       {signOptions.map(s => (
                         <option key={s} value={s}>
@@ -108,10 +132,9 @@ export default function CompatibilityPage() {
                         </option>
                       ))}
                     </select>
-                    <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 text-[#611508] sm:right-4 sm:h-4 sm:w-4" />
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-2 font-mukta text-sm font-medium leading-5 text-[#141414] sm:gap-6 sm:text-xl">
+                <div className="flex items-center justify-center gap-2 font-mukta text-[20px] leading-[20px] font-medium text-[#141414] sm:gap-6 sm:text-xl sm:leading-5">
                   <label className="inline-flex cursor-pointer items-center gap-1.5">
                     <input
                       type="radio"
@@ -194,8 +217,8 @@ export default function CompatibilityPage() {
               </div>
 
               {/* Partner's Sign */}
-              <div className="flex flex-col items-center gap-2 sm:gap-4">
-                <div className="flex h-[120px] w-[120px] items-center justify-center rounded-full border border-[#BE7B71] bg-[#F8F3DF] p-7 sm:h-40 sm:w-40 sm:p-10">
+              <div className="flex flex-col items-center gap-[19.59px] sm:gap-4">
+                <div className="flex h-[161.4238739013672px] w-[164.65234375px] items-center justify-center rounded-[102.91px] border border-[#BE7B71] bg-[#F8F3DF] p-[39.17px] sm:h-40 sm:w-40 sm:p-10">
                   <Image
                     src={zodiacImageMap[partnerSign]}
                     alt={partnerSign}
@@ -206,11 +229,14 @@ export default function CompatibilityPage() {
                   <p className="font-mukta text-sm font-medium text-[#BE7B71] sm:text-base">
                     {copy.partnerSignLabel}
                   </p>
-                  <div className="relative w-full">
+                  <div className="relative w-[172.65234375px]">
+                    <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+                      <ChevronDownIcon className="h-3 w-3 text-[#611508] sm:h-4 sm:w-4" />
+                    </span>
                     <select
                       value={partnerSign}
                       onChange={e => setPartnerSign(e.target.value as HoroscopeSign)}
-                      className="w-full appearance-none rounded-[32px] border border-[#BE7B71] bg-white px-3 py-1.5 pr-8 font-mukta text-sm font-medium uppercase leading-7 text-[#611508] sm:px-4 sm:pr-10 sm:text-xl"
+                      className="appearance-none w-full h-[40px] rounded-[32px] border border-[#BE7B71] bg-white px-4 text-center font-mukta text-[20px] font-medium uppercase leading-[28px] text-[#611508]"
                     >
                       {signOptions.map(s => (
                         <option key={s} value={s}>
@@ -218,10 +244,9 @@ export default function CompatibilityPage() {
                         </option>
                       ))}
                     </select>
-                    <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 text-[#611508] sm:right-4 sm:h-4 sm:w-4" />
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-2 font-mukta text-sm font-medium leading-5 text-[#141414] sm:gap-6 sm:text-xl">
+                <div className="flex items-center justify-center gap-2 font-mukta text-[20px] leading-[20px] font-medium text-[#141414] sm:gap-6 sm:text-xl sm:leading-5">
                   <label className="inline-flex cursor-pointer items-center gap-1.5">
                     <input
                       type="radio"
@@ -304,30 +329,42 @@ export default function CompatibilityPage() {
               </div>
             </div>
 
-            <div className="mt-8 items-center justify-center text-center sm:flex">
+            <div className="mx-auto mt-8 flex justify-center sm:max-w-[560px]">
               <button
                 onClick={findNow}
-                className="inline-flex w-3/4 items-center justify-center gap-2 rounded-[24px] bg-[#611508] px-8 py-2 font-mukta text-base font-semibold leading-7 text-[#F8F3DF] disabled:opacity-60"
+                disabled={isFinding}
+                className="inline-flex min-w-[160px] max-w-full items-center justify-center gap-2 rounded-[24px] bg-[#611508] px-6 py-2 font-mukta text-base font-semibold leading-7 text-[#F8F3DF] disabled:opacity-60"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M19.3 14.9C19.7 14.2 20 13.4 20 12.5C20 10 18 8 15.5 8C13 8 11 10 11 12.5C11 15 13 17 15.5 17C16.4 17 17.2 16.7 17.9 16.3L20.8 19.2L22.2 17.8L19.3 14.9ZM15.5 15C14.1 15 13 13.9 13 12.5C13 11.1 14.1 10 15.5 10C16.9 10 18 11.1 18 12.5C18 13.9 16.9 15 15.5 15ZM14.7 18.9C14.3 19.3 13.9 19.6 13.5 20L12 21.3L10.5 20C5.4 15.4 2 12.3 2 8.5C2 5.4 4.4 3 7.5 3C9.2 3 10.9 3.8 12 5.1C13.1 3.8 14.8 3 16.5 3C19.6 3 22 5.4 22 8.5C22 9.2 21.9 9.8 21.7 10.5C20.8 7.9 18.4 6 15.5 6C11.9 6 9 8.9 9 12.5C9 15.8 11.5 18.5 14.7 18.9Z"
-                    fill="#F8F3DF"
+                <span className="flex h-[18.3px] w-[20.2px] items-center justify-center">
+                  <Image
+                    src={FindNowIcon}
+                    alt="Find now icon"
+                    width={20}
+                    height={18}
+                    className="h-[18.3px] w-[20.2px] object-contain"
                   />
-                </svg>
-                <span>{copy.findNow}</span>
+                </span>
+                <span>{isFinding ? 'Generating…' : copy.findNow}</span>
               </button>
             </div>
           </div>
 
-          <p className="mt-8 font-mukta text-[14px] leading-8 text-[#4f463f]">{copy.outro}</p>
+          <p className="mt-8 font-mukta font-normal text-[24px] leading-[34px] tracking-[0%] text-[#464646] text-justify">
+            {copy.outro}
+          </p>
         </section>
 
         <TalkToOurAstrologer className="mx-auto mt-14 max-w-[1180px]" />
 
-        <div className="mx-auto mt-14 max-w-[1180px]">
+        <div className="mt-14">
+          <Clarity />
+        </div>
+
+        <div className="mt-14">
           <Services />
         </div>
+
+        <DownloadApp className="mx-auto mt-14 max-w-[1180px]" />
       </div>
     </main>
   );

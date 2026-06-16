@@ -26,9 +26,6 @@ function formatMoonLine(selectedDay: Date, event: Date): string {
   return `${clock}, ${suffix}`;
 }
 
-export const MOON_RISE_SET_SOURCE_NOTE =
-  'Moonrise & moonset are computed locally for your selected date at the map coordinates above (suncalc). VedAstro PanchangaTable includes Sun times only.';
-
 /**
  * Moon rise/set at default Panchang coordinates for the given calendar day (local date).
  */

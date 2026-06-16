@@ -1,8 +1,6 @@
 import Image, { type StaticImageData } from 'next/image';
 import Link from 'next/link';
 
-import { AstrologyPrimaryColor } from '@/components/images';
-
 export type KundaliCardProps = {
   title: string;
   subtitle: string;
@@ -58,7 +56,9 @@ export default function KundaliCard({
       </header>
 
       <div
-        className={['mt-5 flex justify-center', imageContainerClassName].filter(Boolean).join(' ')}
+        className={['mt-5 flex justify-center mx-auto', imageContainerClassName]
+          .filter(Boolean)
+          .join(' ')}
         style={{ gap: imageGap ?? 12.64 }}
       >
         <Image
@@ -79,7 +79,7 @@ export default function KundaliCard({
       </div>
 
       <div
-        className="mt-5 flex flex-col"
+        className="mt-5 flex flex-col mx-auto"
         style={{
           width: '100%',
           maxWidth: descriptionWidth ?? undefined,

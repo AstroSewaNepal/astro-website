@@ -2,7 +2,7 @@ const horoscope = {
   HOROSCOPE: {
     range: {
       today: {
-        title: "Today's Astrology Horoscope",
+        title: "Today's Astrologer Horoscope",
         intro:
           'See your horoscope for today with a calm, traditional presentation that keeps the zodiac at the center of the page.',
       },
@@ -39,14 +39,14 @@ const horoscope = {
     section: {
       whatIsTitle: 'What is Horoscope?',
       whatIsP1:
-        'A horoscope is a chart or reading based on the positions of celestial bodies at a given time—often your birth date or the present day. Many traditions use it as a gentle guide for mood, timing, and self-reflection rather than a fixed prediction.',
+        'A horoscope is an interpretation of how the positions and movements of celestial bodies—such as the Sun, Moon, planets, and stars—may influence different aspects of life. In astrology, these cosmic placements are mapped into a birth chart based on the exact date, time, and location of a person’s birth. This chart is believed to reflect personality traits, emotional patterns, strengths, challenges, and potential life paths. Daily, weekly, monthly, and yearly horoscopes are created by comparing current planetary movements with zodiac signs to offer insights into areas like career, relationships, finances, health, and personal growth. Rather than being viewed as absolute predictions, horoscopes are often used as a tool for reflection, awareness, and guidance.',
       whatIsP2:
-        'On Astro Sewa we present daily, weekly, and longer-range summaries in a clear layout so you can explore each sign at your own pace. Use it as one perspective among many when making decisions about work, relationships, and wellbeing.',
+        'At Astro Sewa, horoscopes are designed to be easy to read, meaningful, and practical for everyday life. Whether you are checking your daily energy, exploring compatibility with another zodiac sign, or looking ahead for upcoming opportunities and challenges, the platform presents astrology in a clear and approachable format. Each horoscope is written to help users better understand their emotions, timing, and decisions while encouraging balance and self-awareness. From quick daily updates to detailed long-term forecasts, Astro Sewa allows you to explore every zodiac sign at your own pace and use astrology as a thoughtful companion for personal growth and wellbeing.',
       whyTitle: 'Why Horoscope?',
       whyP1:
-        'Many people check their horoscope to notice patterns in energy, relationships, and focus over time. It can be a simple ritual that encourages mindfulness at the start or end of the day.',
+        'Horoscopes have been followed for centuries as a way to better understand emotions, relationships, timing, and personal direction. While astrology does not claim to control your future, many people use horoscopes as a source of guidance, motivation, and self-reflection in everyday life. By observing planetary movements and zodiac influences, horoscopes can offer helpful perspectives on career choices, love life, communication, health, and decision-making. They encourage mindfulness by helping people pause, reflect on their current situation, and approach challenges with greater awareness and confidence.',
       whyP2:
-        'We keep interpretations grounded and easy to read so you can take what resonates and leave the rest—whether you follow a daily, weekly, or monthly rhythm.',
+        'At Astro Sewa, horoscopes are created to make astrology simple, accessible, and meaningful for modern life. Whether you want a quick daily insight or a deeper understanding of long-term patterns, horoscopes can help you stay connected with your goals, emotions, and personal journey. Many users turn to horoscope readings for inspiration, reassurance, and clarity during uncertain moments, while others simply enjoy exploring the unique traits and energies connected to each zodiac sign. Used thoughtfully, horoscopes can become a positive tool for self-discovery, balance, and personal growth.',
     },
     details: {
       unknownSign: 'Unknown zodiac sign',
@@ -84,9 +84,9 @@ const horoscope = {
         career: 'Career & Finance',
         health: 'Health & Wellness',
       },
-      moreFor: 'More for {sign}',
-      compatibility: '{sign} compatibility',
-      readOtherSigns: 'Read horoscope for other signs',
+      moreFor: '{sign} Horoscope Insights',
+      compatibility: '{sign} Sign Compatibility',
+      readOtherSigns: 'Read Horoscope for Other Signs',
       traitsTitle: 'Traits — {sign}',
       combinedHeading: '{range} — {sign}',
       astro: {
@@ -103,7 +103,7 @@ const horoscope = {
       intro:
         "You may not always click effortlessly with everyone, but when you're with that special someone, life feels brighter, calmer, and more meaningful. Throughout your journey, you'll meet many wonderful people - friends, mentors, and companions - but only one will truly be your life partner. Choosing the right person is important, because they should make you feel cherished, supported, and at peace, never lonely or uncared for. Do you ever feel your heart skip a beat when you meet someone? That spark could be a sign of destiny. Discover what the universe has in store for your love life by exploring your zodiac sign compatibility with Astro Sewa.",
       outro:
-        "Zodiac sign compatibility goes beyond just love matches - it uncovers deeper insights into how you and your partner connect emotionally, romantically, and even physically. By exploring both your signs, you can gain clarity on your love and sexual compatibility, helping to build a stronger foundation of trust, passion, and mutual understanding for a long-lasting relationship. With Astro Sewa, love compatibility doesn't just show you where your relationship stands today - it also offers a glimpse into its future. It highlights the strength of your bond, what keeps it thriving, and whether you're entering a phase of harmony or possible challenges. By simply checking the compatibility of your zodiac signs, you can understand how your connection is likely to grow and evolve. And if your signs align beautifully, consider it a cosmic green light for smooth and joyful times ahead.",
+        "Zodiac sign compatibility goes beyond just love matches — it uncovers deeper insights into how you and your partner connect emotionally, romantically, and even physically. By exploring both your signs, you can gain clarity on your love and sexual compatibility, helping to build a stronger foundation of trust, passion, and mutual understanding for a long-lasting relationship. With Astro Sewa, love compatibility doesn’t just show you where your relationship stands today — it also offers a glimpse into its future. It highlights the strength of your bond, what keeps it thriving, and whether you’re entering a phase of harmony or possible challenges. By simply checking the compatibility of your zodiac signs, you can understand how your connection is likely to grow and evolve. And if your signs align beautifully, consider it a cosmic green light for smooth and joyful times ahead.",
       cardTitle: 'Find Your Compatible Partner?',
       cardSubtitle: "Choose your and your partner's zodiac sign to check compatibility",
       yourSignLabel: 'Your Sign',
@@ -134,6 +134,7 @@ const horoscope = {
         compatibility: 'Compatibility',
         pujaBidhi: 'Puja Bidhi',
         calculator: 'Calculator',
+        aboutUs: 'About Us',
         blog: 'Blog',
       },
       mobile: {
@@ -154,7 +155,7 @@ const horoscope = {
       rights: '|| All Rights Reserved',
       links: {
         freeKundali: 'Free Kundali',
-        kundaliMatching: 'Kundali Matching',
+        kundaliMatching: 'Free Kundali Matching',
         horoscope: 'Horoscope',
         talkToAstrologer: 'Talk to Astrologer',
         pujaBidhi: 'Puja Bidhi',

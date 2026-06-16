@@ -1,16 +1,28 @@
 import {
   EnglishAquariusColor,
+  EnglishAquariusLight,
   EnglishAriesColor,
+  EnglishAriesLight,
   EnglishCancerColor,
+  EnglishCancerLight,
   EnglishCapricornColor,
+  EnglishCapricornLight,
   EnglishGeminiColor,
+  EnglishGeminiLight,
   EnglishLeoColor,
+  EnglishLeoLight,
   EnglishLibraColor,
+  EnglishLibraLight,
   EnglishPiscesColor,
+  EnglishPiscesLight,
   EnglishSagittariusColor,
+  EnglishSagittariusLight,
   EnglishScorpioColor,
+  EnglishScorpioLight,
   EnglishTaurusColor,
+  EnglishTaurusLight,
   EnglishVirgoColor,
+  EnglishVirgoLight,
 } from '@/components/images/zodiac/english';
 import { HOROSCOPE_SIGNS, type HoroscopeSign } from '@/lib/types/horoscope';
 
@@ -28,6 +40,21 @@ export const ENGLISH_ZODIAC_COLOR: Record<HoroscopeSign, typeof EnglishAriesColo
   capricorn: EnglishCapricornColor,
   aquarius: EnglishAquariusColor,
   pisces: EnglishPiscesColor,
+};
+
+export const ENGLISH_ZODIAC_LIGHT: Record<HoroscopeSign, typeof EnglishAriesLight> = {
+  aries: EnglishAriesLight,
+  taurus: EnglishTaurusLight,
+  gemini: EnglishGeminiLight,
+  cancer: EnglishCancerLight,
+  leo: EnglishLeoLight,
+  virgo: EnglishVirgoLight,
+  libra: EnglishLibraLight,
+  scorpio: EnglishScorpioLight,
+  sagittarius: EnglishSagittariusLight,
+  capricorn: EnglishCapricornLight,
+  aquarius: EnglishAquariusLight,
+  pisces: EnglishPiscesLight,
 };
 
 export function englishZodiacColorOrdered() {

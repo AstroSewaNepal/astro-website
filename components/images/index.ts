@@ -11,6 +11,7 @@ import GoogleDownloadImage from './google-download.png';
 import DownloadPhoneImage from './download-phone.png';
 import AstroSewaTransparentLogo from './astro-sewa-transparent.png';
 import FreeKundaliIllustration from './free-kundali-illustration.png';
+import FreeKundaliChart from './free_kundali_chart.png';
 import KundaliSavedSigninIllustration from './kundali-saved-signin-illustration.png';
 import astrology from './astrology.png';
 import AstrologyPrimaryColor from './icons/astrology-primarycolor.png';
@@ -30,6 +31,7 @@ export {
   DownloadPhoneImage,
   AstroSewaTransparentLogo,
   FreeKundaliIllustration,
+  FreeKundaliChart,
   KundaliSavedSigninIllustration,
   astrology,
   AstrologyPrimaryColor,

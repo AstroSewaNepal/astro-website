@@ -1,11 +1,15 @@
+'use client';
+
 import React from 'react';
 
 import clsx from 'clsx';
 
 import ClarityCSS from './clarity.module.css';
 import Image from 'next/image';
+import Link from 'next/link';
 import { AstrologyImage } from '@/components/images';
 import ChevronRight from '@/components/icons/chevron-right';
+import { openAppStore } from '@/lib/constants/app-store';
 
 const Clarity: React.FC = () => {
   return (
@@ -17,31 +21,38 @@ const Clarity: React.FC = () => {
       <div
         className={clsx(
           ClarityCSS.background,
-          'px-6 md:px-12 lg:px-20 xl:px-28 py-6 md:py-8 lg:py-9 rounded-3xl md:rounded-[50px] lg:rounded-[74px] flex flex-col lg:flex-row justify-between items-center lg:items-center gap-6 md:gap-8 lg:gap-10',
+          'px-6 md:px-12 lg:px-20 xl:px-28 py-6 md:py-8 lg:py-9 rounded-3xl md:rounded-[50px] lg:rounded-[74px] flex flex-col-reverse sm:flex-row justify-between items-center sm:items-center gap-6 md:gap-8 lg:gap-10',
         )}
       >
-        <div className="flex-1 w-full lg:w-auto text-center lg:text-left">
-          <h2 className="text-[34px] md:text-[48px] lg:text-[64px] xl:text-[80px] leading-[42px] md:leading-[56px] lg:leading-[80px] xl:leading-[122.57px] text-[#F8F3DF]">
+        <div className="flex-1 w-full sm:w-auto text-center sm:text-left sm:pr-[170px] lg:pr-0">
+          <h2 className="font-tiro-devanagari text-[26px] md:text-[48px] lg:text-[64px] xl:text-[80px] leading-[32px] md:leading-[56px] lg:leading-[80px] xl:leading-[122.57px] text-[#F8F3DF] text-center sm:text-left font-normal">
             Find Clarity today
           </h2>
-          <p className="text-lg md:text-2xl lg:text-3xl xl:text-4xl font-mukta text-[#FFFFFFCF] mt-2 md:mt-3 lg:mt-4">
+          <p className="font-mukta text-[16px] leading-[17px] text-[#FFFFFFCF] mt-2 md:mt-3 lg:mt-4 text-center sm:text-left capitalize md:text-2xl lg:text-3xl xl:text-4xl">
             Discover insights through Vedic astrology.
           </p>
-          <div className="mt-6 md:mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 md:gap-6">
-            <button className="flex items-center justify-center gap-1 border border-solid border-[#F8F3DF] rounded-3xl py-2.5 md:py-3 lg:py-3.5 px-6 md:px-7 lg:px-8 text-[#F8F3DF] w-full sm:w-auto transition-all duration-300 hover:bg-[#F8F3DF]/10">
-              <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl">Chat Now</p>
-              <ChevronRight className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" />
-            </button>
-            <button className="bg-[#F8F3DF] rounded-3xl px-6 md:px-7 lg:px-8 py-2.5 md:py-3 lg:py-3.5 text-black font-mukta text-base md:text-lg lg:text-xl xl:text-2xl w-full sm:w-auto transition-all duration-300 hover:bg-[#F8F3DF]/90">
-              Download app
+          <div className="mt-6 md:mt-8 flex flex-row flex-nowrap items-center justify-center lg:justify-start gap-4 md:gap-6">
+            <Link
+              href="/login"
+              className="flex items-center justify-center gap-1 border border-[#F8F3DF] border-[1px] rounded-[24px] h-[34px] min-w-[111px] py-2 px-8 text-[#F8F3DF] text-sm transition-all duration-300 hover:bg-[#F8F3DF]/10 whitespace-nowrap sm:rounded-3xl sm:h-auto sm:w-auto sm:px-6 sm:py-2.5 sm:text-base md:px-7 lg:px-8"
+            >
+              <span className="font-mukta text-sm sm:text-base whitespace-nowrap">Chat Now</span>
+              <ChevronRight className="!h-6 !w-6 shrink-0" />
+            </Link>
+            <button
+              type="button"
+              onClick={openAppStore}
+              className="bg-[#F8F3DF] rounded-[24px] h-[34px] min-w-[116px] px-8 py-2 text-black font-mukta text-sm flex items-center justify-center transition-all duration-300 hover:bg-[#F8F3DF]/90 whitespace-nowrap sm:rounded-3xl sm:h-auto sm:w-auto sm:px-6 sm:py-2.5 sm:text-base"
+            >
+              <span className="whitespace-nowrap">Download App</span>
             </button>
           </div>
         </div>
-        <div className="flex-shrink-0 w-full lg:w-auto flex justify-center lg:justify-end">
+        <div className="flex-shrink-0 w-full sm:w-auto flex justify-center sm:justify-end">
           <Image
             src={AstrologyImage}
             alt="astrology"
-            className="max-w-[250px] md:max-w-[300px] lg:max-w-[350px] xl:max-w-[376px] w-full h-auto"
+            className="max-w-[180px] sm:max-w-[220px] md:max-w-[300px] lg:max-w-[350px] xl:max-w-[376px] w-full h-auto"
           />
         </div>
       </div>

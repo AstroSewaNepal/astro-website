@@ -2,38 +2,34 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import PhoneIcon from '@/components/icons/phone-icon';
 import {
   AppleDownloadImage,
   AstroSewaTransparentLogo,
   GoogleDownloadImage,
 } from '@/components/images';
-import {
-  FacebookIcon,
-  LinkedinIcon,
-  TiktokIcon,
-  TwitterIcon,
-  YoutubeIcon,
-} from '@/components/images/icons';
+import { BsInstagram, BsTwitterX } from 'react-icons/bs';
+import { FacebookIcon, LinkedinIcon, TiktokIcon, YoutubeIcon } from '@/components/images/icons';
 
 const Footer: React.FC = () => {
   return (
     <footer className="bg-[#5F1508] text-[#F8F3DF]">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="flex flex-col lg:flex-row gap-16 lg:gap-32">
+        <div className="flex flex-col lg:flex-row gap-16 lg:gap-32 items-center lg:items-start text-center lg:text-left">
           {/* Left Section - Logo and Download */}
-          <div className="flex flex-col gap-14 max-w-[278px]">
+          <div className="flex flex-col gap-14 max-w-[278px] w-full lg:max-w-[278px] lg:w-auto mx-auto lg:mx-0 items-center lg:items-start text-center lg:text-left">
             {/* Logo Placeholder */}
-            <div className="w-[187px] h-[58px] rounded-lg flex items-center justify-center">
+            <div className="w-[187px] h-[58px] rounded-lg flex items-center justify-center mx-auto lg:mx-0">
               <Image src={AstroSewaTransparentLogo} alt="Astro Sewa Logo" width={187} height={58} />
             </div>
 
             {/* Mobile Apps Section */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 w-full">
               <h3 className="font-sahitya text-[22px] font-normal">Astro Sewa Mobile Apps</h3>
 
               {/* Download Buttons */}
-              <div className="flex gap-4">
+              <div className="flex flex-col items-center lg:flex-row lg:items-center gap-4">
                 {/* Apple Download Button */}
                 <div className="w-[133px] h-[44px] bg-black rounded-lg flex items-center justify-center">
                   <Image src={AppleDownloadImage} alt="Apple Download" width={133} height={44} />
@@ -47,65 +43,106 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Social Media Icons */}
-            <div className="flex gap-2">
+            <div className="flex justify-center gap-2">
               {/* Facebook */}
-              <div className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center">
+              <a
+                href="https://www.facebook.com/astrosewaofficial"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center"
+                aria-label="Astro Sewa on Facebook"
+              >
                 <Image src={FacebookIcon} alt="Facebook" width={42} height={42} />
-              </div>
-
-              {/* TikTok */}
-              <div className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center">
-                <Image src={TiktokIcon} alt="TikTok" width={42} height={42} />
-              </div>
+              </a>
 
               {/* Instagram */}
-              <div className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center">
-                <Image src={YoutubeIcon} alt="Youtube" width={42} height={42} />
-              </div>
+              <a
+                href="https://www.instagram.com/astrosewaofficial/"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center"
+                aria-label="Astro Sewa on Instagram"
+              >
+                <BsInstagram className="h-6 w-6 text-[#F8F3DF]" />
+              </a>
 
-              {/* Twitter */}
-              <div className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center">
-                <Image src={TwitterIcon} alt="Twitter" width={42} height={42} />
-              </div>
+              {/* TikTok */}
+              <a
+                href="https://www.tiktok.com/@astrosewaofficial"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center"
+                aria-label="Astro Sewa on TikTok"
+              >
+                <Image src={TiktokIcon} alt="TikTok" width={42} height={42} />
+              </a>
+
+              {/* YouTube */}
+              <a
+                href="https://www.youtube.com/@astrosewaofficial"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center"
+                aria-label="Astro Sewa on YouTube"
+              >
+                <Image src={YoutubeIcon} alt="YouTube" width={42} height={42} />
+              </a>
+
+              {/* X */}
+              <a
+                href="https://x.com/astro_sewa"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center"
+                aria-label="Astro Sewa on X"
+              >
+                <BsTwitterX className="h-6 w-6 text-[#F8F3DF]" />
+              </a>
 
               {/* LinkedIn */}
-              <div className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center">
+              <a
+                href="https://www.linkedin.com/company/astrosewa/"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center"
+                aria-label="Astro Sewa on LinkedIn"
+              >
                 <Image src={LinkedinIcon} alt="LinkedIn" width={42} height={42} />
-              </div>
+              </a>
             </div>
           </div>
 
           {/* Right Section - Links and Contact */}
-          <div>
-            <div className="flex flex-col lg:flex-row gap-16 lg:gap-30 flex-1">
+          <div className="w-full">
+            <div className="flex flex-col lg:flex-row gap-16 lg:gap-30 flex-1 justify-center">
               {/* Quick Links */}
               <div className="flex flex-col gap-3">
                 <h4 className="text-[22px] font-normal mb-3">Quick Links</h4>
                 <div className="flex flex-col gap-2">
-                  <a
-                    href="#"
+                  <Link
+                    href="/free-kundali"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
                     Free Kundali
-                  </a>
-                  <a
-                    href="#"
+                  </Link>
+                  <Link
+                    href="/kundali-matching"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    Kundali Matching
-                  </a>
-                  <a
-                    href="#"
+                    Free Kundali Matching
+                  </Link>
+                  <Link
+                    href="/horoscope"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
                     Horoscope
-                  </a>
-                  <a
-                    href="#"
+                  </Link>
+                  <Link
+                    href="/"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
                     Talk to Astrologer
-                  </a>
+                  </Link>
                   <Link
                     href="/puja-bidhi"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
@@ -132,55 +169,87 @@ const Footer: React.FC = () => {
                     About Us
                   </Link>
                   <a
-                    href="#"
+                    href="mailto:support@astrosewa.com"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
                     Contact Us
                   </a>
                   <a
-                    href="#"
+                    href="mailto:support@astrosewa.com?subject=Astrologer%20Registration"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
                     Astrologer Registration
                   </a>
-                  <a
-                    href="#"
+                  <Link
+                    href="/zodiac-sign"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
                     Zodiac Sign
-                  </a>
-                  <a
-                    href="#"
+                  </Link>
+                  <Link
+                    href="/calculators"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
                     Calculator
-                  </a>
+                  </Link>
                 </div>
               </div>
 
               {/* Contact Us */}
-              <div className="flex flex-col gap-3 max-w-[243px]">
+              <div className="flex flex-col gap-3 max-w-[243px] w-full mx-auto lg:mx-0">
                 <h4 className="text-[22px] font-normal mb-3">Contact Us</h4>
                 <div className="flex flex-col gap-6">
                   {/* Phone */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 bg-gray-300 rounded"></div>
-                    <span className="font-mukta text-[18px] font-medium">+977 9818080676</span>
+                  <div className="flex items-center justify-center gap-3 lg:justify-start">
+                    <div
+                      className="flex h-[22px] w-[22px] items-center justify-center rounded"
+                      style={{ opacity: 1, transform: 'rotate(0deg)' }}
+                    >
+                      <PhoneIcon className="h-[22px] w-[22px] text-[#F8F3DF]" />
+                    </div>
+                    <a
+                      href="tel:+9779818080676"
+                      className="font-mukta text-[18px] font-medium text-[#F8F3DF] hover:opacity-75 transition-opacity"
+                    >
+                      +977 9818080676
+                    </a>
                   </div>
 
                   {/* Email */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 bg-gray-300 rounded"></div>
-                    <span className="font-mukta text-[18px] font-medium">
+                  <div className="flex items-center justify-center gap-3 lg:justify-start">
+                    <div
+                      className="flex h-[22px] w-[22px] items-center justify-center rounded"
+                      style={{ opacity: 1, transform: 'rotate(0deg)' }}
+                    >
+                      <svg
+                        width="22"
+                        height="22"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-[22px] w-[22px] text-[#F8F3DF] opacity-100"
+                      >
+                        <path
+                          d="M20 6H4C2.9 6 2 6.9 2 8V16C2 17.1 2.9 18 4 18H20C21.1 18 22 17.1 22 16V8C22 6.9 21.1 6 20 6Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                        />
+                        <path d="M22 8L12 13L2 8" stroke="currentColor" strokeWidth="1.5" />
+                      </svg>
+                    </div>
+                    <a
+                      href="mailto:support@astrosewa.com"
+                      className="font-mukta text-[18px] font-medium text-[#F8F3DF] hover:opacity-75 transition-opacity"
+                    >
                       support@astrosewa.com
-                    </span>
+                    </a>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Terms & Conditions Section */}
-            <div className="flex items-center gap-8 mt-8 flex-wrap">
+            <div className="flex flex-wrap justify-center items-center gap-8 mt-8">
               <Link
                 href="/terms-and-conditions"
                 className="font-mukta text-[20px] font-normal text-[#F8F3DF] hover:opacity-75 transition-opacity underline"
@@ -218,7 +287,7 @@ const Footer: React.FC = () => {
 
       {/* Bottom Section */}
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
           {/* Copyright */}
           <div className="flex items-center gap-1">
             <span className="font-mukta text-[18px] font-normal">Copyright © 2025 AstroSewa</span>

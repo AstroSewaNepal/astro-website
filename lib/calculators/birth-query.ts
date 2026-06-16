@@ -1,0 +1,133 @@
+import { birthTimePartsToHHMM, type BirthTimeParts } from '@/components/shared/birth-time-fields';
+
+import {
+  cityToGeocodeResult,
+  formatCityLabel,
+  type CitySearchResult,
+} from '@/lib/city-search-api';
+
+import type { CalculatorFormValues } from './calculator-form-types';
+import { geocodePlace } from './geocode-place';
+
+const CALCULATOR_SELECTED_CITY_KEY = 'astroBirthSelectedCity';
+
+/** Stash selected city for shared calculator forms that call `buildBirthVedastroQuery` indirectly. */
+export function setCalculatorSelectedCity(city: CitySearchResult | null): void {
+  if (typeof window === 'undefined') return;
+  if (city) {
+    window.sessionStorage.setItem(CALCULATOR_SELECTED_CITY_KEY, JSON.stringify(city));
+  } else {
+    window.sessionStorage.removeItem(CALCULATOR_SELECTED_CITY_KEY);
+  }
+}
+
+function takeCalculatorSelectedCity(): CitySearchResult | undefined {
+  if (typeof window === 'undefined') return undefined;
+  const raw = window.sessionStorage.getItem(CALCULATOR_SELECTED_CITY_KEY);
+  window.sessionStorage.removeItem(CALCULATOR_SELECTED_CITY_KEY);
+  if (!raw) return undefined;
+  try {
+    return JSON.parse(raw) as CitySearchResult;
+  } catch {
+    return undefined;
+  }
+}
+
+/** ISO yyyy-mm-dd → VedAstro DD-MM-YYYY */
+export function isoDateToVedastroDate(iso: string): string | null {
+  const match = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return null;
+  const [, year, month, day] = match;
+  return `${day}-${month}-${year}`;
+}
+
+export function getLocalOffsetFromIsoDate(iso: string): string {
+  const match = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return '+00:00';
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(year, month - 1, day, 12, 0, 0);
+  const offsetMinutes = -date.getTimezoneOffset();
+  const sign = offsetMinutes >= 0 ? '+' : '-';
+  const abs = Math.abs(offsetMinutes);
+  const hours = Math.floor(abs / 60);
+  const minutes = abs % 60;
+  return `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
+export function formBirthTimeToHHMM(form: CalculatorFormValues): string {
+  if (form.dontKnowTime) return '12:00';
+
+  const parts: BirthTimeParts = {
+    hh: form.birthTimeHH,
+    mm: form.birthTimeMM,
+    ampm: form.birthTimeAMPM,
+  };
+  return birthTimePartsToHHMM(parts) ?? '12:00';
+}
+
+export type BirthVedastroQuery = {
+  lat: string;
+  lon: string;
+  date: string;
+  time: string;
+  offset: string;
+  location: string;
+  resolvedLocation?: string;
+};
+
+export async function buildBirthVedastroQuery(
+  form: CalculatorFormValues,
+  selectedCity?: CitySearchResult | null,
+): Promise<BirthVedastroQuery> {
+  if (!form.birthDate) {
+    throw new Error('Please enter your date of birth.');
+  }
+  if (!form.birthPlace.trim()) {
+    throw new Error('Please enter your birth place.');
+  }
+
+  const vedastroDate = isoDateToVedastroDate(form.birthDate);
+  if (!vedastroDate) {
+    throw new Error('Invalid date of birth.');
+  }
+
+  const city =
+    selectedCity !== undefined ? (selectedCity ?? undefined) : takeCalculatorSelectedCity();
+  if (city) {
+    const geo = cityToGeocodeResult(city);
+    return {
+      lat: geo.lat,
+      lon: geo.lon,
+      date: vedastroDate,
+      time: formBirthTimeToHHMM(form),
+      offset: geo.timezoneOffset,
+      location: formatCityLabel(city),
+      resolvedLocation: geo.displayName,
+    };
+  }
+
+  const geo = await geocodePlace(form.birthPlace);
+
+  return {
+    lat: geo.lat,
+    lon: geo.lon,
+    date: vedastroDate,
+    time: formBirthTimeToHHMM(form),
+    offset: getLocalOffsetFromIsoDate(form.birthDate),
+    location: form.birthPlace.trim(),
+    resolvedLocation: geo.displayName?.trim() ?? form.birthPlace.trim(),
+  };
+}
+
+export function birthQueryToSearchParams(q: BirthVedastroQuery): URLSearchParams {
+  return new URLSearchParams({
+    lat: q.lat,
+    lon: q.lon,
+    date: q.date,
+    time: q.time,
+    offset: q.offset,
+    location: q.location,
+  });
+}

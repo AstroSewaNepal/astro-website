@@ -10,10 +10,12 @@ import { FiRefreshCcw } from 'react-icons/fi';
 import UploadPhotoImg from '@/components/images/uploadyourphoto.png';
 import LoveMatchIcon from '@/components/images/icons/lovematch.png';
 import CalculatorCard from '@/components/pages/calculators/calculator-card';
-import LoveHeroImage from '@/components/images/lovecalculator.png';
 import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
 import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
 import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
+import DashaImage from '@/components/images/calculator/dasha.png';
+import MoonPhaseImage from '@/components/images/calculator/moonphase.png';
+import RashiCalculatorImage from '@/components/images/calculator/rashicalculator.png';
 
 type LoveResult = {
   yourName: string;
@@ -24,49 +26,239 @@ type LoveResult = {
 export default function LoveCalculatorResultSection() {
   const router = useRouter();
   const [result, setResult] = useState<LoveResult | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+
+  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      setPhotoPreview(null);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setPhotoPreview(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     const raw = sessionStorage.getItem('loveCalculatorResult');
     if (raw) {
+      let cancelled = false;
       try {
-        setResult(JSON.parse(raw));
+        const parsed = JSON.parse(raw) as LoveResult;
+        queueMicrotask(() => {
+          if (!cancelled) setResult(parsed);
+        });
       } catch {
-        setResult(null);
+        queueMicrotask(() => {
+          if (!cancelled) setResult(null);
+        });
       }
+      return () => {
+        cancelled = true;
+      };
     }
   }, []);
 
   const handleCalculateAnother = () => {
-    sessionStorage.removeItem('loveCalculatorResult');
     router.push('/calculators/love-calculator');
   };
 
+  const otherCalculators = [
+    {
+      title: 'Numerology Calculator',
+      description: 'Discover your life path number and explore numerology insights.',
+      calculateHref: '/calculators/numerology-calculator',
+      mobileIcon: (
+        <Image
+          src={NumerologyCalculatorImage}
+          alt="Numerology calculator"
+          width={84}
+          height={84}
+          className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
+        />
+      ),
+      desktopIcon: (
+        <Image
+          src={NumerologyCalculatorImage}
+          alt="Numerology calculator"
+          width={100}
+          height={100}
+          className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
+        />
+      ),
+      titleClassName: 'md:text-[20px] md:leading-[28px] text-center',
+      descriptionClassName:
+        'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
+    },
+    {
+      title: 'Sun Sign Calculator',
+      description: 'Discover your zodiac sign based on birth date and astrology insights.',
+      calculateHref: '/calculators/sun-sign-calculator',
+      mobileIcon: (
+        <Image
+          src={SunSignCalculatorImage}
+          alt="Sun sign calculator"
+          width={84}
+          height={84}
+          className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
+        />
+      ),
+      desktopIcon: (
+        <Image
+          src={SunSignCalculatorImage}
+          alt="Sun sign calculator"
+          width={100}
+          height={100}
+          className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
+        />
+      ),
+      titleClassName: 'md:text-[20px] md:leading-[28px] text-center',
+      descriptionClassName:
+        'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
+    },
+    {
+      title: 'Mangal Dosha Calculator',
+      description: 'Check Mangal dosha and marriage effects in your birth chart.',
+      calculateHref: '/calculators/mangal-dosha-calculator',
+      mobileIcon: (
+        <Image
+          src={MangalDoshaImage}
+          alt="Mangal dosha calculator"
+          width={84}
+          height={84}
+          className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
+        />
+      ),
+      desktopIcon: (
+        <Image
+          src={MangalDoshaImage}
+          alt="Mangal dosha calculator"
+          width={100}
+          height={100}
+          className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
+        />
+      ),
+      titleClassName: 'md:text-[20px] md:leading-[28px] text-center whitespace-nowrap',
+      descriptionClassName:
+        'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
+    },
+    {
+      title: 'Dasha Calculator',
+      description:
+        'Calculate planetary dasha periods and analyze timing of life events in Vedic astrology.',
+      calculateHref: '/calculators/dasha-calculator',
+      mobileIcon: (
+        <Image
+          src={DashaImage}
+          alt="Dasha calculator"
+          width={130}
+          height={130}
+          className="h-[130px] w-[128px] object-contain opacity-100"
+        />
+      ),
+      desktopIcon: (
+        <Image
+          src={DashaImage}
+          alt="Dasha calculator"
+          width={120}
+          height={120}
+          className="h-[120px] w-[120px] object-contain opacity-100"
+        />
+      ),
+      titleClassName: 'md:text-[22px] md:leading-[32px] text-center',
+      descriptionClassName:
+        'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
+    },
+    {
+      title: 'Moon Phase Calculator',
+      description: 'Track and explore current moon phases and lunar cycle changes over time.',
+      calculateHref: '/calculators/moon-phase-calculator',
+      mobileIcon: (
+        <Image
+          src={MoonPhaseImage}
+          alt="Moon phase calculator"
+          width={130}
+          height={130}
+          className="h-[130px] w-[128px] object-contain opacity-100"
+        />
+      ),
+      desktopIcon: (
+        <Image
+          src={MoonPhaseImage}
+          alt="Moon phase calculator"
+          width={120}
+          height={120}
+          className="h-[120px] w-[120px] object-contain opacity-100"
+        />
+      ),
+      titleClassName: 'md:text-[22px] md:leading-[32px] text-center',
+      descriptionClassName:
+        'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
+    },
+    {
+      title: 'Rashi Calculator',
+      description:
+        'Discover your Vedic Rashi and understand how it shapes your birth chart insights.',
+      calculateHref: '/calculators/rashi-calculator',
+      mobileIcon: (
+        <Image
+          src={RashiCalculatorImage}
+          alt="Rashi calculator"
+          width={130}
+          height={130}
+          className="h-[130px] w-[128px] object-contain opacity-100"
+        />
+      ),
+      desktopIcon: (
+        <Image
+          src={RashiCalculatorImage}
+          alt="Rashi calculator"
+          width={120}
+          height={120}
+          className="h-[120px] w-[120px] object-contain opacity-100"
+        />
+      ),
+      titleClassName: 'md:text-[22px] md:leading-[32px] text-center',
+      descriptionClassName:
+        'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
+    },
+  ];
+
   if (!result) {
     return (
-      <section className="w-full px-4 md:px-8 py-24 flex flex-col items-center justify-center">
-        <h2 className="font-sahitya text-3xl font-bold text-[#5D1409]">No Data Found</h2>
-        <p className="font-mukta mt-2 text-[#4a4a4a]">
-          Please enter your names in the Love Calculator first.
-        </p>
-        <Link
-          href="/calculators/love-calculator"
-          className="mt-6 flex min-h-[48px] items-center justify-center rounded-full bg-[#5D1409] px-8 font-mukta text-lg font-bold text-white transition-opacity hover:opacity-95"
-        >
-          Go to Love Calculator
-        </Link>
+      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-24">
+        <div className="max-w-[1454px] mx-auto flex flex-col items-center justify-center text-center">
+          <h2 className="font-sahitya text-3xl md:text-4xl font-bold text-[#5D1409]">
+            No Data Found
+          </h2>
+          <p className="font-mukta mt-2 text-[#4a4a4a] text-[15px] md:text-[16px] leading-[1.8] max-w-[760px]">
+            Please enter your names in the Love Calculator first.
+          </p>
+          <Link
+            href="/calculators/love-calculator"
+            className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-full bg-[#5D1409] px-8 font-mukta text-lg font-bold text-white transition-opacity hover:opacity-95"
+          >
+            Go to Love Calculator
+          </Link>
+        </div>
       </section>
     );
   }
 
   return (
-    <section className="w-full px-3 md:px-8 pb-12">
-      <div className="mx-auto max-w-[1454px]">
+    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+      <div className="max-w-[1454px] mx-auto">
         {/* Header */}
         <div className="mb-4">
-          <h1 className="font-sahitya text-[28px] md:text-[36px] font-bold leading-tight text-[#471207] italic">
+          <h1 className="font-sahitya font-bold text-[22px] md:text-[48px] leading-[32px] md:leading-[48px] tracking-[0%] text-[#471207]">
             Lovers Report
           </h1>
-          <p className="font-mukta text-[#4a4a4a] text-[13px] md:text-[15px] mt-0.5">
+          <p className="font-mukta font-medium text-[14px] md:text-[24px] leading-[30px] tracking-[0%] text-[#4a4a4a] mt-0.5">
             This calculation may or may not be true but you can analyze it.
           </p>
         </div>
@@ -74,47 +266,123 @@ export default function LoveCalculatorResultSection() {
         {/* Result Card */}
         <div className="rounded-[16px] border border-[#d4c4b8] p-4 md:p-6 flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-8">
           {/* Photo */}
-          <div
-            className="shrink-0 relative rounded-[12px] overflow-hidden"
-            style={{ width: 200, height: 210 }}
+          <label
+            htmlFor="love-photo-upload"
+            className="shrink-0 relative rounded-[19px] overflow-hidden w-full max-w-[320px] h-[332px] md:w-[318px] md:h-[333px] cursor-pointer group"
           >
-            <Image src={UploadPhotoImg} alt="Couple photo" fill className="object-cover" priority />
-          </div>
+            {photoPreview ? (
+              <Image
+                src={photoPreview}
+                alt="Uploaded couple photo"
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            ) : (
+              <Image
+                src={UploadPhotoImg}
+                alt="Couple photo"
+                className="w-full h-full object-cover"
+                width={318}
+                height={333}
+                priority
+              />
+            )}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/0 text-white transition duration-300 group-hover:bg-black/20">
+              <div className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm opacity-0 transition duration-300 group-hover:opacity-100">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5 text-white"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M5 20h14a1 1 0 001-1v-6h-2v5H6v-5H4v6a1 1 0 001 1zm7-15a1 1 0 011 1v5h4l-5 5-5-5h4V6a1 1 0 011-1z" />
+                </svg>
+                <span className="text-sm font-semibold">Upload your photo</span>
+              </div>
+            </div>
+            <input
+              id="love-photo-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handlePhotoChange}
+            />
+          </label>
 
           {/* Names + Heart */}
-          <div className="flex flex-col items-center justify-center shrink-0 gap-1 py-2">
-            <h2 className="font-sahitya font-bold text-[22px] md:text-[26px] uppercase text-[#471207] text-center tracking-wide leading-none">
-              {result.yourName}
-            </h2>
+          {/* Mobile: names left/right with heart centered */}
+          <div className="w-full md:hidden flex items-center justify-between px-0">
+            <div className="w-[20%] text-left">
+              <h3 className="font-mukta font-semibold text-[20px] leading-[38px] uppercase text-[#471207]">
+                {result.yourName}
+              </h3>
+            </div>
 
-            <div
-              className="relative flex items-center justify-center"
-              style={{ width: 130, height: 120 }}
-            >
-              <Image src={LoveMatchIcon} alt="Heart" fill className="object-contain" />
-              <div className="relative z-10 flex flex-col items-center">
-                <span className="font-sahitya font-normal text-white text-[40px] leading-[38px] tracking-normal text-center drop-shadow-md">
+            <div className="flex-shrink-0 mx-0 relative flex items-center justify-center w-[60%]">
+              <div className="relative flex items-center justify-center w-[87.11408996582031px] h-[79.92717742919922px]">
+                <Image
+                  src={LoveMatchIcon}
+                  alt="Heart"
+                  width={205}
+                  height={188}
+                  className="object-contain w-[87.11408996582031px] h-[79.92717742919922px]"
+                />
+              </div>
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
+                <span className="font-sahitya font-normal text-white text-[18px] leading-none tracking-[0%] text-center drop-shadow-md">
                   {result.score}%
                 </span>
-                <span className="font-mukta font-normal text-white text-[16px] leading-[20px] tracking-normal text-center">
+                <span className="font-mukta font-normal text-white text-[10px] leading-none tracking-[0%] text-center">
                   Matched
                 </span>
               </div>
             </div>
 
-            <h2 className="font-sahitya font-bold text-[22px] md:text-[26px] uppercase text-[#471207] text-center tracking-wide leading-none">
+            <div className="w-[20%] text-right">
+              <h3 className="font-mukta font-semibold text-[20px] leading-[38px] uppercase text-[#471207]">
+                {result.partnerName}
+              </h3>
+            </div>
+          </div>
+
+          {/* Desktop / tablet: stacked names with heart between */}
+          <div className="hidden md:flex flex-col items-center justify-center shrink-0 gap-4 -ml-0 md:-ml-8 self-center md:self-auto w-full md:w-[426px]">
+            <h2 className="font-mukta font-semibold text-[20px] md:text-[36px] uppercase text-[#471207] text-center tracking-[0%] leading-[38px] md:leading-[38px]">
+              {result.yourName}
+            </h2>
+
+            <div className="relative flex items-center justify-center w-[205px] h-[188px]">
+              <Image
+                src={LoveMatchIcon}
+                alt="Heart"
+                width={205}
+                height={188}
+                className="object-contain w-[205px] h-[188px]"
+              />
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
+                <span className="font-sahitya font-normal text-white text-[64px] leading-none tracking-[0%] text-center drop-shadow-md">
+                  {result.score}%
+                </span>
+                <span className="font-mukta font-normal text-white text-[24px] leading-none tracking-[0%] text-center">
+                  Matched
+                </span>
+              </div>
+            </div>
+
+            <h2 className="font-mukta font-semibold text-[20px] md:text-[36px] uppercase text-[#471207] text-center tracking-[0%] leading-[38px] md:leading-[38px]">
               {result.partnerName}
             </h2>
           </div>
 
           {/* Narrative + Buttons */}
-          <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left pt-2 md:pt-4">
-            <p className="font-mukta text-[#2d2d2d] text-[14px] md:text-[16px] leading-[1.7] max-w-[420px]">
+          <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left pt-6 md:pt-20 ml-0 md:-ml-12">
+            <p className="font-mukta font-normal text-[#2d2d2d] text-[16px] md:text-[24px] leading-[30px] md:leading-[34px] tracking-[0%] max-w-full text-justify px-2 md:px-0">
               Like a love meteorite, your connection will leave a profound impact on the world,
               inspiring others to seek their own cosmic love.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-3 mt-5">
+            <div className="flex w-full flex-col sm:flex-row items-center gap-3 mt-5 px-2 sm:px-0">
               <button
                 onClick={() => {
                   if (navigator.share) {
@@ -127,7 +395,7 @@ export default function LoveCalculatorResultSection() {
                       .catch(console.error);
                   }
                 }}
-                className="flex items-center justify-center gap-2 rounded-full bg-[#471207] px-5 py-2.5 font-mukta text-[14px] font-semibold text-white transition-colors hover:bg-[#5D1409]"
+                className="flex items-center justify-center gap-[10px] rounded-[40px] w-full sm:w-[204px] h-[50px] p-[12px] bg-[#471207] font-mukta font-semibold text-[18px] leading-[30px] tracking-[0%] text-white transition-colors hover:bg-[#5D1409]"
               >
                 <IoShareOutline className="text-lg" />
                 Share your match
@@ -135,7 +403,7 @@ export default function LoveCalculatorResultSection() {
 
               <button
                 onClick={handleCalculateAnother}
-                className="flex items-center justify-center gap-2 rounded-full border border-[#471207] bg-transparent px-5 py-2.5 font-mukta text-[14px] font-semibold text-[#471207] transition-colors hover:bg-[#471207] hover:text-white"
+                className="flex items-center justify-center gap-[10px] rounded-[32px] border-[2px] border-[#471207] bg-transparent px-[24px] py-[12px] w-full sm:w-[240px] h-[50px] font-mukta font-semibold text-[18px] leading-[30px] tracking-[0%] text-[#471207] transition-colors hover:bg-[#471207] hover:text-white"
               >
                 <FiRefreshCcw className="text-base" />
                 Calculate Another
@@ -150,64 +418,31 @@ export default function LoveCalculatorResultSection() {
             Other Calculators
           </h2>
 
-          <div className="mt-5 flex gap-4 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 lg:gap-8 md:overflow-visible md:pb-0">
-            <CalculatorCard
-              title="Love Calculator"
-              description="Discover your compatibility with a partner or potential love interest."
-              mobileHorizontal
-              calculateHref="/calculators/love-calculator"
-              icon={
-                <Image
-                  src={LoveHeroImage}
-                  alt="Love calculator"
-                  width={84}
-                  height={84}
-                  className="h-[96px] w-[96px] md:h-[84px] md:w-[84px] object-contain"
-                />
-              }
-            />
-            <CalculatorCard
-              title="Numerology Calculator"
-              description="Discover your life path number and explore numerology insights."
-              mobileHorizontal
-              icon={
-                <Image
-                  src={NumerologyCalculatorImage}
-                  alt="Numerology calculator"
-                  width={84}
-                  height={84}
-                  className="h-[96px] w-[96px] md:h-[84px] md:w-[84px] object-contain"
-                />
-              }
-            />
-            <CalculatorCard
-              title="Sun Sign Calculator"
-              description="Discover your zodiac sign based on birth date and astrology insights."
-              mobileHorizontal
-              icon={
-                <Image
-                  src={SunSignCalculatorImage}
-                  alt="Sun sign calculator"
-                  width={84}
-                  height={84}
-                  className="h-[96px] w-[96px] md:h-[84px] md:w-[84px] object-contain"
-                />
-              }
-            />
-            <CalculatorCard
-              title="Mangal Dosha Calculator"
-              description="Check Mangal dosha and marriage effects in your birth chart."
-              mobileHorizontal
-              icon={
-                <Image
-                  src={MangalDoshaImage}
-                  alt="Mangal dosha calculator"
-                  width={84}
-                  height={84}
-                  className="h-[96px] w-[96px] md:h-[84px] md:w-[84px] object-contain"
-                />
-              }
-            />
+          <div className="mt-5 md:hidden flex flex-nowrap gap-4 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
+            {otherCalculators.map(card => (
+              <CalculatorCard
+                key={card.calculateHref}
+                title={card.title}
+                description={card.description}
+                mobileHorizontal
+                calculateHref={card.calculateHref}
+                icon={card.mobileIcon}
+              />
+            ))}
+          </div>
+
+          <div className="mt-5 hidden md:grid md:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+            {otherCalculators.map(card => (
+              <CalculatorCard
+                key={card.calculateHref}
+                title={card.title}
+                description={card.description}
+                titleClassName={card.titleClassName}
+                descriptionClassName={card.descriptionClassName}
+                calculateHref={card.calculateHref}
+                icon={card.desktopIcon}
+              />
+            ))}
           </div>
         </div>
       </div>

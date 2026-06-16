@@ -133,6 +133,7 @@ const horoscope = {
         compatibility: 'मिलनशीलता',
         pujaBidhi: 'पूजा विधि',
         calculator: 'क्यालकुलेटर',
+        aboutUs: 'हाम्रो बारेमा',
         blog: 'ब्लग',
       },
       mobile: {

@@ -12,9 +12,7 @@ export const metadata: Metadata = {
 export default function KundaliMatchingResultPage() {
   return (
     <main>
-      <div className="px-4 md:px-8 py-8 md:py-12 max-w-7xl mx-auto">
-        <KundaliMatchingResultSection />
-      </div>
+      <KundaliMatchingResultSection />
     </main>
   );
 }

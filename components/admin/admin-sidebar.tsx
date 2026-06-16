@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FileText, Tag, Users, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Sparkles, Truck, ShoppingBag } from 'lucide-react';
 
 const NAV_ITEMS = [
   { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -10,6 +10,8 @@ const NAV_ITEMS = [
   // { href: "/admin/tags", icon: Tag, label: "Tags" },
   // { href: "/admin/authors", icon: Users, label: "Authors" },
   { href: '/admin/remedies', icon: Sparkles, label: 'Remedies' },
+  { href: '/admin/remedy-orders', icon: ShoppingBag, label: 'Remedy Orders' },
+  { href: '/admin/delivery-charges', icon: Truck, label: 'Delivery Charges' },
 ];
 
 export default function AdminSidebar() {

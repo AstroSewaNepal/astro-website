@@ -1,11 +1,11 @@
 import React from 'react';
 
 import KundaliCard from './kundali-card';
-import { AstrologyPrimaryColor, SquareNumberChart } from '@/components/images';
+import { SquareNumberChart, FreeKundaliChart } from '@/components/images';
 
 const KundaliDetails: React.FC = () => {
   return (
-    <section className="w-full px-8 pt-0 md:pt-2 pb-10">
+    <section className="w-full px-0 pt-0 md:pt-2 pb-10">
       <header className="max-w-4xl">
         <h1 className="font-sahitya font-bold text-[20px] leading-[100%] md:text-[36px] md:leading-[48px] text-primary mb-1">
           Kundali
@@ -42,7 +42,7 @@ const KundaliDetails: React.FC = () => {
             cta="Generate Free Kundali"
             href="/free-kundali"
             imageAlt="Kundali chart illustration"
-            imageSrc={AstrologyPrimaryColor}
+            imageSrc={FreeKundaliChart}
             imageWidth={463}
             imageHeight={379}
             imageGap={12.64}
@@ -60,7 +60,7 @@ const KundaliDetails: React.FC = () => {
             title="Free Kundali Matching"
             subtitle="Discover your match through Kundali."
             description="Astro Sewa is an astrology platform providing reliable tools and resources for both beginners and professional astrologers. On this Kundali Matching page, users can compare the birth charts of two individuals by entering their dates, times, and places of birth. By clicking “Check Compatibility,” a detailed matching report is generated, including Lagna compatibility, planetary positions, Doshas, and Basic details."
-            cta="Generate Kundali Matching"
+            cta="Generate Free Kundali Matching"
             href="/kundali-matching"
             imageAlt="Kundali matching illustration"
             imageSrc={SquareNumberChart}

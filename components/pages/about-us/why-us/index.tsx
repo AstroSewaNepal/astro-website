@@ -44,7 +44,7 @@ const AboutUsWhyUs: React.FC = () => {
             <h2 className="w-full text-center text-[34px] md:text-[40px] lg:text-[48px] xl:text-[56px] leading-[85%] text-[#691709] font-tiro-devanagari font-normal px-4">
               Why Choose Us?
             </h2>
-            <p className="w-full max-w-[883px] text-center text-sm md:text-base lg:text-lg xl:text-[24px] leading-[150%] tracking-[2%] text-[rgba(0,0,0,0.81)] font-mukta font-normal uppercase px-4">
+            <p className="w-full max-w-[883px] text-center text-sm md:text-base lg:text-lg xl:text-[24px] leading-[150%] tracking-[2%] text-[rgba(0,0,0,0.81)] font-mukta font-normal px-4">
               Connect With Our Most Trusted And Experienced Astrologers For Personalized Guidance,
               Accurate Predictions, And Compassionate Support On Your Life&apos;s Journey.
             </p>

@@ -12,7 +12,7 @@ const AboutUsVision: React.FC = () => {
           <h2 className="w-full text-center text-[40px] md:text-[48px] lg:text-[56px] leading-[119%] text-[#691709] font-tiro-devanagari font-normal">
             Our Vision, Mission & Values
           </h2>
-          <p className="w-full max-w-[883px] text-center text-[18px] md:text-[20px] lg:text-[24px] leading-[150%] tracking-[2%] text-[rgba(0,0,0,0.81)] font-mukta font-normal uppercase">
+          <p className="w-full max-w-[883px] text-center text-[18px] md:text-[20px] lg:text-[24px] leading-[150%] tracking-[2%] text-[rgba(0,0,0,0.81)] font-mukta font-normal">
             The guiding principles that shape everything we do bringing clarity, compassion, and
             authenticity to every astrology experience.
           </p>
@@ -21,7 +21,7 @@ const AboutUsVision: React.FC = () => {
         {/* Three cards section */}
         <div className="flex flex-col lg:flex-row items-center gap-[36px] w-full">
           {/* Vision Card */}
-          <div className="w-full max-w-[460px] h-[672px] border border-[#323232] rounded-[50px] flex flex-col items-center justify-center p-[37px] relative">
+          <div className="w-full max-w-[460px] min-h-[420px] lg:min-h-[520px] border border-[#323232] rounded-[50px] flex flex-col items-center justify-center p-6 md:p-8 lg:p-[37px] relative">
             {/* Image placeholder */}
             <div className="w-[162px] h-[160px] mb-[24px] flex items-center justify-center">
               <Image src={DarshanImage} alt="Vision Darshan" width={162} height={160} />
@@ -45,7 +45,7 @@ const AboutUsVision: React.FC = () => {
           </div>
 
           {/* Mission Card */}
-          <div className="w-full max-w-[460px] h-[672px] border border-[#323232] rounded-[50px] flex flex-col items-center justify-center p-[37px] relative">
+          <div className="w-full max-w-[460px] min-h-[420px] lg:min-h-[520px] border border-[#323232] rounded-[50px] flex flex-col items-center justify-center p-6 md:p-8 lg:p-[37px] relative">
             {/* Image placeholder */}
             <div className="w-[159px] h-[157px] mb-[25px] flex items-center justify-center">
               <Image src={SankalpaImage} alt="Mission Sankalpa" width={159} height={157} />
@@ -69,7 +69,7 @@ const AboutUsVision: React.FC = () => {
           </div>
 
           {/* Values Card */}
-          <div className="w-full max-w-[460px] h-[672px] border border-[#323232] rounded-[50px] flex flex-col items-center justify-center p-[37px] relative">
+          <div className="w-full max-w-[460px] min-h-[420px] lg:min-h-[520px] border border-[#323232] rounded-[50px] flex flex-col items-center justify-center p-6 md:p-8 lg:p-[37px] relative">
             {/* Image placeholder */}
             <div className="w-[151px] h-[151px] mb-[24px] flex items-center justify-center">
               <Image src={MoolyaImage} alt="Values Moolya" width={151} height={151} />

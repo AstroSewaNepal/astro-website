@@ -1,16 +1,17 @@
 'use client';
 
-import { useRef, type ReactNode } from 'react';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
 import clsx from 'clsx';
-import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination } from 'swiper/modules';
+import { Pagination as SwiperPagination } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-import { ChevronLeftIcon } from '@/components/images/icons';
+import ArrowLeft from '@/components/icons/arrow-left';
+import ArrowRight from '@/components/icons/arrow-right';
+import Pagination from '@/components/common/pagination';
 
 export type ZodiacSignCardLayout = 'carousel' | 'grid';
 
@@ -24,6 +25,26 @@ export interface ZodiacSignCardsGridProps<T> {
   renderCard: (card: T, layout: ZodiacSignCardLayout) => ReactNode;
   renderLoadingSkeleton?: (index: number, layout: ZodiacSignCardLayout) => ReactNode;
   className?: string;
+  /**
+   * If false, hide the carousel navigation arrows.
+   */
+  showCarouselNav?: boolean;
+  /**
+   * Optional swiper pagination config.
+   */
+  pagination?: Parameters<typeof Swiper>[0]['pagination'];
+  /**
+   * Show custom mobile pagination dots and left/right buttons for the carousel.
+   */
+  showCustomPagination?: boolean;
+  /**
+   * Show exactly one slide per view on mobile, without partial peeking.
+   */
+  oneSlidePerView?: boolean;
+  /**
+   * Start the carousel aligned to the left edge instead of centering the first card.
+   */
+  alignStart?: boolean;
   /**
    * Tighter carousel + less horizontal padding when nested in a narrow column
    * (avoids page-level horizontal scroll from Swiper overflow).
@@ -51,14 +72,74 @@ export function ZodiacSignCardsGrid<T>({
   renderCard,
   renderLoadingSkeleton,
   className,
+  showCarouselNav = true,
+  pagination,
+  showCustomPagination = false,
+  oneSlidePerView = false,
+  alignStart = false,
   compact = false,
   useSmUpGrid = false,
 }: ZodiacSignCardsGridProps<T>) {
   const swiperRef = useRef<SwiperType | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [slidesPerView, setSlidesPerView] = useState(1);
+  const cardsCount = cards === 'loading' ? 0 : cards.length;
   const isEmpty = cards !== 'loading' && cards.length === 0;
+  const showCustomPaginationBar = showCustomPagination && cardsCount > 1;
+  const showCarouselNavButtons = showCarouselNav && showCustomPaginationBar && cardsCount > 1;
+  const swiperPagination = showCustomPaginationBar
+    ? false
+    : (pagination ?? {
+        clickable: true,
+      });
   const showError = Boolean(listError);
   const carouselHideUp = useSmUpGrid ? 'sm:hidden' : 'md:hidden';
   const gridShowFrom = useSmUpGrid ? 'sm:grid' : 'md:grid';
+
+  const updateSlidesPerView = (swiper: SwiperType) => {
+    if (oneSlidePerView) {
+      setSlidesPerView(1);
+      return;
+    }
+
+    if (typeof swiper.params.slidesPerView === 'number') {
+      setSlidesPerView(swiper.params.slidesPerView);
+      return;
+    }
+
+    if (typeof window === 'undefined') {
+      setSlidesPerView(1);
+      return;
+    }
+
+    const width = swiper.width ?? window.innerWidth;
+
+    if (compact) {
+      setSlidesPerView(width >= 400 ? 2 : 1);
+      return;
+    }
+
+    setSlidesPerView(1);
+  };
+
+  const totalPages = useMemo(() => {
+    if (cards === 'loading') return 0;
+    if (slidesPerView >= cards.length) return 1;
+    return Math.ceil(cards.length / slidesPerView);
+  }, [cards, slidesPerView]);
+
+  const currentPage = useMemo(() => {
+    if (cards === 'loading' || cards.length === 0) return 1;
+    return Math.min(Math.floor(activeIndex / slidesPerView) + 1, totalPages);
+  }, [activeIndex, slidesPerView, totalPages, cards]);
+
+  const handlePageChange = (page: number) => {
+    if (!swiperRef.current || cards === 'loading') return;
+
+    const maxIndex = Math.max(0, cards.length - slidesPerView);
+    const targetIndex = Math.min((page - 1) * slidesPerView, maxIndex);
+    swiperRef.current.slideTo(targetIndex);
+  };
 
   return (
     <div data-qa-id={dataQaId} className="min-w-0 max-w-full">
@@ -70,7 +151,6 @@ export function ZodiacSignCardsGrid<T>({
           {listError} {errorFallbackSuffix}
         </p>
       ) : null}
-
       {isEmpty ? (
         <p className="mt-6 py-6 text-center font-mukta text-[14px] text-[#6b5a4e] sm:mt-8 sm:text-[15px]">
           {emptyLabel}
@@ -85,55 +165,84 @@ export function ZodiacSignCardsGrid<T>({
               carouselHideUp,
             )}
           >
-            <button
-              type="button"
-              aria-label="Previous sign"
-              onClick={() => swiperRef.current?.slidePrev()}
-              className={clsx(
-                'absolute top-[42%] z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white',
-                compact ? 'left-0.5 h-8 w-8 sm:left-0 sm:h-9 sm:w-9' : 'left-0 h-9 w-9',
-              )}
-            >
-              <Image src={ChevronLeftIcon} alt="" className="h-2.5 w-2.5 opacity-75" />
-            </button>
-            <button
-              type="button"
-              aria-label="Next sign"
-              onClick={() => swiperRef.current?.slideNext()}
-              className={clsx(
-                'absolute top-[42%] z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-[#6b2417]/40 bg-white/95 shadow-sm transition-colors hover:bg-white',
-                compact ? 'right-0.5 h-8 w-8 sm:right-0 sm:h-9 sm:w-9' : 'right-0 h-9 w-9',
-              )}
-            >
-              <Image src={ChevronLeftIcon} alt="" className="h-2.5 w-2.5 rotate-180 opacity-75" />
-            </button>
+            {showCarouselNavButtons ? (
+              <>
+                <button
+                  type="button"
+                  aria-label="Previous sign"
+                  onClick={() => swiperRef.current?.slidePrev()}
+                  className={clsx(
+                    'absolute z-10 flex items-center justify-center rounded-full border border-[#611508] bg-transparent text-[#611508] hover:bg-[#fff7f4] transition-colors opacity-100 md:hidden',
+                  )}
+                  style={{
+                    width: 23.72283935546875,
+                    height: 23.72283935546875,
+                    top: '75.14px',
+                    left: '-0px',
+                    borderWidth: 1,
+                  }}
+                >
+                  <ArrowLeft className="h-[12px] w-[12px]" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next sign"
+                  onClick={() => swiperRef.current?.slideNext()}
+                  className={clsx(
+                    'absolute z-10 flex items-center justify-center rounded-full border border-[#611508] bg-transparent text-[#611508] hover:bg-[#fff7f4] transition-colors opacity-100 md:hidden',
+                  )}
+                  style={{
+                    width: 23.72283935546875,
+                    height: 23.72283935546875,
+                    top: '75.14px',
+                    right: 0,
+                    borderWidth: 1,
+                  }}
+                >
+                  <ArrowRight className="h-[12px] w-[12px]" />
+                </button>
+              </>
+            ) : null}
             <Swiper
               key={swiperKey}
-              modules={[Pagination]}
-              slidesPerView={compact ? 1.12 : 1.28}
-              spaceBetween={compact ? 8 : 10}
-              centeredSlides
-              slidesOffsetBefore={compact ? 0 : 4}
-              slidesOffsetAfter={compact ? 0 : 4}
+              modules={[SwiperPagination]}
+              slidesPerView={oneSlidePerView ? 1 : compact ? 2 : 1.28}
+              spaceBetween={oneSlidePerView ? 0 : compact ? 8 : 10}
+              centeredSlides={!alignStart}
+              slidesOffsetBefore={oneSlidePerView ? 0 : compact ? 30 : alignStart ? 0 : 4}
+              slidesOffsetAfter={oneSlidePerView || alignStart ? 40 : compact ? 40 : 4}
               breakpoints={
-                compact
-                  ? {
-                      400: { slidesPerView: 1.22, spaceBetween: 9 },
-                      480: { slidesPerView: 1.32, spaceBetween: 10 },
-                    }
-                  : {
-                      400: { slidesPerView: 1.38, spaceBetween: 11 },
-                      480: { slidesPerView: 1.48, spaceBetween: 12 },
-                    }
+                oneSlidePerView
+                  ? {}
+                  : compact
+                    ? {
+                        320: { slidesPerView: 1.8, spaceBetween: 8 },
+                        400: { slidesPerView: 2, spaceBetween: 8 },
+                        480: { slidesPerView: 2.15, spaceBetween: 10 },
+                      }
+                    : {
+                        400: { slidesPerView: 1.38, spaceBetween: 11 },
+                        480: { slidesPerView: 1.48, spaceBetween: 12 },
+                      }
               }
               className={clsx(
-                'horoscope-cards-swiper pb-9',
-                compact ? 'max-w-full !overflow-hidden px-5' : '!overflow-visible px-10',
+                'horoscope-cards-swiper pb-12 sm:pb-14',
+                alignStart
+                  ? 'max-w-full !overflow-hidden px-0'
+                  : compact
+                    ? 'max-w-full !overflow-hidden px-5'
+                    : '!overflow-visible px-10',
               )}
-              pagination={{ clickable: true }}
+              pagination={swiperPagination}
               onSwiper={swiper => {
                 swiperRef.current = swiper;
+                updateSlidesPerView(swiper);
               }}
+              onSlideChange={swiper => {
+                setActiveIndex(swiper.activeIndex);
+                updateSlidesPerView(swiper);
+              }}
+              onResize={swiper => updateSlidesPerView(swiper)}
             >
               {cards === 'loading'
                 ? Array.from({ length: 8 }).map((_, index) => (
@@ -155,6 +264,21 @@ export function ZodiacSignCardsGrid<T>({
                     </SwiperSlide>
                   ))}
             </Swiper>
+            {showCustomPaginationBar ? (
+              <div className="mt-3 px-3">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  onPrevious={() => swiperRef.current?.slidePrev()}
+                  onNext={() => swiperRef.current?.slideNext()}
+                  hideControls
+                  dotClassName="w-[4.784643650054932px] h-[4.784643650054932px]"
+                  dotGap="4.16px"
+                  className="justify-center w-full"
+                />
+              </div>
+            ) : null}
           </div>
 
           <div

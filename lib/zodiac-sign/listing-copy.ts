@@ -9,12 +9,12 @@ export const zodiacListingCopy = {
     whatIsTitle: 'What is Zodiac Sign?',
     whatIsLead:
       "A zodiac sign is determined by the position of the Sun at the time of your birth. The zodiac is divided into 12 signs, each reflecting unique personality traits, strengths, and characteristics. Your zodiac sign acts like your cosmic identity — it reveals how you express yourself, interact with others, and approach life's journey.",
-    whatIsMore:
-      'Zodiac signs are the twelve divisions of the celestial sky, each representing unique traits, energies, and life paths. From fiery Aries to dreamy Pisces, every sign carries distinct qualities that influence emotions, strengths, challenges, and compatibility.',
+    whatIsMore: '',
     whyTitle: 'Why Zodiac Signs Important?',
     whyBody:
       'Zodiac signs are important because they help you understand your personality and relationships on a deeper level. They uncover your natural strengths, challenges, and compatibility with others, offering insights into your personal growth and life path.',
-    otherSignsTitle: 'Read Horoscope For Other Zodiac Signs',
+    whyMore: '',
+    otherSignsTitle: 'Read Horoscope by Zodiac Sign',
     readMore: 'Read More',
     cardBlurb: 'Your spark can move mountains, start bold today',
     nepaliHubIntro1:
@@ -37,6 +37,8 @@ export const zodiacListingCopy = {
     whyTitle: 'राशि चिन्ह किन महत्त्वपूर्ण?',
     whyBody:
       'राशि चिन्हले व्यक्तित्व, सम्बन्ध र वृद्धिका सम्भावना बुझ्न मद्दत गर्छ। यसले बलियो पक्ष र सन्तुलनको खोजमा सहयोग पुर्‍याउँछ।',
+    whyMore:
+      'राशि चिन्हले समय र भावनात्मक चक्रहरू बुझ्न पनि सहायता गर्छ। यसलाई विवेकपूर्वक प्रयोग गर्दा आत्म-ज्ञान र निर्णयमा समर्थन मिल्छ।',
     otherSignsTitle: 'अन्य राशिहरूको राशिफल पढ्नुहोस्',
     readMore: 'थप पढ्नुहोस्',
     cardBlurb: 'तपाईंको चिंगारीले पहाडहरू सार्न सक्छ, आज साहसी सुरु गर्नुहोस्',

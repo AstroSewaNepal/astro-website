@@ -1,5 +1,6 @@
 'use client';
-import React from 'react';
+import React, { useRef } from 'react';
+
 import ArrowLeftIcon from '@/components/icons/arrow-left';
 import ArrowRightIcon from '@/components/icons/arrow-right';
 import BlogComponents from '@/components/common/blog-components';
@@ -27,6 +28,13 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({ tags, posts: initialPosts }) =>
   } = useBlogPosts(initialPosts);
 
   const categories: BlogTag[] = [{ name: 'All Categories', slug: '' }, ...tags];
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollCategories = (direction: 'left' | 'right') => {
+    const el = categoryScrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: direction === 'left' ? -200 : 200, behavior: 'smooth' });
+  };
 
   return (
     <div className="flex flex-col items-center gap-8 md:gap-12 container mx-auto px-6 lg:px-0 py-12 md:py-16">
@@ -41,27 +49,39 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({ tags, posts: initialPosts }) =>
       </div>
 
       <div className="flex items-center gap-4 md:gap-8 w-full max-w-6xl">
-        <button className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-moonlight-500 flex items-center justify-center hover:bg-moonlight-50 transition-colors flex-shrink-0">
+        <button
+          type="button"
+          onClick={() => scrollCategories('left')}
+          aria-label="Scroll categories left"
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-moonlight-500 flex items-center justify-center hover:bg-moonlight-50 transition-colors flex-shrink-0"
+        >
           <ArrowLeftIcon className="w-1.5 h-3 text-moonlight-500" />
         </button>
 
-        <div className="flex items-center gap-3 md:gap-5 overflow-x-auto scrollbar-hide flex-1 min-w-0">
+        <div
+          ref={categoryScrollRef}
+          className="flex items-center gap-3 md:gap-5 overflow-x-auto scrollbar-hide flex-1 min-w-0"
+        >
           {categories.map(category => (
             <button
               key={category.slug || 'all-categories'}
               onClick={() => setActiveCategory(category.slug)}
-              className={`px-4 md:px-6 py-2 md:py-2.5 rounded-2xl font-mukta text-base md:text-lg font-light leading-7 transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
-                activeCategory === category.slug
-                  ? 'bg-primary text-white'
-                  : 'border border-primary text-primary hover:bg-primary/5'
-              }`}
+              className={`px-4 md:px-6 py-2 md:py-2.5 rounded-2xl font-mukta text-base md:text-lg font-light leading-7 transition-all duration-200 whitespace-nowrap flex-shrink-0 ${activeCategory === category.slug
+                ? 'bg-primary text-white'
+                : 'border border-primary text-primary hover:bg-primary/5'
+                }`}
             >
               {category.name}
             </button>
           ))}
         </div>
 
-        <button className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-moonlight-500 flex items-center justify-center hover:bg-moonlight-50 transition-colors flex-shrink-0">
+        <button
+          type="button"
+          onClick={() => scrollCategories('right')}
+          aria-label="Scroll categories right"
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-moonlight-500 flex items-center justify-center hover:bg-moonlight-50 transition-colors flex-shrink-0"
+        >
           <ArrowRightIcon className="w-1.5 h-3 text-moonlight-500" />
         </button>
       </div>

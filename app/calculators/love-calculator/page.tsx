@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import LoveCalculatorSection from '@/components/pages/calculators/love-calculator-section';
+import LoveCalculatorSection from '@/components/pages/calculators/love-calculator/love-calculator-section';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 

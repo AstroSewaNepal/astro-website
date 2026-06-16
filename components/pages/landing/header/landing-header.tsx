@@ -70,17 +70,28 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
       link: '/kundali-details',
       children: [
         { title: 'Free Kundali', link: '/free-kundali' },
-        { title: 'Kundali Matching', link: '/kundali-matching' },
-        { title: 'Kundali Details', link: '/kundali-details' },
+        { title: 'Free Kundali Matching', link: '/kundali-matching' },
       ],
     },
     { title: d.header.nav.compatibility, link: '/compatibility' },
     { title: d.header.nav.pujaBidhi, link: '/puja-bidhi', children: [] },
-    { title: d.header.nav.calculator, children: [], link: '/calculators' },
+    {
+      title: d.header.nav.calculator,
+      link: '/calculators',
+      children: [
+        { title: 'Love Calculator', link: '/calculators/love-calculator' },
+        { title: 'Numerology Calculator', link: '/calculators/numerology-calculator' },
+        { title: 'Sun Sign Calculator', link: '/calculators/sun-sign-calculator' },
+        { title: 'Mangal Dosha Calculator', link: '/calculators/mangal-dosha-calculator' },
+        { title: 'Dasha Calculator', link: '/calculators/dasha-calculator' },
+        { title: 'Moon Phase Calculator', link: '/calculators/moon-phase-calculator' },
+        { title: 'Rashi Calculator', link: '/calculators/rashi-calculator' },
+      ],
+    },
+    { title: d.header.nav.aboutUs, link: '/about-us' },
     { title: d.header.nav.blog, link: '/blogs' },
     {
       title: uiLanguage === ELanguage.NEPALI ? 'क्यालेन्डर' : 'Calendar',
-      link: '/calendar',
       children: [
         {
           title: uiLanguage === ELanguage.NEPALI ? 'नेपाली पात्रो' : 'Nepali Calendar',
@@ -96,11 +107,7 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
 }
 
 function buildMobileNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[] {
-  return [
-    { title: d.header.mobile.home, link: '/' },
-    { title: d.header.mobile.aboutUs, link: '/about-us' },
-    ...buildLandingNav(uiLanguage, d),
-  ];
+  return [{ title: d.header.mobile.home, link: '/' }, ...buildLandingNav(uiLanguage, d)];
 }
 
 function desktopNavItemActive(pathname: string, item: NavItem): boolean {
@@ -175,8 +182,6 @@ function LandingHeaderClient() {
 
   useEffect(() => {
     if (isMobileMenuOpen) {
-      // Lock vertical scroll when mobile menu is open.
-      // Do not touch overflowX so global horizontal overflow guard remains effective.
       document.body.style.overflowY = 'hidden';
     } else {
       document.body.style.overflowY = '';
@@ -280,24 +285,24 @@ function LandingHeaderClient() {
 
   return (
     <>
-      <header className="container mx-auto px-6 lg:px-0 py-10">
+      <header className="sticky top-0 z-50 bg-transparent container mx-auto px-6 lg:px-0 py-10 pb-0">
         <div className="flex justify-between">
           <div className="flex gap-2">
-            <div className="block md:hidden">
+            <div className="block xl:hidden">
               <NavIcon onClick={openMobileMenu} />
             </div>
             <Link href="/">
-              <AstroSewaLogo className="max-w-[84px] text-[#611508] md:max-w-[100px] lg:max-w-[188px] w-full" />
+              <AstroSewaLogo className="max-w-[84px] text-[#611508] md:max-w-[100px] lg:max-w-[188px] w-full mt-1" />
             </Link>
           </div>
-          <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-            <div className="hidden sm:block">{languageControl}</div>
+          <div className="flex gap-4">
+            <div className="hidden lg:block">{languageControl}</div>
             <Link
               href="/login"
-              aria-label={d.header.signIn}
-              className="flex flex-shrink-0 items-center gap-1.5 rounded-3xl bg-primary px-4 py-2 text-white sm:px-5"
+              className="inline-flex items-center gap-1 rounded-3xl border border-solid border-primary bg-primary text-white px-[15px] py-2 min-w-[93.2794189453125px] h-[40px] lg:min-w-[124px] lg:h-[44px] lg:px-[20px] lg:py-[8px]"
+              style={{ borderWidth: '0.36px' }}
             >
-              <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
+              <UserLineIcon className="w-[17.279px] h-[17.279px]" />
               <span className="font-mukta text-sm leading-7 md:text-lg lg:text-xl">
                 {d.header.signIn}
               </span>
@@ -307,27 +312,31 @@ function LandingHeaderClient() {
             </button>
           </div>
         </div>
-        <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex relative z-40">
+
+        {/* ✅ FIX: responsive padding — grows at xl → 2xl → 3xl screen widths */}
+        <nav className="mt-10 bg-primary py-3 px-6 xl:px-8 2xl:px-14 gap-1 2xl:gap-3 rounded-3xl hidden xl:flex xl:flex-wrap xl:justify-between items-center relative z-40 w-full overflow-visible">
           {landingNav.map(value => {
             const hasChildren = !!value.children?.length;
             const navActive = desktopNavItemActive(pathname, value);
 
             return (
-              <div key={value.title} className="relative group">
-                <Link href={value.link ?? '#'} className="block">
+              <div key={value.title} className="relative group min-w-0">
+                <Link href={value.link ?? '#'} className="block min-w-0">
                   <div
                     className={clsx(
-                      'text-white flex items-center justify-center py-[7px] px-[17px] rounded-xl hover:bg-hoverColor active:bg-hoverColor',
+                      'text-white flex items-center justify-between gap-2 py-2 px-3 lg:py-[7px] lg:px-[14px] rounded-xl hover:bg-hoverColor active:bg-hoverColor',
                       navActive && 'bg-hoverColor',
                     )}
                   >
-                    <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
-                    {hasChildren && <ChevronDownIcon className="text-white" />}
+                    <p className="font-mukta font-light text-sm md:text-base lg:text-lg leading-6 whitespace-nowrap flex-1">
+                      {value.title}
+                    </p>
+                    {hasChildren && <ChevronDownIcon className="text-white shrink-0" />}
                   </div>
                 </Link>
 
                 {hasChildren ? (
-                  <div className="absolute left-0 top-[calc(100%+12px)] min-w-[220px] rounded-none bg-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20">
+                  <div className="absolute left-0 top-[calc(100%+12px)] min-w-max rounded-none bg-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20">
                     {value.children?.map(child => (
                       <div key={child.title} className="relative group/nested">
                         <Link
@@ -371,7 +380,7 @@ function LandingHeaderClient() {
       </header>
 
       <div
-        className={`fixed inset-0 z-50 md:hidden transition-opacity duration-300 ${
+        className={`fixed inset-0 z-50 xl:hidden transition-opacity duration-300 ${
           isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
         style={{ pointerEvents: isMobileMenuOpen ? 'auto' : 'none' }}
@@ -396,13 +405,14 @@ function LandingHeaderClient() {
             <div className="flex flex-col gap-3">
               {mobileNav.map((item, index) => {
                 const hasChildren = item.children && item.children.length > 0;
+                const isZodiacSigns = item.link === '/zodiac-sign';
                 const isExpanded = openMobileDropdown === item.title;
                 const content = (
                   <div className="flex items-center justify-between w-full">
                     <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709]">
                       {item.title}
                     </p>
-                    {hasChildren && (
+                    {hasChildren && !isZodiacSigns && (
                       <ChevronDownIcon
                         className={`text-[#691709] w-[18px] h-[18px] transition-transform duration-200 ${
                           isExpanded ? 'rotate-180' : ''
@@ -412,16 +422,48 @@ function LandingHeaderClient() {
                   </div>
                 );
 
+                if (isZodiacSigns && item.link) {
+                  return (
+                    <Link key={`m-${index}`} href={item.link} onClick={closeMobileMenu}>
+                      {content}
+                    </Link>
+                  );
+                }
+
                 if (hasChildren) {
                   return (
                     <div key={`${item.title}-${index}`} className="w-full">
-                      <button
-                        type="button"
-                        className="w-full text-left"
-                        onClick={() => setOpenMobileDropdown(isExpanded ? null : item.title)}
-                      >
-                        {content}
-                      </button>
+                      <div className="flex items-center justify-between w-full gap-2">
+                        {item.link ? (
+                          <Link
+                            href={item.link}
+                            onClick={closeMobileMenu}
+                            className="flex-1 min-w-0"
+                          >
+                            <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709]">
+                              {item.title}
+                            </p>
+                          </Link>
+                        ) : (
+                          <p className="font-tiro-devanagari text-[22px] leading-[32px] text-[#691709] flex-1">
+                            {item.title}
+                          </p>
+                        )}
+                        {!isZodiacSigns ? (
+                          <button
+                            type="button"
+                            aria-label={`Toggle ${item.title} submenu`}
+                            className="shrink-0 p-1"
+                            onClick={() => setOpenMobileDropdown(isExpanded ? null : item.title)}
+                          >
+                            <ChevronDownIcon
+                              className={`text-[#691709] w-[18px] h-[18px] transition-transform duration-200 ${
+                                isExpanded ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </button>
+                        ) : null}
+                      </div>
                       {isExpanded ? (
                         <div className="mt-2 ml-4 flex flex-col gap-2">
                           {item.children?.map((child, childIndex) => {
@@ -514,7 +556,7 @@ function LandingHeaderFallback() {
     <header className="container mx-auto px-6 lg:px-0 py-10">
       <div className="flex justify-between">
         <div className="flex gap-2">
-          <div className="block md:hidden w-12" />
+          <div className="block xl:hidden w-12" />
           <Link href="/">
             <AstroSewaLogo className="max-w-[84px] text-[#611508] md:max-w-[100px] lg:max-w-[188px] w-full" />
           </Link>
@@ -527,20 +569,25 @@ function LandingHeaderFallback() {
             </p>
             <ChevronDownIcon />
           </div>
-          <button className="bg-primary rounded-3xl px-5 py-2 text-white flex gap-1.5 max-h-fit items-center cursor-pointer">
-            <UserLineIcon className="w-3 h-3 lg:w-6 lg:h-6" />
-            <p className="font-mukta text-sm md:text-lg lg:text-xl leading-7 max-h-fit">
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1 rounded-3xl border border-solid border-primary bg-primary text-white px-[15px] py-2 min-w-[93.2794189453125px] h-[40px] lg:min-w-[124px] lg:h-[44px] lg:px-[20px] lg:py-[8px]"
+            style={{ borderWidth: '0.36px' }}
+          >
+            <UserLineIcon className="w-[17.279px] h-[17.279px]" />
+            <p className="font-mukta text-sm leading-7 md:text-lg lg:text-xl max-h-fit">
               {d.header.signIn}
             </p>
-          </button>
+          </Link>
           <button className="bg-primary p-2.5 rounded-full text-white max-h-fit">
             <TransparentBellIcon />
           </button>
         </div>
       </div>
-      <nav className="mt-10 items-center justify-center bg-primary py-3 gap-[22px] rounded-3xl hidden lg:flex">
+      {/* ✅ FIX applied to fallback as well */}
+      <nav className="mt-10 items-center justify-between bg-primary py-3 px-6 xl:px-8 2xl:px-14 gap-1 2xl:gap-3 rounded-3xl hidden xl:flex w-full">
         {landingNav.map(value => (
-          <Link href={value.link ?? '#'} key={value.title}>
+          <Link href={value.link ?? '#'} key={value.title} className="flex-shrink-0">
             <div className="text-white flex items-center justify-center py-[7px] px-[17px]">
               <p className="font-mukta font-light text-xl leading-7">{value.title}</p>
               {value.children && <ChevronDownIcon className="text-white" />}

@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { ghostClient } from '@/lib/ghostClient';
+import { formatViewCount } from '@/lib/blog-utils';
+import { fetchBlogViewCounts, recordBlogView } from '@/lib/blog-view-api';
 import Services from '@/components/pages/landing/services';
 import BlogContent from '@/components/pages/blogs/content';
 import DownloadApp from '@/components/pages/landing/download-app';
@@ -180,6 +182,10 @@ const BlogDetailPage = async (props: BlogDetailPageProps) => {
       })
     : '';
   const postUrl = `${BASE_URL}/blogs/${post.slug}`;
+  const recordedViews = await recordBlogView(post.slug);
+  const views = formatViewCount(
+    recordedViews ?? (await fetchBlogViewCounts([post.slug]))[post.slug] ?? 0,
+  );
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -232,7 +238,7 @@ const BlogDetailPage = async (props: BlogDetailPageProps) => {
           authorBio={authorBio}
           authorSocial={authorSocial}
           date={date}
-          views="0"
+          views={views}
           tags={post.tags ?? []}
         />
       </div>
@@ -259,9 +265,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
   const post = await getBlogPost(slug);
 
   if (!post) {

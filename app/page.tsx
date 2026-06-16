@@ -7,6 +7,7 @@ import Clarity from '@/components/pages/landing/clarity';
 import LandingHero from '@/components/pages/landing/hero';
 // import EventsPage from '@/components/pages/landing/events';
 import Services from '@/components/pages/landing/services';
+import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import WhoWeAre from '@/components/pages/landing/who-we-are';
 import HotTopics from '@/components/pages/landing/hot-topics';
 import DownloadApp from '@/components/pages/landing/download-app';
@@ -70,25 +71,25 @@ const faqJsonLd = {
 
 export default function Home() {
   return (
-    <main className="min-h-screen space-y-[100px]">
+    <main className="container mx-auto min-h-screen overflow-hidden space-y-[100px] pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <div>
+      <div className="overflow-hidden">
         <LandingHero />
       </div>
       {/* <TodayHoroscope /> */}
       {/* <EventsPage /> */}
       <Services />
       <Clarity />
-      {/* <TalkToOurAstrologer /> */}
-      {/* <CustomerFeedback /> */}
+      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
       <AstrologerBlogListing />
       <WhoWeAre />
       <LandingFAQ />
       <HotTopics />
       <DownloadApp />
+      {/* <CustomerFeedback /> */}
     </main>
   );
 }

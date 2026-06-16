@@ -8,8 +8,10 @@ export type TodayHoroscopeDisplayCard = {
   key: string;
   name: string;
   image: string | StaticImageData;
+  imageLight?: string | StaticImageData;
   summary: string;
   stars: number;
+  href?: string;
 };
 
 type HoroscopeCardMeta = {
@@ -63,7 +65,8 @@ export function buildTodayHoroscopeDisplayCards(args: {
     return staticFallback.map(c => ({
       key: c.name.toLowerCase(),
       name: c.name,
-      image: c.image,
+      image: c.imageColor ?? c.image,
+      imageLight: c.image,
       summary: summaryWithOptionalDatePrefix(listDate, c.detail),
       stars: c.numberOfStars,
     }));
@@ -81,12 +84,19 @@ export function buildTodayHoroscopeDisplayCards(args: {
       meta == null
         ? fallbackImage
         : signLanguage === ELanguage.ENGLISH
+          ? (meta.en.imageColor ?? meta.en.image)
+          : (meta.np.imageColor ?? meta.np.image);
+    const imageLight =
+      meta == null
+        ? fallbackImage
+        : signLanguage === ELanguage.ENGLISH
           ? meta.en.image
           : meta.np.image;
     return {
       key: slug,
       name,
       image,
+      imageLight,
       summary: summaryWithOptionalDatePrefix(listDate, row.summary),
       stars: starCountFromRating(row.rating),
     };

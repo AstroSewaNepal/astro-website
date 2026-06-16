@@ -193,10 +193,11 @@ const TodayHoroscope: React.FC = () => {
   return (
     <section className="container mx-auto px-6 lg:px-0">
       <div className="flex w-full items-center justify-center flex-col">
-        <h2 className="text-4xl md:text-[40px] lg:text-[56px] leading-[47.83px] font-bold text-primary text-center">
+        <h2 className="text-4xl md:text-[40px] lg:text-[56px] leading-[47.83px] font-bold text-primary text-center mb-12">
           Today&apos;s Astrology Horoscope
         </h2>
-        <div className="mt-12 flex gap-5">
+
+        <div className="mt-16 flex gap-5">
           <button
             className={clsx(
               'border border-solid border-primary rounded-3xl px-[35px] py-2.5 text-primary font-mukta text-xl leading-7 font-normal cursor-pointer transition-all duration-300 ease-in-out',
@@ -275,6 +276,8 @@ const TodayHoroscope: React.FC = () => {
             onPageChange={handlePageChange}
             onPrevious={handlePrevious}
             onNext={handleNext}
+            dotClassName="w-[4.784643650054932px] h-[4.784643650054932px]"
+            dotGap="4.16px"
           />
         </div>
       </div>
