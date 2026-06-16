@@ -74,6 +74,9 @@ export function createColumns({
         <div className="font-mukta">
           <p className="text-sm text-neutral-800">{row.original.userName ?? '—'}</p>
           <p className="text-xs text-neutral-400">{row.original.userEmail ?? '—'}</p>
+          {row.original.userPhone && (
+            <p className="text-xs text-neutral-400">{row.original.userPhone}</p>
+          )}
         </div>
       ),
     },
