@@ -96,9 +96,11 @@ export function ZodiacSignExploreSection({
       className={clsx('mx-auto mt-10 w-full min-w-0 max-w-[1180px] px-1 sm:px-0', className)}
     >
       <div className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        <h2 className="px-1 text-center font-sahitya text-[20px] font-bold leading-[28px] text-[#6b2417] text-balance sm:text-left sm:text-[24px] sm:leading-[34px] lg:text-[28px]">
-          {title}
-        </h2>
+        {title ? (
+          <h2 className="px-1 text-center font-sahitya text-[20px] font-bold leading-[28px] text-[#6b2417] text-balance sm:text-left sm:text-[24px] sm:leading-[34px] lg:text-[28px]">
+            {title}
+          </h2>
+        ) : null}
 
         <div className="mx-auto flex w-full min-w-0 flex-row flex-wrap justify-center gap-[10px] sm:mx-0 sm:justify-end">
           <button
