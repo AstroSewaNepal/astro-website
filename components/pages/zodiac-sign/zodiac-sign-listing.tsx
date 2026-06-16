@@ -86,23 +86,21 @@ export function ZodiacSignListing({ mode }: Props) {
               </div>
             </section>
 
-            {mode === 'hub-ne' ? (
-              <section className="mx-auto mt-6 px-2 sm:mt-8 sm:px-3 lg:mt-10 lg:px-4">
-                <h2
-                  className={clsx(
-                    'font-sahitya text-[#6b2417] text-left',
-                    'text-[22px] sm:text-[26px] font-bold lg:text-[32px]',
-                  )}
-                >
-                  {t.whyTitle}
-                </h2>
+            <section className="mx-auto mt-6 px-2 sm:mt-8 sm:px-3 lg:mt-10 lg:px-4">
+              <h2
+                className={clsx(
+                  'font-sahitya text-[#6b2417] text-left',
+                  'text-[22px] sm:text-[26px] font-bold lg:text-[32px]',
+                )}
+              >
+                {t.whyTitle}
+              </h2>
 
-                <div className="mx-auto mt-3 space-y-4 text-left font-mukta text-[15px] leading-8 text-[#5f5248] sm:mt-4 sm:space-y-5 sm:text-[16px] sm:leading-8 lg:mt-5">
-                  <p>{t.whyBody}</p>
-                  {t.whyMore ? <p>{t.whyMore}</p> : null}
-                </div>
-              </section>
-            ) : null}
+              <div className="mx-auto mt-3 space-y-4 text-left font-mukta text-[15px] leading-8 text-[#5f5248] sm:mt-4 sm:space-y-5 sm:text-[16px] sm:leading-8 lg:mt-5">
+                <p>{t.whyBody}</p>
+                {t.whyMore ? <p>{t.whyMore}</p> : null}
+              </div>
+            </section>
 
             {mode === 'hub-ne' ? (
               <div className="mt-10">

@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { StaticImageData } from 'next/image';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -36,36 +37,75 @@ export function CompatibilitySignsGrid({
   variant = 'compact',
   className,
 }: Props) {
-  if (items.length === 0) {
-    return null;
-  }
-
   const currentLight = currentSignImageLight ?? currentSignImage;
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const dots = useMemo(() => items.map((_, index) => index), [items]);
+
+  const updateActiveIndex = () => {
+    if (!containerRef.current) return;
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const slides = Array.from(containerRef.current.children) as HTMLElement[];
+    const active = slides.findIndex(slide => {
+      const rect = slide.getBoundingClientRect();
+      return rect.left >= containerRect.left - 1;
+    });
+    setActiveIndex(active >= 0 ? active : 0);
+  };
+
+   
+  useEffect(() => {
+    let raf = 0;
+    raf = requestAnimationFrame(updateActiveIndex);
+    const element = containerRef.current;
+    if (!element) {
+      cancelAnimationFrame(raf);
+      return;
+    }
+    element.addEventListener('scroll', updateActiveIndex, { passive: true });
+    window.addEventListener('resize', updateActiveIndex);
+    return () => {
+      cancelAnimationFrame(raf);
+      element.removeEventListener('scroll', updateActiveIndex);
+      window.removeEventListener('resize', updateActiveIndex);
+    };
+  }, [items]);
+
+  const scrollToIndex = (index: number) => {
+    if (!containerRef.current) return;
+    const slide = containerRef.current.children[index] as HTMLElement | undefined;
+    if (!slide) return;
+    containerRef.current.scrollTo({ left: slide.offsetLeft, behavior: 'smooth' });
+  };
 
   const renderSignImage = (colorSrc: SignImage, lightSrc: SignImage, alt: string) => (
     <div className="relative h-[96px] w-[100px] sm:h-[96px] sm:w-[110px]">
       <Image
-        src={lightSrc}
+        src={colorSrc}
         alt={alt}
-        className="h-full w-full object-contain transition-opacity duration-300 group-hover:opacity-0"
+        className="h-full w-full object-contain opacity-100 transition-opacity duration-300 group-hover:opacity-0"
       />
       <Image
-        src={colorSrc}
+        src={lightSrc}
         alt={alt}
         className="absolute inset-0 h-full w-full object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       />
     </div>
   );
 
+  if (items.length === 0) {
+    return null;
+  }
+
   return (
     <div className={className}>
       <h3 className="font-mukta text-[18px] font-semibold text-[#6f2618]">{title}</h3>
       <div
+        ref={containerRef}
         className={clsx(
-          'mt-3 grid grid-cols-1',
-          variant === 'figma'
-            ? 'gap-4 sm:grid-cols-2 lg:grid-cols-4'
-            : 'gap-3 sm:grid-cols-2 lg:grid-cols-4',
+          'mt-3 flex snap-x snap-mandatory overflow-x-auto gap-3 px-2 pb-2 scrollbar-hide sm:grid sm:grid-cols-2 lg:grid-cols-4',
+          variant === 'figma' ? 'sm:gap-4' : 'sm:gap-3',
         )}
       >
         {items.map(item => {
@@ -76,10 +116,10 @@ export function CompatibilitySignsGrid({
               href={item.href}
               onClick={() => window.scrollTo(0, 0)}
               className={clsx(
-                'group transition-colors hover:border-[#f4a11a]/80',
+                'group transition-colors hover:border-[#f4a11a]/80 snap-start flex-shrink-0',
                 variant === 'figma'
-                  ? 'flex min-h-[172px] items-center justify-center gap-4 rounded-[20px] border border-[#383838] p-4'
-                  : 'rounded-[10px] border border-[#d7c3b1] bg-[#fdf8f1] px-2 py-2',
+                  ? 'flex min-h-[172px] min-w-[260px] items-center justify-center gap-4 rounded-[20px] border border-[#383838] p-4'
+                  : 'min-w-[220px] rounded-[10px] border border-[#d7c3b1] bg-[#fdf8f1] px-2 py-2',
               )}
             >
               {variant === 'figma' ? (
@@ -150,6 +190,19 @@ export function CompatibilitySignsGrid({
             </Link>
           );
         })}
+      </div>
+      <div className="mt-3 flex justify-center gap-2 sm:hidden">
+        {dots.map(index => (
+          <button
+            key={index}
+            type="button"
+            onClick={() => scrollToIndex(index)}
+            className={clsx(
+              'h-2 min-w-[8px] rounded-full transition-colors',
+              index === activeIndex ? 'bg-[#611508]' : 'bg-[#d7c3b1]'
+            )}
+          />
+        ))}
       </div>
     </div>
   );
