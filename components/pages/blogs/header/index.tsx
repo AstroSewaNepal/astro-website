@@ -1,6 +1,6 @@
 'use client';
 import React, { useRef } from 'react';
-import Link from 'next/link';
+
 import ArrowLeftIcon from '@/components/icons/arrow-left';
 import ArrowRightIcon from '@/components/icons/arrow-right';
 import BlogComponents from '@/components/common/blog-components';
@@ -66,11 +66,10 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({ tags, posts: initialPosts }) =>
             <button
               key={category.slug || 'all-categories'}
               onClick={() => setActiveCategory(category.slug)}
-              className={`px-4 md:px-6 py-2 md:py-2.5 rounded-2xl font-mukta text-base md:text-lg font-light leading-7 transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
-                activeCategory === category.slug
-                  ? 'bg-primary text-white'
-                  : 'border border-primary text-primary hover:bg-primary/5'
-              }`}
+              className={`px-4 md:px-6 py-2 md:py-2.5 rounded-2xl font-mukta text-base md:text-lg font-light leading-7 transition-all duration-200 whitespace-nowrap flex-shrink-0 ${activeCategory === category.slug
+                ? 'bg-primary text-white'
+                : 'border border-primary text-primary hover:bg-primary/5'
+                }`}
             >
               {category.name}
             </button>

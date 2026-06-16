@@ -12,6 +12,8 @@ type ClockTimePickerProps = {
   disabled?: boolean;
   label?: string;
   id?: string;
+  variant?: 'default' | 'calculator';
+  error?: string;
 };
 
 type ClockMode = 'hour' | 'minute';
@@ -157,7 +159,7 @@ function ClockFace({ hour, minute, mode, onCommit }: ClockFaceProps) {
             dominantBaseline="central"
             fontSize={18}
             fontFamily="inherit"
-            fill="var(--primary)"
+            fill="#720A0B"
           >
             {n}
           </text>
@@ -168,12 +170,12 @@ function ClockFace({ hour, minute, mode, onCommit }: ClockFaceProps) {
         y1={CY}
         x2={ex.toFixed(1)}
         y2={ey.toFixed(1)}
-        style={{ stroke: 'var(--primary)' }}
+        style={{ stroke: 'hsl(359 84% 24%)' }}
         strokeWidth={2.2}
         strokeLinecap="round"
       />
-      <circle cx={CX} cy={CY} r={5} style={{ fill: 'var(--primary)' }} />
-      <circle cx={ex.toFixed(1)} cy={ey.toFixed(1)} r={11} style={{ fill: 'var(--primary)' }} />
+      <circle cx={CX} cy={CY} r={5} style={{ fill: 'hsl(359 84% 24%)' }} />
+      <circle cx={ex.toFixed(1)} cy={ey.toFixed(1)} r={11} style={{ fill: 'hsl(359 84% 24%)' }} />
     </svg>
   );
 }
@@ -186,6 +188,8 @@ export function ClockTimePicker({
   disabled = false,
   label = 'Enter birth time',
   id = 'clock-time-picker',
+  variant = 'default',
+  error,
 }: ClockTimePickerProps) {
   const [open, setOpen] = useState(false);
   const [openAbove, setOpenAbove] = useState(false);
@@ -260,29 +264,46 @@ export function ClockTimePicker({
       ? `${pad(hour)} : ${pad(minute)} ${draft.ampm.toUpperCase()}`
       : 'hh / mm / am';
 
+  const labelClass = variant === 'calculator'
+    ? 'block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]'
+    : 'block font-mukta text-[14px] text-primary mb-1.5';
+
+  const buttonClass = clsx(
+    'w-full flex items-center justify-between transition-colors',
+    variant === 'calculator'
+      ? clsx(
+          'rounded-[32px] border-2 sm:border bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal',
+          open ? 'border-[#A13924] ring-2 ring-[#A13924]/10' : error ? 'border-red-600' : 'border-[#BE7B71]',
+          draft.hh && draft.mm ? 'text-[#2f2f2f]' : 'text-[#464646]'
+        )
+      : clsx(
+          'rounded-full border px-4 py-2.5 font-mukta text-[15px]',
+          open ? 'border-primary' : error ? 'border-red-500' : 'border-[#c9b9aa]',
+          'text-primary font-medium'
+        ),
+    disabled && 'opacity-50 pointer-events-none'
+  );
+
   return (
     <div ref={containerRef} className="relative" id={id}>
-      <label className="block font-mukta text-[14px] text-primary mb-1.5">{label}</label>
+      <label className={labelClass}>{label}</label>
       <button
         type="button"
         disabled={disabled}
         onClick={() => setOpen(o => !o)}
-        className={clsx(
-          'w-full flex items-center justify-between rounded-full border px-4 py-2.5',
-          'font-mukta text-[15px] transition-colors',
-          open ? 'border-primary' : 'border-[#c9b9aa]',
-          disabled && 'opacity-50 pointer-events-none',
-        )}
+        className={buttonClass}
       >
-        <span className="text-primary font-medium">{displayVal}</span>
+        <span className={variant === 'calculator' ? 'flex-1 text-left min-w-0' : 'text-primary font-medium'}>
+          {displayVal}
+        </span>
         <svg
           width="17"
           height="17"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="var(--primary)"
+          stroke={variant === 'calculator' ? 'currentColor' : '#720A0B'}
           strokeWidth="1.8"
-          className="opacity-60"
+          className={clsx("opacity-60", variant === 'calculator' && 'text-[#5D1409]')}
           aria-hidden="true"
         >
           <circle cx="12" cy="12" r="10" />
@@ -290,10 +311,17 @@ export function ClockTimePicker({
         </svg>
       </button>
 
+      {error ? (
+        <p className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]" role="alert">
+          {error}
+        </p>
+      ) : null}
+
       {open && (
         <div
           className={clsx(
-            'absolute z-50 left-1/2 -translate-x-1/2',
+            'absolute z-50',
+            variant === 'calculator' ? 'left-0' : 'left-1/2 -translate-x-1/2',
             openAbove ? 'bottom-full mb-2' : 'top-full mt-2',
             'bg-white rounded-[20px] border border-[#61150833] shadow-lg',
             'p-5 flex flex-col items-center gap-4 w-[300px]',

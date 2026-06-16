@@ -3,11 +3,12 @@
 import { useState } from 'react';
 
 import {
+
   UnknownBirthTimeCheckbox,
   type BirthTimeParts,
 } from '@/components/shared/birth-time-fields';
 import { ClockTimePicker } from '@/components/shared/clock-time-picker';
-import { CityAutocompleteInput } from '@/components/shared/city-autocomplete-input';
+
 import CalculatorDatePicker from '@/components/pages/calculators/shared/calculator-date-picker';
 import {
   EMPTY_CALCULATOR_FORM,
@@ -139,14 +140,14 @@ export default function CalculatorBirthDetailsForm({
 
   return (
     <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12">
-      <h2 className="font-sahitya text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px] font-bold text-[#5D1409] mb-3 sm:mb-4 md:mb-5 lg:mb-6">
+      <h2 className="font-mukta text-[18px] font-semibold leading-[28px] tracking-normal sm:font-sahitya sm:text-[28px] sm:font-bold sm:leading-[38px] text-[#5D1409] mb-3 sm:mb-4 md:mb-5 lg:mb-6">
         Fill up the Details
       </h2>
 
-      <div className="rounded-[32px] border border-[#BE7B71] bg-[#fdf5ec] p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.08)]">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:gap-6 mb-4 sm:mb-5 md:mb-6 lg:mb-7">
+      <div className="rounded-[32px] border border-[#BE7B71] bg-transparent p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.08)]">
+        <div className="grid grid-cols-2 gap-x-3 sm:gap-x-4 md:gap-x-5 lg:gap-x-6 gap-y-0 sm:gap-y-1 lg:gap-y-2 mb-2 sm:mb-3">
           <div>
-            <label className="block font-mukta text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-[#2f2f2f] mb-1.5 sm:mb-2">
+            <label className="block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]">
               Enter full name
             </label>
             <div className="relative">
@@ -155,7 +156,7 @@ export default function CalculatorBirthDetailsForm({
                 placeholder="Enter name"
                 value={form.fullName}
                 onChange={e => handleChange('fullName', e.target.value)}
-                className="w-full rounded-[32px] border border-[#BE7B71] bg-white px-4 py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] placeholder:text-[#9a8f87] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
+                className="w-full rounded-[32px] border-2 sm:border border-[#BE7B71] bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] placeholder:font-mukta placeholder:text-[18px] placeholder:font-normal placeholder:leading-[30px] placeholder:tracking-normal placeholder:text-[#464646] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
               />
               <span className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[#5D1409] opacity-60">
                 <svg
@@ -171,20 +172,20 @@ export default function CalculatorBirthDetailsForm({
                 </svg>
               </span>
             </div>
-            <p className="mt-2 font-mukta text-[12px] text-red-600 min-h-[18px]" role="alert">
+            <p className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]" role="alert">
               {fieldErrors.fullName || '\u00a0'}
             </p>
           </div>
 
           <div>
-            <label className="block font-mukta text-[12px] sm:text-[13px] md:text-[14px] text-[#2f2f2f] mb-1.5 sm:mb-2">
+            <label className="block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]">
               Select gender
             </label>
             <div className="relative">
               <select
                 value={form.gender}
                 onChange={e => handleChange('gender', e.target.value)}
-                className="w-full appearance-none rounded-[32px] border border-[#BE7B71] bg-white px-4 py-3 font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] text-[#2f2f2f] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
+                className="w-full appearance-none rounded-[32px] border-2 sm:border border-[#BE7B71] bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
               >
                 <option value="" disabled>
                   Select
@@ -206,48 +207,62 @@ export default function CalculatorBirthDetailsForm({
                 </svg>
               </span>
             </div>
-            <p className="mt-2 font-mukta text-[12px] text-red-600 min-h-[18px]" role="alert">
+            <p className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]" role="alert">
               {fieldErrors.gender || '\u00a0'}
             </p>
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:gap-6 mb-4 sm:mb-5 md:mb-6 lg:mb-7">
           <div>
             <CalculatorDatePicker
               id="calculator-dob"
               value={form.birthDate}
               onChange={value => handleChange('birthDate', value)}
               error={fieldErrors.birthDate}
+              fullWidth
             />
           </div>
 
           <div>
-            <CityAutocompleteInput
-              label="Enter birth place"
-              placeholder="Where were you born?"
-              value={form.birthPlace}
-              onChange={value => handleChange('birthPlace', value)}
-              onCitySelect={city => {
-                setSelectedBirthCity(city);
-                setFieldErrors(prev => ({ ...prev, birthPlace: '' }));
-              }}
-              error={fieldErrors.birthPlace}
+            <label className="block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]">
+              Enter birth place
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Where were you born?"
+                value={form.birthPlace}
+                onChange={e => handleChange('birthPlace', e.target.value)}
+                className="w-full rounded-[32px] border-2 sm:border border-[#BE7B71] bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] placeholder:font-mukta placeholder:text-[18px] placeholder:font-normal placeholder:leading-[30px] placeholder:tracking-normal placeholder:text-[#464646] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
+              />
+              <span className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[#5D1409] opacity-60">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                >
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              </span>
+            </div>
+            <p className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]" role="alert">
+              {fieldErrors.birthPlace || '\u00a0'}
+            </p>
+          </div>
+          <div className="col-span-2">
+            <ClockTimePicker
+              id="calculator-birth-time"
+              label="Enter birth time"
+              value={birthTimeParts}
+              onChange={handleBirthTimeChange}
+              disabled={form.dontKnowTime}
+              variant="calculator"
+              error={fieldErrors.birthTime}
             />
           </div>
-        </div>
-
-        <div className="mb-3 sm:mb-4 md:mb-5 lg:mb-6">
-          <ClockTimePicker
-            id="calculator-birth-time"
-            label="Enter birth time"
-            value={birthTimeParts}
-            onChange={handleBirthTimeChange}
-            disabled={form.dontKnowTime}
-          />
-          <p className="mt-2 font-mukta text-[12px] text-red-600 min-h-[18px]" role="alert">
-            {fieldErrors.birthTime || '\u00a0'}
-          </p>
         </div>
 
         <UnknownBirthTimeCheckbox
@@ -270,14 +285,15 @@ export default function CalculatorBirthDetailsForm({
           <span className="font-bold">80% accurate</span> prediction
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
           <button
             type="button"
             onClick={handleSubmit}
             disabled={submitting}
             className="w-full min-h-[40px] sm:min-h-[44px] md:min-h-[48px] lg:min-h-[52px] rounded-full bg-[#5D1409] font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] font-bold text-white hover:opacity-95 transition-opacity disabled:opacity-60 px-3 sm:px-4 md:px-5 lg:px-6"
           >
-            {submitting ? 'Calculating…' : submitLabel}
+            <span className="sm:hidden">{submitting ? 'Calculating…' : 'Calculate'}</span>
+            <span className="hidden sm:inline">{submitting ? 'Calculating…' : submitLabel}</span>
           </button>
           <button
             type="button"

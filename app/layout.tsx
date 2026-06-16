@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Tiro_Devanagari_Sanskrit, Sahitya, Mukta, Raleway } from 'next/font/google';
+import { Tiro_Devanagari_Sanskrit, Sahitya, Mukta, Raleway, Lato } from 'next/font/google';
 import Script from 'next/script';
 
 import './globals.css';
@@ -29,6 +29,12 @@ const raleway = Raleway({
   variable: '--font-raleway',
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
+});
+
+const lato = Lato({
+  variable: '--font-lato',
+  subsets: ['latin'],
+  weight: ['400', '700'],
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.astrosewa.com';
@@ -154,6 +160,7 @@ export default function RootLayout({
           sahitya.variable,
           mukta.variable,
           raleway.variable,
+          lato.variable,
           `antialiased`,
         )}
       >

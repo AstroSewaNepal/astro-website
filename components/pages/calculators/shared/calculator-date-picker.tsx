@@ -10,7 +10,7 @@ type CalculatorDatePickerProps = {
   value: string;
   onChange: (value: string) => void;
   error?: string;
-  fullWidth?: boolean;
+  fullWidth?: boolean; // ✅ FIX: added this
 };
 
 function isoDateToDdMmYyyy(iso: string): string {
@@ -33,30 +33,34 @@ export default function CalculatorDatePicker({
   value,
   onChange,
   error,
-  fullWidth = false,
+  fullWidth = false, // ✅ FIX: default value added
 }: CalculatorDatePickerProps) {
   const [open, setOpen] = useState(false);
 
-  const displayValue = value ? formatDobDisplay(value) : 'Select date of birth';
+  const displayValue = value ? formatDobDisplay(value) : 'M / D / Y';
   const calendarValue = isoDateToDdMmYyyy(value);
 
   return (
     <div className={`relative ${fullWidth ? 'w-full' : 'w-[532px]'}`}>
       <label
         htmlFor={id}
-        className="mb-1 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] font-semibold leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[30px] tracking-normal text-[#141414]"
+        className="block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]"
       >
         {label}
       </label>
+
       <button
         id={id}
         type="button"
         onClick={() => setOpen(true)}
-        className={`${fullWidth ? 'w-full' : 'w-[532px]'} cursor-pointer flex items-center justify-between h-[56px] box-border rounded-[32px] border-2 border-[#BE7B71] bg-transparent px-[20px] py-[16px] text-left font-mukta text-sm sm:text-[15px] md:text-[18px] md:leading-[30px] text-[#2f2f2f] transition-colors duration-200 focus-within:border-[#BE7B71] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BE7B71]/20`}
+        className="w-full cursor-pointer flex items-center justify-between box-border rounded-[32px] border-2 sm:border border-[#BE7B71] bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 text-left font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] transition-colors duration-200 focus-within:border-[#A13924] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A13924]/20"
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        <span className="flex-1 min-w-0">{displayValue}</span>
+        <span className={`flex-1 min-w-0 ${value ? 'text-[#2f2f2f]' : 'text-[#464646]'}`}>
+          {displayValue}
+        </span>
+
         <svg
           className="w-5 h-5 shrink-0 text-primary"
           viewBox="0 0 24 24"
@@ -70,13 +74,15 @@ export default function CalculatorDatePicker({
           <line x1="3" y1="10" x2="21" y2="10" />
         </svg>
       </button>
+
       <DatePickerDropdown
         open={open}
         onOpenChange={setOpen}
-        onDateSelect={date => onChange(ddMmYyyyToIso(date))}
+        onDateSelect={(date) => onChange(ddMmYyyyToIso(date))}
         value={calendarValue || undefined}
         anchorId={id}
       />
+
       {error ? (
         <p className="mt-2 font-mukta text-[12px] text-red-600" role="alert">
           {error}

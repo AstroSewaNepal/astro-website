@@ -477,6 +477,7 @@ const PersonSection = ({
         value={birthTimeParts}
         onChange={onBirthTimeChange}
         disabled={unknownBirthTime}
+        error={unknownBirthTime ? undefined : errors.birthTime}
       />
 
       <SelectPill
@@ -784,9 +785,9 @@ const KundaliMatchingFormSection: React.FC = () => {
                 aria-hidden
                 className="md:hidden h-0 opacity-100 w-[calc(100%+32px)] -mx-4 mt-2"
                 style={{
-                  borderTop: '1.62px dashed var(--primary)',
+                  borderTop: '1.62px dashed hsl(359 84% 24%)',
                   borderImage:
-                    'repeating-linear-gradient(to right, var(--primary) 0 4.861026287078857px, transparent 4.861026287078857px 9.722052574157714px) 1',
+                    'repeating-linear-gradient(to right, hsl(359 84% 24%) 0 4.861026287078857px, transparent 4.861026287078857px 9.722052574157714px) 1',
                 }}
               />
 
@@ -850,8 +851,7 @@ const KundaliMatchingFormSection: React.FC = () => {
           </div>
         </form>
 
-        {/* Aside card */}
-        <aside className="w-full max-w-[520px] h-[392px] mx-auto lg:mx-0 lg:max-w-none lg:h-auto lg:col-span-4 rounded-[40px] md:rounded-[32px] border border-primary bg-primary text-secondary shadow-[0_12px_34px_rgba(97,21,8,0.22)] p-4 md:p-7 flex flex-col items-center justify-center gap-4 md:gap-6">
+        <aside className="w-full max-w-[398px] h-[392px] mx-auto lg:mx-0 lg:max-w-none lg:h-auto lg:col-span-4 rounded-[40px] md:rounded-[32px] border border-primary bg-primary text-secondary shadow-[0_12px_34px_rgba(97,21,8,0.22)] p-4 md:p-7 flex flex-col items-center justify-center gap-4 md:gap-6">
           <div
             className="relative p-2"
             style={{ width: '188.2345px', height: '220.7189px', opacity: 1 }}
