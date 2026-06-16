@@ -7,12 +7,12 @@ import { resolveVedastroProxyFetchUrl } from '@/lib/utils/url';
 import PanchangCircleImage from '@/components/images/panchang_circle.png';
 import ArrowLeft from '@/components/icons/arrow-left';
 import ArrowRight from '@/components/icons/arrow-right';
+import DatePickerDropdown from '@/components/pages/free-kundali/date-picker-dropdown';
 import PanchangTimingStrip, { type PanchangTimingEntry } from './panchang-timing-strip';
 import { moonRiseSetForPlace } from './panchang-moon-times';
 import {
   PANCHANG_DEFAULT_GEO,
   buildPanchangaTitleLine,
-  dateInputIsoValue,
   extractPanchangaResult,
   formatBriefFromStdTime,
   formatDdMmYyyy,
@@ -20,7 +20,6 @@ import {
   getCandidateBackendBases,
   nestedString,
   pakshaDisplay,
-  parseIsoToLocalCalendarDate,
   utcOffsetHmFromLocalDate,
   yogaName,
 } from './panchang-utils';
@@ -52,7 +51,7 @@ async function fetchPanchangaForDate(
       if (!response.ok || json.success === false) {
         attemptErrors.push(
           (typeof json.message === 'string' && json.message) ||
-            `Request failed (${response.status}).`,
+          `Request failed (${response.status}).`,
         );
         continue;
       }
@@ -93,10 +92,25 @@ function buildTimings(
   ];
 }
 
+function dateToPickerValue(d: Date): string {
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${dd}-${mm}-${yyyy}`;
+}
+
+function pickerValueToDate(v: string): Date | null {
+  const [dd, mm, yyyy] = v.split('-').map(Number);
+  if (!dd || !mm || !yyyy) return null;
+  return new Date(yyyy, mm - 1, dd);
+}
+
 const PanchangTodaySection: React.FC = () => {
   const [calendarDay, setCalendarDay] = useState(() => new Date());
   const [city, setCity] = useState<string>(PANCHANG_DEFAULT_GEO.label);
   const cityRef = useRef(city);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [isDatePickerOpenDesktop, setIsDatePickerOpenDesktop] = useState(false);
 
   useEffect(() => {
     cityRef.current = city;
@@ -138,8 +152,10 @@ const PanchangTodaySection: React.FC = () => {
     setCalendarDay(new Date());
   };
 
-  const onDateInputChange = (iso: string) => {
-    const parsed = parseIsoToLocalCalendarDate(iso);
+
+
+  const onDatePickerSelect = (ddmmyyyy: string) => {
+    const parsed = pickerValueToDate(ddmmyyyy);
     if (parsed) setCalendarDay(parsed);
   };
 
@@ -211,13 +227,24 @@ const PanchangTodaySection: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-2 mt-3">
-                <input
-                  type="date"
-                  value={dateInputIsoValue(calendarDay)}
-                  onChange={e => onDateInputChange(e.target.value)}
-                  className={`date-input ${roundedInputChrome} w-full`}
-                  aria-label="Select date"
-                />
+                <div className="relative w-full">
+                  <button
+                    id="panchang-date-btn-mobile"
+                    type="button"
+                    onClick={() => setIsDatePickerOpen(o => !o)}
+                    className={`${roundedInputChrome} w-full text-left cursor-pointer`}
+                    aria-label="Select date"
+                  >
+                    {formatDdMmYyyy(calendarDay)}
+                  </button>
+                  <DatePickerDropdown
+                    open={isDatePickerOpen}
+                    onOpenChange={setIsDatePickerOpen}
+                    onDateSelect={onDatePickerSelect}
+                    value={dateToPickerValue(calendarDay)}
+                    anchorId="panchang-date-btn-mobile"
+                  />
+                </div>
                 <input
                   type="text"
                   placeholder="City (label only)"
@@ -230,13 +257,24 @@ const PanchangTodaySection: React.FC = () => {
             </div>
 
             <div className="hidden md:flex items-center gap-3 flex-wrap">
-              <input
-                type="date"
-                value={dateInputIsoValue(calendarDay)}
-                onChange={e => onDateInputChange(e.target.value)}
-                className={`${dateChromeMd} font-mukta`}
-                aria-label="Select date"
-              />
+              <div className="relative">
+                <button
+                  id="panchang-date-btn-desktop"
+                  type="button"
+                  onClick={() => setIsDatePickerOpenDesktop(o => !o)}
+                  className={`${dateChromeMd} font-mukta cursor-pointer text-left items-center`}
+                  aria-label="Select date"
+                >
+                  {formatDdMmYyyy(calendarDay)}
+                </button>
+                <DatePickerDropdown
+                  open={isDatePickerOpenDesktop}
+                  onOpenChange={setIsDatePickerOpenDesktop}
+                  onDateSelect={onDatePickerSelect}
+                  value={dateToPickerValue(calendarDay)}
+                  anchorId="panchang-date-btn-desktop"
+                />
+              </div>
               <input
                 type="text"
                 placeholder="City (label only)"
@@ -287,11 +325,7 @@ const PanchangTodaySection: React.FC = () => {
                 <ArrowRight className="w-6 h-6" />
               </button>
             </div>
-            <p className="mt-1 md:mt-2 font-mukta text-[13px] leading-[18px] text-[#666]">
-              Positions use VedAstro at {PANCHANG_DEFAULT_GEO.lat}°N, {PANCHANG_DEFAULT_GEO.lon}°E (
-              {PANCHANG_DEFAULT_GEO.label}). City updates the place name only; coordinates stay
-              fixed.
-            </p>
+
           </div>
 
           <div>
