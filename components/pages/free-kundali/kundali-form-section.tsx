@@ -307,9 +307,9 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
             {/* Right Card - Mobile Only */}
             <div
               className={clsx(
-                'w-full max-w-[398px] h-[392px] box-border rounded-[40px] border border-primary bg-primary text-[#f7e9dd] p-4',
+                'w-[calc(100%+2rem)] md:w-[calc(100%+4rem)] h-[392px] box-border rounded-[40px] border border-primary bg-primary text-[#f7e9dd] p-4',
                 'flex flex-col items-center justify-center text-center gap-4 shadow-[0_12px_34px_rgba(74,20,15,0.14)]',
-                'lg:hidden relative -top-2',
+                'lg:hidden mt-6',
               )}
             >
               <div className="relative w-full max-w-[220px] aspect-square rounded-[28px] p-5">
@@ -328,7 +328,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
             </div>
 
             {/* Mobile Title */}
-            <h2 className="md:hidden text-left w-full self-start font-sahitya text-primary text-[22px] sm:text-[28px] leading-[32px] font-bold mt-6 mb-4">
+            <h2 className="md:hidden text-left w-full self-start font-sahitya text-primary text-[22px] sm:text-[28px] leading-[32px] font-bold mt-10 mb-4">
               Fill up the Details Report
             </h2>
 
@@ -453,8 +453,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                       value={birthTimeParts}
                       onChange={setBirthTimeParts}
                       disabled={unknownBirthTime}
+                      error={unknownBirthTime ? undefined : fieldErrors.birthTime}
                     />
-                    <FieldError message={unknownBirthTime ? undefined : fieldErrors.birthTime} />
                   </div>
 
                   {/* Gender */}
