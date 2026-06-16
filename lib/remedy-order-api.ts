@@ -31,6 +31,7 @@ export interface AdminRemedyOrder {
   createdAt: string;
   userName: string;
   userEmail: string;
+  userPhone: string | null;
   astrologerName: string;
   astrologerEmail: string;
 }
