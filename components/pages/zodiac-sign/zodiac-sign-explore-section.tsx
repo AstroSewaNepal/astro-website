@@ -44,7 +44,7 @@ export function ZodiacSignExploreSection({
         return {
           key: sign,
           name: card.name,
-          image: card.imageColor ?? card.image,
+          image: card.image,
           imageLight: card.image,
           summary: card.detail || cardBaseText,
           stars: card.numberOfStars ?? 3,
@@ -142,7 +142,6 @@ export function ZodiacSignExploreSection({
               <ZodiacSignMiniCard
                 href={zodiacDetailHref(sign, contentLanguage, headerLanguage)}
                 image={card.image}
-                imageColor={card.imageColor}
                 name={card.name}
                 blurb={card.detail || cardBaseText}
                 readMoreLabel={readMoreLabel}

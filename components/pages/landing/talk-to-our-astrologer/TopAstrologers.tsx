@@ -96,6 +96,16 @@ const TopAstrologers: React.FC<TopAstrologersProps> = ({ onChat, onCall, onSched
 
   return (
     <div className="mt-8 sm:mt-10 md:mt-[50px]">
+      <style>{`
+        @media (max-width: 639px) {
+          .talk-to-our-astrologer-swiper .swiper-slide {
+            width: 297.087890625px !important;
+            height: 375px !important;
+            opacity: 1;
+            transform: rotate(0deg);
+          }
+        }
+      `}</style>
       {error ? (
         <p className="mb-4 text-center font-mukta text-sm text-red-600" role="alert">
           {error}
