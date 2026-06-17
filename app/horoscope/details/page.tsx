@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
+import DownloadApp from '@/components/pages/landing/download-app';
 import { HoroscopeHeroSignsSection } from '@/components/pages/horoscope';
 import { ZodiacSignExploreSection } from '@/components/pages/zodiac-sign/zodiac-sign-explore-section';
 import { ELanguage } from '@/components/enums/language.enum';
@@ -366,6 +367,7 @@ function HoroscopeDetailsContent() {
       </div>
 
       <Services />
+      <DownloadApp className="mx-auto mt-14 max-w-[1180px]" />
     </main>
   );
 }
