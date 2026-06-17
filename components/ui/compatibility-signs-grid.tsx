@@ -79,20 +79,33 @@ export function CompatibilitySignsGrid({
     containerRef.current.scrollTo({ left: slide.offsetLeft, behavior: 'smooth' });
   };
 
-  const renderSignImage = (colorSrc: SignImage, lightSrc: SignImage, alt: string) => (
-    <div className="relative h-[96px] w-[100px] sm:h-[96px] sm:w-[110px]">
-      <Image
-        src={colorSrc}
-        alt={alt}
-        className="h-full w-full object-contain opacity-100 transition-opacity duration-300 group-hover:opacity-0"
-      />
-      <Image
-        src={lightSrc}
-        alt={alt}
-        className="absolute inset-0 h-full w-full object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-      />
-    </div>
-  );
+  const renderSignImage = (colorSrc: SignImage, lightSrc: SignImage, alt: string, alwaysColor?: boolean) => {
+    if (alwaysColor) {
+      return (
+        <div className="relative h-[96px] w-[100px] sm:h-[96px] sm:w-[110px]">
+          <Image
+            src={colorSrc}
+            alt={alt}
+            className="h-full w-full object-contain opacity-100"
+          />
+        </div>
+      );
+    }
+    return (
+      <div className="relative h-[96px] w-[100px] sm:h-[96px] sm:w-[110px]">
+        <Image
+          src={lightSrc}
+          alt={alt}
+          className="h-full w-full object-contain opacity-100 transition-opacity duration-300 group-hover:opacity-0"
+        />
+        <Image
+          src={colorSrc}
+          alt={alt}
+          className="absolute inset-0 h-full w-full object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        />
+      </div>
+    );
+  };
 
   if (items.length === 0) {
     return null;
@@ -100,11 +113,11 @@ export function CompatibilitySignsGrid({
 
   return (
     <div className={className}>
-      <h3 className="font-mukta text-[18px] font-semibold text-[#6f2618]">{title}</h3>
+      <h3 className="font-mukta text-[18px] font-semibold text-[#6f2618] lg:font-sahitya lg:font-bold lg:text-[28px] lg:leading-[38px] lg:tracking-[0%]">{title}</h3>
       <div
         ref={containerRef}
         className={clsx(
-          'mt-3 flex snap-x snap-mandatory overflow-x-auto gap-3 px-2 pb-2 scrollbar-hide sm:grid sm:grid-cols-2 lg:grid-cols-4',
+          'mt-3 lg:mt-8 flex snap-x snap-mandatory overflow-x-auto gap-3 px-2 pb-2 scrollbar-hide sm:grid sm:grid-cols-2 lg:grid-cols-4',
           variant === 'figma' ? 'sm:gap-4' : 'sm:gap-3',
         )}
       >
@@ -116,16 +129,16 @@ export function CompatibilitySignsGrid({
               href={item.href}
               onClick={() => window.scrollTo(0, 0)}
               className={clsx(
-                'group transition-colors hover:border-[#f4a11a]/80 snap-start flex-shrink-0',
+                'group transition-colors snap-start flex-shrink-0',
                 variant === 'figma'
-                  ? 'flex min-h-[172px] min-w-[260px] items-center justify-center gap-4 rounded-[20px] border border-[#383838] p-4'
-                  : 'min-w-[220px] rounded-[10px] border border-[#d7c3b1] bg-[#fdf8f1] px-2 py-2',
+                  ? 'flex min-h-[172px] min-w-[260px] items-center justify-center gap-4 rounded-[20px] border border-[#383838] bg-[#FFFFFF99] hover:bg-[#F8F3DF] p-4'
+                  : 'min-w-[220px] rounded-[10px] border border-[#d7c3b1] bg-[#fdf8f1] hover:border-[#f4a11a]/80 px-2 py-2',
               )}
             >
               {variant === 'figma' ? (
                 <>
                   <div className="flex h-full w-[100px] flex-col items-center gap-4">
-                    {renderSignImage(currentSignImage, currentLight, currentSignLabel)}
+                    {renderSignImage(currentSignImage, currentLight, currentSignLabel, true)}
                     <span className="font-mukta text-[18px] font-normal leading-7 text-[#611508]">
                       {currentSignLabel}
                     </span>

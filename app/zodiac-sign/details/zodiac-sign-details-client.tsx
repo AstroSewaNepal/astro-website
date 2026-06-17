@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, type ReactNode } from 'react';
-import clsx from 'clsx';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -24,6 +24,8 @@ import { ENGLISH_ZODIAC_COLOR, ENGLISH_ZODIAC_LIGHT } from '@/lib/zodiac-sign/en
 import { NEPALI_ZODIAC_COLOR, NEPALI_ZODIAC_LIGHT } from '@/lib/zodiac-sign/nepali-zodiac';
 import { parseZodiacSignParam } from '@/lib/zodiac-sign/parse-sign-param';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
+import { ArrowRight } from 'lucide-react';
+import { HoroscopeHeroSignsSection } from '@/components/pages/horoscope/index';
 
 function capitalizeSign(slug: string): string {
   return slug.charAt(0).toUpperCase() + slug.slice(1);
@@ -152,7 +154,7 @@ export function ZodiacSignDetailsClient() {
   return (
     <main className="container mx-auto min-h-screen overflow-hidden">
       <div className="min-w-0 px-3 py-4 sm:px-4">
-        <section className="mx-auto mt-6 max-w-[1180px]">
+        <section className="mx-auto mt-6 min-w-0">
           <ZodiacSignStripNav
             activeSign={slug}
             language={contentLanguage}
@@ -163,9 +165,9 @@ export function ZodiacSignDetailsClient() {
             large
           />
 
-          <div className="mt-4 border-t border-[#e4d4c6] py-8">
-            <div className="grid gap-8 lg:grid-cols-[1fr_308px] lg:items-center lg:gap-8">
-              <div>
+          <div className="mt-8 lg:mt-10 border-t border-[#be7b71] pt-8">
+            <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start lg:gap-4 lg:opacity-100">
+              <div className="min-w-0 order-2 lg:order-none sm:mt-6">
                 <h1 className="font-sahitya text-[34px] font-bold leading-none text-[#611508] sm:text-[36px] sm:leading-[48px]">
                   {title}
                 </h1>
@@ -193,43 +195,45 @@ export function ZodiacSignDetailsClient() {
                     </p>
                   )}
                 </div>
-              </div>
 
-              <div className="hidden lg:flex flex-col items-center lg:items-end">
-                <div className="flex h-[260px] w-[260px] items-center justify-center rounded-full sm:h-[290px] sm:w-[290px] lg:h-[297px] lg:w-[308px]">
-                  <Image
-                    src={signColorMap[slug]}
-                    alt={displayName}
-                    className="h-[190px] w-[190px] object-contain sm:h-[220px] sm:w-[220px] lg:h-[297px] lg:w-[308px]"
-                  />
+                {/* Find Horoscope Link for Mobile */}
+                <div className="mt-6 flex lg:hidden items-center justify-center">
+                  <Link
+                    href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
+                    className="inline-flex w-full sm:w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
+                  >
+                    Find {displayName} horoscope
+                    <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
+                  </Link>
                 </div>
               </div>
-            </div>
 
-            <div className="mt-5 flex flex-wrap items-center gap-3 justify-center lg:justify-end">
-              <Link
-                href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
-                className="inline-flex items-center justify-center w-[185px] h-[40px] rounded-[32px] bg-[#611508] font-mukta text-[16px] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:w-auto sm:h-auto sm:px-4 sm:py-1.5 sm:text-[20px] sm:leading-8 lg:text-[22px] lg:leading-8"
-              >
-                Find {displayName} horoscope
-              </Link>
+              <div className="hidden lg:block order-1 shrink-0 lg:order-none lg:justify-self-end mb-6" style={{ width: '308.29px' }}>
+                <Image
+                  src={signColorMap[slug]}
+                  alt={displayName}
+                  className="mb-4 h-[297px] w-[308px] object-contain"
+                />
+                <Link
+                  href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
+                  className="inline-flex w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px] lg:-translate-x-10"
+                >
+                  Find {displayName} horoscope
+                  <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
+                </Link>
+              </div>
             </div>
           </div>
 
           {!loading && !loadError && (summaryTraits.length > 0 || detailTraits.length > 0) ? (
-            <section className="mt-8 border-t border-[#e4d4c6] py-8">
-              <div className="grid gap-8 md:grid-cols-3 md:gap-10 lg:w-[659px] lg:gap-0 lg:justify-between">
+            <section className="mt-8 border-t border-[#be7b71] py-8">
+              <div className="flex flex-wrap gap-8 md:gap-12 lg:gap-16">
                 {summaryTraits.map(item => (
                   <div key={item.label}>
                     <h3 className="font-sahitya text-[22px] font-bold leading-8 text-[#611508]">
                       {item.label}
                     </h3>
-                    <p
-                      className={clsx(
-                        'mt-2 border-l-[3px] border-[#be7b71] pl-4 font-mukta text-[18px] font-normal leading-7 text-[#383838]',
-                        item.label === 'Compatibility' && 'whitespace-nowrap overflow-x-auto',
-                      )}
-                    >
+                    <p className="mt-2 border-l-[3px] border-[#be7b71] pl-4 font-mukta text-[18px] font-normal leading-7 text-[#383838]">
                       {item.value}
                     </p>
                   </div>
@@ -249,6 +253,8 @@ export function ZodiacSignDetailsClient() {
                 ))}
               </div>
 
+              <hr className="mt-10 border-t border-[#be7b71]" />
+
               <CompatibilitySignsGrid
                 className="mt-10"
                 title={
@@ -264,21 +270,36 @@ export function ZodiacSignDetailsClient() {
           ) : null}
         </section>
 
-        <section className="mx-auto mt-10 max-w-[1180px]">
-          <ZodiacSignExploreSection
-            contentLanguage={contentLanguage}
-            headerLanguage={headerLanguage}
-            signSlug={slug}
-            isNepali={isNepali}
-            onContentLanguageChange={handleContentLanguageChange}
-          />
-        </section>
+        <div className="mt-10 min-w-0">
+          <div className="hidden md:block">
+            <h3 className="font-mukta text-center text-[18px] font-semibold text-[#6f2618] md:font-sahitya md:font-bold md:text-[36px] md:leading-[48px] md:tracking-[0%] md:text-center">
+              {isNepali ? 'अन्य राशिहरू अन्वेषण गर्नुहोस्' : 'Explore Other Zodiac Signs'}
+            </h3>
+            <HoroscopeHeroSignsSection
+              hideTitle
+              highlightSign={slug}
+              sectionClassName="mt-4 min-w-0 max-w-full bg-transparent py-0"
+              swiperKeySuffix="zodiac-details-read-other"
+              dataQaId="zodiac-details-other-signs-grid"
+            />
+          </div>
+          <div className="md:hidden">
+            <ZodiacSignExploreSection
+              title={isNepali ? 'अन्य राशिहरू अन्वेषण गर्नुहोस्' : 'Explore Other Zodiac Signs'}
+              contentLanguage={contentLanguage}
+              headerLanguage={headerLanguage}
+              signSlug={slug}
+              isNepali={isNepali}
+              onContentLanguageChange={handleContentLanguageChange}
+            />
+          </div>
+        </div>
 
-        <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px]" />
-
-        <div className="mx-auto mt-10 max-w-[1180px]">
+        <div className="mt-16 md:mt-24 lg:mt-32 w-full">
           <Clarity />
         </div>
+
+        <TalkToOurAstrologer className="mt-10 min-w-0" />
       </div>
 
       <Services />
