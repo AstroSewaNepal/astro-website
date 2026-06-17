@@ -240,7 +240,7 @@ function HoroscopeDetailsContent() {
               <div className="mt-8 h-40 animate-pulse rounded-xl bg-[#efe1d3]/60" />
             ) : detail ? (
               <>
-                <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[1fr_220px] lg:items-start lg:gap-4 lg:max-w-[1016px] lg:h-[272px] lg:opacity-100">
+                <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start lg:gap-4 lg:h-[272px] lg:opacity-100">
                   <div className="min-w-0 order-2 lg:order-none sm:mt-6">
                     <h2 className="font-sahitya font-bold text-[24px] leading-[32px] tracking-[0%] text-primary whitespace-nowrap sm:text-[28px] sm:leading-[38px]">
                       {capitalizeSign(validSign)}{' '}
@@ -274,21 +274,21 @@ function HoroscopeDetailsContent() {
                     </p>
                   </div>
                   <div
-                    className="hidden md:block order-1 mx-auto shrink-0 lg:order-none lg:mx-0 lg:justify-self-end lg:translate-x-40 mb-6"
+                    className="hidden md:block order-1 shrink-0 lg:order-none lg:justify-self-end mb-6"
                     style={{ width: '308.29px', height: '297.18px', opacity: 1 }}
                   >
                     <Image
                       src={SIGN_COLOR_IMAGE[validSign]}
                       alt={capitalizeSign(validSign)}
-                      className="h-full w-full object-contain"
+                      className="mb-4 h-full w-full object-contain"
                       sizes="(max-width: 1024px) 160px, 170px"
                       priority={false}
                     />
                     <Link
                       href={zodiacDetailHref(validSign, uiLanguage, uiLanguage)}
-                      className="inline-flex h-[44px] max-w-full items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
+                      className="inline-flex w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px] lg:-translate-x-10"
                     >
-                      {capitalizeSign(validSign)} Horoscope Insights
+                     Know More About  {capitalizeSign(validSign)} Zodiac
                       <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
                     </Link>
                   </div>
