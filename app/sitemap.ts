@@ -90,22 +90,38 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let blogEntries: MetadataRoute.Sitemap = [];
+  let pujaBidhiEntries: MetadataRoute.Sitemap = [];
 
   try {
-    const posts = await ghostClient.posts.browse({
-      limit: 'all',
-      fields: ['slug', 'updated_at'],
-    });
+    const [allPosts, pujaPosts] = await Promise.all([
+      ghostClient.posts.browse({ limit: 'all', fields: ['slug', 'updated_at'] }),
+      ghostClient.posts.browse({
+        filter: 'tag:puja-bidhi',
+        limit: 'all',
+        fields: ['slug', 'updated_at'],
+      }),
+    ]);
 
-    blogEntries = posts.map(post => ({
-      url: `${BASE_URL}/blogs/${post.slug}`,
+    const pujaSlugSet = new Set(pujaPosts.map(p => p.slug));
+
+    blogEntries = allPosts
+      .filter(post => !pujaSlugSet.has(post.slug))
+      .map(post => ({
+        url: `${BASE_URL}/blogs/${post.slug}`,
+        lastModified: post.updated_at ? new Date(post.updated_at) : new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }));
+
+    pujaBidhiEntries = pujaPosts.map(post => ({
+      url: `${BASE_URL}/puja-bidhi/${post.slug}`,
       lastModified: post.updated_at ? new Date(post.updated_at) : new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: 'weekly' as const,
       priority: 0.7,
     }));
   } catch (error) {
     console.error('Sitemap: failed to fetch Ghost posts', error);
   }
 
-  return [...STATIC_PAGES, ...blogEntries];
+  return [...STATIC_PAGES, ...blogEntries, ...pujaBidhiEntries];
 }
