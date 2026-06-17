@@ -53,7 +53,10 @@ async function getPujaBidhiPosts() {
 
   const viewCounts = await fetchBlogViewCounts(posts.map(post => post.slug ?? '').filter(Boolean));
 
-  return posts.map(post => ({ ...mapGhostBlogPost(post, viewCounts), link: `/puja-bidhi/${post.slug ?? ''}` }));
+  return posts.map(post => ({
+    ...mapGhostBlogPost(post, viewCounts),
+    link: `/puja-bidhi/${post.slug ?? ''}`,
+  }));
 }
 
 const PujaBidhiPage = async () => {

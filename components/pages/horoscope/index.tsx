@@ -102,7 +102,10 @@ export function HoroscopeHeroSignsSection({
       setListLoading(true);
       setListError(null);
       setRows(null);
-      fetchVedastroHoroscopeList({ type: selectedRange })
+      fetchVedastroHoroscopeList(
+        { type: selectedRange },
+        { headers: { 'Accept-Language': uiLanguage === ELanguage.NEPALI ? 'ne' : 'en' } },
+      )
         .then(envelope => {
           if (cancelled) {
             return;
@@ -124,7 +127,7 @@ export function HoroscopeHeroSignsSection({
     return () => {
       cancelled = true;
     };
-  }, [selectedRange]);
+  }, [selectedRange, uiLanguage]);
 
   const cards = useMemo((): DisplayCard[] | 'loading' => {
     const staticFallback = HOROSCOPE_DATA[signLanguage];

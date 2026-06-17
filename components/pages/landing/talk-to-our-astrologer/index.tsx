@@ -53,25 +53,25 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
           >
             {title}
           </h2>
-        <p
-          className="astrologer-subtitle-description max-w-[810px] px-1 text-center font-mukta text-black/75"
-          style={{
-            fontFamily: 'Mukta',
-            fontWeight: 400,
-            fontStyle: 'normal',
-            fontSize: '14px',
-            lineHeight: '150%',
-            letterSpacing: '2%',
-            textAlign: 'center',
-            textTransform: 'capitalize',
-          }}
-        >
-          {description}
-        </p>
-      </div>
+          <p
+            className="astrologer-subtitle-description max-w-[810px] px-1 text-center font-mukta text-black/75"
+            style={{
+              fontFamily: 'Mukta',
+              fontWeight: 400,
+              fontStyle: 'normal',
+              fontSize: '14px',
+              lineHeight: '150%',
+              letterSpacing: '2%',
+              textAlign: 'center',
+              textTransform: 'capitalize',
+            }}
+          >
+            {description}
+          </p>
+        </div>
 
-      <TopAstrologers onChat={onChat} onCall={onCall} onSchedule={onSchedule} />
-    </section>
+        <TopAstrologers onChat={onChat} onCall={onCall} onSchedule={onSchedule} />
+      </section>
     </>
   );
 };
