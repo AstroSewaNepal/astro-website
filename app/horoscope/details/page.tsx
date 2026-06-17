@@ -7,7 +7,10 @@ import { useSearchParams } from 'next/navigation';
 
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
+import DownloadApp from '@/components/pages/landing/download-app';
 import { HoroscopeHeroSignsSection } from '@/components/pages/horoscope';
+import { ZodiacSignExploreSection } from '@/components/pages/zodiac-sign/zodiac-sign-explore-section';
+import { ELanguage } from '@/components/enums/language.enum';
 import {
   HoroscopeDetailsRangeTabs,
   HoroscopeDetailsSectionPills,
@@ -181,57 +184,64 @@ function HoroscopeDetailsContent() {
           </section>
         ) : (
           <section className="mt-2 min-w-0 py-2 sm:py-3">
-            <h1 className="font-sahitya font-bold tracking-[0px] text-[#6f2618] text-[28px] leading-[34px] sm:text-[38px] sm:leading-[42px] md:text-[48px] md:leading-[48px]">
-              {dict.details.rangeHeading[rangeType]}
-            </h1>
-            {detail?.horoscope?.start_date ? (
-              <h2 className="mt-2 font-sahitya text-[22px] font-bold leading-[30px] text-[#D47F2C] sm:text-[26px] sm:leading-[34px]">
-                {['today', 'tomorrow', 'yesterday'].includes(detail.horoscope.type?.toLowerCase())
-                  ? new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })
-                  : `${new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })} - ${new Date(detail.horoscope.end_date).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}`}
-              </h2>
-            ) : (
-              <p className="mt-2 font-mukta font-medium text-[24px] leading-[30px] tracking-[0px] text-[#D47F2C]">
-                {dict.details.rangeSub[rangeType]}
-              </p>
-            )}
+            <div className="flex flex-col">
+              <div className="order-1 md:order-3">
+                <HoroscopeDetailsRangeTabs
+                  validSign={validSign}
+                  rangeType={rangeType}
+                  uiLanguage={uiLanguage}
+                  rangeTabs={rangeTabs}
+                />
+              </div>
 
-            {error ? (
-              <p className="mt-6 font-mukta text-[14px] text-[#a94442]" role="alert">
-                {error}
-              </p>
-            ) : null}
+              <div className="order-2 md:order-1">
+                <h1 className="font-sahitya font-bold tracking-[0px] text-[#6f2618] text-[28px] leading-[34px] sm:text-[38px] sm:leading-[42px] md:text-[48px] md:leading-[48px]">
+                  {dict.details.rangeHeading[rangeType]}
+                </h1>
+                {detail?.horoscope?.start_date ? (
+                  <h2 className="mt-2 font-sahitya text-[22px] font-bold leading-[30px] text-[#D47F2C] sm:text-[26px] sm:leading-[34px]">
+                    {['today', 'tomorrow', 'yesterday'].includes(detail.horoscope.type?.toLowerCase())
+                      ? new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })
+                      : `${new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })} - ${new Date(detail.horoscope.end_date).toLocaleDateString('en-US', {
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}`}
+                  </h2>
+                ) : (
+                  <p className="mt-2 font-mukta font-medium text-[24px] leading-[30px] tracking-[0px] text-[#D47F2C]">
+                    {dict.details.rangeSub[rangeType]}
+                  </p>
+                )}
+                {error ? (
+                  <p className="mt-6 font-mukta text-[14px] text-[#a94442]" role="alert">
+                    {error}
+                  </p>
+                ) : null}
+              </div>
 
-            <HoroscopeDetailsZodiacNav
-              validSign={validSign}
-              rangeType={rangeType}
-              uiLanguage={uiLanguage}
-            />
-
-            <HoroscopeDetailsRangeTabs
-              validSign={validSign}
-              rangeType={rangeType}
-              uiLanguage={uiLanguage}
-              rangeTabs={rangeTabs}
-            />
+              <div className="order-3 md:order-2">
+                <HoroscopeDetailsZodiacNav
+                  validSign={validSign}
+                  rangeType={rangeType}
+                  uiLanguage={uiLanguage}
+                />
+              </div>
+            </div>
 
             {loading ? (
               <div className="mt-8 h-40 animate-pulse rounded-xl bg-[#efe1d3]/60" />
             ) : detail ? (
               <>
-                <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[1fr_220px] lg:items-start lg:gap-4 lg:max-w-[1016px] lg:h-[272px] lg:opacity-100">
+                <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start lg:gap-4 lg:h-[272px] lg:opacity-100">
                   <div className="min-w-0 order-2 lg:order-none sm:mt-6">
                     <h2 className="font-sahitya font-bold text-[24px] leading-[32px] tracking-[0%] text-primary whitespace-nowrap sm:text-[28px] sm:leading-[38px]">
                       {capitalizeSign(validSign)}{' '}
@@ -265,21 +275,21 @@ function HoroscopeDetailsContent() {
                     </p>
                   </div>
                   <div
-                    className="order-1 mx-auto shrink-0 lg:order-none lg:mx-0 lg:justify-self-end lg:translate-x-40 mb-6"
+                    className="hidden md:block order-1 shrink-0 lg:order-none lg:justify-self-end mb-6"
                     style={{ width: '308.29px', height: '297.18px', opacity: 1 }}
                   >
                     <Image
                       src={SIGN_COLOR_IMAGE[validSign]}
                       alt={capitalizeSign(validSign)}
-                      className="h-full w-full object-contain"
+                      className="mb-4 h-full w-full object-contain"
                       sizes="(max-width: 1024px) 160px, 170px"
                       priority={false}
                     />
                     <Link
                       href={zodiacDetailHref(validSign, uiLanguage, uiLanguage)}
-                      className="inline-flex h-[44px] max-w-full items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
+                      className="inline-flex w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px] lg:-translate-x-10"
                     >
-                      {capitalizeSign(validSign)} Horoscope Insights
+                     Know More About  {capitalizeSign(validSign)} Zodiac
                       <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
                     </Link>
                   </div>
@@ -303,11 +313,12 @@ function HoroscopeDetailsContent() {
                   </p>
                 </div>
 
+                <h3 className="mt-6 font-mukta text-[17px] font-semibold text-[#6f2618] sm:text-[18px] text-center sm:text-left">
+                  {interpolate(dict.details.compatibility, { sign: capitalizeSign(validSign) })}
+                </h3>
                 <CompatibilitySignsGrid
-                  className="mt-8"
-                  title={interpolate(dict.details.compatibility, {
-                    sign: capitalizeSign(validSign),
-                  })}
+                  className="mt-6"
+                  title={''}
                   currentSignLabel={capitalizeSign(validSign)}
                   currentSignImage={SIGN_COLOR_IMAGE[validSign]}
                   currentSignImageLight={SIGN_LIGHT_IMAGE[validSign]}
@@ -320,16 +331,32 @@ function HoroscopeDetailsContent() {
                 />
 
                 <div className="mt-9 min-w-0">
-                  <h3 className="font-mukta text-center text-[18px] font-semibold text-[#6f2618] md:text-left">
-                    {dict.details.readOtherSigns}
-                  </h3>
-                  <HoroscopeHeroSignsSection
-                    hideTitle
-                    highlightSign={validSign}
-                    sectionClassName="mt-4 min-w-0 max-w-full bg-transparent py-0"
-                    swiperKeySuffix="details-read-other"
-                    dataQaId="horoscope-details-other-signs-grid"
-                  />
+                  <h3 className="hidden md:block font-mukta text-center text-[18px] font-semibold text-[#6f2618] md:text-left">
+                      {dict.details.readOtherSigns}
+                    </h3>
+                  <div className="hidden md:block">
+                    <HoroscopeHeroSignsSection
+                      hideTitle
+                      highlightSign={validSign}
+                      sectionClassName="mt-4 min-w-0 max-w-full bg-transparent py-0"
+                      swiperKeySuffix="details-read-other"
+                      dataQaId="horoscope-details-other-signs-grid"
+                    />
+                  </div>
+                  <div className="md:hidden">
+                    <h2 className="px-1 text-center font-sahitya text-[20px] font-bold leading-[28px] text-[#6b2417] text-balance sm:text-left sm:text-[24px] sm:leading-[34px] lg:text-[28px]">
+                      {dict.details.readOtherSigns}
+                    </h2>
+                    <ZodiacSignExploreSection
+                      title={''}
+                      className="mt-4"
+                      contentLanguage={uiLanguage as ELanguage}
+                      headerLanguage={uiLanguage as ELanguage}
+                      signSlug={(validSign ?? HOROSCOPE_SIGNS[0]) as HoroscopeSign}
+                      isNepali={uiLanguage === ELanguage.NEPALI}
+                      onContentLanguageChange={() => {}}
+                    />
+                  </div>
                 </div>
               </>
             ) : null}
@@ -340,6 +367,7 @@ function HoroscopeDetailsContent() {
       </div>
 
       <Services />
+      <DownloadApp className="mx-auto mt-14 max-w-[1180px]" />
     </main>
   );
 }

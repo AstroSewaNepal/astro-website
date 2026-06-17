@@ -4,17 +4,16 @@ import { useMemo, type ReactNode } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { ZodiacSignMiniCard } from '@/components/pages/zodiac-sign/zodiac-sign-mini-card';
 import { ZodiacSignStripNav } from '@/components/pages/zodiac-sign/zodiac-sign-strip-nav';
+import { ZodiacSignExploreSection } from '@/components/pages/zodiac-sign/zodiac-sign-explore-section';
 import { useZodiacSignDetails } from '@/components/pages/zodiac-sign/use-zodiac-sign-details';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Clarity from '@/components/pages/landing/clarity';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 import { CompatibilitySignsGrid } from '@/components/ui/compatibility-signs-grid';
-import ArrowRight from '@/components/icons/arrow-right';
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
 import { horoscopeDetailPageHref } from '@/lib/constants/horoscope-range-nav';
@@ -25,8 +24,6 @@ import { ENGLISH_ZODIAC_COLOR, ENGLISH_ZODIAC_LIGHT } from '@/lib/zodiac-sign/en
 import { NEPALI_ZODIAC_COLOR, NEPALI_ZODIAC_LIGHT } from '@/lib/zodiac-sign/nepali-zodiac';
 import { parseZodiacSignParam } from '@/lib/zodiac-sign/parse-sign-param';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
-
-const cardBaseText = 'Your spark can move mountains, start bold today';
 
 function capitalizeSign(slug: string): string {
   return slug.charAt(0).toUpperCase() + slug.slice(1);
@@ -85,8 +82,16 @@ export function ZodiacSignDetailsClient() {
     () => parseUiLangParam(searchParams.get('lang')) ?? ELanguage.ENGLISH,
     [searchParams],
   );
+  const router = useRouter();
+  const pathname = usePathname();
   const { row, loadError, loading } = useZodiacSignDetails(slug);
   const isNepali = contentLanguage === ELanguage.NEPALI;
+
+  const handleContentLanguageChange = (lang: ELanguage) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('content_lang', lang);
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   const signIndex = HOROSCOPE_SIGNS.indexOf(slug);
   const displayName = HOROSCOPE_DATA[contentLanguage][signIndex]?.name ?? capitalizeSign(slug);
@@ -190,7 +195,7 @@ export function ZodiacSignDetailsClient() {
                 </div>
               </div>
 
-              <div className="flex flex-col items-center lg:items-end">
+              <div className="hidden lg:flex flex-col items-center lg:items-end">
                 <div className="flex h-[260px] w-[260px] items-center justify-center rounded-full sm:h-[290px] sm:w-[290px] lg:h-[297px] lg:w-[308px]">
                   <Image
                     src={signColorMap[slug]}
@@ -198,16 +203,16 @@ export function ZodiacSignDetailsClient() {
                     className="h-[190px] w-[190px] object-contain sm:h-[220px] sm:w-[220px] lg:h-[297px] lg:w-[308px]"
                   />
                 </div>
-                <div className="mt-5 flex flex-wrap items-center gap-3">
-                  <Link
-                    href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
-                    className="inline-flex items-center gap-2 rounded-[32px] bg-[#611508] px-4 py-1.5 font-mukta text-[16px] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[20px] sm:leading-8 lg:text-[22px] lg:leading-8"
-                  >
-                    Find {displayName} horoscope
-                    <ArrowRight className="h-6 w-6 text-[#f8f3df]" />
-                  </Link>
-                </div>
               </div>
+            </div>
+
+            <div className="mt-5 flex flex-wrap items-center gap-3 justify-center lg:justify-end">
+              <Link
+                href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
+                className="inline-flex items-center justify-center w-[185px] h-[40px] rounded-[32px] bg-[#611508] font-mukta text-[16px] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:w-auto sm:h-auto sm:px-4 sm:py-1.5 sm:text-[20px] sm:leading-8 lg:text-[22px] lg:leading-8"
+              >
+                Find {displayName} horoscope
+              </Link>
             </div>
           </div>
 
@@ -260,27 +265,13 @@ export function ZodiacSignDetailsClient() {
         </section>
 
         <section className="mx-auto mt-10 max-w-[1180px]">
-          <h2 className="font-sahitya text-[24px] font-bold text-[#6b2417] sm:text-[28px]">
-            Read Horoscope by Zodiac Sign
-          </h2>
-
-          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {HOROSCOPE_SIGNS.map((s, i) => {
-              const card = HOROSCOPE_DATA[contentLanguage][i]!;
-              return (
-                <ZodiacSignMiniCard
-                  key={s}
-                  href={zodiacDetailHref(s, contentLanguage, headerLanguage)}
-                  image={card.image}
-                  imageColor={card.imageColor}
-                  name={card.name}
-                  blurb={card.detail || cardBaseText}
-                  readMoreLabel={isNepali ? 'थप पढ्नुहोस्' : 'Read More'}
-                  active={s === slug}
-                />
-              );
-            })}
-          </div>
+          <ZodiacSignExploreSection
+            contentLanguage={contentLanguage}
+            headerLanguage={headerLanguage}
+            signSlug={slug}
+            isNepali={isNepali}
+            onContentLanguageChange={handleContentLanguageChange}
+          />
         </section>
 
         <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px]" />

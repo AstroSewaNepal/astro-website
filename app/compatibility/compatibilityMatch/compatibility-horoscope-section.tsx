@@ -25,7 +25,7 @@ interface CompatibilityHoroscopeSectionProps {
 
 type HoroscopeCardLayout = 'grid' | 'carousel';
 
-function CompatibilityHoroscopeCardLink({
+export function CompatibilityHoroscopeCardLink({
   card,
   uiLanguage,
   readMoreLabel,
@@ -188,7 +188,7 @@ export function CompatibilityHoroscopeSection({
   }`;
 
   return (
-    <div className="w-full min-w-0 max-w-full overflow-x-clip">
+    <div className="w-full min-w-0 max-w-full overflow-visible">
       <div className="flex flex-col gap-2 sm:gap-8">
         {title ? (
           <h2 className="px-1 text-center font-sahitya text-[20px] font-bold leading-[28px] text-primary text-balance sm:text-left sm:text-[26px] sm:leading-[34px] md:text-[28px] md:leading-[38px]">
@@ -237,8 +237,7 @@ export function CompatibilityHoroscopeSection({
           dataQaId="compatibility-horoscope-sign-cards-grid"
           compact
           useSmUpGrid
-          alignStart
-          showCarouselNav={false}
+          showCarouselNav
           showCustomPagination
           className="lg:grid-cols-3"
           renderCard={(card, layout) => (
