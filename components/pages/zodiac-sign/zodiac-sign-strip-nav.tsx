@@ -34,94 +34,174 @@ export function ZodiacSignStripNav({
   showActiveDot = false,
   className,
 }: Props) {
+  const rootClassName = clsx('min-w-0', compact ? 'mt-4' : 'mt-6', className);
+  const itemGapClass = compact ? 'gap-[8px]' : 'gap-[10px]';
+  const cardSizeClass = large ? 'h-[108px] w-[110px]' : 'h-[98.305px] w-[100px]';
+  const imageSizeClass = large
+    ? 'h-[86px] w-[86px] sm:h-[96px] sm:w-[96px]'
+    : 'h-[72px] w-[72px] sm:h-[80px] sm:w-[80px]';
+  const activeLabelSizeClass = large ? 'text-[22px]' : 'text-[20px]';
+  const inactiveLabelSizeClass = large ? 'sm:text-[13px]' : 'sm:text-[12px]';
+
   return (
-    <div
-      className={clsx(
-        'flex gap-3 overflow-x-auto pb-3 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden',
-        className,
-      )}
-    >
-      {HOROSCOPE_SIGNS.map((sign, i) => {
-        const label = HOROSCOPE_DATA[language][i]!.name;
-        const active = sign === activeSign;
-        return (
-          <Link
-            key={sign}
-            href={hrefForSign(sign)}
-            className={clsx(
-              'group flex flex-col items-center gap-1 rounded-lg outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#f4a11a]/80',
-              compact
-                ? 'min-w-[56px]'
-                : large
-                  ? 'min-w-[84px] sm:min-w-[92px] lg:min-w-[100px]'
-                  : 'min-w-[62px]',
-            )}
-          >
-            <div
-              className={clsx(
-                'flex items-center justify-center rounded-full border transition-[border-color,box-shadow,background-color] duration-200',
-                compact
-                  ? 'h-[48px] w-[48px] p-1'
-                  : large
-                    ? 'h-[72px] w-[72px] p-1.5 sm:h-[80px] sm:w-[80px] lg:h-[88px] lg:w-[88px]'
-                    : 'h-[64px] w-[64px] p-1.5 sm:h-[72px] sm:w-[72px]',
-                active
-                  ? 'border-[#c9a063] bg-[#faf6f0] ring-2 ring-[#e8c47a]/35'
-                  : 'border-[#d5d3d0] bg-[#f2f0ee] group-hover:border-[#c9a88a] group-hover:bg-[#faf8f6] group-hover:shadow-sm',
-              )}
-            >
-              {lightImageBySign ? (
-                <div className="relative h-full w-full">
-                  <Image
-                    src={lightImageBySign[sign]}
-                    alt={label}
-                    className={clsx(
-                      'absolute inset-0 h-full w-full object-contain transition-opacity duration-200',
-                      active ? 'opacity-0' : 'opacity-100 group-hover:opacity-0',
+    <div className={rootClassName}>
+      <div className="horoscope-details-zodiac-mob -mx-1 min-w-0 overflow-x-auto md:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className={clsx('flex px-1 py-2', itemGapClass)}>
+          {HOROSCOPE_SIGNS.map((sign, i) => {
+            const label = HOROSCOPE_DATA[language][i]!.name;
+            const active = sign === activeSign;
+            return (
+              <Link
+                key={sign}
+                href={hrefForSign(sign)}
+                className={clsx(
+                  'group flex w-[100px] shrink-0 flex-col items-center gap-[10px] rounded-[60px] outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F8F3DF]',
+                )}
+              >
+                <div
+                  className={clsx(
+                    'flex items-center justify-center rounded-[60px] border-[3px] border-solid p-[4px] opacity-100 transition-[border-color,box-shadow,background-color,transform] duration-200 transform rotate-0',
+                    cardSizeClass,
+                    active
+                      ? 'border-[#611508] bg-[#faf6f0]'
+                      : 'border-[#d5d3d0] bg-[#f2f0ee] group-hover:border-[#611508] group-hover:bg-[#faf2f2] group-hover:shadow-sm',
+                  )}
+                >
+                  <div className={clsx('relative', imageSizeClass)}>
+                    {lightImageBySign ? (
+                      <>
+                        <Image
+                          src={lightImageBySign[sign]}
+                          alt={label}
+                          fill
+                          className={clsx(
+                            'object-contain transition-opacity duration-200',
+                            active ? 'opacity-0' : 'opacity-100 group-hover:opacity-0',
+                          )}
+                        />
+                        <Image
+                          src={imageBySign[sign]}
+                          alt={label}
+                          fill
+                          className={clsx(
+                            'object-contain transition-opacity duration-200',
+                            active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+                          )}
+                        />
+                      </>
+                    ) : (
+                      <Image
+                        src={imageBySign[sign]}
+                        alt={label}
+                        fill
+                        className="object-contain"
+                      />
                     )}
-                  />
-                  <Image
-                    src={imageBySign[sign]}
-                    alt={label}
-                    className={clsx(
-                      'absolute inset-0 h-full w-full object-contain transition-opacity duration-200',
-                      active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
-                    )}
-                  />
+                  </div>
                 </div>
-              ) : (
-                <Image
-                  src={imageBySign[sign]}
-                  alt={label}
-                  className="h-full w-full object-contain"
-                />
-              )}
-            </div>
-            <span
+                <span
+                  className={clsx(
+                    'text-center transition-colors duration-200',
+                    active
+                      ? `font-mukta font-medium ${activeLabelSizeClass} leading-[100%] tracking-[0%] text-[#611508]`
+                      : `font-tiro-devanagari text-[11px] font-normal leading-tight text-[#9a6b5c] group-hover:text-[#691709] ${inactiveLabelSizeClass}`,
+                  )}
+                >
+                  {label}
+                </span>
+                {showActiveDot ? (
+                  <span
+                    className={clsx(
+                      'h-[8px] w-[8px] rounded-full bg-[#611508] transition-opacity duration-200',
+                      active ? 'opacity-100' : 'opacity-0',
+                    )}
+                    aria-hidden
+                  />
+                ) : null}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className={clsx('hidden md:grid md:grid-cols-6 lg:grid-cols-12', compact ? 'gap-[8px]' : 'gap-[10px]')}>
+        {HOROSCOPE_SIGNS.map((sign, i) => {
+          const label = HOROSCOPE_DATA[language][i]!.name;
+          const active = sign === activeSign;
+          return (
+            <Link
+              key={sign}
+              href={hrefForSign(sign)}
               className={clsx(
-                'text-center font-tiro-devanagari font-normal leading-tight transition-colors duration-200',
-                active ? 'text-[#611508]' : 'text-[#9a6b5c] group-hover:text-[#691709]',
-                compact
-                  ? 'max-w-[56px] truncate text-[10px]'
-                  : large
-                    ? 'text-[13px] sm:text-[14px]'
-                    : 'text-[11px] sm:text-[12px]',
+                'group flex shrink-0 flex-col items-center rounded-[60px] outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F8F3DF]',
+                compact ? 'gap-[8px]' : 'gap-[10px]',
+                large ? 'w-[110px]' : 'w-[100px]',
               )}
             >
-              {label}
-            </span>
-            {showActiveDot ? (
+              <div
+                className={clsx(
+                  'flex items-center justify-center rounded-[60px] border-[3px] border-solid p-[4px] opacity-100 transition-[border-color,box-shadow,background-color,transform] duration-200 transform rotate-0',
+                  cardSizeClass,
+                  active
+                    ? 'border-[#611508] bg-[#faf6f0]'
+                    : 'border-[#d5d3d0] bg-[#f2f0ee] group-hover:border-[#611508] group-hover:bg-[#faf2f2] group-hover:shadow-sm',
+                )}
+              >
+                <div className={clsx('relative', imageSizeClass)}>
+                  {lightImageBySign ? (
+                    <>
+                      <Image
+                        src={lightImageBySign[sign]}
+                        alt={label}
+                        fill
+                        className={clsx(
+                          'object-contain transition-opacity duration-200',
+                          active ? 'opacity-0' : 'opacity-100 group-hover:opacity-0',
+                        )}
+                      />
+                      <Image
+                        src={imageBySign[sign]}
+                        alt={label}
+                        fill
+                        className={clsx(
+                          'object-contain transition-opacity duration-200',
+                          active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+                        )}
+                      />
+                    </>
+                  ) : (
+                    <Image
+                      src={imageBySign[sign]}
+                      alt={label}
+                      fill
+                      className="object-contain"
+                    />
+                  )}
+                </div>
+              </div>
               <span
                 className={clsx(
-                  'h-[7px] w-[7px] rounded-full bg-[#f4a11a] transition-opacity duration-200',
-                  active ? 'opacity-100' : 'opacity-0',
+                  'text-center transition-colors duration-200',
+                  active
+                    ? `font-mukta font-medium ${activeLabelSizeClass} leading-[100%] tracking-[0%] text-[#611508]`
+                    : `font-tiro-devanagari text-[11px] font-normal leading-tight text-[#9a6b5c] group-hover:text-[#691709] ${inactiveLabelSizeClass}`,
                 )}
-                aria-hidden
-              />
-            ) : null}
-          </Link>
-        );
-      })}
+              >
+                {label}
+              </span>
+              {showActiveDot ? (
+                <span
+                  className={clsx(
+                    'h-[8px] w-[8px] rounded-full bg-[#611508] transition-opacity duration-200',
+                    active ? 'opacity-100' : 'opacity-0',
+                  )}
+                  aria-hidden
+                />
+              ) : null}
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }
