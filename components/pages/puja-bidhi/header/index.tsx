@@ -1,9 +1,14 @@
 import React from 'react';
 
-import { PUJA_BIDHI_CONST } from './puja-bidhi.const';
 import BlogComponents from '@/components/common/blog-components';
+import { BlogPlaceholderImage } from '@/components/images';
+import type { MappedBlogPost } from '@/lib/map-ghost-blog-post';
 
-const PujaBidhiHeader: React.FC = () => {
+type PujaBidhiHeaderProps = {
+  posts: MappedBlogPost[];
+};
+
+const PujaBidhiHeader: React.FC<PujaBidhiHeaderProps> = ({ posts }) => {
   return (
     <section className="container mx-auto px-6 lg:px-0 py-12 md:py-16">
       <div className="flex flex-col justify-center items-center">
@@ -16,9 +21,26 @@ const PujaBidhiHeader: React.FC = () => {
         </p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 mt-[50px] lg:gap-[32px] 2xl:gap-[64px]">
-        {PUJA_BIDHI_CONST.map(item => (
-          <BlogComponents key={`blog-component-${item.id}`} {...item} />
-        ))}
+        {posts.length === 0 ? (
+          <div className="col-span-3 text-center py-12">
+            <p className="font-mukta text-xl text-[#5B5B5B]">No posts found.</p>
+          </div>
+        ) : (
+          posts.map(post => (
+            <BlogComponents
+              key={`blog-component-${post.id}`}
+              date={post.date}
+              feature={post.feature}
+              image={post.image || BlogPlaceholderImage}
+              author={post.author}
+              duration={post.duration}
+              views={post.views}
+              title={post.title}
+              description={post.description}
+              link={post.link}
+            />
+          ))
+        )}
       </div>
     </section>
   );

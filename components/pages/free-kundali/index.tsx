@@ -9,7 +9,7 @@ const FreeKundali: React.FC = () => {
           <h1 className="font-sahitya font-bold text-[22px] leading-[32px] md:text-[36px] md:leading-[48px] tracking-[0] text-primary">
             Free Kundali
           </h1>
-          <p className="font-mukta font-normal text-[12px] leading-[20px] tracking-[0] capitalize md:text-lg lg:font-medium lg:text-[24px] lg:leading-[30px] lg:tracking-[0] text-[#141414]">
+          <p className="font-mukta font-normal text-[16px] leading-[20px] tracking-[0] capitalize md:text-lg lg:font-medium lg:text-[24px] lg:leading-[30px] lg:tracking-[0] text-[#141414]">
             Discover your detailed Janam Kundli instantly
           </p>
         </header>

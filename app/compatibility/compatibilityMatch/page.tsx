@@ -11,6 +11,7 @@ import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 import Clarity from '@/components/pages/landing/clarity';
 import ChevronDownIcon from '@/components/icons/chevron-down';
+import { ZodiacSignExploreSection } from '@/components/pages/zodiac-sign/zodiac-sign-explore-section';
 import {
   EnglishCancerColor,
   EnglishCancerLight,
@@ -192,6 +193,8 @@ export default function CompatibilityMatchPage() {
   const [horoscopeCardLang, setHoroscopeCardLang] = useState<ELanguage>(() =>
     readCardDisplayLanguage(),
   );
+  const [exploreContentLanguage, setExploreContentLanguage] = useState<ELanguage>(uiLanguage);
+  const [exploreHeaderLanguage, setExploreHeaderLanguage] = useState<ELanguage>(uiLanguage);
   const [horoscopeRows, setHoroscopeRows] = useState<HoroscopeSummaryRow[] | null>(null);
   const [horoscopeListError, setHoroscopeListError] = useState<string | null>(null);
   const [horoscopeListLoading, setHoroscopeListLoading] = useState(true);
@@ -200,6 +203,11 @@ export default function CompatibilityMatchPage() {
   useEffect(() => {
     persistCardDisplayLanguage(horoscopeCardLang);
   }, [horoscopeCardLang]);
+
+  useEffect(() => {
+    setExploreContentLanguage(uiLanguage);
+    setExploreHeaderLanguage(uiLanguage);
+  }, [uiLanguage]);
 
   useEffect(() => {
     let cancelled = false;
@@ -760,18 +768,33 @@ export default function CompatibilityMatchPage() {
             ])}
           </div>
 
-          <CompatibilityHoroscopeSection
-            title="Read Horoscope For Other Zodiac Signs"
-            cards={horoscopeSectionCards}
-            listError={horoscopeListError}
-            uiLanguage={uiLanguage}
-            readMoreLabel={dict.list.readMore}
-            emptyLabel={dict.list.empty}
-            errorFallbackSuffix={dict.list.errorFallbackSuffix}
-            horoscopeCardLang={horoscopeCardLang}
-            onLanguageChange={setHoroscopeCardLang}
-            mobileButtonsWrapperClass="mt-8 sm:mt-0"
-          />
+          <div className="sm:hidden">
+            <ZodiacSignExploreSection
+              title="Explore Other Zodiac Signs"
+              contentLanguage={exploreContentLanguage}
+              headerLanguage={exploreHeaderLanguage}
+              signSlug={yourSign}
+              isNepali={exploreContentLanguage === ELanguage.NEPALI}
+              onContentLanguageChange={lang => {
+                setExploreContentLanguage(lang);
+                setExploreHeaderLanguage(lang);
+              }}
+            />
+          </div>
+
+          <div className="hidden sm:block">
+            <CompatibilityHoroscopeSection
+              title="Read Horoscope For Other Zodiac Signs"
+              cards={horoscopeSectionCards}
+              listError={horoscopeListError}
+              uiLanguage={uiLanguage}
+              readMoreLabel={dict.list.readMore}
+              emptyLabel={dict.list.empty}
+              errorFallbackSuffix={dict.list.errorFallbackSuffix}
+              horoscopeCardLang={horoscopeCardLang}
+              onLanguageChange={setHoroscopeCardLang}
+            />
+          </div>
 
           <Clarity />
         </section>
