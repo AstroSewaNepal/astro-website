@@ -33,27 +33,31 @@ import { fetchBlogViewCounts } from '@/lib/blog-view-api';
 import { mapGhostBlogPost } from '@/lib/map-ghost-blog-post';
 
 async function getPujaBidhiPosts() {
-  const posts = await ghostClient.posts.browse({
-    filter: 'tag:puja-bidhi',
-    include: ['tags', 'authors'],
-    fields: [
-      'id',
-      'title',
-      'slug',
-      'excerpt',
-      'html',
-      'feature_image',
-      'published_at',
-      'reading_time',
-      'primary_tag',
-    ],
-    limit: 'all',
-    order: 'published_at desc',
-  });
+  try {
+    const posts = await ghostClient.posts.browse({
+      filter: 'tag:puja-bidhi',
+      include: ['tags', 'authors'],
+      fields: [
+        'id',
+        'title',
+        'slug',
+        'excerpt',
+        'html',
+        'feature_image',
+        'published_at',
+        'reading_time',
+      ],
+      limit: 'all',
+      order: 'published_at desc',
+    });
 
-  const viewCounts = await fetchBlogViewCounts(posts.map(post => post.slug ?? '').filter(Boolean));
+    const viewCounts = await fetchBlogViewCounts(posts.map(post => post.slug ?? '').filter(Boolean));
 
-  return posts.map(post => ({ ...mapGhostBlogPost(post, viewCounts), link: `/puja-bidhi/${post.slug ?? ''}` }));
+    return posts.map(post => ({ ...mapGhostBlogPost(post, viewCounts), link: `/puja-bidhi/${post.slug ?? ''}` }));
+  } catch (error) {
+    console.error('Error fetching puja bidhi posts:', error);
+    return [];
+  }
 }
 
 const PujaBidhiPage = async () => {
