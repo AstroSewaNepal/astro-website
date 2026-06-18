@@ -32,8 +32,8 @@ const BlogComponents: React.FC<IBlogComponentsProps> = ({
   link,
 }) => {
   return (
-    <Link href={link} className="block group">
-      <article className="border border-solid border-[#79787A] rounded-[28px] px-[22px] py-[18px] transition-colors hover:border-[#611508]/40">
+    <Link href={link} className="block group mx-auto w-[317px] md:w-[440px]">
+      <article className="border border-solid border-[#79787A] border-[1.5px] rounded-[28px] px-[22px] py-[18px] transition-colors hover:border-[#611508]/40 opacity-100 h-[487px] md:h-[680px] overflow-hidden">
         <div className="flex items-center justify-between">
           <p className="font-mukta text-xl text-[#5B5B5B]">{date}</p>
           <div className="flex items-center gap-1">
@@ -44,13 +44,13 @@ const BlogComponents: React.FC<IBlogComponentsProps> = ({
           </div>
         </div>
         <div>
-          <div className="flex items-center justify-center mt-[15px] rounded-[8px] overflow-hidden w-full h-[200px]">
+          <div className="flex items-center justify-center mt-[15px] rounded-[8px] overflow-hidden w-full md:w-[396px] h-[200px] md:h-[292px] opacity-100">
             <Image
               src={image}
-              width={500}
-              height={200}
+              width={396}
+              height={292}
               alt={title}
-              className="w-full h-[200px] object-cover"
+              className="w-full h-full object-cover"
             />
           </div>
           <div className="mt-[11px] flex items-center justify-between">

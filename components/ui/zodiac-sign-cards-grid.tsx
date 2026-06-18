@@ -115,7 +115,7 @@ export function ZodiacSignCardsGrid<T>({
     const width = swiper.width ?? window.innerWidth;
 
     if (compact) {
-      setSlidesPerView(width >= 400 ? 2 : 1);
+      setSlidesPerView(width >= 320 ? 2 : 1);
       return;
     }
 
@@ -142,7 +142,7 @@ export function ZodiacSignCardsGrid<T>({
   };
 
   return (
-    <div data-qa-id={dataQaId} className="min-w-0 max-w-full">
+    <div data-qa-id={dataQaId} className="min-w-0 max-w-full overflow-visible">
       {showError ? (
         <p
           className="mt-4 px-1 text-center font-mukta text-[12px] text-[#a94442] sm:text-[13px]"
@@ -160,7 +160,7 @@ export function ZodiacSignCardsGrid<T>({
           {/* Mobile: carousel with peek, side arrows, pagination dots */}
           <div
             className={clsx(
-              'horoscope-hero-swiper-mob relative min-w-0 max-w-full',
+              'horoscope-hero-swiper-mob relative min-w-0 max-w-full overflow-visible',
               compact ? 'mt-4 sm:mt-6' : 'mt-6 sm:mt-8',
               carouselHideUp,
             )}
@@ -172,24 +172,25 @@ export function ZodiacSignCardsGrid<T>({
                   aria-label="Previous sign"
                   onClick={() => swiperRef.current?.slidePrev()}
                   className={clsx(
-                    'absolute z-10 flex items-center justify-center rounded-full border border-[#611508] bg-transparent text-[#611508] hover:bg-[#fff7f4] transition-colors opacity-100 md:hidden',
+                    'absolute z-10 flex items-center justify-center rounded-full border border-[#611508] bg-white text-[#611508] shadow-sm hover:bg-[#fff7f4] transition-colors opacity-100 md:hidden',
                   )}
                   style={{
                     width: 23.72283935546875,
                     height: 23.72283935546875,
                     top: '75.14px',
-                    left: '-0px',
+                    left: 0,
                     borderWidth: 1,
+                    opacity: 1,
                   }}
                 >
-                  <ArrowLeft className="h-[12px] w-[12px]" />
+                  <ArrowLeft className="h-[16px] w-[16px]" />
                 </button>
                 <button
                   type="button"
                   aria-label="Next sign"
                   onClick={() => swiperRef.current?.slideNext()}
                   className={clsx(
-                    'absolute z-10 flex items-center justify-center rounded-full border border-[#611508] bg-transparent text-[#611508] hover:bg-[#fff7f4] transition-colors opacity-100 md:hidden',
+                    'absolute z-10 flex items-center justify-center rounded-full border border-[#611508] bg-white text-[#611508] shadow-sm hover:bg-[#fff7f4] transition-colors opacity-100 md:hidden',
                   )}
                   style={{
                     width: 23.72283935546875,
@@ -197,9 +198,10 @@ export function ZodiacSignCardsGrid<T>({
                     top: '75.14px',
                     right: 0,
                     borderWidth: 1,
+                    opacity: 1,
                   }}
                 >
-                  <ArrowRight className="h-[12px] w-[12px]" />
+                  <ArrowRight className="h-[16px] w-[16px]" />
                 </button>
               </>
             ) : null}
@@ -207,18 +209,20 @@ export function ZodiacSignCardsGrid<T>({
               key={swiperKey}
               modules={[SwiperPagination]}
               slidesPerView={oneSlidePerView ? 1 : compact ? 2 : 1.28}
-              spaceBetween={oneSlidePerView ? 0 : compact ? 8 : 10}
-              centeredSlides={!alignStart}
-              slidesOffsetBefore={oneSlidePerView ? 0 : compact ? 30 : alignStart ? 0 : 4}
-              slidesOffsetAfter={oneSlidePerView || alignStart ? 40 : compact ? 40 : 4}
+              spaceBetween={oneSlidePerView ? 0 : compact ? 10 : 10}
+              slidesPerGroup={compact ? 2 : 1}
+              centeredSlides={false}
+              centeredSlidesBounds
+              slidesOffsetBefore={compact ? 0 : 0}
+              slidesOffsetAfter={compact ? 0 : 0}
               breakpoints={
                 oneSlidePerView
                   ? {}
                   : compact
                     ? {
-                        320: { slidesPerView: 1.8, spaceBetween: 8 },
-                        400: { slidesPerView: 2, spaceBetween: 8 },
-                        480: { slidesPerView: 2.15, spaceBetween: 10 },
+                        320: { slidesPerView: 2, slidesPerGroup: 2, spaceBetween: 10 },
+                        400: { slidesPerView: 2, slidesPerGroup: 2, spaceBetween: 10 },
+                        480: { slidesPerView: 2, slidesPerGroup: 2, spaceBetween: 10 },
                       }
                     : {
                         400: { slidesPerView: 1.38, spaceBetween: 11 },
@@ -228,10 +232,10 @@ export function ZodiacSignCardsGrid<T>({
               className={clsx(
                 'horoscope-cards-swiper pb-12 sm:pb-14',
                 alignStart
-                  ? 'max-w-full !overflow-hidden px-0'
+                  ? 'max-w-full px-0'
                   : compact
-                    ? 'max-w-full !overflow-hidden px-5'
-                    : '!overflow-visible px-10',
+                    ? 'max-w-full px-5'
+                    : 'px-10',
               )}
               pagination={swiperPagination}
               onSwiper={swiper => {

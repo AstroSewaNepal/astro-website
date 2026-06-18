@@ -75,7 +75,7 @@ export default function CompatibilityPage() {
             <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-[0%] text-[#6b2417] sm:text-[36px] sm:leading-[48px]">
               {copy.title}
             </h1>
-            <p className="mt-2 font-mukta font-normal text-[14px] leading-[24px] tracking-[0%] text-[#111111] text-center max-sm:!text-[14px] max-sm:!leading-[24px] sm:text-[22px] sm:leading-[30px]">
+            <p className="mt-2 font-mukta font-normal text-[14px] leading-[24px] tracking-[0%] text-[#111111] text-left max-sm:!text-[14px] max-sm:!leading-[24px] sm:text-[22px] sm:leading-[30px]">
               {copy.subtitle}
             </p>
 
