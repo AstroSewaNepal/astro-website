@@ -43,7 +43,7 @@ export default function MangalDoshaCalculatorSection() {
   return (
     <CalculatorPageIntro
       title="Mangal Dosha Calculator"
-      shortDescription="Real chart-based Manglik check using VedAstro planet positions and the AstroSewa dosha engine (not a random date trick)."
+      shortDescription="Real chart-based Manglik check using accurate planetary positions and the AstroSewa dosha engine (not a random date trick)."
     >
       <CalculatorBirthDetailsForm submitLabel="Check Mangal Dosha" onSubmit={handleSubmit} />
       <CalculatorChooserSection exclude="mangal-dosha" />

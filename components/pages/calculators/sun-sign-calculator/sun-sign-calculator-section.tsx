@@ -36,7 +36,7 @@ export default function SunSignCalculatorSection() {
   return (
     <CalculatorPageIntro
       title="Sun Sign Calculator"
-      shortDescription="Sidereal sun sign from VedAstro at your birth time and place (Vedic / Lahiri-style chart, not Western newspaper dates)."
+      shortDescription="Sidereal sun sign from precise sidereal astrology at your birth time and place (Vedic / Lahiri-style chart, not Western newspaper dates)."
     >
       <CalculatorBirthDetailsForm submitLabel="Find Your Sun Sign" onSubmit={handleSubmit} />
       <CalculatorChooserSection exclude="sun-sign" />

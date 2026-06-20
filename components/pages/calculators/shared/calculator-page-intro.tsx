@@ -31,7 +31,7 @@ export default function CalculatorPageIntro({
     },
     {
       title: 'Why choose AstroSewa?',
-      body: 'AstroSewa calculations are powered by VedAstro ephemeris and Vedic astrology principles for precise, chart-aware insights.',
+      body: 'AstroSewa calculations are powered by accurate Vedic ephemeris and astrology principles for precise, chart-aware insights.',
     },
   ];
 
