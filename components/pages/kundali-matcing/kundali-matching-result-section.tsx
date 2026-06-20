@@ -515,6 +515,9 @@ const KundaliMatchingResultSection: React.FC = () => {
   );
   const [activeTab, setActiveTab] = useState<KundaliMatchingTab>('basic');
 
+  // No automatic clearing of sessionStorage here — leave stored result intact so
+  // the results page can read and display it after navigation from the form.
+
   if (!result) {
     return (
       <section className="container mx-auto px-6 lg:px-0 py-8 md:py-12">
