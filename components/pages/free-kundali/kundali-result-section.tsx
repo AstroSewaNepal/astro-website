@@ -616,7 +616,10 @@ const KundaliResultSection: React.FC = () => {
                               if (cellIdx === 2) {
                                 const signDeg = String(row[2] ?? '');
                                 const nirayana = String(row[3] ?? '');
-                                display = nirayana && nirayana !== '-' ? compactDegreeInSign(nirayana) : compactDegreeInSign(signDeg);
+                                display =
+                                  nirayana && nirayana !== '-'
+                                    ? compactDegreeInSign(nirayana)
+                                    : compactDegreeInSign(signDeg);
                                 if (signDeg && nirayana && signDeg !== '-' && nirayana !== '-') {
                                   titleAttr = `Sign: ${signDeg} · Nirayana: ${nirayana}`;
                                 }
