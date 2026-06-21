@@ -18,6 +18,13 @@ export interface AdminOrderItem {
   imageUrl: string | null;
 }
 
+export interface AstrologerSummary {
+  id: string;
+  name: string;
+  email: string;
+  remedyNames: string[];
+}
+
 export interface AdminRemedyOrder {
   id: string;
   trackingNumber: string;
@@ -28,12 +35,12 @@ export interface AdminRemedyOrder {
   items: AdminOrderItem[];
   totalAmount: number;
   totalDeliveryCharge: number;
+  grandTotal: number;
   createdAt: string;
   userName: string;
   userEmail: string;
   userPhone: string | null;
-  astrologerName: string;
-  astrologerEmail: string;
+  astrologers: AstrologerSummary[];
 }
 
 export interface AdminPaginatedOrders {
