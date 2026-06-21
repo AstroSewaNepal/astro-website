@@ -37,7 +37,7 @@ export default function RashiCalculatorSection() {
   return (
     <CalculatorPageIntro
       title="Rashi/Moon Sign Calculator"
-      shortDescription="Your Vedic moon sign (Rashi) from VedAstro Panchanga — based on real birth time and location, not a date table."
+      shortDescription="Your Vedic moon sign (Rashi) from precise panchanga data — based on real birth time and location, not a date table."
     >
       <CalculatorBirthDetailsForm submitLabel="Find Your Rashi" onSubmit={handleSubmit} />
       <CalculatorChooserSection exclude="rashi" />
