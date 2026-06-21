@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Loader2 } from 'lucide-react';
+import { MoreHorizontal, Loader2, Info } from 'lucide-react';
 import { AdminRemedyOrder } from '@/lib/remedy-order-api';
 
 const STATUS_STYLES: Record<string, string> = {
@@ -81,14 +81,35 @@ export function createColumns({
       ),
     },
     {
-      accessorKey: 'astrologerName',
+      id: 'astrologers',
       header: 'Astrologer',
-      cell: ({ row }) => (
-        <div className="font-mukta">
-          <p className="text-sm text-neutral-800">{row.original.astrologerName ?? '—'}</p>
-          <p className="text-xs text-neutral-400">{row.original.astrologerEmail ?? '—'}</p>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const astrologers = row.original.astrologers ?? [];
+        if (astrologers.length === 0) {
+          return <span className="font-mukta text-sm text-neutral-400">—</span>;
+        }
+        return (
+          <div className="flex flex-col gap-1 font-mukta">
+            {astrologers.map(a => (
+              <div key={a.id} className="flex items-center gap-1">
+                <span className="text-sm text-neutral-800">{a.name}</span>
+                <div className="group relative">
+                  <Info size={12} className="shrink-0 cursor-pointer text-neutral-400" />
+                  {/* Tooltip anchored above the icon */}
+                  <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 hidden w-48 -translate-x-1/2 rounded-lg border border-neutral-200 bg-white p-2.5 shadow-lg group-hover:block">
+                    <p className="mb-1 text-xs font-semibold text-neutral-500">Remedies ordered</p>
+                    <ul className="space-y-0.5">
+                      {a.remedyNames.map(name => (
+                        <li key={name} className="text-xs text-neutral-700">• {name}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'status',
@@ -142,12 +163,19 @@ export function createColumns({
       ),
     },
     {
-      accessorKey: 'totalAmount',
+      accessorKey: 'grandTotal',
       header: 'Total (NPR)',
-      cell: ({ getValue }) => (
-        <span className="font-mukta text-sm font-semibold text-neutral-800">
-          {(getValue<number | null | undefined>() ?? 0).toLocaleString()}
-        </span>
+      cell: ({ row }) => (
+        <div className="font-mukta">
+          <span className="text-sm font-semibold text-neutral-800">
+            {(row.original.grandTotal ?? 0).toLocaleString()}
+          </span>
+          {row.original.totalDeliveryCharge > 0 && (
+            <p className="text-xs text-neutral-400">
+              incl. {row.original.totalDeliveryCharge.toLocaleString()} delivery
+            </p>
+          )}
+        </div>
       ),
     },
     {

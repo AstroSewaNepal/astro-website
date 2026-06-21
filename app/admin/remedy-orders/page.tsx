@@ -29,7 +29,9 @@ export default function RemedyOrdersPage() {
 
   const page = Math.max(1, Number(searchParams.get('page') ?? '1'));
   const limit = Math.max(1, Number(searchParams.get('limit') ?? String(DEFAULT_LIMIT)));
-  const statusFilter = searchParams.get('status') ?? '';
+  const rawStatus = searchParams.get('status');
+  // No param on first load → default to 'placed'; explicit 'all' → show everything
+  const statusFilter = rawStatus === null ? 'placed' : rawStatus === 'all' ? '' : rawStatus;
 
   const { data, isLoading, isFetching, isError } = useAdminRemedyOrders(
     page,
@@ -64,16 +66,15 @@ export default function RemedyOrdersPage() {
 
   function handleStatusFilter(value: string) {
     const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set('status', value);
-    } else {
-      params.delete('status');
-    }
+    // Empty value = "show all"; write 'all' so the page doesn't snap back to the placed default
+    params.set('status', value || 'all');
     params.set('page', '1');
     router.push(`?${params.toString()}`);
   }
 
-  const activeLabel = STATUS_OPTIONS.find(o => o.value === statusFilter)?.label;
+  const activeLabel = statusFilter
+    ? STATUS_OPTIONS.find(o => o.value === statusFilter)?.label
+    : undefined;
 
   return (
     <div className="space-y-6">
