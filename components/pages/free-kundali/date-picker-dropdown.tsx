@@ -40,6 +40,10 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
   });
 
   const [displayYear, setDisplayYear] = useState(currentDate.getFullYear());
+  // `gridCenterYear` controls which block of years is shown in year view.
+  // Keep it distinct from `displayYear` so navigating the grid doesn't change
+  // the currently selected year unless the user explicitly clicks a year.
+  const [gridCenterYear, setGridCenterYear] = useState(displayYear);
   const [displayMonth, setDisplayMonth] = useState(currentDate.getMonth());
   const [view, setView] = useState<'day' | 'month' | 'year'>('day');
 
@@ -59,11 +63,13 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
         if (year && month) {
           setDisplayYear(year);
           setDisplayMonth(month - 1);
+          setGridCenterYear(year);
         }
       } else {
         const t = new Date();
         setDisplayYear(t.getFullYear());
         setDisplayMonth(t.getMonth());
+        setGridCenterYear(t.getFullYear());
       }
       setView('day');
     });
@@ -219,14 +225,48 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
 
   const handlePrevMonth = () =>
     displayMonth === 0
-      ? (setDisplayMonth(11), setDisplayYear(y => y - 1))
+      ? (setDisplayMonth(11),
+        setDisplayYear(y => {
+          const ny = y - 1;
+          setGridCenterYear(ny);
+          return ny;
+        }))
       : setDisplayMonth(m => m - 1);
+
   const handleNextMonth = () =>
     displayMonth === 11
-      ? (setDisplayMonth(0), setDisplayYear(y => y + 1))
+      ? (setDisplayMonth(0),
+        setDisplayYear(y => {
+          const ny = y + 1;
+          setGridCenterYear(ny);
+          return ny;
+        }))
       : setDisplayMonth(m => m + 1);
-  const handlePrevYear = () => setDisplayYear(y => y - 10);
-  const handleNextYear = () => setDisplayYear(y => y + 10);
+
+  // Month view: navigate year by 1; Year view: shift the displayed grid by 25 years
+  const handlePrevYear = () => {
+    if (view === 'year') {
+      setGridCenterYear(g => g - 25);
+    } else {
+      setDisplayYear(y => {
+        const ny = y - 1;
+        setGridCenterYear(ny);
+        return ny;
+      });
+    }
+  };
+
+  const handleNextYear = () => {
+    if (view === 'year') {
+      setGridCenterYear(g => g + 25);
+    } else {
+      setDisplayYear(y => {
+        const ny = y + 1;
+        setGridCenterYear(ny);
+        return ny;
+      });
+    }
+  };
 
   const handleDayClick = (day: number) => {
     onDateSelect(
@@ -567,7 +607,7 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
                 }}
               >
                 <span style={{ ...numberStyle, color: maroon, fontWeight: 700 }}>
-                  {displayYear - 5} – {displayYear + 4}
+                  {gridCenterYear - 12} – {gridCenterYear + 12}
                 </span>
                 <div style={{ display: 'flex', gap: 4 }}>
                   <button onClick={handlePrevYear} type="button" style={navBtn}>
@@ -582,13 +622,17 @@ const DatePickerDropdown: React.FC<DatePickerDropdownProps> = ({
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(54px,1fr))',
-                  gap: 6,
-                  flex: 1,
-                  alignContent: 'space-evenly',
+                  // Use a fixed 5-column layout so the 10-year range renders
+                  // as two compact rows and utilizes the dropdown space well.
+                  gridTemplateColumns: 'repeat(5, 1fr)',
+                  gap: 8,
+                  // Prevent the grid from stretching vertically which produced
+                  // empty rows; center content instead.
+                  flex: 'none',
+                  alignContent: 'center',
                 }}
               >
-                {Array.from({ length: 10 }, (_, i) => displayYear - 5 + i).map(year => (
+                {Array.from({ length: 25 }, (_, i) => gridCenterYear - 12 + i).map(year => (
                   <button
                     key={year}
                     onClick={() => handleYearClick(year)}
