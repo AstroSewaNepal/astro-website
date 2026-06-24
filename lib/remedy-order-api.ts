@@ -41,6 +41,11 @@ export interface AdminRemedyOrder {
   userEmail: string;
   userPhone: string | null;
   astrologers: AstrologerSummary[];
+  shippingAddress: string | null;
+  accessVia: string | null;
+  onsiteAddress: string | null;
+  onsiteDate: string | null;
+  onsiteTime: string | null;
 }
 
 export interface AdminPaginatedOrders {
