@@ -254,6 +254,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
         time: parsedTime!,
         offset,
         location,
+        lang: 'ne',
       });
 
       const bundle = await fetchFreeKundaliBundle(query);

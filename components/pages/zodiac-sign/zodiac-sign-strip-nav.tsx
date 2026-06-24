@@ -90,12 +90,7 @@ export function ZodiacSignStripNav({
                         />
                       </>
                     ) : (
-                      <Image
-                        src={imageBySign[sign]}
-                        alt={label}
-                        fill
-                        className="object-contain"
-                      />
+                      <Image src={imageBySign[sign]} alt={label} fill className="object-contain" />
                     )}
                   </div>
                 </div>
@@ -124,7 +119,12 @@ export function ZodiacSignStripNav({
         </div>
       </div>
 
-      <div className={clsx('hidden md:grid md:grid-cols-6 lg:grid-cols-12', compact ? 'gap-[8px]' : 'gap-[10px]')}>
+      <div
+        className={clsx(
+          'hidden md:grid md:grid-cols-6 lg:grid-cols-12',
+          compact ? 'gap-[8px]' : 'gap-[10px]',
+        )}
+      >
         {HOROSCOPE_SIGNS.map((sign, i) => {
           const label = HOROSCOPE_DATA[language][i]!.name;
           const active = sign === activeSign;
@@ -170,12 +170,7 @@ export function ZodiacSignStripNav({
                       />
                     </>
                   ) : (
-                    <Image
-                      src={imageBySign[sign]}
-                      alt={label}
-                      fill
-                      className="object-contain"
-                    />
+                    <Image src={imageBySign[sign]} alt={label} fill className="object-contain" />
                   )}
                 </div>
               </div>
