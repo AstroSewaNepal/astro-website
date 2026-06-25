@@ -192,9 +192,11 @@ export default function SunSignCalculatorResultSection() {
               <p>
                 <span className="font-semibold">Date of birth:</span> {dobDisplay}
               </p>
-              <p>
-                <span className="font-semibold">Time of birth:</span> {birthTimeDisplay}
-              </p>
+              {!data.dontKnowTime && (
+                <p>
+                  <span className="font-semibold">Time of birth:</span> {birthTimeDisplay}
+                </p>
+              )}
               <p>
                 <span className="font-semibold">Birth place:</span> {data.birthPlace || '—'}
               </p>
@@ -204,7 +206,7 @@ export default function SunSignCalculatorResultSection() {
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-[#e4d5c9] bg-[#FFF5E3] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+          <div className="rounded-[24px] border border-[#e4d5c9] bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
             <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409]">Sun sign summary</h2>
             <p className="mt-4 text-[15px] text-[#3d352f] md:text-[16px]">
               {meta.englishName} is your Vedic sun sign. It is a {meta.element.toLowerCase()} sign
