@@ -10,7 +10,8 @@ type CalculatorDatePickerProps = {
   value: string;
   onChange: (value: string) => void;
   error?: string;
-  fullWidth?: boolean; // ✅ FIX: added this
+  fullWidth?: boolean;
+  compact?: boolean;
 };
 
 function isoDateToDdMmYyyy(iso: string): string {
@@ -33,7 +34,8 @@ export default function CalculatorDatePicker({
   value,
   onChange,
   error,
-  fullWidth = false, // ✅ FIX: default value added
+  fullWidth = false,
+  compact = false,
 }: CalculatorDatePickerProps) {
   const [open, setOpen] = useState(false);
 
@@ -44,7 +46,11 @@ export default function CalculatorDatePicker({
     <div className={`relative ${fullWidth ? 'w-full' : 'w-[532px]'}`}>
       <label
         htmlFor={id}
-        className="block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]"
+        className={
+          compact
+            ? 'mb-2 block font-mukta text-sm text-Trinary'
+            : 'mb-1.5 block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]'
+        }
       >
         {label}
       </label>
@@ -53,11 +59,19 @@ export default function CalculatorDatePicker({
         id={id}
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full cursor-pointer flex items-center justify-between box-border rounded-[32px] border-2 sm:border border-[#BE7B71] bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 text-left font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] transition-colors duration-200 focus-within:border-[#A13924] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A13924]/20"
+        className={
+          compact
+            ? 'box-border flex h-[52px] w-full cursor-pointer items-center justify-between rounded-[32px] border border-[#BE7B71] bg-transparent px-4 text-left font-mukta text-sm md:text-base text-[#4f2620] transition-colors duration-200 focus-within:border-[#BE7B71] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#BE7B71]/20'
+            : 'box-border flex h-[48px] w-full cursor-pointer items-center justify-between rounded-[32px] border-2 border-[#BE7B71] bg-transparent px-4 text-left font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] transition-colors duration-200 focus-within:border-[#A13924] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A13924]/20 sm:h-auto sm:border sm:py-3'
+        }
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        <span className={`flex-1 min-w-0 ${value ? 'text-[#2f2f2f]' : 'text-[#464646]'}`}>
+        <span
+          className={`flex-1 min-w-0 ${
+            value ? (compact ? 'text-[#4f2620]' : 'text-[#2f2f2f]') : 'text-Paragraph'
+          }`}
+        >
           {displayValue}
         </span>
 
