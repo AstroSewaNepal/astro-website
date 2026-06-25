@@ -15,7 +15,6 @@ import CalculatorChooserSection from '../shared/calculator-chooser-section';
 import CalculatorDatePicker from '../shared/calculator-date-picker';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
 
-const placeRegex = /^[A-Za-z\s,.'-]+$/;
 
 export default function LoveCalculatorSection() {
   const router = useRouter();
@@ -60,19 +59,10 @@ export default function LoveCalculatorSection() {
 
       if (!yourBirthPlaceValue) {
         errors.yourBirthPlace = 'Please enter your birth place.';
-      } else if (!placeRegex.test(yourBirthPlaceValue) || !/[A-Za-z]/.test(yourBirthPlaceValue)) {
-        errors.yourBirthPlace =
-          'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       }
 
       if (!partnerBirthPlaceValue) {
         errors.partnerBirthPlace = 'Please enter your partner birth place.';
-      } else if (
-        !placeRegex.test(partnerBirthPlaceValue) ||
-        !/[A-Za-z]/.test(partnerBirthPlaceValue)
-      ) {
-        errors.partnerBirthPlace =
-          'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       }
 
       setFieldErrors(errors);

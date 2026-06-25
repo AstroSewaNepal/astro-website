@@ -109,14 +109,16 @@ export function BirthTimeFields({
   );
 
   const separatorClass = clsx(
-    variant === 'calculator' && 'font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#464646] mx-1',
+    variant === 'calculator' &&
+      'font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#464646] mx-1',
     variant === 'kundali' && 'font-mukta text-sm md:text-base text-[#4f2620]',
     variant === 'matching' && 'font-mukta text-[13px] text-[#7b6b69]',
   );
 
   const selectClass = clsx(
     'bg-transparent outline-none disabled:cursor-not-allowed cursor-pointer appearance-none',
-    variant === 'calculator' && 'h-[44px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] w-10 text-center',
+    variant === 'calculator' &&
+      'h-[44px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] w-10 text-center',
     variant === 'kundali' && 'font-mukta text-sm md:text-base text-[#4f2620] w-8',
     variant === 'matching' && 'font-mukta text-[13px] md:text-[14px] text-[#141414]',
   );
@@ -129,7 +131,8 @@ export function BirthTimeFields({
   );
 
   const labelClass = clsx(
-    variant === 'calculator' && 'block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]',
+    variant === 'calculator' &&
+      'block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]',
     variant === 'kundali' && 'block font-mukta text-sm text-Trinary mb-2',
     variant === 'matching' && 'block font-mukta text-[12px] md:text-[13px] text-primary mb-1.5',
   );

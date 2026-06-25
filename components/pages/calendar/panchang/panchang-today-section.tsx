@@ -51,7 +51,7 @@ async function fetchPanchangaForDate(
       if (!response.ok || json.success === false) {
         attemptErrors.push(
           (typeof json.message === 'string' && json.message) ||
-          `Request failed (${response.status}).`,
+            `Request failed (${response.status}).`,
         );
         continue;
       }
@@ -151,8 +151,6 @@ const PanchangTodaySection: React.FC = () => {
   const onTodayClick = () => {
     setCalendarDay(new Date());
   };
-
-
 
   const onDatePickerSelect = (ddmmyyyy: string) => {
     const parsed = pickerValueToDate(ddmmyyyy);
@@ -325,7 +323,6 @@ const PanchangTodaySection: React.FC = () => {
                 <ArrowRight className="w-6 h-6" />
               </button>
             </div>
-
           </div>
 
           <div>
