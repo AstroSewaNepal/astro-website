@@ -67,6 +67,7 @@ export type HoroscopeDetailData = {
     love: string;
     career: string;
     health: string;
+    events: unknown[];
   };
   astro_signals: AstroSignals;
 };

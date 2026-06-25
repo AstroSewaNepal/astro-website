@@ -26,15 +26,52 @@ export const metadata: Metadata = {
 
 // import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
-
 import DownloadApp from '@/components/pages/landing/download-app';
 import PujaBidhiHeader from '@/components/pages/puja-bidhi/header';
+import { ghostClient } from '@/lib/ghostClient';
+import { fetchBlogViewCounts } from '@/lib/blog-view-api';
+import { mapGhostBlogPost } from '@/lib/map-ghost-blog-post';
 
-const PujaBidhiPage = () => {
+async function getPujaBidhiPosts() {
+  try {
+    const posts = await ghostClient.posts.browse({
+      filter: 'tag:puja-bidhi',
+      include: ['tags', 'authors'],
+      fields: [
+        'id',
+        'title',
+        'slug',
+        'excerpt',
+        'html',
+        'feature_image',
+        'published_at',
+        'reading_time',
+      ],
+      limit: 'all',
+      order: 'published_at desc',
+    });
+
+    const viewCounts = await fetchBlogViewCounts(
+      posts.map(post => post.slug ?? '').filter(Boolean),
+    );
+
+    return posts.map(post => ({
+      ...mapGhostBlogPost(post, viewCounts),
+      link: `/puja-bidhi/${post.slug ?? ''}`,
+    }));
+  } catch (error) {
+    console.error('Error fetching puja bidhi posts:', error);
+    return [];
+  }
+}
+
+const PujaBidhiPage = async () => {
+  const posts = await getPujaBidhiPosts();
+
   return (
     <main className="min-h-screen space-y-[100px]">
       <div>
-        <PujaBidhiHeader />
+        <PujaBidhiHeader posts={posts} />
       </div>
       {/* <TalkToOurAstrologer /> */}
       <Services />

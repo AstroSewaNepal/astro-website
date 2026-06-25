@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 import { ghostClient } from '@/lib/ghostClient';
 import { formatViewCount } from '@/lib/blog-utils';
@@ -9,12 +9,11 @@ import Services from '@/components/pages/landing/services';
 import BlogContent from '@/components/pages/blogs/content';
 import DownloadApp from '@/components/pages/landing/download-app';
 
-// ISR fallback: re-render at most every 24 h. Webhook-triggered revalidation takes effect sooner.
 export const revalidate = 86400;
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.astrosewa.com';
 
-type BlogPostData = {
+type PostData = {
   id: string;
   title: string;
   slug: string;
@@ -32,10 +31,7 @@ type BlogPostData = {
   twitter_description?: string | null;
   meta_title?: string | null;
   meta_description?: string | null;
-  tags?: Array<{
-    name?: string;
-    slug?: string;
-  }>;
+  tags?: Array<{ name?: string; slug?: string }>;
   authors?: Array<{
     name?: string;
     profile_image?: string;
@@ -60,7 +56,7 @@ type BlogPostData = {
   };
 };
 
-async function getBlogPost(slug: string): Promise<BlogPostData | null> {
+async function getPost(slug: string): Promise<PostData | null> {
   try {
     const post = await ghostClient.posts.read(
       { slug },
@@ -89,9 +85,7 @@ async function getBlogPost(slug: string): Promise<BlogPostData | null> {
       },
     );
 
-    if (!post) {
-      return null;
-    }
+    if (!post) return null;
 
     return {
       id: post.id ?? '',
@@ -112,10 +106,7 @@ async function getBlogPost(slug: string): Promise<BlogPostData | null> {
       meta_title: post.meta_title ?? null,
       meta_description: post.meta_description ?? null,
       tags:
-        post.tags?.map(tag => ({
-          name: tag.name ?? undefined,
-          slug: tag.slug ?? undefined,
-        })) ?? [],
+        post.tags?.map(tag => ({ name: tag.name ?? undefined, slug: tag.slug ?? undefined })) ?? [],
       authors:
         post.authors?.map(author => ({
           name: author.name ?? undefined,
@@ -142,29 +133,20 @@ async function getBlogPost(slug: string): Promise<BlogPostData | null> {
           }
         : undefined,
     };
-  } catch (error) {
-    console.error('Error fetching blog post:', error);
+  } catch {
     return null;
   }
 }
 
-type BlogDetailPageProps = {
-  params: Promise<{
-    slug: string;
-  }>;
+type PageProps = {
+  params: Promise<{ slug: string }>;
 };
 
-const BlogDetailPage = async (props: BlogDetailPageProps) => {
-  const params = await props.params;
-  const post = await getBlogPost(params.slug);
+const PujaBidhiDetailPage = async (props: PageProps) => {
+  const { slug } = await props.params;
+  const post = await getPost(slug);
 
-  if (!post) {
-    notFound();
-  }
-
-  if (post.tags?.some(tag => tag.slug === 'puja-bidhi')) {
-    redirect(`/puja-bidhi/${post.slug}`);
-  }
+  if (!post) notFound();
 
   const author = post.primary_author ?? post.authors?.[0];
   const authorName = author?.name ?? 'Unknown Author';
@@ -185,7 +167,8 @@ const BlogDetailPage = async (props: BlogDetailPageProps) => {
         day: 'numeric',
       })
     : '';
-  const postUrl = `${BASE_URL}/blogs/${post.slug}`;
+
+  const postUrl = `${BASE_URL}/puja-bidhi/${post.slug}`;
   const recordedViews = await recordBlogView(post.slug);
   const views = formatViewCount(
     recordedViews ?? (await fetchBlogViewCounts([post.slug]))[post.slug] ?? 0,
@@ -252,11 +235,12 @@ const BlogDetailPage = async (props: BlogDetailPageProps) => {
   );
 };
 
-export default BlogDetailPage;
+export default PujaBidhiDetailPage;
 
 export async function generateStaticParams() {
   try {
     const posts = await ghostClient.posts.browse({
+      filter: 'tag:puja-bidhi',
       limit: 'all',
       fields: ['slug'],
     });
@@ -266,17 +250,11 @@ export async function generateStaticParams() {
   }
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getBlogPost(slug);
+  const post = await getPost(slug);
 
-  if (!post) {
-    return {};
-  }
+  if (!post) return {};
 
   const title = post.meta_title ?? post.og_title ?? post.title ?? undefined;
   const description = post.meta_description ?? post.og_description ?? post.excerpt ?? undefined;
@@ -289,7 +267,7 @@ export async function generateMetadata({
     description,
     keywords: tagNames.length ? tagNames : undefined,
     alternates: {
-      canonical: `/blogs/${slug}`,
+      canonical: `/puja-bidhi/${slug}`,
     },
     openGraph: {
       title: post.og_title ?? title,

@@ -208,7 +208,10 @@ export function ZodiacSignDetailsClient() {
                 </div>
               </div>
 
-              <div className="hidden lg:block order-1 shrink-0 lg:order-none lg:justify-self-end mb-6" style={{ width: '308.29px' }}>
+              <div
+                className="hidden lg:block order-1 shrink-0 lg:order-none lg:justify-self-end mb-6"
+                style={{ width: '308.29px' }}
+              >
                 <Image
                   src={signColorMap[slug]}
                   alt={displayName}
