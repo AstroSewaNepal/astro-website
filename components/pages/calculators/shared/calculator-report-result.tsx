@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import {
+  formatBirthTimeDisplay,
   formatDobDisplay,
   formatGenderDisplay,
   type CalculatorFormValues,
@@ -139,6 +140,7 @@ export default function CalculatorReportResult<T extends CalculatorReportResultD
   const personalInfoRows = [
     { label: 'Name', value: displayName },
     { label: 'Date of Birth', value: formatDobDisplay(data.birthDate) },
+    { label: 'Time of Birth', value: formatBirthTimeDisplay(data) },
     { label: 'Gender', value: formatGenderDisplay(data.gender) },
     { label: 'Place of Birth', value: data.birthPlace.trim() || '—' },
     ...(extraPersonalRows?.(data) ?? []),

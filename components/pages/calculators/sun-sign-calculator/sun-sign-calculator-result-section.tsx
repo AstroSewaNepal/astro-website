@@ -5,8 +5,12 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
-import { formatDobDisplay, formatGenderDisplay } from '@/lib/calculators/calculator-form-types';
+import {
+  formatBirthTimeDisplay,
+  formatDobDisplay,
+  formatGenderDisplay,
+  type CalculatorFormValues,
+} from '@/lib/calculators/calculator-form-types';
 import {
   getReportDisplayName,
   getSunSignMeta,
@@ -149,9 +153,7 @@ export default function SunSignCalculatorResultSection() {
   const meta = getSunSignMeta(data.sunSign);
   const displayName = getReportDisplayName(data.fullName);
   const dobDisplay = formatDobDisplay(data.birthDate);
-  const birthTimeDisplay = data.dontKnowTime
-    ? 'Unknown'
-    : `${data.birthTimeHH}:${data.birthTimeMM} ${data.birthTimeAMPM.toUpperCase()}`;
+  const birthTimeDisplay = formatBirthTimeDisplay(data);
   const genderDisplay = formatGenderDisplay(data.gender);
 
   if (!meta) {
@@ -192,11 +194,9 @@ export default function SunSignCalculatorResultSection() {
               <p>
                 <span className="font-semibold">Date of birth:</span> {dobDisplay}
               </p>
-              {!data.dontKnowTime && (
-                <p>
-                  <span className="font-semibold">Time of birth:</span> {birthTimeDisplay}
-                </p>
-              )}
+              <p>
+                <span className="font-semibold">Time of birth:</span> {birthTimeDisplay}
+              </p>
               <p>
                 <span className="font-semibold">Birth place:</span> {data.birthPlace || '—'}
               </p>

@@ -16,6 +16,28 @@ type NumerologyResult = {
   note?: string;
 };
 
+const LABEL_CLASS =
+  'font-sahitya text-[16px] leading-[24px] text-[#9a8f87] md:text-[20px] md:leading-[30px] lg:text-[22px] lg:leading-[32px]';
+
+const VALUE_CLASS =
+  'font-sahitya text-[16px] leading-[24px] text-[#2f2f2f] md:text-[20px] md:leading-[30px] lg:text-[22px] lg:leading-[32px]';
+
+const SECTION_TITLE_CLASS =
+  'font-sahitya text-[22px] font-bold leading-[30px] text-[#5D1409] md:text-[26px] md:leading-[34px] lg:text-[28px] lg:leading-[38px]';
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-row items-center gap-3 border-b border-[#e8ddd4] py-3 sm:gap-4 md:gap-6 md:py-4">
+      <span
+        className={`w-[42%] min-w-[100px] max-w-[180px] shrink-0 capitalize md:max-w-[220px] ${LABEL_CLASS}`}
+      >
+        {label}
+      </span>
+      <span className={`min-w-0 flex-1 break-words ${VALUE_CLASS}`}>{value}</span>
+    </div>
+  );
+}
+
 export default function NumerologyCalculatorResultSection() {
   const router = useRouter();
   const [data, setData] = useState<NumerologyResult | null>(null);
@@ -38,9 +60,9 @@ export default function NumerologyCalculatorResultSection() {
 
   if (!loaded) {
     return (
-      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-0 pt-4 md:pt-8 pb-12">
         <div className="max-w-[1454px] mx-auto">
-          <p className="py-24 text-center font-mukta text-[#4a4a4a]">Loading…</p>
+          <p className="py-12 text-center font-mukta text-[#4a4a4a]">Loading…</p>
         </div>
       </section>
     );
@@ -48,7 +70,7 @@ export default function NumerologyCalculatorResultSection() {
 
   if (!data) {
     return (
-      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-0 pt-4 md:pt-8 pb-12">
         <div className="max-w-[1454px] mx-auto">
           <div className="rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center">
             <h1 className="font-sahitya text-[32px] font-bold text-[#5D1409]">Numerology Result</h1>
@@ -98,200 +120,56 @@ export default function NumerologyCalculatorResultSection() {
   };
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
+    <section className="container mx-auto px-4 sm:px-6 lg:px-0 pt-4 md:pt-8 pb-12">
       <div className="max-w-[1454px] mx-auto">
-        {/* Header */}
-        <div className="pt-8 pb-6">
-          <h1 className="font-sahitya text-[28px] font-bold text-[#5D1409] md:text-[40px]">
+        <div className="pb-4 md:pb-6">
+          <h1 className="font-sahitya text-[24px] font-bold leading-[1.2] text-[#5D1409] md:text-[34px] lg:text-[40px]">
             Numerology Calculator
           </h1>
-          <p className="mt-2 font-mukta text-sm md:text-lg text-[#141414]">
+          <p className="mt-2 font-mukta text-[14px] leading-[22px] text-[#141414] md:text-[16px] md:leading-[28px] lg:text-lg">
             Discover your numerology profile and unlock insights about your life path, expression,
             and soul urge
           </p>
         </div>
 
-        {/* Personal Information — no card border */}
-        <div className="mb-6">
-          <h2
-            className="text-[#5D1409] mb-4"
-            style={{
-              fontFamily: 'Sahitya',
-              fontWeight: 700,
-              fontSize: '28px',
-              lineHeight: '38px',
-              letterSpacing: 0,
-            }}
-          >
-            Personal Information
-          </h2>
-          <div className="flex flex-col gap-y-4">
-            <div>
-              <p
-                style={{
-                  fontFamily: 'Sahitya',
-                  fontWeight: 400,
-                  fontSize: '22px',
-                  lineHeight: '32px',
-                  letterSpacing: 0,
-                  color: '#9a8f87',
-                }}
-              >
-                Name
-              </p>
-              <p
-                style={{
-                  fontFamily: 'Sahitya',
-                  fontWeight: 400,
-                  fontSize: '22px',
-                  lineHeight: '32px',
-                  letterSpacing: 0,
-                  color: '#2f2f2f',
-                }}
-              >
-                {data.fullName}
-              </p>
-            </div>
-            <div>
-              <p
-                style={{
-                  fontFamily: 'Sahitya',
-                  fontWeight: 400,
-                  fontSize: '22px',
-                  lineHeight: '32px',
-                  letterSpacing: 0,
-                  color: '#9a8f87',
-                }}
-              >
-                Date of Birth
-              </p>
-              <p
-                style={{
-                  fontFamily: 'Sahitya',
-                  fontWeight: 400,
-                  fontSize: '22px',
-                  lineHeight: '32px',
-                  letterSpacing: 0,
-                  color: '#2f2f2f',
-                }}
-              >
-                {data.birthDate}
-              </p>
-            </div>
-            {data.birthPlace ? (
-              <div>
-                <p
-                  style={{
-                    fontFamily: 'Sahitya',
-                    fontWeight: 400,
-                    fontSize: '22px',
-                    lineHeight: '32px',
-                    letterSpacing: 0,
-                    color: '#9a8f87',
-                  }}
-                >
-                  Birth place
-                </p>
-                <p
-                  style={{
-                    fontFamily: 'Sahitya',
-                    fontWeight: 400,
-                    fontSize: '22px',
-                    lineHeight: '32px',
-                    letterSpacing: 0,
-                    color: '#2f2f2f',
-                  }}
-                >
-                  {data.birthPlace}
-                </p>
-              </div>
-            ) : null}
+        <div className="mb-5 md:mb-6">
+          <h2 className={`mb-3 md:mb-4 ${SECTION_TITLE_CLASS}`}>Personal Information</h2>
+          <div className="border-t border-[#e8ddd4]">
+            <InfoRow label="Name" value={data.fullName} />
+            <InfoRow label="Date of Birth" value={data.birthDate} />
+            {data.birthPlace ? <InfoRow label="Birth place" value={data.birthPlace} /> : null}
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-[#e0d6cc] mb-6" />
-
-        {/* Numerology Analysis — flat two-column table, no outer card border */}
-        <div className="mb-8">
-          <h2
-            className="text-[#5D1409] mb-4"
-            style={{
-              fontFamily: 'Sahitya',
-              fontWeight: 700,
-              fontSize: '28px',
-              lineHeight: '38px',
-              letterSpacing: 0,
-            }}
-          >
+        <div className="border-t border-[#e0d6cc] mb-5 md:mb-8">
+          <h2 className={`mt-5 md:mt-6 mb-3 md:mb-4 ${SECTION_TITLE_CLASS}`}>
             Numerology Analysis
           </h2>
           {rows.length === 0 ? (
-            <p
-              style={{
-                fontFamily: 'Sahitya',
-                fontWeight: 400,
-                fontSize: '22px',
-                lineHeight: '32px',
-                color: '#4a4a4a',
-              }}
-            >
+            <p className={`${VALUE_CLASS} text-[#4a4a4a]`}>
               No detail rows returned. Try adding birth place and time on the form.
             </p>
           ) : (
-            <div>
+            <div className="border-t border-[#e8ddd4]">
               {rows.map((row, idx) => (
-                <div
-                  key={`${row.label}-${idx}`}
-                  className={`grid w-full grid-cols-[300px_minmax(0,1fr)] items-center gap-x-4 py-3 ${
-                    idx < rows.length - 1 ? 'border-b border-[#ede5dc]' : ''
-                  }`}
-                >
-                  <span
-                    style={{
-                      fontFamily: 'Sahitya',
-                      fontWeight: 400,
-                      fontSize: '22px',
-                      lineHeight: '32px',
-                      letterSpacing: 0,
-                      color: '#9a8f87',
-                    }}
-                    className="capitalize"
-                  >
-                    {row.label}
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: 'Sahitya',
-                      fontWeight: 400,
-                      fontSize: '22px',
-                      lineHeight: '32px',
-                      letterSpacing: 0,
-                      color: '#2f2f2f',
-                    }}
-                    className="text-left"
-                  >
-                    {row.value}
-                  </span>
-                </div>
+                <InfoRow key={`${row.label}-${idx}`} label={row.label} value={row.value} />
               ))}
             </div>
           )}
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-row items-center gap-[10px]">
+        <div className="flex flex-row items-center gap-2.5 sm:gap-4">
           <button
             type="button"
             onClick={handleShareReport}
-            className="inline-flex h-[50px] w-[calc(50%-0.3125rem)] items-center justify-center rounded-[32px] bg-[#5D1409] px-[10px] py-[16px] font-mukta text-[16px] leading-[30px] font-semibold text-white transition-opacity hover:opacity-95 sm:w-[240px] sm:text-[18px]"
+            className="inline-flex min-h-[50px] w-[calc(50%-0.3125rem)] flex-1 items-center justify-center rounded-[32px] bg-[#5D1409] px-3 py-3 font-mukta text-[14px] font-semibold leading-[22px] text-white transition-opacity hover:opacity-95 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-[18px] sm:leading-[30px]"
           >
             Share Your Report
           </button>
           <button
             type="button"
             onClick={() => router.push('/calculators/numerology-calculator')}
-            className="inline-flex h-[50px] w-[calc(50%-0.3125rem)] items-center justify-center rounded-[32px] border border-[#5D1409] bg-[#FFF5E3] px-[10px] py-[16px] font-mukta text-[16px] leading-[30px] font-semibold text-[#5D1409] transition-colors hover:bg-[#f7e7d2] sm:w-[240px] sm:text-[18px]"
+            className="inline-flex min-h-[50px] w-[calc(50%-0.3125rem)] flex-1 items-center justify-center rounded-[32px] border border-[#5D1409] bg-[#FFF5E3] px-3 py-3 font-mukta text-[14px] font-semibold leading-[22px] text-[#5D1409] transition-colors hover:bg-[#f7e7d2] sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-[18px] sm:leading-[30px]"
           >
             Calculate Again
           </button>

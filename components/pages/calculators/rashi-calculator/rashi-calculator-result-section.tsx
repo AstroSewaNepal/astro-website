@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
+import { formatBirthTimeDisplay } from '@/lib/calculators/calculator-form-types';
 import { getRashiMeta, getReportDisplayName } from '@/lib/calculators/rashi-metadata';
 export type RashiCalculatorResult = CalculatorFormValues & {
   rashi: string;
@@ -131,6 +132,7 @@ export default function RashiCalculatorResultSection() {
   const personalInfoRows = [
     { label: 'Name', value: displayName },
     { label: 'Date of Birth', value: formatDobDisplay(data.birthDate) },
+    { label: 'Time of Birth', value: formatBirthTimeDisplay(data) },
     { label: 'Gender', value: formatGenderDisplay(data.gender) },
     { label: 'Place of Birth', value: data.birthPlace.trim() || '—' },
   ];

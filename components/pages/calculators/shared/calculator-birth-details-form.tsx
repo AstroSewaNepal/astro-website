@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import {
-
+  DEFAULT_UNKNOWN_BIRTH_TIME,
   UnknownBirthTimeCheckbox,
   type BirthTimeParts,
 } from '@/components/shared/birth-time-fields';
@@ -69,7 +69,13 @@ export default function CalculatorBirthDetailsForm({
     setForm(prev => ({
       ...prev,
       dontKnowTime: checked,
-      ...(checked ? { birthTimeHH: '', birthTimeMM: '', birthTimeAMPM: 'am' } : {}),
+      ...(checked
+        ? {
+            birthTimeHH: DEFAULT_UNKNOWN_BIRTH_TIME.hh,
+            birthTimeMM: DEFAULT_UNKNOWN_BIRTH_TIME.mm,
+            birthTimeAMPM: DEFAULT_UNKNOWN_BIRTH_TIME.ampm,
+          }
+        : {}),
     }));
     if (checked) {
       setFieldErrors(prev => ({ ...prev, birthTime: '' }));

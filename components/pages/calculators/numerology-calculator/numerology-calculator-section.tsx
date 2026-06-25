@@ -191,10 +191,10 @@ export default function NumerologyCalculatorSection() {
               <label htmlFor="numerology-type" className={FIELD_LABEL_CLASS}>
                 Report focus
               </label>
-              <div className="relative h-[48px] sm:h-[56px] w-full rounded-[32px] border-2 border-[#BE7B71] px-4 sm:px-5 py-3 sm:py-4 overflow-visible">
+              <div className="relative w-full">
                 <select
                   id="numerology-type"
-                  className="h-full min-w-full w-full appearance-none border-none bg-transparent pr-10 font-mukta text-[13px] sm:text-[15px] md:text-[18px] md:leading-[30px] text-[#34211d] outline-none cursor-pointer"
+                  className="h-[48px] sm:h-[56px] w-full appearance-none rounded-[32px] border-2 border-[#BE7B71] bg-transparent px-4 sm:px-5 pr-10 font-mukta text-[13px] sm:text-[15px] md:text-[18px] leading-[24px] md:leading-[30px] text-[#34211d] outline-none cursor-pointer"
                   value={calculatorType}
                   onChange={e => setCalculatorType(e.target.value)}
                 >
