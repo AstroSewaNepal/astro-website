@@ -24,7 +24,8 @@ export const metadata: Metadata = {
   },
 };
 
-// import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
+import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
+import Clarity from '@/components/pages/landing/clarity';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 import PujaBidhiHeader from '@/components/pages/puja-bidhi/header';
@@ -69,11 +70,12 @@ const PujaBidhiPage = async () => {
   const posts = await getPujaBidhiPosts();
 
   return (
-    <main className="min-h-screen space-y-[100px]">
+    <main className="container mx-auto min-h-screen overflow-hidden space-y-[100px] pb-16">
       <div>
         <PujaBidhiHeader posts={posts} />
       </div>
-      {/* <TalkToOurAstrologer /> */}
+      <Clarity />
+      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
       <Services />
       <DownloadApp />
     </main>

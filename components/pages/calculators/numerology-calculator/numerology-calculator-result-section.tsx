@@ -158,18 +158,18 @@ export default function NumerologyCalculatorResultSection() {
           )}
         </div>
 
-        <div className="flex flex-row items-center gap-2.5 sm:gap-4">
+        <div className="mt-8 flex flex-row items-center gap-3">
           <button
             type="button"
             onClick={handleShareReport}
-            className="inline-flex min-h-[50px] w-[calc(50%-0.3125rem)] flex-1 items-center justify-center rounded-[32px] bg-[#5D1409] px-3 py-3 font-mukta text-[14px] font-semibold leading-[22px] text-white transition-opacity hover:opacity-95 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-[18px] sm:leading-[30px]"
+            className="inline-flex min-h-[52px] w-[calc(50%-0.375rem)] items-center justify-center rounded-full bg-[#5D1409] px-4 font-mukta text-[15px] font-bold text-white transition-opacity hover:opacity-95 sm:w-auto sm:px-8 sm:text-[16px]"
           >
             Share Your Report
           </button>
           <button
             type="button"
             onClick={() => router.push('/calculators/numerology-calculator')}
-            className="inline-flex min-h-[50px] w-[calc(50%-0.3125rem)] flex-1 items-center justify-center rounded-[32px] border border-[#5D1409] bg-[#FFF5E3] px-3 py-3 font-mukta text-[14px] font-semibold leading-[22px] text-[#5D1409] transition-colors hover:bg-[#f7e7d2] sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-[18px] sm:leading-[30px]"
+            className="inline-flex min-h-[52px] w-[calc(50%-0.375rem)] items-center justify-center rounded-full border border-[#5D1409] bg-[#FFF5E3] px-4 font-mukta text-[15px] font-bold text-[#5D1409] transition-colors hover:bg-[#f7e7d2] sm:w-auto sm:px-8 sm:text-[16px]"
           >
             Calculate Again
           </button>

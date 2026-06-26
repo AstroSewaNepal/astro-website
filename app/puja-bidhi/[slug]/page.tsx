@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation';
 import { ghostClient } from '@/lib/ghostClient';
 import { formatViewCount } from '@/lib/blog-utils';
 import { fetchBlogViewCounts, recordBlogView } from '@/lib/blog-view-api';
+import Clarity from '@/components/pages/landing/clarity';
+import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
 import BlogContent from '@/components/pages/blogs/content';
 import DownloadApp from '@/components/pages/landing/download-app';
@@ -210,7 +212,7 @@ const PujaBidhiDetailPage = async (props: PageProps) => {
   };
 
   return (
-    <main className="min-h-screen space-y-[100px]">
+    <main className="container mx-auto min-h-screen overflow-hidden space-y-[100px] pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -229,6 +231,8 @@ const PujaBidhiDetailPage = async (props: PageProps) => {
           tags={post.tags ?? []}
         />
       </div>
+      <Clarity />
+      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
       <Services />
       <DownloadApp />
     </main>

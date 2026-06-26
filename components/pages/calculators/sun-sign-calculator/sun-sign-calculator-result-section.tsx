@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { IoShareOutline } from 'react-icons/io5';
 
 import {
   formatBirthTimeDisplay,
@@ -119,6 +120,34 @@ export default function SunSignCalculatorResultSection() {
     router.push('/calculators/sun-sign-calculator');
   };
 
+  const handleShareReport = async () => {
+    if (typeof window === 'undefined') return;
+
+    const shareData = {
+      title: document.title || 'AstroSewa Sun Sign Result',
+      text: 'Check out my Sun Sign result on AstroSewa.',
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareData.url);
+        return;
+      }
+
+      window.prompt('Copy this result link:', shareData.url);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+    }
+  };
+
   if (!loaded) {
     return (
       <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
@@ -222,11 +251,19 @@ export default function SunSignCalculatorResultSection() {
           <SunSignReportCard meta={meta} />
         </div>
 
-        <div className="mt-10 flex justify-center lg:mt-12">
+        <div className="mt-10 flex flex-row items-center gap-3 justify-center lg:mt-12">
+          <button
+            type="button"
+            onClick={handleShareReport}
+            className="inline-flex min-h-[52px] w-[calc(50%-0.375rem)] items-center justify-center rounded-full bg-[#5D1409] px-4 font-mukta text-[15px] font-bold text-white transition-opacity hover:opacity-95 sm:w-auto sm:px-8 sm:text-[16px]"
+          >
+            <IoShareOutline className="mr-2 text-lg" />
+            Share Your Report
+          </button>
           <button
             type="button"
             onClick={handleCalculateAgain}
-            className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[#5D1409] bg-[#FFF5E3] px-8 font-mukta text-[16px] font-bold text-[#5D1409] transition-colors hover:bg-[#f7e7d2]"
+            className="inline-flex min-h-[52px] w-[calc(50%-0.375rem)] items-center justify-center rounded-full border border-[#5D1409] bg-[#FFF5E3] px-4 font-mukta text-[15px] font-bold text-[#5D1409] transition-colors hover:bg-[#f7e7d2] sm:w-auto sm:px-8 sm:text-[16px]"
           >
             Calculate Again
           </button>

@@ -9,13 +9,6 @@ import { FiRefreshCcw } from 'react-icons/fi';
 
 import UploadPhotoImg from '@/components/images/uploadyourphoto.png';
 import LoveMatchIcon from '@/components/images/icons/lovematch.png';
-import CalculatorCard from '@/components/pages/calculators/calculator-card';
-import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
-import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
-import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
-import DashaImage from '@/components/images/calculator/dasha.png';
-import MoonPhaseImage from '@/components/images/calculator/moonphase.png';
-import RashiCalculatorImage from '@/components/images/calculator/rashicalculator.png';
 
 type LoveResult = {
   yourName: string;
@@ -68,166 +61,35 @@ export default function LoveCalculatorResultSection() {
     router.push('/calculators/love-calculator');
   };
 
-  const otherCalculators = [
-    {
-      title: 'Numerology Calculator',
-      description: 'Discover your life path number and explore numerology insights.',
-      calculateHref: '/calculators/numerology-calculator',
-      mobileIcon: (
-        <Image
-          src={NumerologyCalculatorImage}
-          alt="Numerology calculator"
-          width={84}
-          height={84}
-          className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
-        />
-      ),
-      desktopIcon: (
-        <Image
-          src={NumerologyCalculatorImage}
-          alt="Numerology calculator"
-          width={100}
-          height={100}
-          className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
-        />
-      ),
-      titleClassName: 'md:text-[20px] md:leading-[28px] text-center',
-      descriptionClassName:
-        'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
-    },
-    {
-      title: 'Sun Sign Calculator',
-      description: 'Discover your zodiac sign based on birth date and astrology insights.',
-      calculateHref: '/calculators/sun-sign-calculator',
-      mobileIcon: (
-        <Image
-          src={SunSignCalculatorImage}
-          alt="Sun sign calculator"
-          width={84}
-          height={84}
-          className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
-        />
-      ),
-      desktopIcon: (
-        <Image
-          src={SunSignCalculatorImage}
-          alt="Sun sign calculator"
-          width={100}
-          height={100}
-          className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
-        />
-      ),
-      titleClassName: 'md:text-[20px] md:leading-[28px] text-center',
-      descriptionClassName:
-        'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
-    },
-    {
-      title: 'Mangal Dosha Calculator',
-      description: 'Check Mangal dosha and marriage effects in your birth chart.',
-      calculateHref: '/calculators/mangal-dosha-calculator',
-      mobileIcon: (
-        <Image
-          src={MangalDoshaImage}
-          alt="Mangal dosha calculator"
-          width={84}
-          height={84}
-          className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
-        />
-      ),
-      desktopIcon: (
-        <Image
-          src={MangalDoshaImage}
-          alt="Mangal dosha calculator"
-          width={100}
-          height={100}
-          className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
-        />
-      ),
-      titleClassName: 'md:text-[20px] md:leading-[28px] text-center whitespace-nowrap',
-      descriptionClassName:
-        'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
-    },
-    {
-      title: 'Dasha Calculator',
-      description:
-        'Calculate planetary dasha periods and analyze timing of life events in Vedic astrology.',
-      calculateHref: '/calculators/dasha-calculator',
-      mobileIcon: (
-        <Image
-          src={DashaImage}
-          alt="Dasha calculator"
-          width={130}
-          height={130}
-          className="h-[130px] w-[128px] object-contain opacity-100"
-        />
-      ),
-      desktopIcon: (
-        <Image
-          src={DashaImage}
-          alt="Dasha calculator"
-          width={120}
-          height={120}
-          className="h-[120px] w-[120px] object-contain opacity-100"
-        />
-      ),
-      titleClassName: 'md:text-[22px] md:leading-[32px] text-center',
-      descriptionClassName:
-        'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
-    },
-    {
-      title: 'Moon Phase Calculator',
-      description: 'Track and explore current moon phases and lunar cycle changes over time.',
-      calculateHref: '/calculators/moon-phase-calculator',
-      mobileIcon: (
-        <Image
-          src={MoonPhaseImage}
-          alt="Moon phase calculator"
-          width={130}
-          height={130}
-          className="h-[130px] w-[128px] object-contain opacity-100"
-        />
-      ),
-      desktopIcon: (
-        <Image
-          src={MoonPhaseImage}
-          alt="Moon phase calculator"
-          width={120}
-          height={120}
-          className="h-[120px] w-[120px] object-contain opacity-100"
-        />
-      ),
-      titleClassName: 'md:text-[22px] md:leading-[32px] text-center',
-      descriptionClassName:
-        'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
-    },
-    {
-      title: 'Rashi Calculator',
-      description:
-        'Discover your Vedic Rashi and understand how it shapes your birth chart insights.',
-      calculateHref: '/calculators/rashi-calculator',
-      mobileIcon: (
-        <Image
-          src={RashiCalculatorImage}
-          alt="Rashi calculator"
-          width={130}
-          height={130}
-          className="h-[130px] w-[128px] object-contain opacity-100"
-        />
-      ),
-      desktopIcon: (
-        <Image
-          src={RashiCalculatorImage}
-          alt="Rashi calculator"
-          width={120}
-          height={120}
-          className="h-[120px] w-[120px] object-contain opacity-100"
-        />
-      ),
-      titleClassName: 'md:text-[22px] md:leading-[32px] text-center',
-      descriptionClassName:
-        'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
-    },
-  ];
+  const handleShareReport = async () => {
+    if (typeof window === 'undefined' || !result) return;
+
+    const shareData = {
+      title: 'Love Calculator Match',
+      text: `Check out our love match! ${result.yourName} & ${result.partnerName} scored ${result.score}%!`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareData.url);
+        return;
+      }
+
+      window.prompt('Copy this result link:', shareData.url);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+    }
+  };
+
+
 
   if (!result) {
     return (
@@ -384,17 +246,7 @@ export default function LoveCalculatorResultSection() {
 
             <div className="flex w-full flex-col sm:flex-row items-center gap-3 mt-5 px-2 sm:px-0">
               <button
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator
-                      .share({
-                        title: 'Love Calculator Match',
-                        text: `Check out our love match! ${result.yourName} & ${result.partnerName} scored ${result.score}%!`,
-                        url: window.location.href,
-                      })
-                      .catch(console.error);
-                  }
-                }}
+                onClick={handleShareReport}
                 className="flex items-center justify-center gap-[10px] rounded-[40px] w-full sm:w-[204px] h-[50px] p-[12px] bg-[#471207] font-mukta font-semibold text-[18px] leading-[30px] tracking-[0%] text-white transition-colors hover:bg-[#5D1409]"
               >
                 <IoShareOutline className="text-lg" />
@@ -409,40 +261,6 @@ export default function LoveCalculatorResultSection() {
                 Calculate Another
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* Other Calculators */}
-        <div className="mt-10">
-          <h2 className="font-sahitya font-bold text-[22px] md:text-[26px] leading-[1.1] text-primary">
-            Other Calculators
-          </h2>
-
-          <div className="mt-5 md:hidden flex flex-nowrap gap-4 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
-            {otherCalculators.map(card => (
-              <CalculatorCard
-                key={card.calculateHref}
-                title={card.title}
-                description={card.description}
-                mobileHorizontal
-                calculateHref={card.calculateHref}
-                icon={card.mobileIcon}
-              />
-            ))}
-          </div>
-
-          <div className="mt-5 hidden md:grid md:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-            {otherCalculators.map(card => (
-              <CalculatorCard
-                key={card.calculateHref}
-                title={card.title}
-                description={card.description}
-                titleClassName={card.titleClassName}
-                descriptionClassName={card.descriptionClassName}
-                calculateHref={card.calculateHref}
-                icon={card.desktopIcon}
-              />
-            ))}
           </div>
         </div>
       </div>
