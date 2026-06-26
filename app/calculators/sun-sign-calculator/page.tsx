@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 
 import SunSignCalculatorSection from '@/components/pages/calculators/sun-sign-calculator/sun-sign-calculator-section';
+import Clarity from '@/components/pages/landing/clarity';
+import Services from '@/components/pages/landing/services';
+import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
   title: 'Sun Sign Calculator',
@@ -15,6 +18,9 @@ export default function SunSignCalculatorPage() {
   return (
     <main className="space-y-12">
       <SunSignCalculatorSection />
+      <Services />
+      <Clarity />
+      <DownloadApp />
     </main>
   );
 }

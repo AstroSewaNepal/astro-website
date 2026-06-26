@@ -19,8 +19,8 @@ export default function SunSignCalculatorResultPage() {
       <section className="container mx-auto px-4 sm:px-6 lg:px-0 pb-8 md:pb-12">
         <CalculatorChooserSection exclude="sun-sign" />
       </section>
-      <Clarity />
       <Services />
+      <Clarity />
       <DownloadApp />
     </main>
   );

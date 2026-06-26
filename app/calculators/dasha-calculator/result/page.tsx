@@ -19,8 +19,8 @@ export default function DashaCalculatorResultPage() {
       <section className="container mx-auto px-4 sm:px-6 lg:px-0 pb-8 md:pb-12">
         <CalculatorChooserSection exclude="dasha" />
       </section>
-      <Clarity />
       <Services />
+      <Clarity />
       <DownloadApp />
     </main>
   );

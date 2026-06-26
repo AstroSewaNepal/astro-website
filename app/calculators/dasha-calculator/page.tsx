@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 
 import DashaCalculatorSection from '@/components/pages/calculators/dasha-calculator/dasha-calculator-section';
+import Clarity from '@/components/pages/landing/clarity';
+import Services from '@/components/pages/landing/services';
+import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
   title: 'Dasha Calculator',
@@ -15,6 +18,9 @@ export default function DashaCalculatorPage() {
   return (
     <main className="space-y-12">
       <DashaCalculatorSection />
+      <Services />
+      <Clarity />
+      <DownloadApp />
     </main>
   );
 }

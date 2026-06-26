@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import LoveCalculatorSection from '@/components/pages/calculators/love-calculator/love-calculator-section';
+import Clarity from '@/components/pages/landing/clarity';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
@@ -18,6 +19,7 @@ export default function LoveCalculatorPage() {
     <main className="space-y-12">
       <LoveCalculatorSection />
       <Services />
+      <Clarity />
       <DownloadApp />
     </main>
   );

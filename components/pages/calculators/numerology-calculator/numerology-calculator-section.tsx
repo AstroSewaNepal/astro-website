@@ -130,7 +130,7 @@ export default function NumerologyCalculatorSection() {
   };
 
   return (
-    <section className="container mx-auto px-4 sm:px-6 lg:px-0 pt-4 md:pt-8 pb-12">
+    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
       <div className="max-w-[1454px] mx-auto">
         {/* Hero */}
         <div className="mb-12">

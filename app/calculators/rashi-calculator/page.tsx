@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 
 import RashiCalculatorSection from '@/components/pages/calculators/rashi-calculator/rashi-calculator-section';
+import Clarity from '@/components/pages/landing/clarity';
+import Services from '@/components/pages/landing/services';
+import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
   title: 'Rashi Calculator',
@@ -15,6 +18,9 @@ export default function RashiCalculatorPage() {
   return (
     <main className="space-y-12">
       <RashiCalculatorSection />
+      <Services />
+      <Clarity />
+      <DownloadApp />
     </main>
   );
 }

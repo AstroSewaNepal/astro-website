@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import Calculators from '@/components/pages/calculators';
+import Clarity from '@/components/pages/landing/clarity';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default function CalculatorsPage() {
     <main className="space-y-12">
       <Calculators />
       <Services />
+      <Clarity />
       <DownloadApp />
     </main>
   );

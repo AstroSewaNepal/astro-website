@@ -60,7 +60,7 @@ export default function NumerologyCalculatorResultSection() {
 
   if (!loaded) {
     return (
-      <section className="container mx-auto px-4 sm:px-6 lg:px-0 pt-4 md:pt-8 pb-12">
+      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
         <div className="max-w-[1454px] mx-auto">
           <p className="py-12 text-center font-mukta text-[#4a4a4a]">Loading…</p>
         </div>
@@ -70,7 +70,7 @@ export default function NumerologyCalculatorResultSection() {
 
   if (!data) {
     return (
-      <section className="container mx-auto px-4 sm:px-6 lg:px-0 pt-4 md:pt-8 pb-12">
+      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
         <div className="max-w-[1454px] mx-auto">
           <div className="rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center">
             <h1 className="font-sahitya text-[32px] font-bold text-[#5D1409]">Numerology Result</h1>
@@ -120,7 +120,7 @@ export default function NumerologyCalculatorResultSection() {
   };
 
   return (
-    <section className="container mx-auto px-4 sm:px-6 lg:px-0 pt-4 md:pt-8 pb-12">
+    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
       <div className="max-w-[1454px] mx-auto">
         <div className="pb-4 md:pb-6">
           <h1 className="font-sahitya text-[24px] font-bold leading-[1.2] text-[#5D1409] md:text-[34px] lg:text-[40px]">

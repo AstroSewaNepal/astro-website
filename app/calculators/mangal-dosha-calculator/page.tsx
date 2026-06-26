@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 
 import MangalDoshaCalculatorSection from '@/components/pages/calculators/mangal-dosha-calculator/mangal-dosha-calculator-section';
+import Clarity from '@/components/pages/landing/clarity';
+import Services from '@/components/pages/landing/services';
+import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
   title: 'Mangal Dosha Calculator',
@@ -15,6 +18,9 @@ export default function MangalDoshaCalculatorPage() {
   return (
     <main className="space-y-12">
       <MangalDoshaCalculatorSection />
+      <Services />
+      <Clarity />
+      <DownloadApp />
     </main>
   );
 }
