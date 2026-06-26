@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import AstroSewaLogo from '@/components/logo';
-import TransparentBellIcon from '@/components/icons/bell';
 import UserLineIcon from '@/components/icons/user/user-line';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import LanguageEarthIcon from '@/components/icons/language/earth';
@@ -307,9 +306,6 @@ function LandingHeaderClient() {
                 {d.header.signIn}
               </span>
             </Link>
-            <button className="flex-shrink-0 bg-primary p-2.5 rounded-full text-white max-h-fit">
-              <TransparentBellIcon />
-            </button>
           </div>
         </div>
 
@@ -579,9 +575,6 @@ function LandingHeaderFallback() {
               {d.header.signIn}
             </p>
           </Link>
-          <button className="bg-primary p-2.5 rounded-full text-white max-h-fit">
-            <TransparentBellIcon />
-          </button>
         </div>
       </div>
       {/* ✅ FIX applied to fallback as well */}
