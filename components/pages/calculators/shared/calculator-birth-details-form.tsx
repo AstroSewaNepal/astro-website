@@ -10,6 +10,7 @@ import {
 import { ClockTimePicker } from '@/components/shared/clock-time-picker';
 
 import CalculatorDatePicker from '@/components/pages/calculators/shared/calculator-date-picker';
+import { CityAutocompleteInput } from '@/components/shared/city-autocomplete-input';
 import {
   EMPTY_CALCULATOR_FORM,
   type CalculatorFormValues,
@@ -235,37 +236,17 @@ export default function CalculatorBirthDetailsForm({
           </div>
 
           <div>
-            <label className="block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]">
-              Enter birth place
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Where were you born?"
-                value={form.birthPlace}
-                onChange={e => handleChange('birthPlace', e.target.value)}
-                className="w-full rounded-[32px] border-2 sm:border border-[#BE7B71] bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] placeholder:font-mukta placeholder:text-[18px] placeholder:font-normal placeholder:leading-[30px] placeholder:tracking-normal placeholder:text-[#464646] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
-              />
-              <span className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[#5D1409] opacity-60">
-                <svg
-                  width="15"
-                  height="15"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                >
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-              </span>
-            </div>
-            <p
-              className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]"
-              role="alert"
-            >
-              {fieldErrors.birthPlace || '\u00a0'}
-            </p>
+            <CityAutocompleteInput
+              label="Enter birth place"
+              placeholder="Where were you born?"
+              value={form.birthPlace}
+              onChange={value => handleChange('birthPlace', value)}
+              onCitySelect={city => {
+                setSelectedBirthCity(city);
+                setFieldErrors(prev => ({ ...prev, birthPlace: '' }));
+              }}
+              error={fieldErrors.birthPlace}
+            />
           </div>
           <div className="col-span-2">
             <ClockTimePicker
