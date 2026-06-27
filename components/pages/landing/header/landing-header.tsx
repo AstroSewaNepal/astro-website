@@ -111,19 +111,31 @@ function buildMobileNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[] 
 
 function desktopNavItemActive(pathname: string, item: NavItem): boolean {
   const path = item.link?.split('?')[0];
-  if (!path || path === '#' || path === '/') {
-    return false;
+
+  const matchesPath = (candidate: string) =>
+    pathname === candidate || pathname.startsWith(`${candidate}/`);
+
+  if (path) {
+    if (path === '/horoscope') {
+      return pathname.startsWith('/horoscope');
+    }
+    if (path === '/zodiac-sign') {
+      return pathname.startsWith('/zodiac-sign');
+    }
+    if (path === '/compatibility') {
+      return pathname.startsWith('/compatibility');
+    }
+
+    if (matchesPath(path)) {
+      return true;
+    }
   }
-  if (path === '/horoscope') {
-    return pathname.startsWith('/horoscope');
+
+  if (item.children?.some(child => child.link && matchesPath(child.link))) {
+    return true;
   }
-  if (path === '/zodiac-sign') {
-    return pathname.startsWith('/zodiac-sign');
-  }
-  if (path === '/compatibility') {
-    return pathname.startsWith('/compatibility');
-  }
-  return pathname === path || pathname.startsWith(`${path}/`);
+
+  return false;
 }
 
 const NavIcon = ({ onClick }: { onClick: () => void }) => {

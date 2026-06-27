@@ -42,7 +42,7 @@ export const SERVICES_LIST: Array<{
     id: 4,
     title:
       'Get your daily dose of guidance personalized insights to help you make the most of your day.',
-    buttonText: "Read Today's Horoscope",
+    buttonText: 'Read Horoscope',
     icon: ServiceTodayHoroscope,
     action: { type: 'link', href: '/horoscope', scrollTopOnSamePath: true },
   },
