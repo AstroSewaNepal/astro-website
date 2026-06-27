@@ -91,6 +91,37 @@ export default function NumerologyCalculatorResultSection() {
 
   const rows = data.rows ?? [];
 
+  const copyTextToClipboard = async (text: string) => {
+    if (typeof window === 'undefined') return false;
+
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        // Fall back to legacy copy behavior below.
+      }
+    }
+
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.setAttribute('readonly', '');
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    textArea.style.top = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      return document.execCommand('copy');
+    } catch {
+      return false;
+    } finally {
+      document.body.removeChild(textArea);
+    }
+  };
+
   const handleShareReport = async () => {
     if (typeof window === 'undefined') return;
 
@@ -106,8 +137,8 @@ export default function NumerologyCalculatorResultSection() {
         return;
       }
 
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(shareData.url);
+      const copied = await copyTextToClipboard(shareData.url);
+      if (copied) {
         return;
       }
 
@@ -115,6 +146,11 @@ export default function NumerologyCalculatorResultSection() {
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
         return;
+      }
+
+      const copied = await copyTextToClipboard(shareData.url);
+      if (!copied) {
+        window.prompt('Copy this result link:', shareData.url);
       }
     }
   };
