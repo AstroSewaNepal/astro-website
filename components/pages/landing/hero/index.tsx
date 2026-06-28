@@ -35,7 +35,7 @@ const LandingHero: React.FC = () => {
           <button
             type="button"
             onClick={openAppStore}
-            className="font-mukta text-base md:text-lg lg:text-2xl leading-7 text-white bg-primary rounded-3xl px-3 md:px-8 py-2 md:py-3 cursor-pointer justify-center gap-2 flex-1 md:flex-none whitespace-nowrap"
+            className="font-mukta text-base md:text-lg lg:text-2xl leading-7 text-white bg-primary rounded-3xl px-3 md:px-8 py-2 md:py-3 cursor-pointer flex items-center justify-center gap-2 flex-1 md:flex-none whitespace-nowrap"
           >
             Download App
           </button>
