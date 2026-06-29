@@ -31,3 +31,23 @@ export function formatGenderDisplay(value: string) {
   if (!value) return '—';
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
+
+/** Display birth time on calculator result pages (shows 12:00 PM when time is unknown). */
+export function formatBirthTimeDisplay(
+  form: Pick<
+    CalculatorFormValues,
+    'birthTimeHH' | 'birthTimeMM' | 'birthTimeAMPM' | 'dontKnowTime'
+  >,
+): string {
+  if (form.dontKnowTime && !form.birthTimeHH && !form.birthTimeMM) {
+    return '12:00 PM';
+  }
+  if (!form.birthTimeHH && !form.birthTimeMM) {
+    return '—';
+  }
+
+  const hh = form.birthTimeHH || '12';
+  const mm = (form.birthTimeMM || '00').padStart(2, '0');
+  const ampm = (form.birthTimeAMPM || 'pm').toUpperCase();
+  return `${hh}:${mm} ${ampm}`;
+}

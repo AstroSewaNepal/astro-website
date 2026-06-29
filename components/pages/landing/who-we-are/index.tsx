@@ -16,7 +16,7 @@ const WhoWeAre: React.FC = () => {
           'py-6 md:py-8 lg:py-9 px-6 md:px-12 lg:px-20 xl:px-[108px] rounded-3xl md:rounded-[50px] lg:rounded-[74px] flex flex-col lg:flex-row items-center gap-6 md:gap-8 lg:gap-10',
         )}
       >
-        <div className="flex flex-col flex-1 w-full lg:w-auto text-center lg:text-left">
+        <div className="flex flex-col flex-1 w-full lg:w-auto text-center lg:text-left items-center lg:items-start">
           <h2 className="text-[34px] md:text-[48px] lg:text-[64px] xl:text-[80px] 2xl:text-[110px] leading-[42px] md:leading-[56px] lg:leading-[80px] xl:leading-[96px] 2xl:leading-[120%] text-[#F8F3DF] font-normal">
             Who are we?
           </h2>
@@ -24,7 +24,7 @@ const WhoWeAre: React.FC = () => {
             AstroSewa is Nepal&apos;s trusted online astrology platform, connecting people with over
             1000+ verified and experienced astrologers.{' '}
           </p>
-          <button className="mt-4 md:mt-5 lg:mt-6 rounded-3xl bg-white max-w-full md:max-w-[279px] w-full md:w-auto py-2.5 md:py-3 lg:py-3.5 px-6 md:px-8 flex items-center justify-center gap-1 transition-all duration-300 hover:bg-gray-50">
+          <button className="mt-4 md:mt-5 lg:mt-6 rounded-3xl bg-white max-w-full lg:max-w-[279px] w-full lg:w-auto py-2.5 md:py-3 lg:py-3.5 px-6 md:px-8 flex items-center justify-center gap-1 transition-all duration-300 hover:bg-gray-50">
             <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-primary font-normal">
               Learn More
             </p>

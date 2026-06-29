@@ -10,6 +10,7 @@ import { ELanguage } from '@/components/enums/language.enum';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 import Clarity from '@/components/pages/landing/clarity';
+import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import { ZodiacSignExploreSection } from '@/components/pages/zodiac-sign/zodiac-sign-explore-section';
 import {
@@ -804,6 +805,8 @@ export default function CompatibilityMatchPage() {
           <Clarity />
         </section>
       </div>
+
+      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
 
       <Services />
 
