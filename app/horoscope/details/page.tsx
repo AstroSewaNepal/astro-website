@@ -208,19 +208,19 @@ function HoroscopeDetailsContent() {
                       detail.horoscope.type?.toLowerCase(),
                     )
                       ? new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })
                       : `${new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })} - ${new Date(detail.horoscope.end_date).toLocaleDateString('en-US', {
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}`}
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })} - ${new Date(detail.horoscope.end_date).toLocaleDateString('en-US', {
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}`}
                   </h2>
                 ) : (
                   <p className="mt-2 font-mukta font-medium text-[24px] leading-[30px] tracking-[0px] text-[#D47F2C]">
@@ -257,22 +257,22 @@ function HoroscopeDetailsContent() {
                           detail.horoscope.type?.toLowerCase(),
                         )
                           ? new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })
-                          : `${new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })} - ${new Date(detail.horoscope.end_date).toLocaleDateString(
-                            'en-US',
-                            {
                               month: 'long',
                               day: 'numeric',
                               year: 'numeric',
-                            },
-                          )}`}
+                            })
+                          : `${new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
+                              month: 'long',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })} - ${new Date(detail.horoscope.end_date).toLocaleDateString(
+                              'en-US',
+                              {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric',
+                              },
+                            )}`}
                         )
                       </span>
                     </h2>
@@ -359,7 +359,7 @@ function HoroscopeDetailsContent() {
                       contentLanguage={uiLanguage as ELanguage}
                       signSlug={(validSign ?? HOROSCOPE_SIGNS[0]) as HoroscopeSign}
                       isNepali={uiLanguage === ELanguage.NEPALI}
-                      onContentLanguageChange={() => { }}
+                      onContentLanguageChange={() => {}}
                     />
                   </div>
                 </div>
