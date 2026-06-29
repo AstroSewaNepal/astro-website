@@ -8,7 +8,7 @@ import { ZodiacSignMiniCard } from '@/components/pages/zodiac-sign/zodiac-sign-m
 import { ZodiacSignCardsGrid } from '@/components/ui/zodiac-sign-cards-grid';
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
-import { zodiacDetailHref } from '@/lib/constants/zodiac-sign-nav';
+import { zodiacEnglishDetailHref, zodiacNepaliDetailHref } from '@/lib/constants/zodiac-sign-nav';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 import type { HoroscopeSign } from '@/lib/types/horoscope';
 
@@ -17,7 +17,6 @@ const cardBaseText = 'Your spark can move mountains, start bold today';
 type Props = {
   title?: string;
   contentLanguage: ELanguage;
-  headerLanguage: ELanguage;
   signSlug: HoroscopeSign;
   isNepali: boolean;
   onContentLanguageChange: (lang: ELanguage) => void;
@@ -27,7 +26,6 @@ type Props = {
 export function ZodiacSignExploreSection({
   title = 'Explore Other Zodiac Signs',
   contentLanguage,
-  headerLanguage,
   signSlug,
   isNepali,
   onContentLanguageChange,
@@ -41,6 +39,10 @@ export function ZodiacSignExploreSection({
     () =>
       HOROSCOPE_SIGNS.map((sign, index) => {
         const card = HOROSCOPE_DATA[contentLanguage][index]!;
+        const href =
+          contentLanguage === ELanguage.NEPALI
+            ? zodiacNepaliDetailHref(sign)
+            : zodiacEnglishDetailHref(sign);
         return {
           key: sign,
           name: card.name,
@@ -48,10 +50,10 @@ export function ZodiacSignExploreSection({
           imageLight: card.image,
           summary: card.detail || cardBaseText,
           stars: card.numberOfStars ?? 3,
-          href: zodiacDetailHref(sign, contentLanguage, headerLanguage),
+          href,
         };
       }),
-    [contentLanguage, headerLanguage],
+    [contentLanguage],
   );
 
   const updateActiveCarouselIndex = () => {
@@ -140,7 +142,11 @@ export function ZodiacSignExploreSection({
           return (
             <div key={sign} className="min-w-[260px] shrink-0 snap-start">
               <ZodiacSignMiniCard
-                href={zodiacDetailHref(sign, contentLanguage, headerLanguage)}
+                href={
+                  contentLanguage === ELanguage.NEPALI
+                    ? zodiacNepaliDetailHref(sign)
+                    : zodiacEnglishDetailHref(sign)
+                }
                 image={card.image}
                 name={card.name}
                 blurb={card.detail || cardBaseText}

@@ -195,7 +195,6 @@ export default function CompatibilityMatchPage() {
     readCardDisplayLanguage(),
   );
   const [exploreContentLanguage, setExploreContentLanguage] = useState<ELanguage>(uiLanguage);
-  const [exploreHeaderLanguage, setExploreHeaderLanguage] = useState<ELanguage>(uiLanguage);
   const [horoscopeRows, setHoroscopeRows] = useState<HoroscopeSummaryRow[] | null>(null);
   const [horoscopeListError, setHoroscopeListError] = useState<string | null>(null);
   const [horoscopeListLoading, setHoroscopeListLoading] = useState(true);
@@ -207,7 +206,6 @@ export default function CompatibilityMatchPage() {
 
   useEffect(() => {
     setExploreContentLanguage(uiLanguage);
-    setExploreHeaderLanguage(uiLanguage);
   }, [uiLanguage]);
 
   useEffect(() => {
@@ -778,13 +776,9 @@ export default function CompatibilityMatchPage() {
             <ZodiacSignExploreSection
               title="Explore Other Zodiac Signs"
               contentLanguage={exploreContentLanguage}
-              headerLanguage={exploreHeaderLanguage}
               signSlug={yourSign}
               isNepali={exploreContentLanguage === ELanguage.NEPALI}
-              onContentLanguageChange={lang => {
-                setExploreContentLanguage(lang);
-                setExploreHeaderLanguage(lang);
-              }}
+              onContentLanguageChange={setExploreContentLanguage}
             />
           </div>
 
