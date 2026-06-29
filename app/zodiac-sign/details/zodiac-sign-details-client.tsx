@@ -201,7 +201,7 @@ export function ZodiacSignDetailsClient() {
                 <div className="mt-6 flex lg:hidden items-center justify-center">
                   <Link
                     href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
-                    className="inline-flex w-full sm:w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
+                    className="flex w-fit mx-auto h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[24px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
                   >
                     Find {displayName} horoscope
                     <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
@@ -220,7 +220,7 @@ export function ZodiacSignDetailsClient() {
                 />
                 <Link
                   href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
-                  className="inline-flex w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px] lg:-translate-x-10"
+                  className="flex w-fit mx-auto h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[24px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
                 >
                   Find {displayName} horoscope
                   <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />

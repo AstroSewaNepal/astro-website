@@ -208,19 +208,19 @@ function HoroscopeDetailsContent() {
                       detail.horoscope.type?.toLowerCase(),
                     )
                       ? new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
-                          month: 'long',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })
                       : `${new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
-                          month: 'long',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })} - ${new Date(detail.horoscope.end_date).toLocaleDateString('en-US', {
-                          month: 'long',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}`}
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })} - ${new Date(detail.horoscope.end_date).toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}`}
                   </h2>
                 ) : (
                   <p className="mt-2 font-mukta font-medium text-[24px] leading-[30px] tracking-[0px] text-[#D47F2C]">
@@ -257,22 +257,22 @@ function HoroscopeDetailsContent() {
                           detail.horoscope.type?.toLowerCase(),
                         )
                           ? new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
-                              month: 'long',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })
                           : `${new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })} - ${new Date(detail.horoscope.end_date).toLocaleDateString(
+                            'en-US',
+                            {
                               month: 'long',
                               day: 'numeric',
                               year: 'numeric',
-                            })} - ${new Date(detail.horoscope.end_date).toLocaleDateString(
-                              'en-US',
-                              {
-                                month: 'long',
-                                day: 'numeric',
-                                year: 'numeric',
-                              },
-                            )}`}
+                            },
+                          )}`}
                         )
                       </span>
                     </h2>
@@ -293,9 +293,9 @@ function HoroscopeDetailsContent() {
                     />
                     <Link
                       href={zodiacDetailHref(validSign, uiLanguage)}
-                      className="inline-flex w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px] lg:-translate-x-10"
+                      className="flex w-fit mx-auto h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[24px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
                     >
-                      Know More About {capitalizeSign(validSign)} Zodiac
+                      Explore {capitalizeSign(validSign)}
                       <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
                     </Link>
                   </div>
@@ -359,7 +359,7 @@ function HoroscopeDetailsContent() {
                       contentLanguage={uiLanguage as ELanguage}
                       signSlug={(validSign ?? HOROSCOPE_SIGNS[0]) as HoroscopeSign}
                       isNepali={uiLanguage === ELanguage.NEPALI}
-                      onContentLanguageChange={() => {}}
+                      onContentLanguageChange={() => { }}
                     />
                   </div>
                 </div>
