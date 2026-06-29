@@ -493,6 +493,11 @@ const PersonSection = ({
       checked={unknownBirthTime}
       onChange={onToggleUnknownTime}
     />
+
+    <p className="font-mukta text-[10px] sm:text-[11px] md:text-[12px] lg:text-[13px] text-[#5D1409] mt-1 sm:mt-2 md:mt-3">
+      <span className="font-bold">Note:</span> Without time of birth, we can still achieve up to{' '}
+      <span className="font-bold">80% accurate</span> prediction
+    </p>
   </div>
 );
 

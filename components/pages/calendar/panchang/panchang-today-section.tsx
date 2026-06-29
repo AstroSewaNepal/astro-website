@@ -159,6 +159,9 @@ const PanchangTodaySection: React.FC = () => {
 
   const titleLine = panchanga ? buildPanchangaTitleLine(panchanga.table) : '—';
   const longDateLabel = formatEnglishLongDate(calendarDay);
+  const longDateLabelNoWeekday = longDateLabel.includes(',')
+    ? longDateLabel.replace(/^[^,]+,\s*/, '')
+    : longDateLabel;
   const displayDdMmYy = formatDdMmYyyy(calendarDay);
 
   const tithiObj = (panchanga?.table?.Tithi ?? null) as Record<string, unknown> | null;
@@ -356,8 +359,8 @@ const PanchangTodaySection: React.FC = () => {
               </div>
               <div className="border-b border-Trinary"></div>
               <div className="px-4 md:px-6 py-4">
-                <p className="text-[28px] leading-[34px] md:text-[40px] md:leading-[46px] font-bold font-mukta text-[#7b1c1c] mb-2 md:mb-3">
-                  {longDateLabel}
+                <p className="text-[20px] leading-[28px] md:text-[28px] md:leading-[36px] text-[#7b1c1c] font-medium mb-2 md:mb-3">
+                  {longDateLabelNoWeekday}
                 </p>
                 <p className="text-[20px] leading-[28px] md:text-[28px] md:leading-[36px] text-Trinary font-medium mb-2 md:mb-3">
                   {varaLabel}

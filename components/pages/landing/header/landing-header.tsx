@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import AstroSewaLogo from '@/components/logo';
-import TransparentBellIcon from '@/components/icons/bell';
 import UserLineIcon from '@/components/icons/user/user-line';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import LanguageEarthIcon from '@/components/icons/language/earth';
@@ -88,7 +87,7 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
         { title: 'Rashi Calculator', link: '/calculators/rashi-calculator' },
       ],
     },
-    { title: d.header.nav.aboutUs, link: '/about-us' },
+    { title: d.header.nav.aboutUs, link: '/about-us', children: [{ title: 'Download App', link: '/download-app' }] },
     { title: d.header.nav.blog, link: '/blogs' },
     {
       title: uiLanguage === ELanguage.NEPALI ? 'क्यालेन्डर' : 'Calendar',
@@ -112,19 +111,31 @@ function buildMobileNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[] 
 
 function desktopNavItemActive(pathname: string, item: NavItem): boolean {
   const path = item.link?.split('?')[0];
-  if (!path || path === '#' || path === '/') {
-    return false;
+
+  const matchesPath = (candidate: string) =>
+    pathname === candidate || pathname.startsWith(`${candidate}/`);
+
+  if (path) {
+    if (path === '/horoscope') {
+      return pathname.startsWith('/horoscope');
+    }
+    if (path === '/zodiac-sign') {
+      return pathname.startsWith('/zodiac-sign');
+    }
+    if (path === '/compatibility') {
+      return pathname.startsWith('/compatibility');
+    }
+
+    if (matchesPath(path)) {
+      return true;
+    }
   }
-  if (path === '/horoscope') {
-    return pathname.startsWith('/horoscope');
+
+  if (item.children?.some(child => child.link && matchesPath(child.link))) {
+    return true;
   }
-  if (path === '/zodiac-sign') {
-    return pathname.startsWith('/zodiac-sign');
-  }
-  if (path === '/compatibility') {
-    return pathname.startsWith('/compatibility');
-  }
-  return pathname === path || pathname.startsWith(`${path}/`);
+
+  return false;
 }
 
 const NavIcon = ({ onClick }: { onClick: () => void }) => {
@@ -307,9 +318,6 @@ function LandingHeaderClient() {
                 {d.header.signIn}
               </span>
             </Link>
-            <button className="flex-shrink-0 bg-primary p-2.5 rounded-full text-white max-h-fit">
-              <TransparentBellIcon />
-            </button>
           </div>
         </div>
 
@@ -579,9 +587,6 @@ function LandingHeaderFallback() {
               {d.header.signIn}
             </p>
           </Link>
-          <button className="bg-primary p-2.5 rounded-full text-white max-h-fit">
-            <TransparentBellIcon />
-          </button>
         </div>
       </div>
       {/* ✅ FIX applied to fallback as well */}

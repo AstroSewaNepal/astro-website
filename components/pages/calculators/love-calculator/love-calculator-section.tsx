@@ -216,7 +216,7 @@ export default function LoveCalculatorSection() {
                     <div>
                       <label
                         htmlFor="love-your-name"
-                        className="mb-2 block font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-medium text-[#141414]"
+                        className="mb-2 block font-mukta text-sm text-Trinary"
                       >
                         Your Name
                       </label>
@@ -224,7 +224,7 @@ export default function LoveCalculatorSection() {
                         <input
                           id="love-your-name"
                           className="min-w-0 flex-1 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] outline-none placeholder:text-[#464646]"
-                          placeholder="Rupak"
+                          placeholder="Enter your Full Name"
                           value={yourName}
                           onChange={e => {
                             setYourName(e.target.value);
@@ -252,6 +252,7 @@ export default function LoveCalculatorSection() {
                         }}
                         error={fieldErrors.yourBirthDate}
                         fullWidth={true}
+                        compact={true}
                       />
                     </div>
 
@@ -283,7 +284,7 @@ export default function LoveCalculatorSection() {
                     <div>
                       <label
                         htmlFor="love-partner-name"
-                        className="mb-2 block font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-medium text-[#141414]"
+                        className="mb-2 block font-mukta text-sm text-Trinary"
                       >
                         Partner&apos;s Name
                       </label>
@@ -291,7 +292,7 @@ export default function LoveCalculatorSection() {
                         <input
                           id="love-partner-name"
                           className="min-w-0 flex-1 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] outline-none placeholder:text-[#464646]"
-                          placeholder="Sarah"
+                          placeholder="Enter your Partner's Full Name"
                           value={partnerName}
                           onChange={e => {
                             setPartnerName(e.target.value);
@@ -319,6 +320,7 @@ export default function LoveCalculatorSection() {
                         }}
                         error={fieldErrors.partnerBirthDate}
                         fullWidth={true}
+                        compact={true}
                       />
                     </div>
 

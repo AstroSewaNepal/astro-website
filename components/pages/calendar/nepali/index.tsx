@@ -67,16 +67,15 @@ const MAX_NEPALI_YEAR = 2090;
 const clampNepaliYear = (year: number) =>
   Math.min(MAX_NEPALI_YEAR, Math.max(MIN_NEPALI_YEAR, year));
 
-const getAdjacentNepaliMonth = (year: number, month: number, offset: number) => {
-  const dateRef = new NepaliDate(year, month, 1);
-  dateRef.setMonth(month + offset);
-  return { year: clampNepaliYear(dateRef.getYear()), month: dateRef.getMonth() };
-};
-
 const getCellDisplayDay = (cell: CalendarCell) => {
   const dateRef = new NepaliDate(cell.year, cell.month, cell.day);
   return dateRef.format('DD', 'np');
 };
+
+const nepaliYears = Array.from(
+  { length: MAX_NEPALI_YEAR - MIN_NEPALI_YEAR + 1 },
+  (_, i) => MIN_NEPALI_YEAR + i,
+);
 
 const NepaliCalendarPageContent: React.FC = () => {
   const [visibleMonth, setVisibleMonth] = useState(() => {
@@ -85,7 +84,6 @@ const NepaliCalendarPageContent: React.FC = () => {
   });
 
   const [selectedDate, setSelectedDate] = useState<CalendarCell | null>(null);
-  const [calendarMode] = useState<'BS' | 'AD'>('BS');
   const [panchangData, setPanchangData] = useState<PanchangData | null>(null);
   const [panchangLoading, setPanchangLoading] = useState(false);
   const [panchangError, setPanchangError] = useState<string | null>(null);
@@ -95,6 +93,7 @@ const NepaliCalendarPageContent: React.FC = () => {
   const clickRectRef = useRef<DOMRect | null>(null);
   const clickTargetRef = useRef<HTMLElement | null>(null);
   const calendarRef = useRef<HTMLElement | null>(null);
+
   const computePlacement = useCallback(() => {
     if (!selectedDate || !dialogRef.current || !clickRectRef.current) return;
 
@@ -102,7 +101,6 @@ const NepaliCalendarPageContent: React.FC = () => {
     const dRect = dialogRef.current!.getBoundingClientRect();
     const margin = 12;
 
-    // compute calendar container bounds in document coordinates (if available)
     let containerTop = 0;
     let containerLeft = 0;
     let containerRight = document.documentElement.clientWidth;
@@ -114,41 +112,34 @@ const NepaliCalendarPageContent: React.FC = () => {
       containerRight = containerLeft + c.width;
       containerBottom = containerTop + c.height;
     } else {
-      // document bounds
       containerTop = 0;
       containerLeft = 0;
       containerRight = document.documentElement.scrollWidth;
       containerBottom = document.documentElement.scrollHeight;
     }
 
-    // Mobile: center horizontally and place below if possible
     const isMobile = window.innerWidth <= 640;
 
     let top: number;
     if (!isMobile) {
-      // Try above
       top = rect.top - dRect.height - margin;
       if (top < margin) top = rect.bottom + margin;
     } else {
-      // On mobile, prefer placing below the cell; if no space, place at margin
       top = rect.bottom + margin;
       if (top + dRect.height + margin > window.innerHeight) {
         top = Math.max(margin, window.innerHeight - dRect.height - margin);
       }
     }
 
-    // Horizontal centering (viewport bounds)
     let left = rect.left + (rect.width - dRect.width) / 2;
     const viewportMinLeft = margin;
     const viewportMaxLeft = window.innerWidth - dRect.width - margin;
     if (left < viewportMinLeft) left = viewportMinLeft;
     if (left > viewportMaxLeft) left = viewportMaxLeft;
 
-    // convert viewport coords to document coords so portal element scrolls with page
     let docTop = top + window.scrollY;
     let docLeft = left + window.scrollX;
 
-    // Clamp within calendar container bounds (document coords)
     const minLeft = containerLeft + margin;
     const maxLeft = Math.max(containerLeft + margin, containerRight - dRect.width - margin);
     if (docLeft < minLeft) docLeft = minLeft;
@@ -159,7 +150,6 @@ const NepaliCalendarPageContent: React.FC = () => {
     if (docTop < minTop) docTop = Math.max(minTop, rect.bottom + window.scrollY + margin);
     if (docTop > maxTop) docTop = maxTop;
 
-    // Only update if position changed significantly to avoid jitter
     const prev = lastDialogPosRef.current;
     const changed = !prev || Math.abs(prev.top - docTop) > 1 || Math.abs(prev.left - docLeft) > 1;
     if (changed) {
@@ -172,12 +162,13 @@ const NepaliCalendarPageContent: React.FC = () => {
       });
     }
   }, [selectedDate]);
+
   const lastDialogPosRef = useRef<{ top: number; left: number } | null>(null);
   const rafRef = useRef<number | null>(null);
 
   const today = useMemo(() => NepaliDate.now(), []);
 
-  const { yearNp, adRangeLabel, cells } = useMemo(() => {
+  const { adRangeLabel, cells } = useMemo(() => {
     const safeYear = clampNepaliYear(visibleMonth.year);
     const firstDay = new NepaliDate(safeYear, visibleMonth.month, 1);
     const firstWeekDay = firstDay.getDay();
@@ -241,27 +232,19 @@ const NepaliCalendarPageContent: React.FC = () => {
 
     const cells = [...prevCells, ...currentCells, ...nextCells];
 
+    // Build AD range label: e.g. "Jun / Jul 2026"
     const monthStartAd = firstDay.toJsDate();
     const monthEndAd = new NepaliDate(visibleMonth.year, visibleMonth.month, totalDays).toJsDate();
-    const adRangeLabel = `${monthStartAd.toLocaleString('en-US', { month: 'long' })} / ${monthEndAd.toLocaleString(
-      'en-US',
-      { month: 'long' },
-    )} ${monthEndAd.getFullYear()}`;
+    const startMonthStr = monthStartAd.toLocaleString('en-US', { month: 'short' });
+    const endMonthStr = monthEndAd.toLocaleString('en-US', { month: 'short' });
+    const endYear = monthEndAd.getFullYear();
+    const adRangeLabel =
+      startMonthStr === endMonthStr
+        ? `${startMonthStr} ${endYear}`
+        : `${startMonthStr} / ${endMonthStr} ${endYear}`;
 
-    return {
-      yearNp: firstDay.format('YYYY', 'np'),
-      adRangeLabel,
-      cells,
-    };
+    return { adRangeLabel, cells };
   }, [today, visibleMonth.month, visibleMonth.year]);
-
-  const handlePrevMonth = () => {
-    setVisibleMonth(prev => getAdjacentNepaliMonth(prev.year, prev.month, -1));
-  };
-
-  const handleNextMonth = () => {
-    setVisibleMonth(prev => getAdjacentNepaliMonth(prev.year, prev.month, 1));
-  };
 
   const handlePrevYear = () => {
     setVisibleMonth(prev => ({ year: clampNepaliYear(prev.year - 1), month: prev.month }));
@@ -279,7 +262,6 @@ const NepaliCalendarPageContent: React.FC = () => {
   const handleDateClick = (cell: CalendarCell, event: React.MouseEvent<HTMLDivElement>) => {
     const el = event.currentTarget as HTMLElement;
 
-    // If clicking the same date that's already selected, ignore to avoid repositioning.
     if (selectedDate && selectedDate.key === cell.key) {
       return;
     }
@@ -287,20 +269,14 @@ const NepaliCalendarPageContent: React.FC = () => {
     const rect = el.getBoundingClientRect();
     clickTargetRef.current = el;
     clickRectRef.current = rect;
-    // hide dialog until placement computed to avoid flicker
     setDialogVisible(false);
-    // set initial position using document coordinates so popup scrolls with page
     setDialogPosition({ top: rect.top + window.scrollY, left: rect.left + window.scrollX });
     setSelectedDate(cell);
   };
 
-  // Recompute dialog placement when opened or on resize/scroll
   useEffect(() => {
     if (!selectedDate) return;
-    // initial compute (if dialog already mounted)
     computePlacement();
-
-    // recompute only on window resize
     window.addEventListener('resize', computePlacement);
     return () => {
       window.removeEventListener('resize', computePlacement);
@@ -310,7 +286,6 @@ const NepaliCalendarPageContent: React.FC = () => {
     };
   }, [selectedDate, computePlacement]);
 
-  // Fetch panchang data when a date is selected
   useEffect(() => {
     if (!selectedDate) {
       setPanchangData(null);
@@ -377,50 +352,21 @@ const NepaliCalendarPageContent: React.FC = () => {
           ref={calendarRef}
           className="rounded-xl sm:rounded-2xl md:rounded-3xl border border-[#ead9cf] bg-white shadow-[0_10px_24px_rgba(97,21,8,0.1)] sm:shadow-[0_14px_32px_rgba(97,21,8,0.12)] md:shadow-[0_18px_40px_rgba(97,21,8,0.12)] overflow-hidden"
         >
-          <div className="bg-[linear-gradient(135deg,#611508_0%,#7a2516_45%,#b04832_100%)] text-secondary px-2 sm:px-3 md:px-4 lg:px-6 py-2 sm:py-3 md:py-4 lg:py-6">
-            {/* One-line Header Layout */}
-            <div className="grid grid-cols-[auto_1fr_auto] gap-1 sm:gap-2 md:gap-3 lg:gap-4 items-center">
-              {/* Left: Year Display */}
-              <div className="flex justify-start">
-                <p className="font-mukta text-[12px] sm:text-[16px] md:text-[20px] lg:text-[26px] font-semibold text-[#fff5ee] opacity-95 whitespace-nowrap">
-                  {calendarMode === 'BS' ? `वि.सं ${yearNp}` : `AD ${new Date().getFullYear()}`}
+          {/* ── Calendar Header ── */}
+          <div className="bg-[linear-gradient(135deg,#611508_0%,#7a2516_45%,#b04832_100%)] px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-5">
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3">
+
+              {/* Left: AD date range */}
+              <div className="flex items-center justify-start">
+                <p className="font-mukta text-[12px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-[#fff5ee] opacity-90 whitespace-nowrap">
+                  {adRangeLabel}
                 </p>
               </div>
 
-              {/* Center: Month Navigation */}
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2 md:gap-3 text-center">
-                <button
-                  type="button"
-                  onClick={handlePrevMonth}
-                  className="flex h-7 sm:h-8 md:h-9 lg:h-10 w-7 sm:w-8 md:w-9 lg:w-10 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white shadow-sm transition-colors hover:bg-white/15 active:bg-white/25"
-                  aria-label="Previous month"
-                >
-                  <ArrowLeft className="h-3 sm:h-3.5 md:h-4 lg:h-5 w-3 sm:w-3.5 md:w-4 lg:w-5" />
-                </button>
-                <div className="flex items-center justify-center">
-                  <p className="font-sahitya text-[18px] sm:text-[22px] md:text-[32px] lg:text-[44px] font-bold leading-tight text-[#fffaf5]">
-                    {calendarMode === 'BS' ? nepaliMonthNames[visibleMonth.month] : adRangeLabel}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleNextMonth}
-                  className="flex h-7 sm:h-8 md:h-9 lg:h-10 w-7 sm:w-8 md:w-9 lg:w-10 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white shadow-sm transition-colors hover:bg-white/15 active:bg-white/25"
-                  aria-label="Next month"
-                >
-                  <ArrowRight className="h-3 sm:h-3.5 md:h-4 lg:h-5 w-3 sm:w-3.5 md:w-4 lg:w-5" />
-                </button>
-              </div>
+              {/* Center: < Year▼ Month▼ > */}
+              <div className="flex items-center justify-center gap-1.5 sm:gap-2 md:gap-3">
 
-              {/* Right: Year Controls + Today */}
-              <div className="flex items-center justify-end gap-1 sm:gap-2 md:gap-3">
-                <button
-                  type="button"
-                  onClick={handleGoToToday}
-                  className="inline-flex items-center justify-center rounded-full bg-[#f8f3df] px-2 sm:px-3 md:px-4 lg:px-5 py-0.5 sm:py-1 md:py-1.5 lg:py-2 text-[10px] sm:text-[11px] md:text-[13px] lg:text-[15px] font-semibold text-[#611508] shadow-[0_2px_6px_rgba(97,21,8,0.1)] sm:shadow-[0_4px_10px_rgba(97,21,8,0.12)] md:shadow-[0_6px_14px_rgba(97,21,8,0.15)] lg:shadow-[0_8px_18px_rgba(97,21,8,0.18)] transition-colors hover:bg-white active:shadow-[0_1px_3px_rgba(97,21,8,0.15)] whitespace-nowrap"
-                >
-                  Today
-                </button>
+                {/* < Prev Year */}
                 <button
                   type="button"
                   onClick={handlePrevYear}
@@ -429,6 +375,57 @@ const NepaliCalendarPageContent: React.FC = () => {
                 >
                   <ArrowLeft className="h-3 sm:h-3.5 md:h-4 lg:h-5 w-3 sm:w-3.5 md:w-4 lg:w-5" />
                 </button>
+
+                {/* Year dropdown */}
+                <div className="relative">
+                  <select
+                    value={visibleMonth.year}
+                    onChange={e =>
+                      setVisibleMonth(prev => ({ ...prev, year: Number(e.target.value) }))
+                    }
+                    className="appearance-none bg-white/15 border border-white/30 text-white rounded-lg pl-2 sm:pl-3 pr-6 sm:pr-7 py-1 sm:py-1.5 font-mukta text-[13px] sm:text-[16px] md:text-[19px] font-semibold cursor-pointer hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white/40"
+                    style={{ colorScheme: 'dark' }}
+                  >
+                    {nepaliYears.map(yr => {
+                      const npYr = new NepaliDate(yr, 0, 1).format('YYYY', 'np');
+                      return (
+                        <option key={yr} value={yr} className="bg-[#7a2516] text-white">
+                          {npYr}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <svg className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-white/80" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </div>
+
+                {/* Month dropdown */}
+                <div className="relative">
+                  <select
+                    value={visibleMonth.month}
+                    onChange={e =>
+                      setVisibleMonth(prev => ({ ...prev, month: Number(e.target.value) }))
+                    }
+                    className="appearance-none bg-white/15 border border-white/30 text-white rounded-lg pl-2 sm:pl-3 pr-6 sm:pr-7 py-1 sm:py-1.5 font-sahitya text-[14px] sm:text-[18px] md:text-[22px] font-bold cursor-pointer hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white/40"
+                    style={{ colorScheme: 'dark' }}
+                  >
+                    {nepaliMonthNames.map((name, idx) => (
+                      <option
+                        key={idx}
+                        value={idx}
+                        className="bg-[#7a2516] text-white font-normal text-base"
+                      >
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                  <svg className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-white/80" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </div>
+
+                {/* > Next Year */}
                 <button
                   type="button"
                   onClick={handleNextYear}
@@ -437,10 +434,24 @@ const NepaliCalendarPageContent: React.FC = () => {
                 >
                   <ArrowRight className="h-3 sm:h-3.5 md:h-4 lg:h-5 w-3 sm:w-3.5 md:w-4 lg:w-5" />
                 </button>
+
               </div>
+
+              {/* Right: Today button */}
+              <div className="flex items-center justify-end">
+                <button
+                  type="button"
+                  onClick={handleGoToToday}
+                  className="inline-flex items-center justify-center rounded-full bg-[#f8f3df] px-2 sm:px-3 md:px-4 lg:px-5 py-0.5 sm:py-1 md:py-1.5 lg:py-2 text-[10px] sm:text-[11px] md:text-[13px] lg:text-[15px] font-semibold text-[#611508] shadow-[0_2px_6px_rgba(97,21,8,0.1)] sm:shadow-[0_4px_10px_rgba(97,21,8,0.12)] md:shadow-[0_6px_14px_rgba(97,21,8,0.15)] lg:shadow-[0_8px_18px_rgba(97,21,8,0.18)] transition-colors hover:bg-white active:shadow-[0_1px_3px_rgba(97,21,8,0.15)] whitespace-nowrap"
+                >
+                  Today
+                </button>
+              </div>
+
             </div>
           </div>
 
+          {/* ── Week Day Headers ── */}
           <div className="overflow-x-auto">
             <div className="grid grid-cols-7 border-b border-[#c7c7c7]">
               {weekDays.map(weekDay => (
@@ -459,6 +470,7 @@ const NepaliCalendarPageContent: React.FC = () => {
             </div>
           </div>
 
+          {/* ── Calendar Grid ── */}
           <div className="overflow-x-auto">
             <div className="grid grid-cols-7">
               {cells.map((date, idx) => (
@@ -498,7 +510,7 @@ const NepaliCalendarPageContent: React.FC = () => {
         </section>
       </div>
 
-      {/* Date Info Card Dialog */}
+      {/* ── Date Info Card Dialog ── */}
       {selectedDate &&
         typeof document !== 'undefined' &&
         createPortal(

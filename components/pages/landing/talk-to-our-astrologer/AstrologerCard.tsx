@@ -192,7 +192,7 @@ const AstrologerCard = memo(function AstrologerCard({
           {features.map((feature, index) => (
             <div
               className="flex min-h-[34px] sm:min-h-[52px] lg:min-h-[60px] items-center gap-1 rounded-[14px] sm:rounded-2xl lg:rounded-3xl border border-solid border-[#79787A]/70 bg-white/40 px-2 py-0.5 sm:gap-1.5 sm:px-2.5 sm:py-2 lg:gap-2 lg:px-3 lg:py-2.5"
-              key={index}
+              key={`${feature.title || 'feature'}-${index}`}
             >
               <Image
                 src={feature.icon}

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import DashaCalculatorResultSection from '@/components/pages/calculators/dasha-calculator/dasha-calculator-result-section';
 import CalculatorChooserSection from '@/components/pages/calculators/shared/calculator-chooser-section';
 import Clarity from '@/components/pages/landing/clarity';
+import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
@@ -14,12 +15,13 @@ export const metadata: Metadata = {
 
 export default function DashaCalculatorResultPage() {
   return (
-    <main className="space-y-12">
+    <main className="container mx-auto space-y-12">
       <DashaCalculatorResultSection />
-      <section className="container mx-auto px-4 sm:px-6 lg:px-0 pb-8 md:pb-12">
+      <section className="px-4 sm:px-6 lg:px-0 pb-8 md:pb-12">
         <CalculatorChooserSection exclude="dasha" />
       </section>
       <Clarity />
+      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
       <Services />
       <DownloadApp />
     </main>

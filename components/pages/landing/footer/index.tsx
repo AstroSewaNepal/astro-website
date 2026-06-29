@@ -169,7 +169,9 @@ const Footer: React.FC = () => {
                     About Us
                   </Link>
                   <a
-                    href="mailto:support@astrosewa.com"
+                    href="https://wa.me/9779818080676?text=Hello%20AstroSewa%20team%2C%20I%20would%20like%20to%20discuss%20your%20services%20and%20need%20some%20assistance%20with%20my%20astrology%20requirements.%20Please%20let%20me%20know%20the%20best%20way%20to%20proceed."
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="font-mukta text-[18px] font-medium text-[#F8F3DF] opacity-75 hover:opacity-100 transition-opacity"
                   >
                     Contact Us
@@ -208,7 +210,9 @@ const Footer: React.FC = () => {
                       <PhoneIcon className="h-[22px] w-[22px] text-[#F8F3DF]" />
                     </div>
                     <a
-                      href="tel:+9779818080676"
+                      href="https://wa.me/9779818080676?text=Hello%20AstroSewa%20team%2C%20I%20would%20like%20to%20discuss%20your%20services%20and%20need%20some%20assistance%20with%20my%20astrology%20requirements.%20Please%20let%20me%20know%20the%20best%20way%20to%20proceed."
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="font-mukta text-[18px] font-medium text-[#F8F3DF] hover:opacity-75 transition-opacity"
                     >
                       +977 9818080676

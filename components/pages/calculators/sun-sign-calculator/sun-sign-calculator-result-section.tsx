@@ -4,9 +4,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { IoShareOutline } from 'react-icons/io5';
 
-import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
-import { formatDobDisplay, formatGenderDisplay } from '@/lib/calculators/calculator-form-types';
+import {
+  formatBirthTimeDisplay,
+  formatDobDisplay,
+  formatGenderDisplay,
+  type CalculatorFormValues,
+} from '@/lib/calculators/calculator-form-types';
 import {
   getReportDisplayName,
   getSunSignMeta,
@@ -115,6 +120,70 @@ export default function SunSignCalculatorResultSection() {
     router.push('/calculators/sun-sign-calculator');
   };
 
+  const copyTextToClipboard = async (text: string) => {
+    if (typeof window === 'undefined') return false;
+
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        // Fall back to legacy copy behavior below.
+      }
+    }
+
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.setAttribute('readonly', '');
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    textArea.style.top = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      return document.execCommand('copy');
+    } catch {
+      return false;
+    } finally {
+      document.body.removeChild(textArea);
+    }
+  };
+
+  const handleShareReport = async () => {
+    if (typeof window === 'undefined') return;
+
+    const shareData = {
+      title: document.title || 'AstroSewa Sun Sign Result',
+      text: 'Check out my Sun Sign result on AstroSewa.',
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      const copied = await copyTextToClipboard(shareData.url);
+      if (copied) {
+        return;
+      }
+
+      window.prompt('Copy this result link:', shareData.url);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+
+      const copied = await copyTextToClipboard(shareData.url);
+      if (!copied) {
+        window.prompt('Copy this result link:', shareData.url);
+      }
+    }
+  };
+
   if (!loaded) {
     return (
       <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
@@ -149,9 +218,7 @@ export default function SunSignCalculatorResultSection() {
   const meta = getSunSignMeta(data.sunSign);
   const displayName = getReportDisplayName(data.fullName);
   const dobDisplay = formatDobDisplay(data.birthDate);
-  const birthTimeDisplay = data.dontKnowTime
-    ? 'Unknown'
-    : `${data.birthTimeHH}:${data.birthTimeMM} ${data.birthTimeAMPM.toUpperCase()}`;
+  const birthTimeDisplay = formatBirthTimeDisplay(data);
   const genderDisplay = formatGenderDisplay(data.gender);
 
   if (!meta) {
@@ -204,7 +271,7 @@ export default function SunSignCalculatorResultSection() {
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-[#e4d5c9] bg-[#FFF5E3] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+          <div className="rounded-[24px] border border-[#e4d5c9] bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
             <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409]">Sun sign summary</h2>
             <p className="mt-4 text-[15px] text-[#3d352f] md:text-[16px]">
               {meta.englishName} is your Vedic sun sign. It is a {meta.element.toLowerCase()} sign
@@ -220,11 +287,19 @@ export default function SunSignCalculatorResultSection() {
           <SunSignReportCard meta={meta} />
         </div>
 
-        <div className="mt-10 flex justify-center lg:mt-12">
+        <div className="mt-10 flex flex-row items-center gap-3 justify-center lg:mt-12">
+          <button
+            type="button"
+            onClick={handleShareReport}
+            className="inline-flex min-h-[52px] w-[calc(50%-0.375rem)] items-center justify-center rounded-full bg-[#5D1409] px-4 font-mukta text-[15px] font-bold text-white transition-opacity hover:opacity-95 sm:w-auto sm:px-8 sm:text-[16px]"
+          >
+            <IoShareOutline className="mr-2 text-lg" />
+            Share Your Report
+          </button>
           <button
             type="button"
             onClick={handleCalculateAgain}
-            className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[#5D1409] bg-[#FFF5E3] px-8 font-mukta text-[16px] font-bold text-[#5D1409] transition-colors hover:bg-[#f7e7d2]"
+            className="inline-flex min-h-[52px] w-[calc(50%-0.375rem)] items-center justify-center rounded-full border border-[#5D1409] bg-[#FFF5E3] px-4 font-mukta text-[15px] font-bold text-[#5D1409] transition-colors hover:bg-[#f7e7d2] sm:w-auto sm:px-8 sm:text-[16px]"
           >
             Calculate Again
           </button>

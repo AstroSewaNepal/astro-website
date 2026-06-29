@@ -108,10 +108,10 @@ export default function CalculatorSection({
                 </div>
               ))}
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-row items-center gap-3">
                 <button
                   type="submit"
-                  className="min-h-[52px] rounded-full bg-[#5D1409] px-6 py-3.5 font-mukta text-[17px] font-bold text-white transition hover:opacity-95 disabled:opacity-60"
+                  className="flex-1 min-h-[52px] rounded-full bg-[#5D1409] px-6 py-3.5 font-mukta text-[17px] font-bold text-white transition hover:opacity-95 disabled:opacity-60"
                   disabled={!canSubmit}
                 >
                   {buttonLabel}
@@ -122,7 +122,7 @@ export default function CalculatorSection({
                     setValues(Object.fromEntries(fields.map(field => [field.id, ''])));
                     setSubmitted(false);
                   }}
-                  className="min-h-[52px] rounded-full border border-[#5D1409] bg-[#fff9ec] px-6 py-3.5 font-mukta text-[17px] font-bold text-[#5D1409] transition hover:bg-[#f5e9d7]"
+                  className="flex-1 min-h-[52px] rounded-full border border-[#5D1409] bg-[#fff9ec] px-6 py-3.5 font-mukta text-[17px] font-bold text-[#5D1409] transition hover:bg-[#f5e9d7]"
                 >
                   Reset
                 </button>
