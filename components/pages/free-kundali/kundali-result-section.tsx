@@ -5,7 +5,6 @@ import Link from 'next/link';
 import {
   NorthIndianOpenChartWithPlanets,
   OPEN_CHART_FRAME_CLASS,
-  compactDegreeInSign,
 } from '@/components/pages/free-kundali/north-indian-open-chart';
 import DoshaRemediesSection from '@/components/pages/free-kundali/dosha-remedies-section';
 import {
@@ -609,40 +608,22 @@ const KundaliResultSection: React.FC = () => {
                       <tbody>
                         {(result.planetRows ?? []).map((row, rowIdx) => (
                           <tr key={`planet-row-${rowIdx}`}>
-                            {row.map((cell, cellIdx) => {
-                              // For the '° in sign' column (index 2) prefer nirayana longitude (index 3)
-                              let display = cell as string;
-                              let titleAttr: string | undefined = undefined;
-                              if (cellIdx === 2) {
-                                const signDeg = String(row[2] ?? '');
-                                const nirayana = String(row[3] ?? '');
-                                display =
-                                  nirayana && nirayana !== '-'
-                                    ? compactDegreeInSign(nirayana)
-                                    : compactDegreeInSign(signDeg);
-                                if (signDeg && nirayana && signDeg !== '-' && nirayana !== '-') {
-                                  titleAttr = `Sign: ${signDeg} · Nirayana: ${nirayana}`;
-                                }
-                              }
-
-                              return (
-                                <td
-                                  key={`planet-cell-${rowIdx}-${cellIdx}`}
-                                  title={titleAttr}
-                                  className={`border-b border-r border-[#f0e6d0] px-2 py-1.5 align-top font-mukta text-xs leading-snug last:border-r-0 sm:px-3 sm:py-2 sm:text-sm md:leading-normal ${
-                                    cellIdx === 0
-                                      ? `sticky left-0 z-10 min-w-[4.5rem] whitespace-nowrap font-semibold text-[#720A0B] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] ${
-                                          rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
-                                        }`
-                                      : `max-w-[8.5rem] break-words text-[#2d2d2d] sm:max-w-[11rem] md:max-w-none tabular-nums ${
-                                          rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
-                                        }`
-                                  }`}
-                                >
-                                  {display}
-                                </td>
-                              );
-                            })}
+                            {row.map((cell, cellIdx) => (
+                              <td
+                                key={`planet-cell-${rowIdx}-${cellIdx}`}
+                                className={`border-b border-r border-[#f0e6d0] px-2 py-1.5 align-top font-mukta text-xs leading-snug last:border-r-0 sm:px-3 sm:py-2 sm:text-sm md:leading-normal ${
+                                  cellIdx === 0
+                                    ? `sticky left-0 z-10 min-w-[4.5rem] whitespace-nowrap font-semibold text-[#720A0B] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] ${
+                                        rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
+                                      }`
+                                    : `max-w-[8.5rem] break-words text-[#2d2d2d] sm:max-w-[11rem] md:max-w-none tabular-nums ${
+                                        rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
+                                      }`
+                                }`}
+                              >
+                                {cell}
+                              </td>
+                            ))}
                           </tr>
                         ))}
                       </tbody>

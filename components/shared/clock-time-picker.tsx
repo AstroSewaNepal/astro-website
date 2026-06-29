@@ -264,29 +264,24 @@ export function ClockTimePicker({
       ? `${pad(hour)} : ${pad(minute)} ${draft.ampm.toUpperCase()}`
       : 'hh / mm / am';
 
-  const labelClass =
-    variant === 'calculator'
-      ? 'block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]'
-      : 'block font-mukta text-[14px] text-primary mb-1.5';
+  const labelClass = variant === 'calculator'
+    ? 'block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]'
+    : 'block font-mukta text-[14px] text-primary mb-1.5';
 
   const buttonClass = clsx(
     'w-full flex items-center justify-between transition-colors',
     variant === 'calculator'
       ? clsx(
           'rounded-[32px] border-2 sm:border bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal',
-          open
-            ? 'border-[#A13924] ring-2 ring-[#A13924]/10'
-            : error
-              ? 'border-red-600'
-              : 'border-[#BE7B71]',
-          draft.hh && draft.mm ? 'text-[#2f2f2f]' : 'text-[#464646]',
+          open ? 'border-[#A13924] ring-2 ring-[#A13924]/10' : error ? 'border-red-600' : 'border-[#BE7B71]',
+          draft.hh && draft.mm ? 'text-[#2f2f2f]' : 'text-[#464646]'
         )
       : clsx(
           'rounded-full border px-4 py-2.5 font-mukta text-[15px]',
           open ? 'border-primary' : error ? 'border-red-500' : 'border-[#c9b9aa]',
-          'text-primary font-medium',
+          'text-primary font-medium'
         ),
-    disabled && 'opacity-50 pointer-events-none',
+    disabled && 'opacity-50 pointer-events-none'
   );
 
   return (
@@ -298,11 +293,7 @@ export function ClockTimePicker({
         onClick={() => setOpen(o => !o)}
         className={buttonClass}
       >
-        <span
-          className={
-            variant === 'calculator' ? 'flex-1 text-left min-w-0' : 'text-primary font-medium'
-          }
-        >
+        <span className={variant === 'calculator' ? 'flex-1 text-left min-w-0' : 'text-primary font-medium'}>
           {displayVal}
         </span>
         <svg
@@ -312,7 +303,7 @@ export function ClockTimePicker({
           fill="none"
           stroke={variant === 'calculator' ? 'currentColor' : '#720A0B'}
           strokeWidth="1.8"
-          className={clsx('opacity-60', variant === 'calculator' && 'text-[#5D1409]')}
+          className={clsx("opacity-60", variant === 'calculator' && 'text-[#5D1409]')}
           aria-hidden="true"
         >
           <circle cx="12" cy="12" r="10" />
@@ -321,10 +312,7 @@ export function ClockTimePicker({
       </button>
 
       {error ? (
-        <p
-          className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]"
-          role="alert"
-        >
+        <p className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]" role="alert">
           {error}
         </p>
       ) : null}

@@ -520,6 +520,7 @@ const KundaliMatchingFormSection: React.FC = () => {
   const [womanSelectedCity, setWomanSelectedCity] = useState<CitySearchResult | null>(null);
 
   const nameRegex = /^[A-Za-z ]+$/;
+  const placeRegex = /^[A-Za-z\s,.'-]+$/;
 
   /** Validate one person's fields. Returns parsed data or null, populates errorsOut. */
   const validatePerson = (
@@ -568,6 +569,10 @@ const KundaliMatchingFormSection: React.FC = () => {
     // Birth place
     if (!birthPlace) {
       errorsOut.birthPlace = 'Birth place is required.';
+      valid = false;
+    } else if (!placeRegex.test(birthPlace) || !/[A-Za-z]/.test(birthPlace)) {
+      errorsOut.birthPlace =
+        'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       valid = false;
     }
 

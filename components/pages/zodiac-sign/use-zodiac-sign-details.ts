@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 
-import { fetchAstroSewaZodiacSignBySlug } from '@/lib/api/zodiac-signs';
+import { fetchVedastroZodiacSignBySlug } from '@/lib/api/vedastro/zodiac-sign';
 import type { HoroscopeSign } from '@/lib/types/horoscope';
-import type { AstroSewaZodiacSignResponse } from '@/lib/types/zodiac-signs';
+import type { VedastroZodiacSignRow } from '@/lib/types/vedastro';
+import { unwrapResult } from '@/lib/utils/vedastro-result';
 
 export function useZodiacSignDetails(slug: HoroscopeSign) {
-  const [row, setRow] = useState<AstroSewaZodiacSignResponse | null>(null);
+  const [row, setRow] = useState<VedastroZodiacSignRow | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +19,8 @@ export function useZodiacSignDetails(slug: HoroscopeSign) {
 
     (async () => {
       try {
-        const data = await fetchAstroSewaZodiacSignBySlug(slug);
+        const envelope = await fetchVedastroZodiacSignBySlug(slug);
+        const data = unwrapResult(envelope);
         if (!cancelled) {
           setRow(data);
         }

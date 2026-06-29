@@ -79,7 +79,7 @@ const horoscope = {
         year: 'Yearly',
       },
       sections: {
-        general: 'Summary',
+        general: 'General',
         love: 'Love & Relationships',
         career: 'Career & Finance',
         health: 'Health & Wellness',
