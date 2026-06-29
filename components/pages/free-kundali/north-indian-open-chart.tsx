@@ -112,15 +112,15 @@ const PLANET_ABBR: Record<string, string> = {
 const HOUSE_ANCHORS: Record<number, { leftPct: number; topPct: number; widthPct: number }> = {
   1: { leftPct: 50, topPct: 25, widthPct: 14 },
   2: { leftPct: 30, topPct: 10, widthPct: 10 },
-  3: { leftPct: 12.5, topPct: 32, widthPct: 14 },
-  4: { leftPct: 25, topPct: 50, widthPct: 14 },
-  5: { leftPct: 13.5, topPct: 74, widthPct: 14 },
-  6: { leftPct: 35, topPct: 90, widthPct: 14 },
-  7: { leftPct: 50, topPct: 75, widthPct: 14 },
+  3: { leftPct: 9, topPct: 28, widthPct: 14 },
+  4: { leftPct: 30, topPct: 48, widthPct: 14 },
+  5: { leftPct: 13, topPct: 70, widthPct: 14 },
+  6: { leftPct: 25, topPct: 87, widthPct: 14 },
+  7: { leftPct: 50, topPct: 68, widthPct: 14 },
   8: { leftPct: 69.5, topPct: 90, widthPct: 14 },
-  9: { leftPct: 90, topPct: 75, widthPct: 16 },
+  9: { leftPct: 89, topPct: 70, widthPct: 16 },
   10: { leftPct: 75, topPct: 50, widthPct: 14 },
-  11: { leftPct: 92, topPct: 30, widthPct: 10 },
+  11: { leftPct: 90, topPct: 25, widthPct: 10 },
   12: { leftPct: 72, topPct: 9, widthPct: 17 },
 };
 
@@ -323,7 +323,7 @@ export function NorthIndianOpenChartWithPlanets({
       />
       {imgFit ? (
         <div
-          className="pointer-events-none absolute"
+          className="pointer-events-none absolute overflow-hidden"
           style={{
             left: imgFit.left,
             top: imgFit.top,
@@ -345,40 +345,65 @@ export function NorthIndianOpenChartWithPlanets({
                 style={{
                   left: `${anchor.leftPct}%`,
                   top: `${anchor.topPct}%`,
-                  width: `${anchor.widthPct}%`,
-                  minWidth: '5rem',
+                  width: `${anchor.widthPct * 0.9}%`,
+                  minWidth: '4rem',
+                  minHeight: '6rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0.1rem',
+                  textAlign: 'center',
+                  boxSizing: 'border-box',
                 }}
               >
                 {signLabel ? (
                   <span
-                    className="font-mukta font-semibold leading-none text-primary [text-shadow:0_0_4px_rgba(255,255,255,0.9)]"
-                    style={{ fontSize: Math.round(fzSign * dense), marginTop: 1 }}
+                    className="font-mukta font-semibold text-primary [text-shadow:0_0_4px_rgba(255,255,255,0.9)]"
+                    style={{ fontSize: Math.round(fzSign * dense), lineHeight: 1, marginBottom: '0.18rem' }}
                   >
                     {signLabel}
                   </span>
                 ) : null}
-                {planets.map(p => (
+                {planets.length > 0 ? (
                   <div
-                    key={p.planet}
-                    className="mt-[3px] flex max-w-full items-center justify-center break-words"
+                    className="flex flex-col items-center justify-center gap-1"
+                    style={{ width: '100%', maxHeight: '4rem', overflow: 'hidden' }}
                   >
-                    <span
-                      className="font-mukta font-semibold leading-[1.08] tracking-tight text-primary [text-shadow:0_0_4px_rgba(255,255,255,0.9)]"
-                      style={{ fontSize: Math.round(fzPlanet * dense) }}
-                    >
-                      {p.line1}
-                    </span>
+                    {planets.map(p => (
+                      <span
+                        key={p.planet}
+                        className="font-mukta font-semibold tracking-tight text-primary [text-shadow:0_0_4px_rgba(255,255,255,0.9)]"
+                        style={{
+                          fontSize: Math.round(fzPlanet * dense * 0.92),
+                          lineHeight: '1.08em',
+                          width: '100%',
+                          wordBreak: 'break-word',
+                        }}
+                      >
+                        {p.line1}
+                      </span>
+                    ))}
                   </div>
-                ))}
+                ) : null}
               </div>
             );
           })}
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="relative h-full w-full">
-              <span className="absolute left-[15%] top-[30%] -rotate-12 text-[15px] font-semibold uppercase tracking-[0.3em] text-[#7f1808]/18">
+          <div className="pointer-events-none absolute inset-0">
+            {[
+              { left: '72%', top: '14%', rotate: '14deg' },
+              { left: '48%', top: '46%', rotate: '-8deg' },
+              { left: '18%', top: '72%', rotate: '10deg' },
+              { left: '76%', top: '76%', rotate: '-10deg' },
+            ].map(({ left, top, rotate }, index) => (
+              <span
+                key={index}
+                className="absolute text-[14px] font-semibold uppercase tracking-[0.3em] text-[#7f1808]/18"
+                style={{ left, top, transform: `translate(-50%, -50%) rotate(${rotate})` }}
+              >
                 astrosewa.com
               </span>
-            </div>
+            ))}
           </div>
         </div>
       ) : null}
