@@ -96,13 +96,14 @@ const TodayHoroscope: React.FC = () => {
             .map((item: HoroscopeRecord) => {
               // Find matching static data for translated name
               const staticData = HOROSCOPE_DATA[language].find(
-                s => s.name.toLowerCase() === item.sign.toLowerCase() || 
-                     HOROSCOPE_DATA[ELanguage.ENGLISH].find(e => e.name.toLowerCase() === item.sign.toLowerCase())?.name === s.name
+                s =>
+                  s.name.toLowerCase() === item.sign.toLowerCase() ||
+                  HOROSCOPE_DATA[ELanguage.ENGLISH].find(
+                    e => e.name.toLowerCase() === item.sign.toLowerCase(),
+                  )?.name === s.name,
               );
-              
-              const translatedName = staticData 
-                ? staticData.name 
-                : capitalizeSign(item.sign);
+
+              const translatedName = staticData ? staticData.name : capitalizeSign(item.sign);
 
               return {
                 name: translatedName,
@@ -273,7 +274,7 @@ const TodayHoroscope: React.FC = () => {
                   <p className="font-mukta text-sm leading-[120%] font-light text-[#5b5b5b]">
                     {item.detail}
                   </p>
-                  <Link 
+                  <Link
                     href={horoscopeDetailPageHref(item.sign, 'today', language)}
                     className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF] w-fit"
                   >
@@ -329,7 +330,7 @@ const TodayHoroscope: React.FC = () => {
               <p className="font-mukta text-sm leading-[120%] font-light text-[#5b5b5b]">
                 {item.detail}
               </p>
-              <Link 
+              <Link
                 href={horoscopeDetailPageHref(item.sign, 'today', language)}
                 className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF] w-fit"
               >
