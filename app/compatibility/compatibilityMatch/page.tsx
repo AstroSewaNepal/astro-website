@@ -194,7 +194,6 @@ export default function CompatibilityMatchPage() {
     readCardDisplayLanguage(),
   );
   const [exploreContentLanguage, setExploreContentLanguage] = useState<ELanguage>(uiLanguage);
-  const [exploreHeaderLanguage, setExploreHeaderLanguage] = useState<ELanguage>(uiLanguage);
   const [horoscopeRows, setHoroscopeRows] = useState<HoroscopeSummaryRow[] | null>(null);
   const [horoscopeListError, setHoroscopeListError] = useState<string | null>(null);
   const [horoscopeListLoading, setHoroscopeListLoading] = useState(true);
@@ -206,7 +205,6 @@ export default function CompatibilityMatchPage() {
 
   useEffect(() => {
     setExploreContentLanguage(uiLanguage);
-    setExploreHeaderLanguage(uiLanguage);
   }, [uiLanguage]);
 
   useEffect(() => {
@@ -216,7 +214,10 @@ export default function CompatibilityMatchPage() {
       setHoroscopeListLoading(true);
       setHoroscopeListError(null);
       setHoroscopeRows(null);
-      fetchVedastroHoroscopeList({ type: 'today' })
+      fetchVedastroHoroscopeList(
+        { type: 'today' },
+        { headers: { 'Accept-Language': uiLanguage === ELanguage.NEPALI ? 'ne' : 'en' } },
+      )
         .then(envelope => {
           if (cancelled) return;
           setHoroscopeRows(envelope.data?.data ?? []);
@@ -235,7 +236,7 @@ export default function CompatibilityMatchPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [uiLanguage]);
 
   const horoscopeSectionCards = useMemo(
     () =>
@@ -295,7 +296,9 @@ export default function CompatibilityMatchPage() {
       try {
         setLoading(true);
         setError(null);
-        const response = await postZodiacCompatibility(payload);
+        const response = await postZodiacCompatibility(payload, {
+          headers: { 'Accept-Language': uiLanguage === ELanguage.NEPALI ? 'ne' : 'en' },
+        });
         if (response.success && response.data) {
           setCompatibilityData(response.data);
           setPillYourSign(payload.your_sign);
@@ -310,7 +313,7 @@ export default function CompatibilityMatchPage() {
         setLoading(false);
       }
     },
-    [yourSign, partnerSign, yourGender, partnerGender],
+    [yourSign, partnerSign, yourGender, partnerGender, uiLanguage],
   );
 
   const currentQuery = searchParams.toString();
@@ -772,13 +775,9 @@ export default function CompatibilityMatchPage() {
             <ZodiacSignExploreSection
               title="Explore Other Zodiac Signs"
               contentLanguage={exploreContentLanguage}
-              headerLanguage={exploreHeaderLanguage}
               signSlug={yourSign}
               isNepali={exploreContentLanguage === ELanguage.NEPALI}
-              onContentLanguageChange={lang => {
-                setExploreContentLanguage(lang);
-                setExploreHeaderLanguage(lang);
-              }}
+              onContentLanguageChange={setExploreContentLanguage}
             />
           </div>
 

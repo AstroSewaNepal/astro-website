@@ -35,7 +35,7 @@ export default function MangalDoshaCalculatorResultSection() {
           subtitle: meta?.subtitle,
           description:
             (meta?.description ??
-              'Your Mangal Dosha result is calculated from VedAstro planet positions and AstroSewa rules.') +
+              'Your Mangal Dosha result is calculated from accurate planetary positions and AstroSewa rules.') +
             reasonText,
           image: meta?.image,
           imageAlt: 'Mangal Dosha',

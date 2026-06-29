@@ -76,20 +76,7 @@ const SIGN_NAME_TO_ENGLISH: Record<string, string> = {
   meen: 'Pisces',
 };
 
-const SIGN_SHORT: Record<string, string> = {
-  Aries: 'Ar',
-  Taurus: 'Ta',
-  Gemini: 'Ge',
-  Cancer: 'Cn',
-  Leo: 'Le',
-  Virgo: 'Vi',
-  Libra: 'Li',
-  Scorpio: 'Sc',
-  Sagittarius: 'Sg',
-  Capricorn: 'Cp',
-  Aquarius: 'Aq',
-  Pisces: 'Pi',
-};
+// SIGN_SHORT removed — chart displays zodiac sequence numbers instead of short names.
 
 const PLANET_ORDER = [
   'Ascendant',
@@ -147,7 +134,7 @@ function parseHouseNumber(cell: string): number | null {
   return n;
 }
 
-function compactDegreeInSign(dms: string): string {
+export function compactDegreeInSign(dms: string): string {
   if (!dms || dms === '-') return '';
   const m = dms.match(/(\d+)\s*°\s*(\d+)\s*['′]\s*(\d+)?/);
   if (!m) {
@@ -185,8 +172,9 @@ function wholeSignLabelsForHouses(lagnaEnglish: string): string[] | null {
   if (idx < 0) return null;
   const labels: string[] = [];
   for (let h = 1; h <= 12; h++) {
-    const sign = ZODIAC_ORDER[(idx + h - 1) % 12];
-    labels.push(SIGN_SHORT[sign] ?? sign.slice(0, 2));
+    // Show zodiac sequence number (1..12) instead of short sign name.
+    const signIndex = (idx + h - 1) % 12;
+    labels.push(String(signIndex + 1));
   }
   return labels;
 }
@@ -224,7 +212,9 @@ function groupPlanetsByHouse(rows: PlanetTableRow[]): Map<number, HousePlanet[]>
     const retro = retroRaw === 'yes' || retroRaw === 'true' || retroRaw === 'y' || retroRaw === '1';
 
     const abbr = PLANET_ABBR[planet] ?? planet.slice(0, 3);
-    const degShort = compactDegreeInSign(row[2] ?? '');
+    // Prefer nirayana (absolute longitude) from column 3 when available,
+    // fallback to sign-relative degree in column 2.
+    const degShort = compactDegreeInSign(row[3] ?? row[2] ?? '');
     const line1 = degShort
       ? `${abbr}-${degShort}${retro ? '®' : ''}`
       : `${abbr}${retro ? '®' : ''}`;
@@ -311,7 +301,6 @@ export function NorthIndianOpenChartWithPlanets({
   const src = typeof OpenChart === 'string' ? OpenChart : OpenChart.src;
 
   const fitH = imgFit?.height ?? 353;
-  const fzHouse = Math.max(10, Math.round(fitH * 0.034));
   const fzSign = Math.max(9, Math.round(fitH * 0.032));
   const fzPlanet = Math.max(11, Math.round(fitH * 0.044));
 
@@ -360,12 +349,6 @@ export function NorthIndianOpenChartWithPlanets({
                   minWidth: '5rem',
                 }}
               >
-                <span
-                  className="font-mukta font-bold leading-none text-primary [text-shadow:0_0_4px_rgba(255,255,255,0.9)]"
-                  style={{ fontSize: Math.round(fzHouse * dense) }}
-                >
-                  {houseNum}
-                </span>
                 {signLabel ? (
                   <span
                     className="font-mukta font-semibold leading-none text-primary [text-shadow:0_0_4px_rgba(255,255,255,0.9)]"

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 
@@ -22,29 +22,37 @@ export function ZodiacSignDetailNepaliClient() {
   const searchParams = useSearchParams();
   const slug = useMemo(() => parseZodiacSignParam(searchParams.get('sign')), [searchParams]);
   const { row, loadError, loading } = useZodiacSignDetails(slug);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const signIndex = HOROSCOPE_SIGNS.indexOf(slug);
   const nepaliName = HOROSCOPE_DATA[ELanguage.NEPALI][signIndex]?.name ?? slug;
 
+  const neTrans = row?.translations?.ne;
   const traits = row
     ? [
         { label: 'तत्व', value: row.element },
-        { label: 'राशिको ग्रह', value: row.ruling_planet },
+        { label: 'राशिको ग्रह', value: row.ruling_planets?.[0] },
         {
           label: 'सामञ्जस्यपूर्ण राशि',
           value: row.compatibility?.length ? row.compatibility.join(', ') : '—',
         },
         {
           label: 'बलियो पक्ष',
-          value: row.strengths?.length ? row.strengths.join(', ') : '—',
+          value: neTrans?.strengths?.length ? neTrans.strengths.join(', ') : '—',
         },
         {
           label: 'चुनौतीपूर्ण पक्ष',
-          value: row.weaknesses?.length ? row.weaknesses.join(', ') : '—',
+          value: neTrans?.weaknesses?.length ? neTrans.weaknesses.join(', ') : '—',
         },
-        { label: 'व्यक्तित्व', value: row.personality_traits || '—' },
+        { label: 'व्यक्तित्व', value: neTrans?.personality_traits || '—' },
       ]
     : [];
+
+  const description = neTrans?.intro ?? neTrans?.card_summary ?? '';
+  const descriptionWords = description.split(/\s+/);
+  const shouldTruncate = descriptionWords.length > 150;
+  const displayedDescription =
+    !isExpanded && shouldTruncate ? descriptionWords.slice(0, 150).join(' ') + '...' : description;
 
   return (
     <main className="container mx-auto min-h-screen overflow-hidden">
@@ -66,8 +74,8 @@ export function ZodiacSignDetailNepaliClient() {
                 {nepaliName}
               </h1>
               <p className="mt-1 font-mukta text-[14px] text-[#8a7463]">
-                {row?.sign ? `${row.sign} · ` : null}
-                {row?.date_range ?? ''}
+                {row?.slug ? `${row.slug} · ` : null}
+                {row?.date_range ? `${row.date_range.from} - ${row.date_range.to}` : ''}
               </p>
 
               <div className="mt-3 max-w-[860px]">
@@ -76,9 +84,19 @@ export function ZodiacSignDetailNepaliClient() {
                 ) : loadError ? (
                   <p className="font-mukta text-[13px] leading-7 text-[#b42318]">{loadError}</p>
                 ) : (
-                  <p className="font-mukta text-[13px] leading-7 text-[#4f463f]">
-                    {row?.intro ?? row?.card_summary ?? ''}
-                  </p>
+                  <>
+                    <p className="font-mukta text-[13px] leading-7 text-[#4f463f]">
+                      {displayedDescription}
+                    </p>
+                    {shouldTruncate && (
+                      <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="mt-2 text-[#be7b71] hover:text-[#a06860] font-mukta font-semibold text-[13px]"
+                      >
+                        {isExpanded ? 'कम देखाउनुहोस्' : 'थप पढ्नुहोस्'}
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

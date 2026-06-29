@@ -47,7 +47,7 @@ const RANGE_TAB_TYPES = [
 
 type HoroscopeBodyKey = 'general' | 'love' | 'career' | 'health';
 
-const SECTION_PILL_IDS: HoroscopeBodyKey[] = ['general', 'love', 'career', 'health'];
+const SECTION_PILL_IDS: HoroscopeBodyKey[] = ['love', 'career', 'health', 'general'];
 
 function HoroscopeDetailsFallback() {
   return (
@@ -85,10 +85,10 @@ function HoroscopeDetailsContent() {
   const [activeSectionByView, setActiveSectionByView] = useState<{
     key: string;
     section: HoroscopeBodyKey;
-  }>({ key: '', section: 'general' });
+  }>({ key: '', section: 'love' });
   const activeViewKey = `${validSign ?? 'none'}:${rangeType}`;
   const activeSection =
-    activeSectionByView.key === activeViewKey ? activeSectionByView.section : 'general';
+    activeSectionByView.key === activeViewKey ? activeSectionByView.section : 'love';
 
   useEffect(() => {
     if (!validSign) {
@@ -102,7 +102,11 @@ function HoroscopeDetailsContent() {
       setLoading(true);
       setError(null);
       setDetail(null);
-      fetchVedastroHoroscopeDetail(validSign, { type: rangeType })
+      fetchVedastroHoroscopeDetail(
+        validSign,
+        { type: rangeType },
+        { headers: { 'Accept-Language': uiLanguage === ELanguage.NEPALI ? 'ne' : 'en' } },
+      )
         .then(envelope => {
           if (cancelled) {
             return;
@@ -124,7 +128,7 @@ function HoroscopeDetailsContent() {
     return () => {
       cancelled = true;
     };
-  }, [validSign, rangeType]);
+  }, [validSign, rangeType, uiLanguage]);
 
   const sectionBody = useMemo(() => {
     if (!detail) {
@@ -200,7 +204,9 @@ function HoroscopeDetailsContent() {
                 </h1>
                 {detail?.horoscope?.start_date ? (
                   <h2 className="mt-2 font-sahitya text-[22px] font-bold leading-[30px] text-[#D47F2C] sm:text-[26px] sm:leading-[34px]">
-                    {['today', 'tomorrow', 'yesterday'].includes(detail.horoscope.type?.toLowerCase())
+                    {['today', 'tomorrow', 'yesterday'].includes(
+                      detail.horoscope.type?.toLowerCase(),
+                    )
                       ? new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
                           month: 'long',
                           day: 'numeric',
@@ -286,10 +292,10 @@ function HoroscopeDetailsContent() {
                       priority={false}
                     />
                     <Link
-                      href={zodiacDetailHref(validSign, uiLanguage, uiLanguage)}
-                      className="inline-flex w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px] lg:-translate-x-10"
+                      href={zodiacDetailHref(validSign, uiLanguage)}
+                      className="flex w-fit mx-auto h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[24px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
                     >
-                     Know More About  {capitalizeSign(validSign)} Zodiac
+                      Explore {capitalizeSign(validSign)}
                       <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
                     </Link>
                   </div>
@@ -332,8 +338,8 @@ function HoroscopeDetailsContent() {
 
                 <div className="mt-9 min-w-0">
                   <h3 className="hidden md:block font-mukta text-center text-[18px] font-semibold text-[#6f2618] md:text-left">
-                      {dict.details.readOtherSigns}
-                    </h3>
+                    {dict.details.readOtherSigns}
+                  </h3>
                   <div className="hidden md:block">
                     <HoroscopeHeroSignsSection
                       hideTitle
@@ -351,7 +357,6 @@ function HoroscopeDetailsContent() {
                       title={''}
                       className="mt-4"
                       contentLanguage={uiLanguage as ELanguage}
-                      headerLanguage={uiLanguage as ELanguage}
                       signSlug={(validSign ?? HOROSCOPE_SIGNS[0]) as HoroscopeSign}
                       isNepali={uiLanguage === ELanguage.NEPALI}
                       onContentLanguageChange={() => {}}
