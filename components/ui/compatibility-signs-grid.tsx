@@ -54,6 +54,7 @@ export function CompatibilitySignsGrid({
     setActiveIndex(active >= 0 ? active : 0);
   };
 
+   
   useEffect(() => {
     let raf = 0;
     raf = requestAnimationFrame(updateActiveIndex);
@@ -78,16 +79,15 @@ export function CompatibilitySignsGrid({
     containerRef.current.scrollTo({ left: slide.offsetLeft, behavior: 'smooth' });
   };
 
-  const renderSignImage = (
-    colorSrc: SignImage,
-    lightSrc: SignImage,
-    alt: string,
-    alwaysColor?: boolean,
-  ) => {
+  const renderSignImage = (colorSrc: SignImage, lightSrc: SignImage, alt: string, alwaysColor?: boolean) => {
     if (alwaysColor) {
       return (
         <div className="relative h-[96px] w-[100px] sm:h-[96px] sm:w-[110px]">
-          <Image src={colorSrc} alt={alt} className="h-full w-full object-contain opacity-100" />
+          <Image
+            src={colorSrc}
+            alt={alt}
+            className="h-full w-full object-contain opacity-100"
+          />
         </div>
       );
     }
@@ -113,9 +113,7 @@ export function CompatibilitySignsGrid({
 
   return (
     <div className={className}>
-      <h3 className="font-mukta text-[18px] font-semibold text-[#6f2618] lg:font-sahitya lg:font-bold lg:text-[28px] lg:leading-[38px] lg:tracking-[0%]">
-        {title}
-      </h3>
+      <h3 className="font-mukta text-[18px] font-semibold text-[#6f2618] lg:font-sahitya lg:font-bold lg:text-[28px] lg:leading-[38px] lg:tracking-[0%]">{title}</h3>
       <div
         ref={containerRef}
         className={clsx(
@@ -133,15 +131,15 @@ export function CompatibilitySignsGrid({
               className={clsx(
                 'group transition-colors snap-start flex-shrink-0',
                 variant === 'figma'
-                  ? 'flex min-h-[172px] w-[260px] sm:w-full items-center justify-center gap-2 lg:gap-4 rounded-[20px] border border-[#383838] bg-[#FFFFFF99] hover:bg-[#F8F3DF] p-3 lg:p-4'
+                  ? 'flex min-h-[172px] min-w-[260px] items-center justify-center gap-4 rounded-[20px] border border-[#383838] bg-[#FFFFFF99] hover:bg-[#F8F3DF] p-4'
                   : 'min-w-[220px] rounded-[10px] border border-[#d7c3b1] bg-[#fdf8f1] hover:border-[#f4a11a]/80 px-2 py-2',
               )}
             >
               {variant === 'figma' ? (
                 <>
-                  <div className="flex h-full flex-1 min-w-0 flex-col items-center gap-2 sm:gap-4">
+                  <div className="flex h-full w-[100px] flex-col items-center gap-4">
                     {renderSignImage(currentSignImage, currentLight, currentSignLabel, true)}
-                    <span className="font-mukta text-[16px] sm:text-[18px] font-normal leading-7 text-[#611508] truncate w-full text-center">
+                    <span className="font-mukta text-[18px] font-normal leading-7 text-[#611508]">
                       {currentSignLabel}
                     </span>
                   </div>
@@ -150,7 +148,7 @@ export function CompatibilitySignsGrid({
                     height="44"
                     viewBox="0 0 44 44"
                     fill="none"
-                    className="flex-shrink-0 -translate-y-4 sm:-translate-y-5 w-[32px] h-[32px] sm:w-[44px] sm:h-[44px]"
+                    className="flex-shrink-0"
                     aria-hidden="true"
                   >
                     <path
@@ -159,9 +157,9 @@ export function CompatibilitySignsGrid({
                     ></path>
                   </svg>
 
-                  <div className="flex h-full flex-1 min-w-0 flex-col items-center gap-2 sm:gap-4">
+                  <div className="flex h-full w-[110px] flex-col items-center gap-4">
                     {renderSignImage(item.image, itemLight, item.name)}
-                    <span className="font-mukta text-[16px] sm:text-[18px] font-normal leading-7 text-[#611508] truncate w-full text-center">
+                    <span className="font-mukta text-[18px] font-normal leading-7 text-[#611508]">
                       {item.name}
                     </span>
                   </div>
@@ -214,7 +212,7 @@ export function CompatibilitySignsGrid({
             onClick={() => scrollToIndex(index)}
             className={clsx(
               'h-2 min-w-[8px] rounded-full transition-colors',
-              index === activeIndex ? 'bg-[#611508]' : 'bg-[#d7c3b1]',
+              index === activeIndex ? 'bg-[#611508]' : 'bg-[#d7c3b1]'
             )}
           />
         ))}

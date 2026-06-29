@@ -9,7 +9,7 @@ import {
 } from '@/lib/api/vedastro/zodiac-sign';
 import type { VedastroFetchOptions } from '@/lib/api/vedastro/http';
 import type { VedastroZodiacSignRow } from '@/lib/types/vedastro';
-import type { ZodiacSignRecord, ZodiacType, AstroSewaZodiacSignResponse } from '@/lib/types/zodiac-signs';
+import type { ZodiacSignRecord, ZodiacType } from '@/lib/types/zodiac-signs';
 import { unwrapResult } from '@/lib/utils/vedastro-result';
 import { getPublicBackendBaseUrl, joinUrl } from '@/lib/utils/url';
 
@@ -76,16 +76,4 @@ export async function fetchZodiacSignById(
   const envelope = await fetchVedastroZodiacSignBySlug(idOrSlug, init);
   const row = unwrapResult(envelope);
   return mapRow(row);
-}
-export async function fetchAstroSewaZodiacSignBySlug(
-  slug: string,
-): Promise<AstroSewaZodiacSignResponse> {
-  const url = joinUrl(getPublicBackendBaseUrl(), `users/zodiac-signs/${slug}`);
-  const response = await fetch(url, {
-    next: { revalidate: 3600 },
-  });
-  if (!response.ok) {
-    throw new Error(`Failed to fetch AstroSewa Zodiac Sign details: ${response.statusText}`);
-  }
-  return response.json();
 }

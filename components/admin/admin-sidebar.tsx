@@ -9,8 +9,8 @@ const NAV_ITEMS = [
   // { href: "/admin/posts", icon: FileText, label: "Posts" },
   // { href: "/admin/tags", icon: Tag, label: "Tags" },
   // { href: "/admin/authors", icon: Users, label: "Authors" },
-  { href: '/admin/remedies', icon: Sparkles, label: 'Remedies Category' },
-  { href: '/admin/remedy-orders', icon: ShoppingBag, label: 'Remedies Orders' },
+  { href: '/admin/remedies', icon: Sparkles, label: 'Remedies' },
+  { href: '/admin/remedy-orders', icon: ShoppingBag, label: 'Remedy Orders' },
   { href: '/admin/delivery-charges', icon: Truck, label: 'Delivery Charges' },
 ];
 
