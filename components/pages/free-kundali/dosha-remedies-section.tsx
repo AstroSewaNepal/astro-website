@@ -21,7 +21,8 @@ export default function DoshaRemediesSection({ doshas }: DoshaRemediesSectionPro
     [doshas],
   );
 
-  const [openKey, setOpenKey] = useState<string | null>('manglik');
+  const [openKey, setOpenKey] = useState<string | null>(() => ordered[0]?.key ?? null);
+  const resolvedOpenKey = openKey ?? ordered[0]?.key ?? null;
 
   return (
     <div className="mt-10 p-5 md:p-7">
@@ -58,13 +59,13 @@ export default function DoshaRemediesSection({ doshas }: DoshaRemediesSectionPro
           return (
             <details
               key={`remedy-${key}`}
-              open={openKey === key}
+              open={resolvedOpenKey === key}
               className="group overflow-hidden rounded-xl"
             >
               <summary
                 onClick={e => {
                   e.preventDefault();
-                  setOpenKey(openKey === key ? null : key);
+                  setOpenKey(currentKey => (currentKey === key ? null : key));
                 }}
                 className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-mukta text-base font-semibold text-[#2d2d2d] marker:content-none [&::-webkit-details-marker]:hidden"
               >
