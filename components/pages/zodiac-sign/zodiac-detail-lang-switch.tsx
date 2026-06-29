@@ -3,7 +3,6 @@
 import clsx from 'clsx';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-
 import { zodiacEnglishDetailHref, zodiacNepaliDetailHref } from '@/lib/constants/zodiac-sign-nav';
 import { parseZodiacSignParam } from '@/lib/zodiac-sign/parse-sign-param';
 import type { HoroscopeSign } from '@/lib/types/horoscope';
