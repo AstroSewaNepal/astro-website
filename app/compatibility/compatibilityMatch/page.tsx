@@ -777,10 +777,7 @@ export default function CompatibilityMatchPage() {
               contentLanguage={exploreContentLanguage}
               signSlug={yourSign}
               isNepali={exploreContentLanguage === ELanguage.NEPALI}
-              onContentLanguageChange={lang => {
-                setExploreContentLanguage(lang);
-                setExploreHeaderLanguage(lang);
-              }}
+              onContentLanguageChange={setExploreContentLanguage}
             />
           </div>
 

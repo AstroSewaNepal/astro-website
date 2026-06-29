@@ -102,7 +102,7 @@ export function HoroscopeDetailsSectionPills(props: {
 
   return (
     <div className="mt-3 min-w-0">
-      <div className="horoscope-details-pills-mob -mx-1 md:hidden">
+      <div className="horoscope-details-pills-mob -mx-1">
         <Swiper
           modules={[FreeMode]}
           freeMode={{ enabled: true, momentumRatio: 0.85 }}
@@ -119,11 +119,6 @@ export function HoroscopeDetailsSectionPills(props: {
             </SwiperSlide>
           ))}
         </Swiper>
-      </div>
-      <div className="hidden flex-wrap gap-2 md:flex md:overflow-x-auto md:pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {sectionPills.map(pill => (
-          <Fragment key={pill.id}>{pillBtn(pill)}</Fragment>
-        ))}
       </div>
     </div>
   );
