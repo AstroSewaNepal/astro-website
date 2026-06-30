@@ -1,10 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
+import clsx from 'clsx';
 
 import LandingFAQ from '@/components/pages/landing/faq';
 import { ZodiacSignMiniCard } from '@/components/pages/zodiac-sign/zodiac-sign-mini-card';
@@ -25,6 +26,45 @@ export function ZodiacSignDetailNepaliClient() {
   const slug = useMemo(() => parseZodiacSignParam(searchParams.get('sign')), [searchParams]);
   const { row, loadError, loading } = useZodiacSignDetails(slug);
   const [isExpanded, setIsExpanded] = useState(false);
+  const carouselRef = useRef<HTMLDivElement | null>(null);
+  const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
+
+  const updateActiveCarouselIndex = () => {
+    if (!carouselRef.current) return;
+    const containerRect = carouselRef.current.getBoundingClientRect();
+    const slides = Array.from(carouselRef.current.children) as HTMLElement[];
+    const activeIndex = slides.findIndex(slide => {
+      const rect = slide.getBoundingClientRect();
+      return rect.left >= containerRect.left - 1;
+    });
+    setActiveCarouselIndex(activeIndex >= 0 ? activeIndex : 0);
+  };
+
+  useEffect(() => {
+    let raf = 0;
+    raf = requestAnimationFrame(updateActiveCarouselIndex);
+    const element = carouselRef.current;
+    if (!element) {
+      cancelAnimationFrame(raf);
+      return;
+    }
+
+    element.addEventListener('scroll', updateActiveCarouselIndex, { passive: true });
+    window.addEventListener('resize', updateActiveCarouselIndex);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      element.removeEventListener('scroll', updateActiveCarouselIndex);
+      window.removeEventListener('resize', updateActiveCarouselIndex);
+    };
+  }, []);
+
+  const scrollToCarouselIndex = (index: number) => {
+    if (!carouselRef.current) return;
+    const slide = carouselRef.current.children[index] as HTMLElement | undefined;
+    if (!slide) return;
+    carouselRef.current.scrollTo({ left: slide.offsetLeft, behavior: 'smooth' });
+  };
 
   const signIndex = HOROSCOPE_SIGNS.indexOf(slug);
   const nepaliName = HOROSCOPE_DATA[ELanguage.NEPALI][signIndex]?.name ?? slug;
@@ -151,7 +191,53 @@ export function ZodiacSignDetailNepaliClient() {
             </div>
           ) : null}
 
-          <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {/* Mobile Slider */}
+          <div
+            ref={carouselRef}
+            className="mt-10 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 scrollbar-hide sm:hidden"
+          >
+            {HOROSCOPE_SIGNS.map((s, i) => {
+              const card = HOROSCOPE_DATA[ELanguage.NEPALI][i]!;
+              return (
+                <div key={s} className="min-w-[260px] shrink-0 snap-start">
+                  <ZodiacSignMiniCard
+                    href={zodiacNepaliDetailHref(s)}
+                    image={card.image}
+                    imageColor={card.imageColor}
+                    name={card.name}
+                    blurb={cardTextNp}
+                    readMoreLabel="थप पढ्नुहोस्"
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Mobile Pagination */}
+          <div className="mt-3 flex justify-center gap-2 sm:hidden">
+            {(() => {
+              let startDot = Math.max(0, activeCarouselIndex - 1);
+              if (startDot + 3 > HOROSCOPE_SIGNS.length) {
+                startDot = Math.max(0, HOROSCOPE_SIGNS.length - 3);
+              }
+              const visibleDots = HOROSCOPE_SIGNS.map((_, i) => i).slice(startDot, startDot + 3);
+              return visibleDots.map(index => (
+                <button
+                  key={index}
+                  type="button"
+                  aria-label={`Go to card ${index + 1}`}
+                  onClick={() => scrollToCarouselIndex(index)}
+                  className={clsx(
+                    'h-2 min-w-[8px] rounded-full transition-all duration-300',
+                    index === activeCarouselIndex ? 'bg-[#611508]' : 'bg-[#d7c3b1]',
+                  )}
+                />
+              ));
+            })()}
+          </div>
+
+          {/* Desktop Grid */}
+          <div className="mt-10 hidden sm:grid sm:grid-cols-2 xl:grid-cols-4 gap-3">
             {HOROSCOPE_SIGNS.map((s, i) => {
               const card = HOROSCOPE_DATA[ELanguage.NEPALI][i]!;
               return (
