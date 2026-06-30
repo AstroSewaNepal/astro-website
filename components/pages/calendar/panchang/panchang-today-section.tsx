@@ -227,15 +227,14 @@ const PanchangTodaySection: React.FC = () => {
       <section className="w-full max-w-full box-border min-h-[580px] min-w-0 flex flex-col lg:flex-row items-start gap-8 md:gap-10 opacity-100">
         <div className="w-full min-w-0 min-h-[580px] flex flex-col gap-7 md:gap-10 opacity-100">
 
-          {/* ── Unified nav bar (matches Image 1 exactly) ── */}
-          <div className="w-full">
+          {/* ── Unified nav bar ── */}
+          <div className="w-full flex justify-start">
             <div
-              className="flex items-center w-full"
+              className="flex items-center w-full max-w-[620px] px-2 py-1.5 sm:px-4 sm:py-2.5"
               style={{
                 background: '#fbf6ef',
                 borderRadius: '999px',
                 border: '1px solid #e8dfc8',
-                padding: '10px 18px',
                 gap: '0',
                 boxShadow: '0 2px 6px 0 rgba(97,21,8,0.06)',
               }}
@@ -245,17 +244,17 @@ const PanchangTodaySection: React.FC = () => {
                 type="button"
                 onClick={() => shiftDay(-1)}
                 aria-label="Previous day"
-                className="flex flex-col items-center justify-center text-primary hover:opacity-70 transition-opacity"
-                style={{ minWidth: '56px', padding: '4px 8px', gap: '2px', background: 'none', border: 'none', cursor: 'pointer' }}
+                className="flex flex-col items-center justify-center text-primary hover:opacity-70 transition-opacity min-w-[32px] sm:min-w-[56px]"
+                style={{ padding: '4px 8px', gap: '2px', background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 <ArrowLeft className="w-5 h-5" />
-                <span style={{ fontSize: '11px', fontFamily: 'var(--font-mukta, sans-serif)', color: 'var(--color-primary, #7b1c1c)', lineHeight: 1.2 }}>
+                <span className="hidden sm:inline" style={{ fontSize: '11px', fontFamily: 'var(--font-mukta, sans-serif)', color: 'var(--color-primary, #7b1c1c)', lineHeight: 1.2 }}>
                   Previous Day
                 </span>
               </button>
 
               {/* Divider */}
-              <div style={{ width: '1px', height: '36px', background: '#e8dfc8', flexShrink: 0, margin: '0 12px' }} />
+              <div className="hidden sm:block" style={{ width: '1px', height: '36px', background: '#e8dfc8', flexShrink: 0, margin: '0 12px' }} />
 
               {/* Calendar icon pill (tappable, opens date picker) */}
               <div className="relative">
@@ -264,14 +263,11 @@ const PanchangTodaySection: React.FC = () => {
                   type="button"
                   onClick={() => setIsDatePickerOpen(o => !o)}
                   aria-label="Select date"
-                  className="flex items-center justify-center hover:opacity-80 transition-opacity"
+                  className="flex items-center justify-center hover:opacity-80 transition-opacity w-9 h-9 sm:w-12 sm:h-12 ml-1 mr-2 sm:ml-2 sm:mr-3"
                   style={{
                     background: '#f5ede0',
                     border: '1px solid #e8dfc8',
                     borderRadius: '999px',
-                    width: '48px',
-                    height: '48px',
-                    margin: '0 12px 0 8px',
                     cursor: 'pointer',
                     color: 'var(--color-primary, #7b1c1c)',
                     flexShrink: 0,
@@ -295,11 +291,9 @@ const PanchangTodaySection: React.FC = () => {
               >
                 {/* Bold date */}
                 <span
+                  className="text-base sm:text-xl font-extrabold whitespace-nowrap"
                   style={{
                     fontFamily: 'var(--font-mukta, sans-serif)',
-                    fontWeight: 800,
-                    fontSize: '20px',
-                    lineHeight: '24px',
                     color: 'var(--color-primary, #7b1c1c)',
                     letterSpacing: '0.01em',
                   }}
@@ -308,11 +302,9 @@ const PanchangTodaySection: React.FC = () => {
                 </span>
                 {/* Location row */}
                 <span
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-0.5 sm:gap-1 text-xs sm:text-sm"
                   style={{
                     fontFamily: 'var(--font-mukta, sans-serif)',
-                    fontSize: '14px',
-                    lineHeight: '18px',
                     color: 'var(--color-primary, #7b1c1c)',
                     opacity: 0.9,
                     whiteSpace: 'nowrap',
@@ -321,47 +313,44 @@ const PanchangTodaySection: React.FC = () => {
                     maxWidth: '100%',
                   }}
                 >
-                  <PinIcon className="w-3.5 h-3.5 flex-shrink-0" style={{ opacity: 0.7 } as React.CSSProperties} />
+                  <PinIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0 opacity-70" />
                   {city}
-                  <ChevronDown className="w-3.5 h-3.5 flex-shrink-0 ml-0.5" />
+                  <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0 ml-0.5" />
                 </span>
               </div>
 
               {/* Divider */}
-              <div style={{ width: '1px', height: '36px', background: '#e8dfc8', flexShrink: 0, margin: '0 8px' }} />
+              <div className="hidden sm:block" style={{ width: '1px', height: '36px', background: '#e8dfc8', flexShrink: 0, margin: '0 8px' }} />
 
               {/* Next Day */}
               <button
                 type="button"
                 onClick={() => shiftDay(1)}
                 aria-label="Next day"
-                className="flex flex-col items-center justify-center text-primary hover:opacity-70 transition-opacity"
-                style={{ minWidth: '56px', padding: '4px 8px', gap: '2px', background: 'none', border: 'none', cursor: 'pointer' }}
+                className="flex flex-col items-center justify-center text-primary hover:opacity-70 transition-opacity min-w-[32px] sm:min-w-[56px]"
+                style={{ padding: '4px 8px', gap: '2px', background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 <ArrowRight className="w-5 h-5" />
-                <span style={{ fontSize: '11px', fontFamily: 'var(--font-mukta, sans-serif)', color: 'var(--color-primary, #7b1c1c)', lineHeight: 1.2 }}>
+                <span className="hidden sm:inline" style={{ fontSize: '11px', fontFamily: 'var(--font-mukta, sans-serif)', color: 'var(--color-primary, #7b1c1c)', lineHeight: 1.2 }}>
                   Next Day
                 </span>
               </button>
 
               {/* Divider */}
-              <div style={{ width: '1px', height: '36px', background: '#e8dfc8', flexShrink: 0, margin: '0 8px' }} />
+              <div className="hidden sm:block" style={{ width: '1px', height: '36px', background: '#e8dfc8', flexShrink: 0, margin: '0 8px' }} />
 
               {/* Today button */}
               <button
                 type="button"
                 onClick={onTodayClick}
-                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                className="flex items-center gap-2 hover:opacity-80 transition-opacity py-2 px-3 sm:py-3 sm:px-7 text-sm sm:text-base ml-1 sm:ml-3 mr-1"
                 style={{
                   background: '#7b1c1c',
                   color: '#F8F3DF',
                   border: 'none',
                   borderRadius: '999px',
-                  padding: '12px 28px',
-                  margin: '0 6px 0 12px',
                   fontFamily: 'var(--font-mukta, sans-serif)',
                   fontWeight: 700,
-                  fontSize: '16px',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   boxShadow: '0 6px 18px rgba(97,21,8,0.12)',
