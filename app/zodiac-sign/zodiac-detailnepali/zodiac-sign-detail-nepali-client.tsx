@@ -112,44 +112,38 @@ export function ZodiacSignDetailNepaliClient() {
 
           <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start lg:gap-4 lg:opacity-100">
             <div className="min-w-0 order-2 lg:order-none sm:mt-6">
-              <h1 className="font-sahitya text-[34px] font-bold leading-none text-[#6b2417] sm:text-[42px]">
+              <h1 className="font-tiro-devanagari text-[40px] font-normal leading-[1.2] text-[#6b2417] sm:text-[50px] lg:text-[60px]">
                 {nepaliName}
               </h1>
-              <p className="mt-1 font-mukta text-[14px] text-[#8a7463]">
+              <p className="mt-[10px] sm:mt-[24px] font-mukta text-[14px] tracking-[0.02em] text-[#8a7463] sm:text-[16px] lg:text-[18px]">
                 {row?.slug ? `${row.slug} · ` : null}
                 {row?.date_range ? `${row.date_range.from} - ${row.date_range.to}` : ''}
               </p>
 
-              <div className="mt-3 max-w-[860px]">
+              <div className="mt-[24px] sm:mt-[50px] max-w-[860px]">
                 {loading ? (
-                  <p className="font-mukta text-[13px] leading-7 text-[#4f463f]">लोड हुँदैछ…</p>
+                  <p className="font-mukta text-[16px] tracking-[0.02em] leading-[1.5] text-[#4f463f] sm:text-[18px] lg:text-[24px]">
+                    लोड हुँदैछ…
+                  </p>
                 ) : loadError ? (
-                  <p className="font-mukta text-[13px] leading-7 text-[#b42318]">{loadError}</p>
+                  <p className="font-mukta text-[16px] tracking-[0.02em] leading-[1.5] text-[#b42318] sm:text-[18px] lg:text-[24px]">
+                    {loadError}
+                  </p>
                 ) : (
                   <>
-                    <p className="font-mukta text-[13px] leading-7 text-[#4f463f]">
+                    <p className="font-mukta text-[16px] tracking-[0.02em] leading-[1.5] text-[#4f463f] sm:text-[18px] lg:text-[24px]">
                       {displayedDescription}
                     </p>
                     {shouldTruncate && (
                       <button
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="mt-2 text-[#be7b71] hover:text-[#a06860] font-mukta font-semibold text-[13px]"
+                        className="mt-2 text-[#be7b71] hover:text-[#a06860] font-mukta font-semibold text-[16px] sm:text-[18px]"
                       >
                         {isExpanded ? 'कम देखाउनुहोस्' : 'थप पढ्नुहोस्'}
                       </button>
                     )}
                   </>
                 )}
-              </div>
-
-              <div className="mt-6 flex lg:hidden items-center justify-center">
-                <Link
-                  href={`/np/horoscope/${slug}/today`}
-                  className="flex w-fit mx-auto h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[24px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
-                >
-                  {nepaliName} राशिफल हेर्नुहोस्
-                  <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
-                </Link>
               </div>
             </div>
 
@@ -162,26 +156,19 @@ export function ZodiacSignDetailNepaliClient() {
                 alt={nepaliName}
                 className="mb-4 h-[297px] w-[308px] object-contain"
               />
-              {/* <Link
-                href={`/np/horoscope/${slug}/today`}
-                className="flex w-fit mx-auto h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[24px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
-              >
-                {nepaliName} राशिफल हेर्नुहोस्
-                <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
-              </Link> */}
             </div>
           </div>
 
           {!loading && !loadError && traits.length > 0 ? (
-            <div className="mt-8 overflow-x-auto rounded-[8px] border border-[#ebe0d4]">
+            <div className="mt-[48px] sm:mt-[100px] overflow-x-auto rounded-[8px] border border-[#ebe0d4]">
               <table className="w-full min-w-[700px] border-collapse">
                 <tbody>
                   {traits.map(tr => (
                     <tr key={tr.label} className="border-b border-[#ebe0d4] last:border-b-0">
-                      <td className="w-[36%] px-4 py-3 font-mukta text-[13px] text-[#7c6556]">
+                      <td className="w-[36%] px-4 py-4 font-mukta text-[16px] sm:text-[18px] text-[#7c6556]">
                         {tr.label}
                       </td>
-                      <td className="px-4 py-3 font-mukta text-[13px] text-[#4f463f]">
+                      <td className="px-4 py-4 font-mukta text-[16px] sm:text-[18px] text-[#4f463f]">
                         {tr.value}
                       </td>
                     </tr>
@@ -194,7 +181,7 @@ export function ZodiacSignDetailNepaliClient() {
           {/* Mobile Slider */}
           <div
             ref={carouselRef}
-            className="mt-10 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 scrollbar-hide sm:hidden"
+            className="mt-[48px] sm:mt-[100px] flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 scrollbar-hide sm:hidden"
           >
             {HOROSCOPE_SIGNS.map((s, i) => {
               const card = HOROSCOPE_DATA[ELanguage.NEPALI][i]!;
@@ -237,7 +224,7 @@ export function ZodiacSignDetailNepaliClient() {
           </div>
 
           {/* Desktop Grid */}
-          <div className="mt-10 hidden sm:grid sm:grid-cols-2 xl:grid-cols-4 gap-3">
+          <div className="mt-[48px] sm:mt-[100px] hidden sm:grid sm:grid-cols-2 xl:grid-cols-4 gap-3">
             {HOROSCOPE_SIGNS.map((s, i) => {
               const card = HOROSCOPE_DATA[ELanguage.NEPALI][i]!;
               return (
@@ -254,7 +241,7 @@ export function ZodiacSignDetailNepaliClient() {
             })}
           </div>
 
-          <div className="mt-16">
+          <div className="mt-[48px] sm:mt-[100px]">
             <LandingFAQ />
           </div>
         </section>
