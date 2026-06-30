@@ -232,10 +232,15 @@ const InputPill = ({
   error,
 }: InputPillProps) => (
   <div className={['block', className].filter(Boolean).join(' ')}>
-    <label htmlFor={id} className="block font-mukta text-[12px] md:text-[13px] text-primary mb-1.5">
+    <label htmlFor={id} className="mb-2 block font-mukta text-sm text-Trinary">
       {label}
     </label>
-    <span className="relative block">
+    <span
+      className={clsx(
+        'flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20',
+        error ? 'border-red-500 focus-within:border-red-500' : 'border-Trinary focus-within:border-Trinary',
+      )}
+    >
       <input
         id={id}
         name={name}
@@ -246,13 +251,10 @@ const InputPill = ({
         value={value}
         onChange={onChange}
         onInput={onInput}
-        className={[
-          'w-full min-w-0 h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 pr-16 font-mukta text-[13px] md:text-[14px] text-[#141414] placeholder:text-[#7b6b69] outline-none focus:ring-2 focus:ring-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap',
-          error ? 'border-red-500 focus:border-red-500' : 'border-primary focus:border-primary',
-        ].join(' ')}
+        className="flex-1 min-w-0 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] placeholder:text-[#464646] outline-none disabled:opacity-50 disabled:cursor-not-allowed"
       />
       {rightIcon ? (
-        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-primary/70">
+        <span className="shrink-0 self-center text-primary">
           {rightIcon}
         </span>
       ) : null}
@@ -291,7 +293,7 @@ const DatePickerPill = ({
   onDateSelect: (value: string) => void;
 }) => (
   <div className="relative">
-    <label htmlFor={id} className="block font-mukta text-sm text-Trinary mb-2">
+    <label htmlFor={id} className="mb-2 block font-mukta text-sm text-Trinary">
       {label}
     </label>
     <button
@@ -299,14 +301,14 @@ const DatePickerPill = ({
       type="button"
       onClick={() => onOpenChange(true)}
       className={clsx(
-        'relative w-full h-10 md:h-11 rounded-full border-2 bg-[#fbf5ec]/70 px-4 pr-10 font-mukta text-[13px] md:text-[14px] text-[#141414] outline-none focus:ring-2 focus:ring-primary/10 transition-colors flex items-center',
-        error ? 'border-red-500' : 'border-primary',
+        'w-full flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20 cursor-pointer text-left font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px]',
+        error ? 'border-red-500 focus-within:border-red-500' : 'border-Trinary focus-within:border-Trinary',
       )}
     >
-      <span className="flex-1 min-w-0 truncate text-left">{value || 'Select date of birth'}</span>
-      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-primary">
-        <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 shrink-0" />
+      <span className={clsx('flex-1 min-w-0 truncate', value ? 'text-[#2f2f2f]' : 'text-[#464646]')}>
+        {value || 'Select date of birth'}
       </span>
+      <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary" />
     </button>
     <input type="hidden" name={name} value={value} />
     <DatePickerDropdown
@@ -321,27 +323,29 @@ const DatePickerPill = ({
 
 const SelectPill = ({ id, label, name, className, error }: SelectPillProps) => (
   <div className={['block', className].filter(Boolean).join(' ')}>
-    <label htmlFor={id} className="block font-mukta text-[12px] md:text-[13px] text-primary mb-1.5">
+    <label htmlFor={id} className="mb-2 block font-mukta text-sm text-Trinary">
       {label}
     </label>
-    <span className="relative block">
+    <span
+      className={clsx(
+        'relative flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20',
+        error ? 'border-red-500 focus-within:border-red-500' : 'border-Trinary focus-within:border-Trinary',
+      )}
+    >
       <select
         id={id}
         name={name}
         defaultValue=""
-        className={[
-          'w-full h-10 md:h-11 appearance-none rounded-full border-2 bg-[#fbf5ec]/70 px-4 pr-10 font-mukta text-[13px] md:text-[14px] text-[#141414] outline-none focus:ring-2 focus:ring-primary/10 cursor-pointer transition-colors',
-          error ? 'border-red-500 focus:border-red-500' : 'border-primary focus:border-primary',
-        ].join(' ')}
+        className="flex-1 min-w-0 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] outline-none cursor-pointer pr-10 appearance-none"
       >
-        <option value="" disabled>
+        <option value="" disabled className="text-[#464646]">
           Select
         </option>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-        <option value="other">Other</option>
+        <option value="male" className="text-[#2f2f2f]">Male</option>
+        <option value="female" className="text-[#2f2f2f]">Female</option>
+        <option value="other" className="text-[#2f2f2f]">Other</option>
       </select>
-      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-primary/70">
+      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-primary">
         <ChevronIcon />
       </span>
     </span>
@@ -477,6 +481,7 @@ const PersonSection = ({
         value={birthTimeParts}
         onChange={onBirthTimeChange}
         disabled={unknownBirthTime}
+        variant="calculator"
         error={unknownBirthTime ? undefined : errors.birthTime}
       />
 
@@ -732,7 +737,7 @@ const KundaliMatchingFormSection: React.FC = () => {
 
   return (
     <section className="max-w-7xl mx-auto mt-6 md:mt-8">
-      <h2 className="w-[287px] md:w-full md:text-center font-sahitya font-bold text-[20px] leading-[38px] md:text-[28px] md:leading-[38px] text-primary mb-4 md:mb-6 opacity-100">
+      <h2 className="w-[287px] md:w-full text-left font-sahitya font-bold text-[20px] leading-[38px] md:text-[28px] md:leading-[38px] text-primary mb-4 md:mb-6 opacity-100">
         Fill Up The Form To Match Kundali
       </h2>
 
@@ -741,7 +746,7 @@ const KundaliMatchingFormSection: React.FC = () => {
         <form
           onSubmit={onSubmit}
           noValidate
-          className="w-full max-w-[760px] mx-auto lg:mx-0 lg:max-w-none lg:col-span-8 rounded-[32.41px] md:rounded-[32px] border-2 border-primary shadow-[0_10px_30px_rgba(97,21,8,0.08)] p-4 pb-[12.96px] md:p-6"
+          className="w-full max-w-[760px] mx-auto lg:mx-0 lg:max-w-none lg:col-span-8 rounded-[32.41px] md:rounded-[32px] border border-Trinary shadow-[0_10px_30px_rgba(97,21,8,0.08)] p-4 pb-[12.96px] md:p-6"
         >
           <div>
             <div className="relative grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
@@ -851,23 +856,25 @@ const KundaliMatchingFormSection: React.FC = () => {
           </div>
         </form>
 
-        <aside className="w-full max-w-[398px] h-[392px] mx-auto lg:mx-0 lg:max-w-none lg:h-auto lg:col-span-4 rounded-[40px] md:rounded-[32px] border border-primary bg-primary text-secondary shadow-[0_12px_34px_rgba(97,21,8,0.22)] p-4 md:p-7 flex flex-col items-center justify-center gap-4 md:gap-6">
-          <div
-            className="relative p-2"
-            style={{ width: '188.2345px', height: '220.7189px', opacity: 1 }}
-          >
-            <Image
-              src={ServiceReport}
-              alt="Astrologer illustration"
-              fill
-              className="object-contain filter brightness-0 invert"
-              sizes="240px"
-            />
-          </div>
+        <aside className="w-full max-w-[398px] h-[392px] mx-auto lg:mx-0 lg:max-w-none lg:h-auto lg:col-span-4 rounded-[40px] md:rounded-[32px] border border-primary bg-primary text-secondary shadow-[0_12px_34px_rgba(97,21,8,0.22)] p-4 md:p-7 lg:pt-8 lg:pb-6 flex flex-col items-center justify-center lg:justify-between gap-4 md:gap-6 lg:gap-4">
+          <div className="flex flex-col items-center gap-4 lg:gap-6">
+            <div
+              className="relative p-2"
+              style={{ width: '188.2345px', height: '220.7189px', opacity: 1 }}
+            >
+              <Image
+                src={ServiceReport}
+                alt="Astrologer illustration"
+                fill
+                className="object-contain filter brightness-0 invert"
+                sizes="240px"
+              />
+            </div>
 
-          <h3 className="font-sahitya font-bold text-[28px] leading-[38px] text-center">
-            Get Lifetime Access to Your Kundali Matchmaking
-          </h3>
+            <h3 className="font-sahitya font-bold text-[28px] leading-[38px] text-center">
+              Get Lifetime Access to Your Kundali Matchmaking
+            </h3>
+          </div>
 
           <FreeKundaliGoogleSignIn buttonClassName="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-[#f8f1e7] px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60" />
         </aside>

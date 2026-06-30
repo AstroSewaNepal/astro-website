@@ -214,9 +214,7 @@ export function UnknownBirthTimeCheckbox({
   const textColor =
     variant === 'calculator'
       ? 'text-[#2f2f2f]'
-      : variant === 'kundali'
-        ? 'text-primary'
-        : 'text-Trinary';
+      : 'text-primary';
 
   return (
     <label
