@@ -35,7 +35,9 @@ const BlogComponents: React.FC<IBlogComponentsProps> = ({
     <Link href={link} className="block group mx-auto w-[317px] md:w-[440px]">
       <article className="flex flex-col border border-solid border-[#79787A] border-[1.5px] rounded-[36px] md:rounded-[40px] p-[16px] md:p-[20px] transition-colors hover:border-[#611508]/40 opacity-100 h-[487px] md:h-[680px] overflow-hidden bg-transparent">
         <div className="flex items-center justify-between">
-          <p className="font-mukta text-[13px] md:text-[15px] text-[#5B5B5B] whitespace-nowrap mr-2">{date}</p>
+          <p className="font-mukta text-[13px] md:text-[15px] text-[#5B5B5B] whitespace-nowrap mr-2">
+            {date}
+          </p>
           <div className="flex items-center gap-1 overflow-hidden">
             {feature.slice(0, 2).map((item, index) => (
               <BlogCard content={item} key={`${item}-${index}`} />
@@ -65,8 +67,16 @@ const BlogComponents: React.FC<IBlogComponentsProps> = ({
               </div>
             </div>
             <div className="flex items-center gap-1.5">
-              <Image src={EyeIcon} alt="Eye" width={16} height={16} className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0" />
-              <p className="font-mukta text-[12px] md:text-sm text-[#4A494B] whitespace-nowrap">{views}</p>
+              <Image
+                src={EyeIcon}
+                alt="Eye"
+                width={16}
+                height={16}
+                className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0"
+              />
+              <p className="font-mukta text-[12px] md:text-sm text-[#4A494B] whitespace-nowrap">
+                {views}
+              </p>
             </div>
           </div>
         </div>

@@ -40,7 +40,7 @@ const AstrologerCard = memo(function AstrologerCard({
   const name = getAstrologerName(astrologer);
   const isOnline = isAstrologerOnline(astrologer);
   const isVerified = Boolean(astrologer.isAstrologerActive);
-  
+
   const ratingStars = useMemo(
     () => getRatingStars(astrologer.averageRating),
     [astrologer.averageRating],
@@ -91,7 +91,13 @@ const AstrologerCard = memo(function AstrologerCard({
         title: getDisplayServices(astrologer.services),
       },
     ],
-    [astrologer.language, astrologer.expertise, astrologer.specialist, astrologer.services, astrologer.yearsOfExperience],
+    [
+      astrologer.language,
+      astrologer.expertise,
+      astrologer.specialist,
+      astrologer.services,
+      astrologer.yearsOfExperience,
+    ],
   );
 
   const showChat = Boolean(astrologer.chatAvailable);

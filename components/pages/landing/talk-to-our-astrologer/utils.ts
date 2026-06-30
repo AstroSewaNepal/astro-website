@@ -44,7 +44,10 @@ export function getDisplayServices(services?: string[] | null): string {
   return list.slice(0, MAX_SERVICES).join(', ');
 }
 
-export function getDisplayExpertise(expertise?: string[] | null, specialist?: string[] | null): string {
+export function getDisplayExpertise(
+  expertise?: string[] | null,
+  specialist?: string[] | null,
+): string {
   const list = [...(expertise ?? []), ...(specialist ?? [])]
     .map(item => item.trim())
     .filter(Boolean);
