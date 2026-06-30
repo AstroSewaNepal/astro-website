@@ -440,9 +440,7 @@ export default function CompatibilityMatchPage() {
                 {/* Description */}
                 <div className="font-mukta text-[15px] leading-[28px] text-[#464646] sm:text-[16px] sm:leading-[32px]">
                   {loading ? (
-                    <p className="animate-pulse text-[#888]">
-                      Loading compatibility details…
-                    </p>
+                    <p className="animate-pulse text-[#888]">Loading compatibility details…</p>
                   ) : error ? (
                     <p className="text-red-600">Error: {error}</p>
                   ) : getTabContent() ? (
