@@ -382,7 +382,7 @@ export default function CompatibilityMatchPage() {
                     <span className="font-mukta text-[14px] font-medium uppercase leading-[20px] text-primary sm:text-[20px] sm:leading-[28px]">
                       {signLabels[pillYourSign]}
                     </span>
-                    <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-[#ff0066] bg-secondary p-2 sm:h-[84px] sm:w-[84px] sm:p-3">
+                    <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-[#BE7B71] bg-secondary p-2 sm:h-[84px] sm:w-[84px] sm:p-3">
                       <Image
                         src={zodiacImageMap[pillYourSign].color}
                         alt={pillYourSign}
@@ -409,7 +409,7 @@ export default function CompatibilityMatchPage() {
 
                   {/* Partner sign */}
                   <div className="flex items-center gap-2">
-                    <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-[#ff0066] bg-secondary p-2 sm:h-[84px] sm:w-[84px] sm:p-3">
+                    <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-[#BE7B71] bg-secondary p-2 sm:h-[84px] sm:w-[84px] sm:p-3">
                       <Image
                         src={zodiacImageMap[pillPartnerSign].color}
                         alt={pillPartnerSign}
@@ -476,7 +476,7 @@ export default function CompatibilityMatchPage() {
                 </div>
 
                 {/* Description */}
-                <div className="font-mukta text-[15px] leading-[28px] text-[#464646] sm:text-[16px] sm:leading-[32px]">
+                <div className="font-mukta text-[15px] leading-[28px] text-[#464646] sm:text-[16px] sm:leading-[32px] text-center sm:text-left">
                   {loading ? (
                     <p className="animate-pulse text-[#888]">Loading compatibility details…</p>
                   ) : error ? (
