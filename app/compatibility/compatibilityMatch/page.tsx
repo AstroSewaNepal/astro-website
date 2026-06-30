@@ -483,7 +483,7 @@ export default function CompatibilityMatchPage() {
                     <p className="text-red-600">Error: {error}</p>
                   ) : getTabContent() ? (
                     <ul className="flex flex-col gap-3">
-                      {getTabContent()
+                      {getTabContent()!
                         .split(/(?:\r?\n)+|\.\s+/)
                         .map(s => s.trim())
                         .filter(Boolean)
