@@ -36,10 +36,10 @@ export function ZodiacSignStripNav({
 }: Props) {
   const rootClassName = clsx('min-w-0', compact ? 'mt-4' : 'mt-6', className);
   const itemGapClass = compact ? 'gap-[8px]' : 'gap-[10px]';
-  const cardSizeClass = large ? 'w-full max-w-[110px] aspect-[110/108]' : 'w-full max-w-[100px] aspect-[100/98]';
-  const imageSizeClass = large
-    ? 'h-14 w-14 sm:h-16 sm:w-16'
-    : 'h-10 w-10 sm:h-12 sm:w-12';
+  const cardSizeClass = large
+    ? 'w-full max-w-[110px] aspect-[110/108]'
+    : 'w-full max-w-[100px] aspect-[100/98]';
+  const imageSizeClass = large ? 'h-14 w-14 sm:h-16 sm:w-16' : 'h-10 w-10 sm:h-12 sm:w-12';
   const activeLabelSizeClass = large ? 'text-[22px]' : 'text-[20px]';
   const inactiveLabelSizeClass = large ? 'sm:text-[13px]' : 'sm:text-[12px]';
 
@@ -56,7 +56,7 @@ export function ZodiacSignStripNav({
                 href={hrefForSign(sign)}
                 className={clsx(
                   'group flex shrink-0 flex-col items-center gap-[10px] rounded-[60px] outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F8F3DF]',
-                  large ? 'w-[110px]' : 'w-[100px]'
+                  large ? 'w-[110px]' : 'w-[100px]',
                 )}
               >
                 <div
