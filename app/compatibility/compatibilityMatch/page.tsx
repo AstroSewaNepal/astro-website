@@ -123,6 +123,45 @@ export default function CompatibilityMatchPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [animatedScore, setAnimatedScore] = useState(0);
+
+  useEffect(() => {
+    const targetScore = compatibilityData?.overall_match_percent;
+    let animReq: number;
+
+    if (targetScore === undefined || loading) {
+      let lastTime = 0;
+      const calculateStep = (timestamp: number) => {
+        if (timestamp - lastTime > 60) {
+          setAnimatedScore(Math.floor(Math.random() * 90) + 10);
+          lastTime = timestamp;
+        }
+        animReq = window.requestAnimationFrame(calculateStep);
+      };
+      animReq = window.requestAnimationFrame(calculateStep);
+      return () => window.cancelAnimationFrame(animReq);
+    }
+
+    let startTimestamp: number | null = null;
+    const duration = 1500;
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setAnimatedScore(Math.floor(easeProgress * targetScore));
+
+      if (progress < 1) {
+        animReq = window.requestAnimationFrame(step);
+      } else {
+        setAnimatedScore(targetScore);
+      }
+    };
+
+    animReq = window.requestAnimationFrame(step);
+    return () => window.cancelAnimationFrame(animReq);
+  }, [compatibilityData?.overall_match_percent, loading]);
+
   const lastHandledQueryRef = useRef<string | null>(null);
 
   const [horoscopeCardLang, setHoroscopeCardLang] = useState<ELanguage>(() =>
@@ -316,7 +355,6 @@ export default function CompatibilityMatchPage() {
 
   const scoreMap = getTabScoreMap();
   const currentScore = scoreMap[activeTab] || 0;
-  const overallScore = compatibilityData?.overall_match_percent || 95;
 
   return (
     <main className="min-h-screen pt-6 sm:pt-8 lg:pt-10">
@@ -338,7 +376,7 @@ export default function CompatibilityMatchPage() {
 
               {/* Zodiac pair pill — mobile centered, desktop inline */}
               <div className="flex items-center justify-center">
-                <div className="relative flex items-center justify-center overflow-hidden rounded-[48px] bg-white/70 px-4 py-4 backdrop-blur-md sm:px-10 sm:py-6">
+                <div className="relative flex items-center justify-center overflow-hidden rounded-[48px] px-4 py-4 backdrop-blur-md sm:px-10 sm:py-6">
                   {/* Your sign */}
                   <div className="flex items-center gap-2">
                     <span className="font-mukta text-[14px] font-medium uppercase leading-[20px] text-primary sm:text-[20px] sm:leading-[28px]">
@@ -388,7 +426,7 @@ export default function CompatibilityMatchPage() {
               {/* Match % — centered on mobile, right-aligned on desktop */}
               <div className="text-center lg:text-right">
                 <span className="font-raleway text-[36px] font-bold leading-[44px] text-primary sm:text-[48px] sm:leading-[56px] lg:text-[59px] lg:leading-[65px]">
-                  {overallScore}%{' '}
+                  {animatedScore}%{' '}
                   <span className="text-[28px] sm:text-[40px] lg:text-[52px]">Matched</span>
                 </span>
               </div>
