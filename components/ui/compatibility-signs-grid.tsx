@@ -207,17 +207,24 @@ export function CompatibilitySignsGrid({
         })}
       </div>
       <div className="mt-3 flex justify-center gap-2 sm:hidden">
-        {dots.map(index => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => scrollToIndex(index)}
-            className={clsx(
-              'h-2 min-w-[8px] rounded-full transition-colors',
-              index === activeIndex ? 'bg-[#611508]' : 'bg-[#d7c3b1]',
-            )}
-          />
-        ))}
+        {(() => {
+          let startDot = Math.max(0, activeIndex - 1);
+          if (startDot + 3 > dots.length) {
+            startDot = Math.max(0, dots.length - 3);
+          }
+          const visibleDots = dots.slice(startDot, startDot + 3);
+          return visibleDots.map(index => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => scrollToIndex(index)}
+              className={clsx(
+                'h-2 min-w-[8px] rounded-full transition-all duration-300',
+                index === activeIndex ? 'bg-[#611508]' : 'bg-[#d7c3b1]',
+              )}
+            />
+          ));
+        })()}
       </div>
     </div>
   );
