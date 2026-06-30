@@ -533,21 +533,23 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                 className={clsx(
                   cardShell,
                   'border border-primary bg-primary text-[#f7e9dd]',
-                  'flex flex-col items-center justify-center text-center gap-6 shadow-[0_12px_34px_rgba(74,20,15,0.14)]',
+                  'flex flex-col items-center justify-between text-center gap-6 shadow-[0_12px_34px_rgba(74,20,15,0.14)]',
                   'w-full hidden lg:flex',
                 )}
               >
-                <div className="relative w-full max-w-[277.916px] aspect-square rounded-[28px] p-5">
-                  <Image
-                    src={ServiceReport}
-                    alt="Astrologer illustration"
-                    fill
-                    className="object-contain filter brightness-0 invert"
-                  />
+                <div className="flex-1 flex flex-col items-center justify-center gap-6">
+                  <div className="relative w-full max-w-[277.916px] aspect-square rounded-[28px] p-5">
+                    <Image
+                      src={ServiceReport}
+                      alt="Astrologer illustration"
+                      fill
+                      className="object-contain filter brightness-0 invert"
+                    />
+                  </div>
+                  <p className="font-sahitya text-[28px] md:text-[26px] leading-snug font-bold">
+                    Get Lifetime Access to Your Kundali
+                  </p>
                 </div>
-                <p className="font-sahitya text-[28px] md:text-[26px] leading-snug font-bold">
-                  Get Lifetime Access to Your Kundali
-                </p>
                 <FreeKundaliGoogleSignIn buttonClassName="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-[#f8f1e7] px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white lg:rotate-0 lg:opacity-100 disabled:cursor-not-allowed disabled:opacity-60" />
               </div>
             </div>
