@@ -51,7 +51,7 @@ async function fetchPanchangaForDate(
       if (!response.ok || json.success === false) {
         attemptErrors.push(
           (typeof json.message === 'string' && json.message) ||
-            `Request failed (${response.status}).`,
+          `Request failed (${response.status}).`,
         );
         continue;
       }
@@ -105,16 +105,64 @@ function pickerValueToDate(v: string): Date | null {
   return new Date(yyyy, mm - 1, dd);
 }
 
+/** Small calendar SVG icon used inside the nav bar */
+const CalendarIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+  >
+    <rect x="3" y="4" width="18" height="18" rx="2" />
+    <line x1="3" y1="9" x2="21" y2="9" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <circle cx="12" cy="15" r="1.2" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+/** Pin / location SVG icon */
+const PinIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    aria-hidden
+  >
+    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
+  </svg>
+);
+
+/** Chevron down icon */
+const ChevronDown: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2.2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+  >
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+);
+
 const PanchangTodaySection: React.FC = () => {
   const [calendarDay, setCalendarDay] = useState(() => new Date());
   const [city] = useState<string>(PANCHANG_DEFAULT_GEO.label);
   const cityRef = useRef(city);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [isDatePickerOpenDesktop, setIsDatePickerOpenDesktop] = useState(false);
 
   useEffect(() => {
     cityRef.current = city;
   }, [city]);
+
   const [panchanga, setPanchanga] = useState<{
     table: Record<string, unknown>;
     moonSign: string;
@@ -174,159 +222,157 @@ const PanchangTodaySection: React.FC = () => {
 
   const timings = buildTimings(panchanga?.table ?? null, calendarDay);
 
-  const roundedInputChrome =
-    'h-[36px] md:h-[44px] rounded-full border border-primary font-mukta bg-secondary text-primary outline-none px-4';
-
-  const dateChromeMd =
-    'hidden md:flex md:h-[44px] md:rounded-[32px] md:border md:border-primary md:px-6 md:min-w-[208px]';
-
   return (
     <>
-      <style>{`
-        .city-input::placeholder {
-          color: inherit;
-        }
-      `}</style>
       <section className="w-full max-w-full box-border min-h-[580px] min-w-0 flex flex-col lg:flex-row items-start gap-8 md:gap-10 opacity-100">
         <div className="w-full min-w-0 min-h-[580px] flex flex-col gap-7 md:gap-10 opacity-100">
-          <div className="w-full md:max-w-none">
-            <div className="md:hidden flex flex-col gap-2">
-              <div className="flex items-center justify-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => shiftDay(-1)}
-                  style={{ width: '44px', height: '44px', opacity: 1 }}
-                  className="border border-primary rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors"
-                  aria-label="Previous day"
-                >
-                  <ArrowLeft className="w-6 h-6" />
-                </button>
-                <button
-                  type="button"
-                  onClick={onTodayClick}
-                  style={{
-                    width: '110px',
-                    height: '44px',
-                    borderRadius: '24px',
-                    borderWidth: '0.5px',
-                    padding: '8px 32px',
-                    opacity: 1,
-                  }}
-                  className="bg-primary text-[#F8F3DF] border-primary font-mukta hover:bg-primary/80 transition-colors flex items-center justify-center"
-                >
-                  Today
-                </button>
-                <button
-                  type="button"
-                  onClick={() => shiftDay(1)}
-                  style={{ width: '44px', height: '44px', opacity: 1 }}
-                  className="border border-primary rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors"
-                  aria-label="Next day"
-                >
-                  <ArrowRight className="w-6 h-6" />
-                </button>
-              </div>
 
-              <div className="grid grid-cols-2 gap-2 mt-3">
-                <div className="relative w-full">
-                  <button
-                    id="panchang-date-btn-mobile"
-                    type="button"
-                    onClick={() => setIsDatePickerOpen(o => !o)}
-                    className={`${roundedInputChrome} w-full text-left cursor-pointer`}
-                    aria-label="Select date"
-                  >
-                    {formatDdMmYyyy(calendarDay)}
-                  </button>
-                  <DatePickerDropdown
-                    open={isDatePickerOpen}
-                    onOpenChange={setIsDatePickerOpen}
-                    onDateSelect={onDatePickerSelect}
-                    value={dateToPickerValue(calendarDay)}
-                    anchorId="panchang-date-btn-mobile"
-                  />
-                </div>
-                <input
-                  type="text"
-                  placeholder="City (label only)"
-                  value={city}
-                  readOnly
-                  className={`city-input ${roundedInputChrome} w-full bg-[#f8f3df] cursor-not-allowed`}
-                />
-              </div>
-            </div>
-
-            <div className="hidden md:flex items-center gap-3 flex-wrap">
-              <div className="relative">
-                <button
-                  id="panchang-date-btn-desktop"
-                  type="button"
-                  onClick={() => setIsDatePickerOpenDesktop(o => !o)}
-                  className={`${dateChromeMd} font-mukta cursor-pointer text-left items-center`}
-                  aria-label="Select date"
-                >
-                  {formatDdMmYyyy(calendarDay)}
-                </button>
-                <DatePickerDropdown
-                  open={isDatePickerOpenDesktop}
-                  onOpenChange={setIsDatePickerOpenDesktop}
-                  onDateSelect={onDatePickerSelect}
-                  value={dateToPickerValue(calendarDay)}
-                  anchorId="panchang-date-btn-desktop"
-                />
-              </div>
-              <input
-                type="text"
-                placeholder="City (label only)"
-                value={city}
-                readOnly
-                style={{
-                  width: '245px',
-                  height: '44px',
-                  borderRadius: '32px',
-                  borderWidth: '1px',
-                  padding: '8px 24px',
-                  opacity: 1,
-                  backgroundColor: '#f8f3df',
-                  cursor: 'not-allowed',
-                }}
-                className="city-input border border-primary font-mukta text-primary outline-none"
-              />
+          {/* ── Unified nav bar (matches Image 1 exactly) ── */}
+          <div className="w-full">
+            <div
+              className="flex items-center w-full"
+              style={{
+                background: '#fbf6ef',
+                borderRadius: '999px',
+                border: '1px solid #e8dfc8',
+                padding: '10px 18px',
+                gap: '0',
+                boxShadow: '0 2px 6px 0 rgba(97,21,8,0.06)',
+              }}
+            >
+              {/* Previous Day */}
               <button
                 type="button"
                 onClick={() => shiftDay(-1)}
-                style={{ width: '44px', height: '44px', opacity: 1 }}
-                className="border border-primary rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors"
                 aria-label="Previous day"
+                className="flex flex-col items-center justify-center text-primary hover:opacity-70 transition-opacity"
+                style={{ minWidth: '56px', padding: '4px 8px', gap: '2px', background: 'none', border: 'none', cursor: 'pointer' }}
               >
-                <ArrowLeft className="w-6 h-6" />
+                <ArrowLeft className="w-5 h-5" />
+                <span style={{ fontSize: '11px', fontFamily: 'var(--font-mukta, sans-serif)', color: 'var(--color-primary, #7b1c1c)', lineHeight: 1.2 }}>
+                  Previous Day
+                </span>
               </button>
-              <button
-                type="button"
-                onClick={onTodayClick}
-                style={{
-                  width: '105px',
-                  height: '44px',
-                  borderRadius: '24px',
-                  borderWidth: '0.5px',
-                  padding: '8px 32px',
-                  opacity: 1,
-                }}
-                className="bg-primary text-[#F8F3DF] border-primary font-mukta hover:bg-primary/80 transition-colors flex items-center justify-center"
+
+              {/* Divider */}
+              <div style={{ width: '1px', height: '36px', background: '#e8dfc8', flexShrink: 0, margin: '0 12px' }} />
+
+              {/* Calendar icon pill (tappable, opens date picker) */}
+              <div className="relative">
+                <button
+                  id="panchang-date-btn"
+                  type="button"
+                  onClick={() => setIsDatePickerOpen(o => !o)}
+                  aria-label="Select date"
+                  className="flex items-center justify-center hover:opacity-80 transition-opacity"
+                  style={{
+                    background: '#f5ede0',
+                    border: '1px solid #e8dfc8',
+                    borderRadius: '999px',
+                    width: '48px',
+                    height: '48px',
+                    margin: '0 12px 0 8px',
+                    cursor: 'pointer',
+                    color: 'var(--color-primary, #7b1c1c)',
+                    flexShrink: 0,
+                  }}
+                >
+                  <CalendarIcon className="w-5 h-5" />
+                </button>
+                <DatePickerDropdown
+                  open={isDatePickerOpen}
+                  onOpenChange={setIsDatePickerOpen}
+                  onDateSelect={onDatePickerSelect}
+                  value={dateToPickerValue(calendarDay)}
+                  anchorId="panchang-date-btn"
+                />
+              </div>
+
+              {/* Date + location centre block — centered, do not expand */}
+              <div
+                className="flex flex-col items-start justify-center min-w-0"
+                style={{ padding: '0 8px', margin: '0 auto' }}
               >
-                Today
-              </button>
+                {/* Bold date */}
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mukta, sans-serif)',
+                    fontWeight: 800,
+                    fontSize: '20px',
+                    lineHeight: '24px',
+                    color: 'var(--color-primary, #7b1c1c)',
+                    letterSpacing: '0.01em',
+                  }}
+                >
+                  {displayDdMmYy}
+                </span>
+                {/* Location row */}
+                <span
+                  className="flex items-center gap-1"
+                  style={{
+                    fontFamily: 'var(--font-mukta, sans-serif)',
+                    fontSize: '14px',
+                    lineHeight: '18px',
+                    color: 'var(--color-primary, #7b1c1c)',
+                    opacity: 0.9,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '100%',
+                  }}
+                >
+                  <PinIcon className="w-3.5 h-3.5 flex-shrink-0" style={{ opacity: 0.7 } as React.CSSProperties} />
+                  {city}
+                  <ChevronDown className="w-3.5 h-3.5 flex-shrink-0 ml-0.5" />
+                </span>
+              </div>
+
+              {/* Divider */}
+              <div style={{ width: '1px', height: '36px', background: '#e8dfc8', flexShrink: 0, margin: '0 8px' }} />
+
+              {/* Next Day */}
               <button
                 type="button"
                 onClick={() => shiftDay(1)}
-                style={{ width: '44px', height: '44px', opacity: 1 }}
-                className="border border-primary rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors"
                 aria-label="Next day"
+                className="flex flex-col items-center justify-center text-primary hover:opacity-70 transition-opacity"
+                style={{ minWidth: '56px', padding: '4px 8px', gap: '2px', background: 'none', border: 'none', cursor: 'pointer' }}
               >
-                <ArrowRight className="w-6 h-6" />
+                <ArrowRight className="w-5 h-5" />
+                <span style={{ fontSize: '11px', fontFamily: 'var(--font-mukta, sans-serif)', color: 'var(--color-primary, #7b1c1c)', lineHeight: 1.2 }}>
+                  Next Day
+                </span>
+              </button>
+
+              {/* Divider */}
+              <div style={{ width: '1px', height: '36px', background: '#e8dfc8', flexShrink: 0, margin: '0 8px' }} />
+
+              {/* Today button */}
+              <button
+                type="button"
+                onClick={onTodayClick}
+                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                style={{
+                  background: '#7b1c1c',
+                  color: '#F8F3DF',
+                  border: 'none',
+                  borderRadius: '999px',
+                  padding: '12px 28px',
+                  margin: '0 6px 0 12px',
+                  fontFamily: 'var(--font-mukta, sans-serif)',
+                  fontWeight: 700,
+                  fontSize: '16px',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 6px 18px rgba(97,21,8,0.12)',
+                  flexShrink: 0,
+                }}
+              >
+                Today
               </button>
             </div>
           </div>
+          {/* ── End nav bar ── */}
 
           <div>
             <h2 className="text-[24px] leading-[32px] md:text-[36px] md:leading-[44px] font-bold font-sahitya text-primary mb-4 md:mb-6">
@@ -351,7 +397,7 @@ const PanchangTodaySection: React.FC = () => {
               />
             </div>
 
-            <div className="border border-Trinary rounded-lg w-full max-w-full mt-5 md:mt-8">
+            <div className="border border-Trinary rounded-lg w-full mt-5 md:mt-8">
               <div className="px-4 md:px-6 pt-2 pb-2">
                 <h3 className="text-[18px] leading-[24px] md:text-[26px] md:leading-[34px] font-mukta font-medium text-primary">
                   {titleLine}
