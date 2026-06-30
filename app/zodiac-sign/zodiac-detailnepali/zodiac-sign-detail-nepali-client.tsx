@@ -2,7 +2,9 @@
 
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { ArrowRight } from 'lucide-react';
 
 import LandingFAQ from '@/components/pages/landing/faq';
 import { ZodiacSignMiniCard } from '@/components/pages/zodiac-sign/zodiac-sign-mini-card';
@@ -68,8 +70,8 @@ export function ZodiacSignDetailNepaliClient() {
             className="mt-4"
           />
 
-          <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_220px] lg:items-start">
-            <div>
+          <div className="mt-6 flex min-w-0 flex-col gap-6 lg:mt-4 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start lg:gap-4 lg:opacity-100">
+            <div className="min-w-0 order-2 lg:order-none sm:mt-6">
               <h1 className="font-sahitya text-[34px] font-bold leading-none text-[#6b2417] sm:text-[42px]">
                 {nepaliName}
               </h1>
@@ -99,14 +101,34 @@ export function ZodiacSignDetailNepaliClient() {
                   </>
                 )}
               </div>
+
+              <div className="mt-6 flex lg:hidden items-center justify-center">
+                <Link
+                  href={`/np/horoscope/${slug}/today`}
+                  className="flex w-fit mx-auto h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[24px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
+                >
+                  {nepaliName} राशिफल हेर्नुहोस्
+                  <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
+                </Link>
+              </div>
             </div>
 
-            <div className="rounded-[10px] bg-[#f4ead2] p-5">
+            <div
+              className="hidden lg:block order-1 shrink-0 lg:order-none lg:justify-self-end mb-6"
+              style={{ width: '308.29px' }}
+            >
               <Image
                 src={NEPALI_ZODIAC_COLOR[slug]}
                 alt={nepaliName}
-                className="mx-auto h-[80px] w-[80px] object-contain"
+                className="mb-4 h-[297px] w-[308px] object-contain"
               />
+              {/* <Link
+                href={`/np/horoscope/${slug}/today`}
+                className="flex w-fit mx-auto h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[24px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
+              >
+                {nepaliName} राशिफल हेर्नुहोस्
+                <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
+              </Link> */}
             </div>
           </div>
 
