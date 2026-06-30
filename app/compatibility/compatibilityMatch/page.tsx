@@ -42,6 +42,8 @@ import {
 import { CompatibilityHoroscopeSection } from './compatibility-horoscope-section';
 import { fetchVedastroHoroscopeList } from '@/lib/api/vedastro/horoscope';
 import { buildTodayHoroscopeDisplayCards } from '@/lib/horoscope/build-today-horoscope-display-cards';
+import { CompatibilitySignsGrid } from '@/components/ui/compatibility-signs-grid';
+import { compatibilityMatchHref } from '@/lib/constants/compatibility-nav';
 import {
   persistCardDisplayLanguage,
   readCardDisplayLanguage,
@@ -91,73 +93,6 @@ const compatibilityTabs = [
   { key: 'weakness', label: 'Weakness' },
 ] as const;
 
-function OtherSignPairCard({
-  firstSign,
-  secondSign,
-  isActive,
-  onClick,
-}: {
-  firstSign: HoroscopeSign;
-  secondSign: HoroscopeSign;
-  isActive: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') onClick();
-      }}
-      className={clsx(
-        'flex h-full min-h-[140px] w-full cursor-pointer items-center justify-center gap-4 rounded-[20px] border border-[#464646] p-4 transition-colors hover:border-primary sm:min-h-0',
-        isActive ? 'bg-secondary' : 'bg-white/60',
-      )}
-    >
-      <div className="flex flex-col items-center gap-4">
-        <Image
-          src={zodiacImageMap[firstSign].color}
-          alt={signLabels[firstSign]}
-          width={100}
-          height={96}
-          className="h-20 w-20 object-contain lg:h-24 lg:w-24"
-        />
-        <span className="font-mukta text-[18px] font-normal leading-[28px] text-primary">
-          {signLabels[firstSign]}
-        </span>
-      </div>
-
-      <svg
-        width="44"
-        height="44"
-        viewBox="0 0 44 44"
-        fill="none"
-        className="flex-shrink-0"
-        aria-hidden
-      >
-        <path
-          d="M22.0013 39.1417L19.343 36.7217C9.9013 28.16 3.66797 22.495 3.66797 15.5833C3.66797 9.91833 8.10464 5.5 13.7513 5.5C16.9413 5.5 20.003 6.985 22.0013 9.31333C23.9996 6.985 27.0613 5.5 30.2513 5.5C35.898 5.5 40.3346 9.91833 40.3346 15.5833C40.3346 22.495 34.1013 28.16 24.6596 36.7217L22.0013 39.1417Z"
-          fill="#862C23"
-        />
-      </svg>
-
-      <div className="flex flex-col items-center gap-4">
-        <Image
-          src={isActive ? zodiacImageMap[secondSign].color : zodiacImageMap[secondSign].light}
-          alt={signLabels[secondSign]}
-          width={100}
-          height={96}
-          className="h-20 w-20 object-contain lg:h-24 lg:w-24"
-        />
-        <span className="font-mukta text-[18px] font-normal leading-[28px] text-primary">
-          {signLabels[secondSign]}
-        </span>
-      </div>
-    </div>
-  );
-}
-
 function RadioDot({ selected }: { selected: boolean }) {
   return selected ? (
     <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -187,8 +122,7 @@ export default function CompatibilityMatchPage() {
   const [compatibilityData, setCompatibilityData] = useState<ZodiacCompatibilityData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const otherSignsScrollRef = useRef<HTMLDivElement>(null);
-  const [otherSignsSlideIndex, setOtherSignsSlideIndex] = useState(0);
+
   const lastHandledQueryRef = useRef<string | null>(null);
 
   const [horoscopeCardLang, setHoroscopeCardLang] = useState<ELanguage>(() =>
@@ -259,25 +193,6 @@ export default function CompatibilityMatchPage() {
     return !!value && HOROSCOPE_SIGNS.includes(value as HoroscopeSign);
   }, []);
 
-  const updateOtherSignsSlideFromScroll = useCallback(() => {
-    const el = otherSignsScrollRef.current;
-    if (!el || el.children.length === 0) return;
-    const first = el.children[0] as HTMLElement;
-    const gap = 16;
-    const stride = first.offsetWidth + gap;
-    if (stride <= 0) return;
-    const idx = Math.round((el.scrollLeft + stride * 0.15) / stride);
-    setOtherSignsSlideIndex(Math.min(HOROSCOPE_SIGNS.length - 1, Math.max(0, idx)));
-  }, []);
-
-  const scrollToOtherSignsSlide = useCallback((index: number) => {
-    const el = otherSignsScrollRef.current;
-    if (!el || el.children.length === 0) return;
-    const first = el.children[0] as HTMLElement;
-    const stride = first.offsetWidth + 16;
-    el.scrollTo({ left: index * stride, behavior: 'smooth' });
-  }, []);
-
   const fetchCompatibility = useCallback(
     async (
       overrides?: Partial<{
@@ -335,20 +250,6 @@ export default function CompatibilityMatchPage() {
       return params.toString();
     },
     [yourSign, partnerSign, yourGender, partnerGender],
-  );
-
-  const handleCompatibilityCardClick = useCallback(
-    (secondSign: HoroscopeSign) => {
-      window.scrollTo(0, 0);
-      const params = new URLSearchParams({
-        your_sign: yourSign,
-        partner_sign: secondSign,
-        your_gender: yourGender,
-        partner_gender: partnerGender,
-      });
-      router.push(`${pathname}?${params.toString()}`);
-    },
-    [yourSign, yourGender, partnerGender, pathname, router],
   );
 
   const handleFindNow = useCallback(() => {
@@ -537,18 +438,33 @@ export default function CompatibilityMatchPage() {
                 </div>
 
                 {/* Description */}
-                <p className="font-mukta text-[15px] leading-[28px] text-[#464646] sm:text-[16px] sm:leading-[32px]">
+                <div className="font-mukta text-[15px] leading-[28px] text-[#464646] sm:text-[16px] sm:leading-[32px]">
                   {loading ? (
-                    <span className="animate-pulse text-[#888]">
+                    <p className="animate-pulse text-[#888]">
                       Loading compatibility details…
-                    </span>
+                    </p>
                   ) : error ? (
-                    <span className="text-red-600">Error: {error}</span>
+                    <p className="text-red-600">Error: {error}</p>
+                  ) : getTabContent() ? (
+                    <ul className="flex flex-col gap-3">
+                      {getTabContent()
+                        .split(/(?:\r?\n)+|\.\s+/)
+                        .map(s => s.trim())
+                        .filter(Boolean)
+                        .map((sentence, i) => {
+                          const text = sentence.match(/[.!?]$/) ? sentence : `${sentence}.`;
+                          return (
+                            <li key={i} className="flex gap-3 items-start">
+                              <span className="mt-[11px] h-2 w-2 flex-shrink-0 rounded-full bg-primary/70" />
+                              <span>{text}</span>
+                            </li>
+                          );
+                        })}
+                    </ul>
                   ) : (
-                    getTabContent() ||
-                    'No additional details available for this compatibility aspect.'
+                    <p>No additional details available for this compatibility aspect.</p>
                   )}
-                </p>
+                </div>
               </div>
 
               {/* Right: Find Compatible Partner — full width on mobile, sidebar on desktop */}
@@ -701,75 +617,20 @@ export default function CompatibilityMatchPage() {
               Compatibility With Other Signs
             </h2>
 
-            {useMemo(() => {
-              const dynamicPairs = signOptions;
-              return (
-                <>
-                  {/* Mobile: horizontal snap carousel + dots */}
-                  <div className="flex flex-col gap-4 overflow-x-clip sm:hidden">
-                    <div
-                      ref={otherSignsScrollRef}
-                      onScroll={updateOtherSignsSlideFromScroll}
-                      className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                    >
-                      {dynamicPairs.map(secondSign => (
-                        <div
-                          key={secondSign}
-                          className="w-[min(100%,calc(100vw-3.5rem))] max-w-[420px] shrink-0 snap-center"
-                        >
-                          <OtherSignPairCard
-                            firstSign={yourSign}
-                            secondSign={secondSign}
-                            isActive={pillYourSign === yourSign && pillPartnerSign === secondSign}
-                            onClick={() => handleCompatibilityCardClick(secondSign)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    <div
-                      className="flex flex-wrap items-center justify-center gap-2"
-                      aria-label="Compatibility pair slides"
-                    >
-                      {dynamicPairs.map((secondSign, i) => (
-                        <button
-                          key={secondSign}
-                          type="button"
-                          aria-label={`Go to ${signLabels[yourSign]} and ${signLabels[secondSign]} compatibility`}
-                          aria-current={i === otherSignsSlideIndex ? 'true' : undefined}
-                          onClick={() => scrollToOtherSignsSlide(i)}
-                          className={clsx(
-                            'h-2 w-2 rounded-full transition-colors',
-                            i === otherSignsSlideIndex ? 'bg-primary' : 'bg-[#C4C4C4]',
-                          )}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Tablet / desktop: grid */}
-                  <div className="hidden grid-cols-2 gap-4 sm:grid sm:grid-cols-3 xl:grid-cols-4">
-                    {dynamicPairs.map(secondSign => (
-                      <OtherSignPairCard
-                        key={secondSign}
-                        firstSign={yourSign}
-                        secondSign={secondSign}
-                        isActive={pillYourSign === yourSign && pillPartnerSign === secondSign}
-                        onClick={() => handleCompatibilityCardClick(secondSign)}
-                      />
-                    ))}
-                  </div>
-                </>
-              );
-            }, [
-              signOptions,
-              yourSign,
-              pillYourSign,
-              pillPartnerSign,
-              handleCompatibilityCardClick,
-              updateOtherSignsSlideFromScroll,
-              otherSignsSlideIndex,
-              scrollToOtherSignsSlide,
-            ])}
+            <CompatibilitySignsGrid
+              title=""
+              currentSignLabel={signLabels[yourSign]}
+              currentSignImage={zodiacImageMap[yourSign].color}
+              currentSignImageLight={zodiacImageMap[yourSign].light}
+              items={signOptions.map(secondSign => ({
+                slug: secondSign,
+                name: signLabels[secondSign],
+                image: zodiacImageMap[secondSign].color,
+                imageLight: zodiacImageMap[secondSign].light,
+                href: compatibilityMatchHref(yourSign, secondSign),
+              }))}
+              variant="figma"
+            />
           </div>
 
           <div className="sm:hidden">
