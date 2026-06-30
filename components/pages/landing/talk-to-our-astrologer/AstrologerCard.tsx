@@ -16,7 +16,7 @@ import {
   getAstrologerName,
   getDisplayLanguages,
   getDisplayServices,
-  getDisplaySpecializations,
+  getDisplayExpertise,
   getExperienceLabel,
   getLowestPackage,
   getProfileImageUrl,
@@ -40,6 +40,7 @@ const AstrologerCard = memo(function AstrologerCard({
   const name = getAstrologerName(astrologer);
   const isOnline = isAstrologerOnline(astrologer);
   const isVerified = Boolean(astrologer.isAstrologerActive);
+
   const ratingStars = useMemo(
     () => getRatingStars(astrologer.averageRating),
     [astrologer.averageRating],
@@ -79,7 +80,7 @@ const AstrologerCard = memo(function AstrologerCard({
       },
       {
         icon: SquareIcon,
-        title: getDisplaySpecializations(astrologer.services),
+        title: getDisplayExpertise(astrologer.expertise, astrologer.specialist),
       },
       {
         icon: EducationIcon,
@@ -90,7 +91,13 @@ const AstrologerCard = memo(function AstrologerCard({
         title: getDisplayServices(astrologer.services),
       },
     ],
-    [astrologer.language, astrologer.services, astrologer.yearsOfExperience],
+    [
+      astrologer.language,
+      astrologer.expertise,
+      astrologer.specialist,
+      astrologer.services,
+      astrologer.yearsOfExperience,
+    ],
   );
 
   const showChat = Boolean(astrologer.chatAvailable);
@@ -100,7 +107,7 @@ const AstrologerCard = memo(function AstrologerCard({
   const isRemoteProfileImage = Boolean(profileImage?.startsWith('http'));
 
   return (
-    <article className="talk-to-our-astrologer-card flex h-full flex-col overflow-hidden rounded-[34px] border border-solid border-[#0000007D] shadow-[0_8px_32px_rgba(97,21,8,0.08)]">
+    <article className="talk-to-our-astrologer-card flex h-full flex-col overflow-hidden rounded-[34px] border border-solid border-[#0000007D] shadow-[0_8px_32px_rgba(97,21,8,0.08)] bg-[#fbf6ee]">
       <div className="flex flex-1 flex-col p-3.5 pt-4 pb-1 sm:p-6 sm:pt-10 lg:p-8 lg:pt-14">
         <div className="flex flex-col items-center">
           <div className="relative shrink-0">
@@ -209,45 +216,30 @@ const AstrologerCard = memo(function AstrologerCard({
         </div>
       </div>
 
-      {(showChat || showCall || showSchedule) && (
-        <div className="mt-auto flex shrink-0 items-center justify-between gap-1.5 bg-primary px-3 py-1.5 sm:px-5 sm:py-3 lg:px-6 lg:py-4 max-sm:mx-2.5 max-sm:mb-2.5 max-sm:mt-2 max-sm:rounded-full">
-          <div className="flex items-center gap-1.5 sm:gap-3 lg:gap-4">
-            {showChat ? (
-              <button
-                type="button"
-                className="flex h-7.5 w-7.5 sm:h-10 sm:w-10 lg:h-11 lg:w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white shadow-sm transition-opacity hover:opacity-90"
-                aria-label={`Chat with ${name}`}
-                onClick={() => onChat?.(astrologer)}
-              >
-                <ChatIcon className="h-4 w-4 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-primary" />
-              </button>
-            ) : null}
-            {showCall ? (
-              <button
-                type="button"
-                className="flex h-7.5 w-7.5 sm:h-10 sm:w-10 lg:h-11 lg:w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white shadow-sm transition-opacity hover:opacity-90"
-                aria-label={`Call ${name}`}
-                onClick={() => onCall?.(astrologer)}
-              >
-                <PhoneIcon className="h-4 w-4 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-primary" />
-              </button>
-            ) : null}
-          </div>
-          {showSchedule ? (
-            <button
-              type="button"
-              className="flex min-w-0 shrink-0 items-center gap-1 rounded-full border border-white/30 sm:border-[#F8F3DF] px-2.5 py-1 sm:px-3.5 sm:py-2 lg:px-4 lg:py-2.5 transition-colors hover:bg-white/10"
-              aria-label={`Schedule session with ${name}`}
-              onClick={() => onSchedule?.(astrologer)}
-            >
-              <CalendarIcon className="h-3 w-3 sm:h-5 sm:w-5 lg:h-6 lg:w-6 shrink-0 text-[#F8F3DF]" />
-              <span className="font-mukta text-[9px] sm:text-sm lg:text-base font-medium text-[#F8F3DF]">
-                Schedule
-              </span>
-            </button>
-          ) : null}
-        </div>
-      )}
+      <div className="mt-auto flex shrink-0 items-center justify-between gap-1.5 sm:gap-3 px-3 py-2 sm:px-5 sm:py-4 lg:px-6 lg:py-5 border-t border-dashed border-[#79787A]/30">
+        <button
+          type="button"
+          className="flex flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-[32px] bg-[#611508] py-2.5 sm:py-3 lg:py-3.5 transition-opacity hover:opacity-90"
+          aria-label={`Schedule session with ${name}`}
+          onClick={() => onSchedule?.(astrologer)}
+        >
+          <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 shrink-0 text-white" />
+          <span className="font-mukta text-[11px] sm:text-[14px] lg:text-base font-medium text-white">
+            Schedule
+          </span>
+        </button>
+        <button
+          type="button"
+          className="flex flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-[32px] border border-[#611508] bg-transparent py-2.5 sm:py-3 lg:py-3.5 transition-opacity hover:bg-[#611508]/5"
+          aria-label={`Connect with ${name}`}
+          onClick={() => (onCall ? onCall(astrologer) : onChat?.(astrologer))}
+        >
+          <PhoneIcon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 shrink-0 text-[#611508]" />
+          <span className="font-mukta text-[11px] sm:text-[14px] lg:text-base font-medium text-[#611508]">
+            Connect Now
+          </span>
+        </button>
+      </div>
     </article>
   );
 });
