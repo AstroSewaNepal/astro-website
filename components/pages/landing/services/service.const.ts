@@ -18,8 +18,8 @@ export const SERVICES_LIST: Array<{
 }> = [
   {
     id: 1,
-    title: 'Order personalized reports from complete birth charts & yearly forecasts',
-    buttonText: 'Kundali Reports',
+    title: 'Get Your Kundali, Birth Chart & Matchmaking Reports',
+    buttonText: 'Get My Reports',
     icon: ServiceReport,
     action: { type: 'link', href: '/kundali-details' },
   },

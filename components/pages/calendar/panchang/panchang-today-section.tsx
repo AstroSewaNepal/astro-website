@@ -107,7 +107,7 @@ function pickerValueToDate(v: string): Date | null {
 
 const PanchangTodaySection: React.FC = () => {
   const [calendarDay, setCalendarDay] = useState(() => new Date());
-  const [city, setCity] = useState<string>(PANCHANG_DEFAULT_GEO.label);
+  const [city] = useState<string>(PANCHANG_DEFAULT_GEO.label);
   const cityRef = useRef(city);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isDatePickerOpenDesktop, setIsDatePickerOpenDesktop] = useState(false);
@@ -250,9 +250,8 @@ const PanchangTodaySection: React.FC = () => {
                   type="text"
                   placeholder="City (label only)"
                   value={city}
-                  onChange={e => setCity(e.target.value)}
-                  onBlur={() => void reload()}
-                  className={`city-input ${roundedInputChrome} w-full`}
+                  readOnly
+                  className={`city-input ${roundedInputChrome} w-full bg-[#f8f3df] cursor-not-allowed`}
                 />
               </div>
             </div>
@@ -280,8 +279,7 @@ const PanchangTodaySection: React.FC = () => {
                 type="text"
                 placeholder="City (label only)"
                 value={city}
-                onChange={e => setCity(e.target.value)}
-                onBlur={() => void reload()}
+                readOnly
                 style={{
                   width: '245px',
                   height: '44px',
@@ -289,8 +287,10 @@ const PanchangTodaySection: React.FC = () => {
                   borderWidth: '1px',
                   padding: '8px 24px',
                   opacity: 1,
+                  backgroundColor: '#f8f3df',
+                  cursor: 'not-allowed',
                 }}
-                className="city-input border border-primary font-mukta bg-secondary text-primary outline-none"
+                className="city-input border border-primary font-mukta text-primary outline-none"
               />
               <button
                 type="button"
