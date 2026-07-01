@@ -9,7 +9,7 @@ import ChevronRight from '@/components/icons/chevron-right';
 
 const WhoWeAre: React.FC = () => {
   return (
-    <section className="container mx-auto px-6 lg:px-0">
+    <section className="container mx-auto px-6 lg:px-0 border-b border-b-[#79787A] pb-[100px]">
       <div
         className={clsx(
           WhoWeAreCSS.container,

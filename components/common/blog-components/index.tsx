@@ -32,21 +32,19 @@ const BlogComponents: React.FC<IBlogComponentsProps> = ({
   link,
 }) => {
   return (
-    <Link href={link} className="block group mx-auto w-[317px] md:w-[440px]">
-      <article className="flex flex-col border border-solid border-[#79787A] border-[1.5px] rounded-[36px] md:rounded-[40px] p-[16px] md:p-[20px] transition-colors hover:border-[#611508]/40 opacity-100 h-[487px] md:h-[680px] overflow-hidden bg-transparent">
-        <div className="flex items-center justify-between">
-          <p className="font-mukta text-[13px] md:text-[15px] text-[#5B5B5B] whitespace-nowrap mr-2">
-            {date}
-          </p>
-          <div className="flex items-center gap-1 overflow-hidden">
-            {feature.slice(0, 2).map((item, index) => (
+    <Link href={link} className="block group mx-auto w-[317px] h-[487px] md:w-full md:h-full">
+      <article className="h-full flex flex-col justify-between border border-solid border-[#79787A] border-[1.5px] rounded-[28px] px-[22px] py-[18px] transition-colors hover:border-[#611508]/40 opacity-100 overflow-hidden">
+        <div className="flex flex-col gap-4 md:gap-0 md:flex-row md:items-center md:justify-between">
+          <p className="font-mukta text-xl text-[#5B5B5B]">{date}</p>
+          <div className="flex items-center gap-1">
+            {feature.slice(0, 1).map((item, index) => (
               <BlogCard content={item} key={`${item}-${index}`} />
             ))}
             {feature.length > 2 && <BlogCard content={`+${feature.length - 2}`} />}
           </div>
         </div>
         <div>
-          <div className="flex items-center justify-center mt-3 md:mt-4 rounded-[16px] md:rounded-[24px] overflow-hidden w-full h-[180px] md:h-[292px] opacity-100 shrink-0">
+          <div className="flex items-center justify-center mt-[15px] rounded-[8px] overflow-hidden w-full h-[200px] md:h-[292px] opacity-100">
             <Image
               src={image}
               width={396}

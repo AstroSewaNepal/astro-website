@@ -12,7 +12,7 @@ const APPLE_STORE_URL = 'https://apps.apple.com/us/search?term=Astro%20Sewa';
 
 const DownloadApp: React.FC<DownloadAppProps> = ({ className }) => {
   return (
-    <section className={clsx(className)}>
+    <section className={clsx(className, 'border-b border-b-[#79787A] pb-[100px]')}>
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 px-4 py-8 md:gap-12 md:px-6 md:py-12 lg:flex-row lg:items-center lg:gap-24 lg:px-4 lg:py-16 xl:gap-36">
         {/* Left Content */}
         <div className="flex flex-col gap-4 md:gap-5 lg:gap-6 max-w-full lg:max-w-[684px] w-full lg:w-auto text-center lg:text-left">

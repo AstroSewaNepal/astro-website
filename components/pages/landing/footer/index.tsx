@@ -7,9 +7,13 @@ import {
   AppleDownloadImage,
   AstroSewaTransparentLogo,
   GoogleDownloadImage,
+  FBLogo,
+  InstagramLogo,
+  TiktokLogo,
+  YoutubeLogo,
+  XLogo,
+  LinkedinLogo,
 } from '@/components/images';
-import { BsInstagram, BsTwitterX } from 'react-icons/bs';
-import { FacebookIcon, LinkedinIcon, TiktokIcon, YoutubeIcon } from '@/components/images/icons';
 
 const Footer: React.FC = () => {
   return (
@@ -43,16 +47,16 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Social Media Icons */}
-            <div className="flex justify-center gap-2">
+            <div className="flex justify-center gap-3">
               {/* Facebook */}
               <a
                 href="https://www.facebook.com/astrosewaofficial"
                 target="_blank"
                 rel="noreferrer noopener"
-                className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center"
+                className="w-[40px] h-[40px] flex items-center justify-center hover:opacity-85 transition-opacity"
                 aria-label="Astro Sewa on Facebook"
               >
-                <Image src={FacebookIcon} alt="Facebook" width={42} height={42} />
+                <Image src={FBLogo} alt="Facebook" width={40} height={40} className="object-contain" />
               </a>
 
               {/* Instagram */}
@@ -60,10 +64,10 @@ const Footer: React.FC = () => {
                 href="https://www.instagram.com/astrosewaofficial/"
                 target="_blank"
                 rel="noreferrer noopener"
-                className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center"
+                className="w-[40px] h-[40px] flex items-center justify-center hover:opacity-85 transition-opacity"
                 aria-label="Astro Sewa on Instagram"
               >
-                <BsInstagram className="h-6 w-6 text-[#F8F3DF]" />
+                <Image src={InstagramLogo} alt="Instagram" width={40} height={40} className="object-contain" />
               </a>
 
               {/* TikTok */}
@@ -71,10 +75,10 @@ const Footer: React.FC = () => {
                 href="https://www.tiktok.com/@astrosewaofficial"
                 target="_blank"
                 rel="noreferrer noopener"
-                className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center"
+                className="w-[40px] h-[40px] flex items-center justify-center hover:opacity-85 transition-opacity"
                 aria-label="Astro Sewa on TikTok"
               >
-                <Image src={TiktokIcon} alt="TikTok" width={42} height={42} />
+                <Image src={TiktokLogo} alt="TikTok" width={40} height={40} className="object-contain" />
               </a>
 
               {/* YouTube */}
@@ -82,10 +86,10 @@ const Footer: React.FC = () => {
                 href="https://www.youtube.com/@astrosewaofficial"
                 target="_blank"
                 rel="noreferrer noopener"
-                className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center"
+                className="w-[40px] h-[40px] flex items-center justify-center hover:opacity-85 transition-opacity"
                 aria-label="Astro Sewa on YouTube"
               >
-                <Image src={YoutubeIcon} alt="YouTube" width={42} height={42} />
+                <Image src={YoutubeLogo} alt="YouTube" width={40} height={40} className="object-contain" />
               </a>
 
               {/* X */}
@@ -93,10 +97,10 @@ const Footer: React.FC = () => {
                 href="https://x.com/astro_sewa"
                 target="_blank"
                 rel="noreferrer noopener"
-                className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center"
+                className="w-[40px] h-[40px] flex items-center justify-center hover:opacity-85 transition-opacity"
                 aria-label="Astro Sewa on X"
               >
-                <BsTwitterX className="h-6 w-6 text-[#F8F3DF]" />
+                <Image src={XLogo} alt="X" width={40} height={40} className="object-contain" />
               </a>
 
               {/* LinkedIn */}
@@ -104,10 +108,10 @@ const Footer: React.FC = () => {
                 href="https://www.linkedin.com/company/astrosewa/"
                 target="_blank"
                 rel="noreferrer noopener"
-                className="w-[42px] h-[42px] border border-[#F8F3DF] rounded-full flex items-center justify-center"
+                className="w-[40px] h-[40px] flex items-center justify-center hover:opacity-85 transition-opacity"
                 aria-label="Astro Sewa on LinkedIn"
               >
-                <Image src={LinkedinIcon} alt="LinkedIn" width={42} height={42} />
+                <Image src={LinkedinLogo} alt="LinkedIn" width={40} height={40} className="object-contain" />
               </a>
             </div>
           </div>

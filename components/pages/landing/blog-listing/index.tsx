@@ -65,7 +65,7 @@ const AstrologerBlogListing: React.FC = () => {
   }, []);
 
   return (
-    <section className="container mx-auto px-6 lg:px-0">
+    <section className="container mx-auto px-6 lg:px-0 border-b border-b-[#79787A] pb-[100px]">
       <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6">
         <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary text-center">
           Astrologer Blogs
@@ -76,7 +76,30 @@ const AstrologerBlogListing: React.FC = () => {
         </p>
       </div>
       <div className="md:hidden mt-8">
-        <div className="relative">
+        <div className="relative w-full">
+          {posts.length > 1 && !isLoading && !error ? (
+            <div className="block sm:hidden">
+              <button
+                type="button"
+                onClick={handlePrev}
+                aria-label="Previous blog"
+                className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full flex items-center justify-center bg-transparent transition-colors hover:bg-[#fff7f4]"
+                style={{ border: '1.27px solid #611508' }}
+              >
+                <ArrowLeft className="w-[14px] h-[14px] text-[#611508]" />
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                aria-label="Next blog"
+                className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full flex items-center justify-center bg-transparent transition-colors hover:bg-[#fff7f4]"
+                style={{ border: '1.27px solid #611508' }}
+              >
+                <ArrowRight className="w-[14px] h-[14px] text-[#611508]" />
+              </button>
+            </div>
+          ) : null}
+
           {isLoading ? (
             <div className="animate-pulse border border-solid border-[#79787A] rounded-[28px] px-[22px] py-[18px]">
               <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
@@ -106,33 +129,10 @@ const AstrologerBlogListing: React.FC = () => {
               link={posts[currentIndex].link}
             />
           )}
-
-          {posts.length > 1 && !isLoading && !error ? (
-            <>
-              <button
-                type="button"
-                onClick={handlePrev}
-                aria-label="Previous blog"
-                className="absolute left-[-10] top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full flex items-center justify-center bg-transparent transition-colors hover:bg-[#fff7f4]"
-                style={{ border: '1.27px solid #611508' }}
-              >
-                <ArrowLeft className="w-[14px] h-[14px] text-[#611508]" />
-              </button>
-              <button
-                type="button"
-                onClick={handleNext}
-                aria-label="Next blog"
-                className="absolute right-[-10] top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full flex items-center justify-center bg-transparent transition-colors hover:bg-[#fff7f4]"
-                style={{ border: '1.27px solid #611508' }}
-              >
-                <ArrowRight className="w-[14px] h-[14px] text-[#611508]" />
-              </button>
-            </>
-          ) : null}
         </div>
       </div>
 
-      <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-8 md:mt-10 lg:mt-[50px] gap-4 md:gap-6 lg:gap-[32px] 2xl:gap-[64px]">
+      <div className="hidden md:grid items-stretch grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-8 md:mt-10 lg:mt-[50px] gap-4 md:gap-6 lg:gap-[32px] 2xl:gap-[64px]">
         {isLoading ? (
           <>
             {[1, 2, 3].map(i => (
@@ -156,19 +156,20 @@ const AstrologerBlogListing: React.FC = () => {
             <p className="font-mukta text-lg md:text-xl text-[#5B5B5B]">No blog posts available.</p>
           </div>
         ) : (
-          posts.map(post => (
-            <BlogComponents
-              key={`blog-component-${post.id}`}
-              date={post.date}
-              feature={post.feature}
-              image={post.image || BlogPlaceholderImage}
-              author={post.author}
-              duration={post.duration}
-              views={post.views}
-              title={post.title}
-              description={post.description}
-              link={post.link}
-            />
+          posts.map((post, index) => (
+            <div key={`blog-component-${post.id}`} className={index > 1 ? 'hidden lg:block' : ''}>
+              <BlogComponents
+                date={post.date}
+                feature={post.feature}
+                image={post.image || BlogPlaceholderImage}
+                author={post.author}
+                duration={post.duration}
+                views={post.views}
+                title={post.title}
+                description={post.description}
+                link={post.link}
+              />
+            </div>
           ))
         )}
       </div>

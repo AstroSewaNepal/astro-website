@@ -154,18 +154,18 @@ export default function CalculatorBirthDetailsForm({
       <div className="rounded-[32px] border border-[#BE7B71] bg-transparent p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.08)]">
         <div className="grid grid-cols-2 gap-x-3 sm:gap-x-4 md:gap-x-5 lg:gap-x-6 gap-y-0 sm:gap-y-1 lg:gap-y-2 mb-2 sm:mb-3">
           <div>
-            <label className="block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]">
+            <label className="mb-2 block font-mukta text-sm text-Trinary">
               Enter full name
             </label>
-            <div className="relative">
+            <div className="flex h-[52px] box-border items-center overflow-hidden rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] transition-colors duration-200 focus-within:border-[#BE7B71] focus-within:ring-1 focus-within:ring-[#BE7B71]/20">
               <input
                 type="text"
                 placeholder="Enter name"
                 value={form.fullName}
                 onChange={e => handleChange('fullName', e.target.value)}
-                className="w-full rounded-[32px] border-2 sm:border border-[#BE7B71] bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] placeholder:font-mukta placeholder:text-[18px] placeholder:font-normal placeholder:leading-[30px] placeholder:tracking-normal placeholder:text-[#464646] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
+                className="min-w-0 flex-1 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] outline-none placeholder:text-[#464646]"
               />
-              <span className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[#5D1409] opacity-60">
+              <span className="shrink-0 self-center text-[#5D1409] opacity-60">
                 <svg
                   width="16"
                   height="16"
@@ -188,14 +188,14 @@ export default function CalculatorBirthDetailsForm({
           </div>
 
           <div>
-            <label className="block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]">
+            <label className="mb-2 block font-mukta text-sm text-Trinary">
               Select gender
             </label>
-            <div className="relative">
+            <div className="relative w-full">
               <select
                 value={form.gender}
                 onChange={e => handleChange('gender', e.target.value)}
-                className="w-full appearance-none rounded-[32px] border-2 sm:border border-[#BE7B71] bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#2f2f2f] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10 transition-colors pr-10"
+                className="h-[52px] w-full appearance-none rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] pr-10 font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] leading-[24px] text-[#2f2f2f] outline-none cursor-pointer transition-colors duration-200"
               >
                 <option value="" disabled>
                   Select
@@ -204,7 +204,7 @@ export default function CalculatorBirthDetailsForm({
                 <option value="female">Female</option>
                 <option value="other">Other</option>
               </select>
-              <span className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5D1409]">
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5D1409]">
                 <svg
                   width="14"
                   height="14"

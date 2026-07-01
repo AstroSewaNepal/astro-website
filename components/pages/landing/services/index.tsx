@@ -85,7 +85,7 @@ const Services = () => {
   };
 
   return (
-    <section id="services">
+    <section id="services" className="border-b border-b-[#79787A] pb-[100px]">
       <div className="max-w-[1450px] mx-auto px-5 flex flex-col items-center gap-12">
         {/* Header */}
         <div className="flex flex-col items-center gap-4 md:gap-5 lg:gap-6 max-w-[1405px] w-full">

@@ -15,7 +15,7 @@ const CALCULATOR_TYPES = [
 ];
 
 const FIELD_LABEL_CLASS =
-  'mb-1 block font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] font-semibold leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[30px] tracking-normal text-[#141414]';
+  'mb-2 block font-mukta text-sm text-Trinary';
 
 const ERROR_TEXT_CLASS = 'mt-0.5 h-[18px] text-xs leading-[18px] text-red-600';
 
@@ -155,7 +155,7 @@ export default function NumerologyCalculatorSection() {
           </div>
           <form
             onSubmit={handleSubmit}
-            className="flex w-full sm:w-[684px] flex-col gap-4 items-center rounded-[20px] sm:rounded-[40px] border pt-6 sm:pt-10 pr-5 sm:pr-[50px] pb-6 sm:pb-10 pl-5 sm:pl-[50px] shadow-[0_10px_30px_rgba(105,23,9,0.08)]"
+            className="flex w-full sm:w-[684px] flex-col gap-4 items-center rounded-[20px] sm:rounded-[40px] border border-[#BE7B71] pt-6 sm:pt-10 pr-5 sm:pr-[50px] pb-6 sm:pb-10 pl-5 sm:pl-[50px] shadow-[0_10px_30px_rgba(105,23,9,0.08)]"
             noValidate
           >
             {/* Full Name */}
@@ -163,10 +163,10 @@ export default function NumerologyCalculatorSection() {
               <label htmlFor="numerology-fullname" className={FIELD_LABEL_CLASS}>
                 Enter full name
               </label>
-              <div className="relative h-[48px] sm:h-[56px] w-full rounded-[32px] border-2 border-[#BE7B71] px-4 sm:px-5 py-3 sm:py-4">
+              <div className="flex h-[52px] box-border items-center overflow-hidden rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] transition-colors duration-200 focus-within:border-[#BE7B71] focus-within:ring-1 focus-within:ring-[#BE7B71]/20">
                 <input
                   id="numerology-fullname"
-                  className="h-full w-full border-none bg-transparent font-mukta text-[13px] sm:text-[15px] md:text-[18px] md:leading-[30px] text-[#34211d] placeholder:text-[#464646] placeholder:font-mukta placeholder:font-semibold md:placeholder:text-[18px] md:placeholder:leading-[30px] placeholder:tracking-normal outline-none"
+                  className="min-w-0 flex-1 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] outline-none placeholder:text-[#464646]"
                   placeholder="Enter name"
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
@@ -194,7 +194,7 @@ export default function NumerologyCalculatorSection() {
               <div className="relative w-full">
                 <select
                   id="numerology-type"
-                  className="h-[48px] sm:h-[56px] w-full appearance-none rounded-[32px] border-2 border-[#BE7B71] bg-transparent px-4 sm:px-5 pr-10 font-mukta text-[13px] sm:text-[15px] md:text-[18px] leading-[24px] md:leading-[30px] text-[#34211d] outline-none cursor-pointer"
+                  className="h-[52px] w-full appearance-none rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] pr-10 font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] leading-[24px] text-[#2f2f2f] outline-none cursor-pointer transition-colors duration-200"
                   value={calculatorType}
                   onChange={e => setCalculatorType(e.target.value)}
                 >

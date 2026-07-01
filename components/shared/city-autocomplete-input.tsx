@@ -121,8 +121,8 @@ export const CityAutocompleteInput = ({
       ) : null}
       <div
         className={clsx(
-          'flex items-center gap-3 rounded-full border px-4 py-3 focus-within:border-primary transition-colors',
-          error ? 'border-red-500' : 'border-Trinary',
+          'flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20',
+          error ? 'border-red-500 focus-within:border-red-500' : 'border-Trinary focus-within:border-Trinary',
         )}
       >
         <input
@@ -164,7 +164,7 @@ export const CityAutocompleteInput = ({
           aria-autocomplete="list"
           aria-activedescendant={activeIndex >= 0 ? `${listId}-item-${activeIndex}` : undefined}
           autoComplete="off"
-          className="flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 min-w-0 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] placeholder:text-[#464646] outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <IoLocationOutline className="w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary" aria-hidden />
       </div>
