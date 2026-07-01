@@ -18,8 +18,8 @@ const LandingHero: React.FC = () => {
             Made Personal.
           </h1>
           <p className="font-mukta text-base md:text-lg lg:text-2xl leading-[150%] text-black opacity-80 max-w-[580px]">
-            Astro Sewa combines ancient Vedic wisdom with Modern insight, to help you transform
-            uncertainty into Opportunity
+            Talk to a verified Vedic astrologer, generate your free Kundali, or read your daily
+            horoscope. Ancient wisdom and clear answers in one place.
           </p>
         </div>
         <div className="mt-11 flex flex-row items-center gap-2 md:gap-6">

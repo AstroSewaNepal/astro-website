@@ -17,8 +17,8 @@ const DownloadApp: React.FC<DownloadAppProps> = ({ className }) => {
         {/* Left Content */}
         <div className="flex flex-col gap-4 md:gap-5 lg:gap-6 max-w-full lg:max-w-[684px] w-full lg:w-auto text-center lg:text-left">
           {/* Title */}
-          <h2 className="text-[34px] md:text-[40px] lg:text-[48px] xl:text-5xl 2xl:text-6xl font-normal text-[#691709] leading-tight">
-            Download App
+          <h2 className="whitespace-nowrap text-[34px] md:text-[40px] lg:text-[48px] xl:text-5xl 2xl:text-6xl font-normal text-[#691709] leading-tight">
+            Take AstroSewa With You
           </h2>
 
           {/* Description */}

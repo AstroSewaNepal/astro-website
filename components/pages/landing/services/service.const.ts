@@ -18,7 +18,7 @@ export const SERVICES_LIST: Array<{
 }> = [
   {
     id: 1,
-    title: 'Get Your Kundali, Birth Chart & Matchmaking Reports',
+    title: 'Order a personalised report built from your complete birth chart. Covers personality, yearly forecasts, planetary positions, and life predictions written for you.',
     buttonText: 'Get My Reports',
     icon: ServiceReport,
     action: { type: 'link', href: '/kundali-details' },
@@ -26,14 +26,14 @@ export const SERVICES_LIST: Array<{
   {
     id: 2,
     title:
-      'Connect directly with experienced astrologers to discuss love, career, health, or financial concerns.',
+      'Book a live chat or call with a verified Vedic astrologer. Discuss love, career, health, or any question on your mind and get a reading based on your actual birth chart.',
     buttonText: 'Talk to an Astrologer',
     icon: ServiceTalkToAstrologer,
     action: { type: 'app-store' },
   },
   {
     id: 3,
-    title: 'Have a single doubt or decision weighing on your mind? Ask our astrologers',
+    title: 'Not ready for a full consultation? Submit one specific question and get a focused, personal answer from our astrologers without booking a full session.',
     buttonText: 'Ask a Question',
     icon: ServiceAskQuestion,
     action: { type: 'app-store' },
@@ -41,7 +41,7 @@ export const SERVICES_LIST: Array<{
   {
     id: 4,
     title:
-      'Get your daily dose of guidance personalized insights to help you make the most of your day.',
+      'Get your daily horoscope with insights on love, work, energy, and timing based on your zodiac sign. Updated every morning.',
     buttonText: 'Read Horoscope',
     icon: ServiceTodayHoroscope,
     action: { type: 'link', href: '/horoscope', scrollTopOnSamePath: true },

@@ -13,8 +13,8 @@ interface TalkToOurAstrologerProps extends AstrologerCardActions {
 }
 
 const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
-  title = 'Talk To Our Top Astrologer',
-  description = 'Connect with our most trusted and experienced astrologers for personalized guidance, accurate predictions, and compassionate support on your life’s journey.',
+  title = 'Talk to a Verified Astrologer',
+  description = 'Choose an astrologer, pick chat or call, and get a reading tailored to your birth chart. Available in English, Hindi, and Nepali.',
   className,
   onChat,
   onCall,
