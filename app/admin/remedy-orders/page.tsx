@@ -79,7 +79,7 @@ export default function RemedyOrdersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-mukta text-2xl font-semibold text-neutral-800">Astrologers & Products</h1>
+        <h1 className="font-mukta text-2xl font-semibold text-neutral-800">Remedies Orders</h1>
         <p className="mt-0.5 font-mukta text-sm text-neutral-500">
           All user remedy orders — sorted by date (oldest first)
           {data && !isLoading && (

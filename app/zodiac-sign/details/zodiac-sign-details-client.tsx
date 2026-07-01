@@ -1,10 +1,10 @@
 'use client';
 
-import { useMemo, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { ZodiacSignStripNav } from '@/components/pages/zodiac-sign/zodiac-sign-strip-nav';
 import { ZodiacSignExploreSection } from '@/components/pages/zodiac-sign/zodiac-sign-explore-section';
@@ -18,10 +18,8 @@ import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
 import { horoscopeDetailPageHref } from '@/lib/constants/horoscope-range-nav';
 import { compatibilityMatchHref } from '@/lib/constants/compatibility-nav';
-import { parseUiLangParam } from '@/lib/i18n';
-import { zodiacDetailHref } from '@/lib/constants/zodiac-sign-nav';
+import { zodiacEnglishDetailHref, zodiacNepaliDetailHref } from '@/lib/constants/zodiac-sign-nav';
 import { ENGLISH_ZODIAC_COLOR, ENGLISH_ZODIAC_LIGHT } from '@/lib/zodiac-sign/english-zodiac';
-import { NEPALI_ZODIAC_COLOR, NEPALI_ZODIAC_LIGHT } from '@/lib/zodiac-sign/nepali-zodiac';
 import { parseZodiacSignParam } from '@/lib/zodiac-sign/parse-sign-param';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 import { ArrowRight } from 'lucide-react';
@@ -75,65 +73,59 @@ function highlightFirstMatch(text: string, needle: string): ReactNode {
 
 export function ZodiacSignDetailsClient() {
   const searchParams = useSearchParams();
-  const slug = useMemo(() => parseZodiacSignParam(searchParams.get('sign')), [searchParams]);
-  const contentLanguage = useMemo(
-    () => parseUiLangParam(searchParams.get('content_lang')) ?? ELanguage.ENGLISH,
-    [searchParams],
-  );
-  const headerLanguage = useMemo(
-    () => parseUiLangParam(searchParams.get('lang')) ?? ELanguage.ENGLISH,
-    [searchParams],
-  );
   const router = useRouter();
-  const pathname = usePathname();
+  const slug = useMemo(() => parseZodiacSignParam(searchParams.get('sign')), [searchParams]);
   const { row, loadError, loading } = useZodiacSignDetails(slug);
-  const isNepali = contentLanguage === ELanguage.NEPALI;
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleContentLanguageChange = (lang: ELanguage) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('content_lang', lang);
-    router.push(`${pathname}?${params.toString()}`);
+  const handleContentLanguageChange = (newLang: ELanguage) => {
+    if (newLang === ELanguage.NEPALI) {
+      router.push(zodiacNepaliDetailHref(slug));
+    }
   };
 
   const signIndex = HOROSCOPE_SIGNS.indexOf(slug);
-  const displayName = HOROSCOPE_DATA[contentLanguage][signIndex]?.name ?? capitalizeSign(slug);
-  const signColorMap = isNepali ? NEPALI_ZODIAC_COLOR : ENGLISH_ZODIAC_COLOR;
-  const signLightMap = isNepali ? NEPALI_ZODIAC_LIGHT : ENGLISH_ZODIAC_LIGHT;
-  const hrefForSign = (sign: (typeof HOROSCOPE_SIGNS)[number]) =>
-    zodiacDetailHref(sign, contentLanguage, headerLanguage);
+  const displayName = HOROSCOPE_DATA[ELanguage.ENGLISH][signIndex]?.name ?? capitalizeSign(slug);
+  const hrefForSign = (sign: (typeof HOROSCOPE_SIGNS)[number]) => zodiacEnglishDetailHref(sign);
 
-  const title = isNepali ? displayName : (row?.sign ?? displayName);
-  const rangeLine = row?.date_range ? formatZodiacDateRange(row.date_range) : '';
-  const subtitle =
-    row?.element && row?.ruling_planet
-      ? `${row.element} sign · Ruled by ${row.ruling_planet}`
-      : row?.element
-        ? `${row.element} sign`
-        : row?.ruling_planet
-          ? `Ruled by ${row.ruling_planet}`
-          : '';
-  const description = row?.intro ?? row?.card_summary ?? '';
+  const trans = row?.translations.en ?? null;
+  const title = trans?.name ?? displayName;
+  const dateRangeObj = row?.date_range;
+  const rangeLine = dateRangeObj
+    ? formatZodiacDateRange(`${dateRangeObj.from}-${dateRangeObj.to}`)
+    : '';
+  const subtitle = trans?.subtitle ?? '';
+  const description = trans?.hero_description ?? trans?.intro ?? trans?.card_summary ?? '';
+  const descriptionWords = description.split(/\s+/);
+  const shouldTruncate = descriptionWords.length > 100;
+  const displayedDescription =
+    !isExpanded && shouldTruncate ? descriptionWords.slice(0, 100).join(' ') + '...' : description;
+
   const compatChips = row?.compatibility?.length ? row.compatibility.join(', ') : '—';
+  const rulingPlanet = row?.ruling_planets?.length ? row.ruling_planets[0] : '';
 
   const summaryTraits = row
     ? [
         { label: 'Element', value: row.element },
-        { label: 'Ruling Planet', value: row.ruling_planet },
+        { label: 'Ruling Planet', value: rulingPlanet },
         { label: 'Compatibility', value: compatChips },
       ]
     : [];
 
-  const detailTraits = row
+  const detailTraits = trans
     ? [
         {
           label: 'Strengths',
-          value: row.strengths?.length ? row.strengths.join(', ') : '—',
+          value: trans.strengths?.length ? trans.strengths.join(', ') : '—',
         },
         {
           label: 'Weaknesses',
-          value: row.weaknesses?.length ? row.weaknesses.join(', ') : '—',
+          value: trans.weaknesses?.length ? trans.weaknesses.join(', ') : '—',
         },
-        { label: 'Personality Traits', value: row.personality_traits || '—' },
+        {
+          label: 'Personality Traits',
+          value: trans.personality_traits || '—',
+        },
       ]
     : [];
 
@@ -142,13 +134,13 @@ export function ZodiacSignDetailsClient() {
       HOROSCOPE_SIGNS.map(sign => ({
         slug: sign,
         name:
-          HOROSCOPE_DATA[contentLanguage][HOROSCOPE_SIGNS.indexOf(sign)]?.name ??
+          HOROSCOPE_DATA[ELanguage.ENGLISH][HOROSCOPE_SIGNS.indexOf(sign)]?.name ??
           capitalizeSign(sign),
-        image: signColorMap[sign],
-        imageLight: signLightMap[sign],
+        image: ENGLISH_ZODIAC_COLOR[sign],
+        imageLight: ENGLISH_ZODIAC_LIGHT[sign],
         href: compatibilityMatchHref(slug, sign),
       })),
-    [contentLanguage, signColorMap, signLightMap, slug],
+    [slug],
   );
 
   return (
@@ -157,9 +149,9 @@ export function ZodiacSignDetailsClient() {
         <section className="mx-auto mt-6 min-w-0">
           <ZodiacSignStripNav
             activeSign={slug}
-            language={contentLanguage}
-            imageBySign={signColorMap}
-            lightImageBySign={signLightMap}
+            language={ELanguage.ENGLISH}
+            imageBySign={ENGLISH_ZODIAC_COLOR}
+            lightImageBySign={ENGLISH_ZODIAC_LIGHT}
             hrefForSign={hrefForSign}
             showActiveDot
             large
@@ -190,17 +182,26 @@ export function ZodiacSignDetailsClient() {
                       {loadError}
                     </p>
                   ) : (
-                    <p className="font-mukta text-[16px] leading-8 text-[#383838] sm:text-[18px] sm:leading-[30px] lg:text-[24px] lg:leading-[34px]">
-                      {highlightFirstMatch(description, displayName)}
-                    </p>
+                    <>
+                      <p className="font-mukta text-[16px] leading-8 text-[#383838] sm:text-[18px] sm:leading-[30px] lg:text-[24px] lg:leading-[34px]">
+                        {highlightFirstMatch(displayedDescription, displayName)}
+                      </p>
+                      {shouldTruncate && (
+                        <button
+                          onClick={() => setIsExpanded(!isExpanded)}
+                          className="mt-2 text-[#be7b71] hover:text-[#a06860] font-mukta font-semibold text-[16px] sm:text-[18px]"
+                        >
+                          {isExpanded ? 'See less' : 'See more'}
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
 
-                {/* Find Horoscope Link for Mobile */}
                 <div className="mt-6 flex lg:hidden items-center justify-center">
                   <Link
                     href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
-                    className="inline-flex w-full sm:w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
+                    className="flex w-fit mx-auto h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[24px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
                   >
                     Find {displayName} horoscope
                     <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
@@ -213,13 +214,13 @@ export function ZodiacSignDetailsClient() {
                 style={{ width: '308.29px' }}
               >
                 <Image
-                  src={signColorMap[slug]}
+                  src={ENGLISH_ZODIAC_COLOR[slug]}
                   alt={displayName}
                   className="mb-4 h-[297px] w-[308px] object-contain"
                 />
                 <Link
                   href={horoscopeDetailPageHref(slug, 'today', ELanguage.ENGLISH)}
-                  className="inline-flex w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px] lg:-translate-x-10"
+                  className="flex w-fit mx-auto h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[24px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
                 >
                   Find {displayName} horoscope
                   <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
@@ -260,12 +261,10 @@ export function ZodiacSignDetailsClient() {
 
               <CompatibilitySignsGrid
                 className="mt-10"
-                title={
-                  isNepali ? `${displayName} राशि अनुकूलता` : `${displayName} Sign Compatibility`
-                }
+                title={`${displayName} Sign Compatibility`}
                 currentSignLabel={displayName}
-                currentSignImage={signColorMap[slug]}
-                currentSignImageLight={signLightMap[slug]}
+                currentSignImage={ENGLISH_ZODIAC_COLOR[slug]}
+                currentSignImageLight={ENGLISH_ZODIAC_LIGHT[slug]}
                 items={compatibilityItems}
                 variant="figma"
               />
@@ -276,7 +275,7 @@ export function ZodiacSignDetailsClient() {
         <div className="mt-10 min-w-0">
           <div className="hidden md:block">
             <h3 className="font-mukta text-center text-[18px] font-semibold text-[#6f2618] md:font-sahitya md:font-bold md:text-[36px] md:leading-[48px] md:tracking-[0%] md:text-center">
-              {isNepali ? 'अन्य राशिहरू अन्वेषण गर्नुहोस्' : 'Explore Other Zodiac Signs'}
+              Explore Other Zodiac Signs
             </h3>
             <HoroscopeHeroSignsSection
               hideTitle
@@ -288,11 +287,10 @@ export function ZodiacSignDetailsClient() {
           </div>
           <div className="md:hidden">
             <ZodiacSignExploreSection
-              title={isNepali ? 'अन्य राशिहरू अन्वेषण गर्नुहोस्' : 'Explore Other Zodiac Signs'}
-              contentLanguage={contentLanguage}
-              headerLanguage={headerLanguage}
+              title="Explore Other Zodiac Signs"
+              contentLanguage={ELanguage.ENGLISH}
               signSlug={slug}
-              isNepali={isNepali}
+              isNepali={false}
               onContentLanguageChange={handleContentLanguageChange}
             />
           </div>

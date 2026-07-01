@@ -15,7 +15,6 @@ import CalculatorChooserSection from '../shared/calculator-chooser-section';
 import CalculatorDatePicker from '../shared/calculator-date-picker';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
 
-
 export default function LoveCalculatorSection() {
   const router = useRouter();
   const [yourName, setYourName] = useState('');

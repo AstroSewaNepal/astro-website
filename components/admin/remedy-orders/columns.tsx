@@ -10,12 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { MoreHorizontal, Loader2, Eye } from 'lucide-react';
 import { AdminRemedyOrder } from '@/lib/remedy-order-api';
 
@@ -30,7 +25,6 @@ const STATUS_LABELS: Record<string, string> = {
   in_transit: 'In Transit',
   delivered: 'Delivered',
 };
-
 
 /** Options available from each status — forward-only. */
 const NEXT_STATUS_OPTIONS: Record<string, { value: string; label: string }[]> = {
@@ -175,7 +169,9 @@ function OrderDetailsModal({ order }: { order: AdminRemedyOrder }) {
                           <li key={name}>
                             <div className="flex items-center justify-between gap-2">
                               <div className="flex items-center gap-2 min-w-0">
-                                <span className="text-xs font-medium text-neutral-700 truncate">{name}</span>
+                                <span className="text-xs font-medium text-neutral-700 truncate">
+                                  {name}
+                                </span>
                                 <span className="shrink-0 rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-500">
                                   {DELIVERY_TYPE_LABELS[deliveryType] ?? deliveryType}
                                 </span>
@@ -252,7 +248,9 @@ export function createColumns({
         return (
           <div className="flex flex-col gap-0.5 font-mukta">
             {astrologers.map(a => (
-              <span key={a.id} className="text-sm text-neutral-800">{a.name}</span>
+              <span key={a.id} className="text-sm text-neutral-800">
+                {a.name}
+              </span>
             ))}
           </div>
         );

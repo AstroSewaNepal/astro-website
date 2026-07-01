@@ -40,7 +40,7 @@ const BlogComponents: React.FC<IBlogComponentsProps> = ({
             {feature.slice(0, 1).map((item, index) => (
               <BlogCard content={item} key={`${item}-${index}`} />
             ))}
-            {feature.length > 1 && <BlogCard content={`+${feature.length - 1}`} />}
+            {feature.length > 2 && <BlogCard content={`+${feature.length - 2}`} />}
           </div>
         </div>
         <div>
@@ -53,28 +53,36 @@ const BlogComponents: React.FC<IBlogComponentsProps> = ({
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="mt-[11px] flex items-center justify-between">
-            <div className="flex items-center gap-4 text-sm font-mukta">
-              <div className="flex items-center gap-2">
-                <p className="font-bold">Author</p>
-                <p>{author}</p>
+          <div className="mt-3 md:mt-4 flex items-center justify-between">
+            <div className="flex items-center gap-2 md:gap-4 text-[12px] md:text-sm font-mukta">
+              <div className="flex items-center gap-1">
+                <p className="font-bold text-[#181A2A]">Author</p>
+                <p className="text-[#181A2A]">{author}</p>
               </div>
-              <div className="flex items-center gap-2">
-                <p className="font-bold">Duration</p>
-                <p>{duration}</p>
+              <div className="flex items-center gap-1">
+                <p className="font-bold text-[#181A2A]">Duration</p>
+                <p className="text-[#181A2A]">{duration}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Image src={EyeIcon} alt="Eye" width={16} height={16} className="w-4 h-4" />
-              <p className="font-mukta text-base text-[#4A494B]">{views}</p>
+            <div className="flex items-center gap-1.5">
+              <Image
+                src={EyeIcon}
+                alt="Eye"
+                width={16}
+                height={16}
+                className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0"
+              />
+              <p className="font-mukta text-[12px] md:text-sm text-[#4A494B] whitespace-nowrap">
+                {views}
+              </p>
             </div>
           </div>
         </div>
-        <div className="mt-[18px]">
-          <div className="space-y-[15px]">
+        <div className="mt-[16px] md:mt-[22px] flex flex-col flex-1 min-h-0">
+          <div className="space-y-[8px] md:space-y-[12px] overflow-hidden">
             <h3
               className={clsx(
-                'text-[32px] leading-[40px] text-[#181A2A] group-hover:text-primary transition-colors',
+                'font-tiro-devanagari text-[24px] md:text-[28px] leading-[1.25] text-[#181A2A] group-hover:text-primary transition-colors',
                 BlogCardCSS['title-line-clamp'],
               )}
             >
@@ -82,14 +90,14 @@ const BlogComponents: React.FC<IBlogComponentsProps> = ({
             </h3>
             <p
               className={clsx(
-                'font-mukta text-xl text-[#5B5B5B]',
+                'font-mukta text-[14px] md:text-[16px] text-[#5B5B5B] leading-relaxed',
                 BlogCardCSS['description-line-clamp'],
               )}
             >
               {description}
             </p>
           </div>
-          <span className="block w-full bg-primary py-3.5 cursor-pointer rounded-3xl mt-4 font-mukta text-2xl text-[#F8F3DF] text-center">
+          <span className="block w-full bg-primary py-2.5 md:py-3 cursor-pointer rounded-3xl mt-auto shrink-0 font-mukta text-lg md:text-xl text-[#F8F3DF] text-center transition-opacity hover:opacity-90">
             Read More
           </span>
         </div>

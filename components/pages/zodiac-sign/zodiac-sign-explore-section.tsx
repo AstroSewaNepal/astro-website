@@ -8,7 +8,7 @@ import { ZodiacSignMiniCard } from '@/components/pages/zodiac-sign/zodiac-sign-m
 import { ZodiacSignCardsGrid } from '@/components/ui/zodiac-sign-cards-grid';
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
-import { zodiacDetailHref } from '@/lib/constants/zodiac-sign-nav';
+import { zodiacEnglishDetailHref, zodiacNepaliDetailHref } from '@/lib/constants/zodiac-sign-nav';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 import type { HoroscopeSign } from '@/lib/types/horoscope';
 
@@ -17,7 +17,6 @@ const cardBaseText = 'Your spark can move mountains, start bold today';
 type Props = {
   title?: string;
   contentLanguage: ELanguage;
-  headerLanguage: ELanguage;
   signSlug: HoroscopeSign;
   isNepali: boolean;
   onContentLanguageChange: (lang: ELanguage) => void;
@@ -27,7 +26,6 @@ type Props = {
 export function ZodiacSignExploreSection({
   title = 'Explore Other Zodiac Signs',
   contentLanguage,
-  headerLanguage,
   signSlug,
   isNepali,
   onContentLanguageChange,
@@ -41,6 +39,10 @@ export function ZodiacSignExploreSection({
     () =>
       HOROSCOPE_SIGNS.map((sign, index) => {
         const card = HOROSCOPE_DATA[contentLanguage][index]!;
+        const href =
+          contentLanguage === ELanguage.NEPALI
+            ? zodiacNepaliDetailHref(sign)
+            : zodiacEnglishDetailHref(sign);
         return {
           key: sign,
           name: card.name,
@@ -48,10 +50,10 @@ export function ZodiacSignExploreSection({
           imageLight: card.image,
           summary: card.detail || cardBaseText,
           stars: card.numberOfStars ?? 3,
-          href: zodiacDetailHref(sign, contentLanguage, headerLanguage),
+          href,
         };
       }),
-    [contentLanguage, headerLanguage],
+    [contentLanguage],
   );
 
   const updateActiveCarouselIndex = () => {
@@ -140,7 +142,11 @@ export function ZodiacSignExploreSection({
           return (
             <div key={sign} className="min-w-[260px] shrink-0 snap-start">
               <ZodiacSignMiniCard
-                href={zodiacDetailHref(sign, contentLanguage, headerLanguage)}
+                href={
+                  contentLanguage === ELanguage.NEPALI
+                    ? zodiacNepaliDetailHref(sign)
+                    : zodiacEnglishDetailHref(sign)
+                }
                 image={card.image}
                 name={card.name}
                 blurb={card.detail || cardBaseText}
@@ -153,18 +159,25 @@ export function ZodiacSignExploreSection({
       </div>
 
       <div className="mt-3 flex justify-center gap-2 sm:hidden">
-        {HOROSCOPE_SIGNS.map((_, index) => (
-          <button
-            key={index}
-            type="button"
-            aria-label={`Go to card ${index + 1}`}
-            onClick={() => scrollToCarouselIndex(index)}
-            className={clsx(
-              'h-2 min-w-[8px] rounded-full transition-colors',
-              index === activeCarouselIndex ? 'bg-[#611508]' : 'bg-[#d7c3b1]',
-            )}
-          />
-        ))}
+        {(() => {
+          let startDot = Math.max(0, activeCarouselIndex - 1);
+          if (startDot + 3 > HOROSCOPE_SIGNS.length) {
+            startDot = Math.max(0, HOROSCOPE_SIGNS.length - 3);
+          }
+          const visibleDots = HOROSCOPE_SIGNS.map((_, i) => i).slice(startDot, startDot + 3);
+          return visibleDots.map(index => (
+            <button
+              key={index}
+              type="button"
+              aria-label={`Go to card ${index + 1}`}
+              onClick={() => scrollToCarouselIndex(index)}
+              className={clsx(
+                'h-2 min-w-[8px] rounded-full transition-all duration-300',
+                index === activeCarouselIndex ? 'bg-[#611508]' : 'bg-[#d7c3b1]',
+              )}
+            />
+          ));
+        })()}
       </div>
 
       {/* Desktop: horoscope-style card grid */}
