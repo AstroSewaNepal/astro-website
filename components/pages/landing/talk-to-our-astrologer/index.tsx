@@ -34,7 +34,7 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
       `}</style>
       <section
         className={clsx(
-          'talk-to-our-astrologer-section container mx-auto max-w-full px-3 sm:px-5 lg:px-0',
+          'talk-to-our-astrologer-section container mx-auto max-w-full px-3 sm:px-5 lg:px-0 border-b border-b-[#79787A] pb-[100px]',
           className,
         )}
       >
