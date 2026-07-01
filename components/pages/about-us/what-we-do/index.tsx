@@ -10,7 +10,7 @@ const AboutUsWhatWeDo: React.FC = () => {
     'Kundli analysis & matchmaking',
     'Daily, weekly & monthly horoscopes',
     'Remedies and gemstone suggestions',
-    'Career, relationship, and health guidance',
+    'Career,\u00A0relationship,\u00A0and\u00A0health\u00A0guidance',
     'Vedic, Tarot, Numerology & more',
   ];
 
@@ -18,7 +18,7 @@ const AboutUsWhatWeDo: React.FC = () => {
     <section className="w-full py-8 md:py-12 lg:py-16 xl:py-[100px]">
       <div className="container mx-auto px-6 lg:px-0">
         {/* Mandala Banner with Text Overlay */}
-        <div className="relative w-full min-h-[640px] md:min-h-[760px] lg:min-h-[820px] mx-auto rounded-3xl md:rounded-[50px] lg:rounded-[74px] overflow-hidden">
+        <div className="relative w-full max-w-[1455px] h-auto md:h-[760px] lg:h-[999px] mx-auto rounded-3xl md:rounded-[50px] lg:rounded-[74px] overflow-hidden">
           {/* Gradient Background */}
           <div className="absolute inset-0 bg-gradient-to-r from-[rgba(53,11,4,1)] to-[rgba(105,23,9,1)]"></div>
 
