@@ -7,8 +7,17 @@ import DownloadApp from '@/components/pages/landing/download-app';
 import NepaliCalendarPageContent from '@/components/pages/calendar/nepali';
 
 export const metadata: Metadata = {
-  title: 'Nepali Calendar',
-  description: 'Nepali calendar information page',
+  title: 'Nepali Calendar 2083 BS | AstroSewa',
+  description:
+    'Browse the Nepali Calendar 2083 BS with Bikram Sambat dates, Gregorian equivalents, and Nepali festivals. Your go-to Nepali patro online.',
+  keywords: [
+    'Nepali Calendar 2083 BS | AstroSewa',
+    'Bikram Sambat calendar',
+    'Nepali patro',
+    'BS calendar online',
+    'Nepali festival dates',
+    'Nepali calendar 2083 BS',
+  ],
 };
 
 export default function NepaliCalendarPage() {

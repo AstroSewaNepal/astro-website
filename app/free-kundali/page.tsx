@@ -10,9 +10,17 @@ import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
-  title: 'Free Kundali',
+  title: 'Generate Your Birth Chart Online Free | AstroSewa',
   description:
-    'Discover your detailed Janam Kundli instantly with Astro Sewa. Free online Kundli with insights on personality, career, relationships, and life path.',
+    'Generate your free Janam Kundali in seconds. Planetary positions, Lagna, Nakshatras, Doshas and life predictions. Enter your birth details now.',
+  keywords: [
+    'free Kundali',
+    'Janam Kundali online',
+    'free birth chart generator',
+    'Kundali online free',
+    'free Kundali chart',
+    'online Kundali',
+  ],
   alternates: {
     canonical: '/free-kundali',
   },

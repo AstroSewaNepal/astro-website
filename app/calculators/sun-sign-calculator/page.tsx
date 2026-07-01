@@ -7,9 +7,17 @@ import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
-  title: 'Sun Sign Calculator',
+  title: 'Free Sun Sign Calculator | AstroSewa',
   description:
-    'Discover your sun sign using your birth date and learn what it reveals about your personality.',
+    'Your Vedic sun sign may differ from your Western zodiac. Find your true sidereal sign using the Lahiri ayanamsa. Free on AstroSewa.',
+  keywords: [
+    'Vedic sun sign calculator',
+    'sidereal zodiac calculator',
+    'Lahiri ayanamsa',
+    'zodiac sign by birth date Vedic',
+    'Jyotish sun sign',
+    'Western vs Vedic zodiac',
+  ],
   alternates: {
     canonical: '/calculators/sun-sign-calculator',
   },

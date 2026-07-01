@@ -7,9 +7,17 @@ import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
-  title: 'Dasha Calculator',
+  title: 'Free MahaDasha Period Calculator | AstroSewa',
   description:
-    'Calculate your current dasha cycle and learn what kind of life phase you are in based on your birth date.',
+    'Discover your current Mahadasha and Antardasha free. Enter your birth details and get your full Vimshottari Dasha timeline on AstroSewa. Start now.',
+  keywords: [
+    'Dasha calculator',
+    'Mahadasha calculator',
+    'Vimshottari Dasha',
+    'Antardasha calculator',
+    'planetary period Vedic astrology',
+    'current Dasha period',
+  ],
   alternates: {
     canonical: '/calculators/dasha-calculator',
   },

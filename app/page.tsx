@@ -16,39 +16,36 @@ import DownloadApp from '@/components/pages/landing/download-app';
 import AstrologerBlogListing from '@/components/pages/landing/blog-listing';
 
 export const metadata: Metadata = {
+  title: 'Astrologer, Free Kundali and Horoscope | AstroSewa',
   description:
-    'Astro Sewa combines ancient Vedic wisdom with modern insight to help you transform uncertainty into opportunity. Get daily horoscopes, connect with verified astrologers, and access personalized astrology guidance for love, career, health, and finances.',
+    "Talk to a verified Vedic astrologer, get your free Kundali, and read today's horoscope. Your complete astrology platform. Start exploring now.",
   keywords: [
-    'astrology Nepal',
-    'online astrology consultation',
+    'talk to an astrologer online',
+    'free Kundali',
     'daily horoscope',
-    'vedic astrology',
-    'astrologer chat',
-    'birth chart reading',
-    'astrology app',
-    'Nepal astrologer',
-    'astrology services',
-    'horoscope today',
+    'online astrology consultation',
+    'Kundali matching',
+    'Vedic astrology',
   ],
   openGraph: {
-    title: 'Astro Sewa - Astrology Made Personal',
+    title: 'Astrologer, Free Kundali and Horoscope | AstroSewa',
     description:
-      'Transform uncertainty into opportunity with personalized Vedic astrology guidance. Connect with 1000+ verified astrologers, get daily horoscopes, and expert consultations.',
+      "Talk to a verified Vedic astrologer, get your free Kundali, and read today's horoscope. Your complete astrology platform. Start exploring now.",
     images: [
       {
         url: HeroSectionImage.src,
         width: 516,
         height: 516,
-        alt: 'Astro Sewa - Astrology Made Personal',
+        alt: 'Astrologer, Free Kundali and Horoscope | AstroSewa',
       },
     ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Astro Sewa - Astrology Made Personal',
+    title: 'Astrologer, Free Kundali and Horoscope | AstroSewa',
     description:
-      'Transform uncertainty into opportunity with personalized Vedic astrology guidance. Connect with 1000+ verified astrologers.',
+      "Talk to a verified Vedic astrologer, get your free Kundali, and read today's horoscope. Your complete astrology platform. Start exploring now.",
     images: [HeroSectionImage.src],
   },
   alternates: {
