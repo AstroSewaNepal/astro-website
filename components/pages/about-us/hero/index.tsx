@@ -1,6 +1,5 @@
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 
 import { AboutUsHeroImage } from '@/components/images/about-us';
 
@@ -37,24 +36,6 @@ const AboutUsHero: React.FC = () => {
               and meaningful decisions.
             </p>
 
-            {/* CTAs */}
-            <div className="mt-6 flex flex-col sm:flex-row gap-3 items-center justify-center md:justify-start">
-              <Link
-                href="/download-app"
-                className="inline-flex items-center justify-center rounded-3xl bg-primary text-white px-6 py-2.5 font-mukta text-base"
-              >
-                Download App
-              </Link>
-
-              <a
-                href="https://wa.me/9779818080676?text=Hello%20AstroSewa%20team%2C%20I%20would%20like%20to%20discuss%20your%20services%20and%20need%20some%20assistance%20with%20my%20astrology%20requirements.%20Please%20let%20me%20know%20the%20best%20way%20to%20proceed."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-3xl border border-primary text-primary px-6 py-2.5 font-mukta text-base"
-              >
-                Contact Us
-              </a>
-            </div>
           </div>
         </div>
       </div>
