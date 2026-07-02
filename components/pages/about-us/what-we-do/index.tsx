@@ -6,12 +6,13 @@ import { CheckImageIcon } from '@/components/images/icons';
 
 const AboutUsWhatWeDo: React.FC = () => {
   const services = [
-    'Instant astrology chat & calls',
-    'Kundli analysis & matchmaking',
-    'Daily, weekly & monthly horoscopes',
-    'Remedies and gemstone suggestions',
-    'Career,\u00A0relationship,\u00A0and\u00A0health\u00A0guidance',
-    'Vedic, Tarot, Numerology & more',
+    'Live astrology chat and call consultations',
+    'Free Kundali and birth chart generation',
+    'Kundali matching for marriage compatibility',
+    'Daily, weekly, and monthly horoscopes',
+    'Astrology calculators: Rashi, Dasha, Mangal Dosha, Sun Sign, Love, Numerology, Moon Phase',
+    'Puja Bidhi guides for Hindu rituals',
+    'Astrology blog written by our verified astrologers',
   ];
 
   return (
@@ -30,14 +31,13 @@ const AboutUsWhatWeDo: React.FC = () => {
                 {/* Main Text Section */}
                 <div className="flex flex-col gap-4 md:gap-5 lg:gap-6 xl:gap-[24px] w-full">
                   <h2 className="w-full text-left text-[26px] md:text-[36px] lg:text-[48px] xl:text-[56px] leading-[32px] md:leading-[44px] lg:leading-[56px] xl:leading-[65px] tracking-[0%] text-[#F8F3DF] font-tiro-devanagari font-normal">
-                    What we do ?
+                    What We Offer
                   </h2>
                   <p className="w-full text-left text-sm md:text-base lg:text-lg xl:text-[24px] leading-[150%] tracking-[2%] text-[#F8F3DF] font-mukta font-normal">
-                    At AstroSewa, we connect you with trusted astrologers to provide personalized
-                    guidance and accurate predictions based on your birth chart and planetary
-                    positions. Whether you&apos;re facing confusion in love, career, health, or
-                    finances we help you gain clarity through chat, call, or live sessions with
-                    expert astrologers.
+                    AstroSewa brings together everything you need for a complete astrology experience
+                    in one place. You can generate your free Kundali, book a live astrologer
+                    consultation, check Kundali matching, read your daily horoscope, use our astrology
+                    calculators, browse Puja Bidhi guides, and read our blog. All in one place.
                   </p>
                 </div>
 
@@ -63,7 +63,7 @@ const AboutUsWhatWeDo: React.FC = () => {
                           height={16}
                           className="w-4 h-4 md:w-5 md:h-5 lg:w-[19px] lg:h-[19px] flex-shrink-0"
                         />
-                        <span className="text-sm md:text-base lg:text-lg xl:text-[24px] leading-[117%] tracking-[2%] text-[#F8F3DF] font-mukta font-normal">
+                        <span className="whitespace-nowrap text-sm md:text-base lg:text-lg xl:text-[24px] leading-[117%] tracking-[2%] text-[#F8F3DF] font-mukta font-normal">
                           {service}
                         </span>
                       </div>

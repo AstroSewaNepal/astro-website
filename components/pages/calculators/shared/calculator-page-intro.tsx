@@ -1,22 +1,27 @@
 import type { ReactNode } from 'react';
+import QNASComponent from '@/components/common/qnas-component';
 
 type CalculatorPageIntroProps = {
   title: string;
   shortDescription: string;
   longDescription?: string[];
+  infoHeading?: string;
+  infoDescription?: string;
   infoSections?: Array<{ title: string; body: string }>;
   children: ReactNode;
 };
 
 const DEFAULT_LONG = [
-  'AstroSewa calculators use accurate Vedic astronomy and your birth details to generate personalized results for each chart-based calculation.',
-  'Enter your birth date, time, and birthplace to get a precise reading from our Vedic astrology engine, not a generic sun sign formula.',
+  'In Vedic astrology, your life unfolds through a sequence of planetary periods called Dashas. The Vimshottari system divides life into nine cycles covering 120 years in total. Each cycle is governed by a different planet: Ketu for 7 years, Venus for 20 years, Sun for 6 years, Moon for 10 years, Mars for 7 years, Rahu for 18 years, Jupiter for 16 years, Saturn for 19 years, and Mercury for 17 years.',
+  'The planet ruling your Mahadasha at any given time sets the overall quality of that life phase. It shapes the themes, opportunities, and challenges of that period. Within each Mahadasha, shorter sub-periods called Antardasha cycle through all nine planets in sequence. Knowing your current Mahadasha and Antardasha helps you understand why certain areas of life feel active or difficult right now.',
 ];
 
 export default function CalculatorPageIntro({
   title,
   shortDescription,
   longDescription = DEFAULT_LONG,
+  infoHeading,
+  infoDescription,
   infoSections,
   children,
 }: CalculatorPageIntroProps) {
@@ -57,17 +62,32 @@ export default function CalculatorPageIntro({
 
         {children}
 
-        <div className="mt-8 sm:mt-10 md:mt-12 lg:mt-14 xl:mt-16 space-y-0">
-          {sections.map((section, idx) => (
-            <div key={idx} className="pt-5 sm:pt-6 md:pt-7 lg:pt-8 xl:pt-10 pb-2">
-              <h2 className="font-sahitya text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] xl:text-[22px] font-bold text-[#2f2f2f] mb-2 sm:mb-2.5 md:mb-3 lg:mb-3.5 xl:mb-4">
-                {section.title}
-              </h2>
-              <p className="w-full text-left font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] xl:text-[18px] font-normal leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[28px] xl:leading-[30px] text-[#4a423d]">
-                {section.body}
-              </p>
+        <div className="mt-8 sm:mt-10 md:mt-12 lg:mt-14 xl:mt-16">
+          {infoHeading || infoDescription ? (
+            <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6 text-center">
+              {infoHeading ? (
+                <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary">
+                  {infoHeading}
+                </h2>
+              ) : null}
+              {infoDescription ? (
+                <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px]">
+                  {infoDescription}
+                </p>
+              ) : null}
             </div>
-          ))}
+          ) : null}
+
+          <div className="mt-6 space-y-4 md:space-y-6 lg:space-y-[34px]">
+            {sections.map((section, idx) => (
+              <QNASComponent
+                key={idx}
+                question={section.title}
+                answer={section.body}
+                isDefaultOpen={idx === 0}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

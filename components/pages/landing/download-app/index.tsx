@@ -23,10 +23,9 @@ const DownloadApp: React.FC<DownloadAppProps> = ({ className }) => {
 
           {/* Description */}
           <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl text-[#4A494B] leading-relaxed">
-            Experience personalized astrology guidance anytime, anywhere with the AstroSewa app. Get
-            daily horoscope updates, instant kundali insights, compatibility checks, and easy access
-            to trusted astrologers - all in one place, designed to make your spiritual journey
-            simple and meaningful.
+            Get the AstroSewa app and carry your astrology tools wherever you go. Daily horoscopes,
+            instant Kundali access, compatibility checks, and direct astrologer chat are all
+            available from your phone.
           </p>
 
           {/* Download Buttons */}

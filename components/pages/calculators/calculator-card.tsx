@@ -33,7 +33,7 @@ export default function CalculatorCard({
       className={[
         'h-full min-w-0 rounded-[12px] border border-[#b8b0a8] bg-transparent shadow-[0_6px_18px_rgba(0,0,0,0.04)]',
         mobileHorizontal
-          ? 'snap-start w-[332px] min-w-[332px] h-[184px] rounded-[12px] border border-[#79787A] bg-transparent px-3 py-2 opacity-100 overflow-hidden md:w-auto md:min-w-0 md:h-auto md:px-5 md:pt-8 md:pb-5'
+          ? 'snap-start w-[332px] min-w-[332px] min-h-[184px] rounded-[12px] border border-[#79787A] bg-transparent px-3 py-2 opacity-100 overflow-hidden md:w-auto md:min-w-0 md:h-auto md:px-5 md:pt-8 md:pb-5'
           : 'min-w-0 px-5 pt-8 pb-5',
       ]
         .filter(Boolean)

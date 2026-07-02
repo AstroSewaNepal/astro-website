@@ -24,7 +24,8 @@ const calculators: Array<{
   {
     key: 'love',
     title: 'Love Calculator',
-    description: 'Discover your compatibility with a partner or potential love interest.',
+    description:
+      'Get a compatibility score based on Vedic Kuta matching. Enter names and birth details for both partners to see how your signs, Nakshatras, and planetary positions align.',
     href: '/calculators/love-calculator',
     icon: (
       <Image
@@ -39,7 +40,8 @@ const calculators: Array<{
   {
     key: 'numerology',
     title: 'Numerology Calculator',
-    description: 'Discover your life path number and explore numerology insights.',
+    description:
+      'Calculate your Life Path Number, Expression Number, and Soul Urge Number using Pythagorean numerology. All you need is your full name and date of birth.',
     href: '/calculators/numerology-calculator',
     icon: (
       <Image
@@ -54,7 +56,8 @@ const calculators: Array<{
   {
     key: 'sun-sign',
     title: 'Sun Sign Calculator',
-    description: 'Discover your zodiac sign based on birth date and astrology insights.',
+    description:
+      'Find your true Vedic sun sign using the sidereal zodiac and Lahiri ayanamsa. This gives you your real Jyotish sun sign, not the simplified date range from Western horoscopes.',
     href: '/calculators/sun-sign-calculator',
     icon: (
       <Image
@@ -69,7 +72,8 @@ const calculators: Array<{
   {
     key: 'mangal-dosha',
     title: 'Mangal Dosha Calculator',
-    description: 'Check Mangal dosha and marriage effects in your birth chart.',
+    description:
+      'Check whether Mars creates Mangal Dosha in your birth chart. Chart-based analysis using real planetary positions, not a simplified birth date rule.',
     href: '/calculators/mangal-dosha-calculator',
     icon: (
       <Image
@@ -85,7 +89,7 @@ const calculators: Array<{
     key: 'dasha',
     title: 'Dasha Calculator',
     description:
-      'Calculate planetary dasha periods and analyze timing of life events in Vedic astrology.',
+      'Find your current Mahadasha and Antardasha using the Vimshottari system. See which planet is shaping this phase of your life and what the timeline ahead looks like.',
     href: '/calculators/dasha-calculator',
     icon: (
       <Image
@@ -101,7 +105,7 @@ const calculators: Array<{
     key: 'moon-phase',
     title: 'Moon Phase Calculator',
     description:
-      'Track each moon phase and explore current moon phases and lunar cycle changes over time.',
+      'See the exact lunar phase and Tithi at the time of your birth. Calculated using VedAstro Panchanga and real ephemeris data, not a calendar formula.',
     href: '/calculators/moon-phase-calculator',
     icon: (
       <Image
@@ -117,7 +121,7 @@ const calculators: Array<{
     key: 'rashi',
     title: 'Rashi Calculator',
     description:
-      'Discover your Vedic Rashi and understand how it shapes your birth chart insights.',
+      'Find your Vedic moon sign (Rashi) calculated from your exact birth time and location. Your Rashi is the foundation for Dasha calculations and Kundali matching.',
     href: '/calculators/rashi-calculator',
     icon: (
       <Image
@@ -135,7 +139,7 @@ export default function CalculatorChooserSection({ exclude }: CalculatorChooserS
   return (
     <div className="mx-auto mt-12 max-w-[1454px]">
       <h2 className="font-sahitya font-bold text-[22px] md:text-[26px] leading-[1.1] text-primary">
-        Choose Your Calculator
+        Explore more calculators
       </h2>
 
       <div className="mt-5 flex gap-4 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 lg:gap-8 md:overflow-visible md:pb-0">
