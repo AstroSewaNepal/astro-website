@@ -738,7 +738,7 @@ const KundaliMatchingFormSection: React.FC = () => {
   return (
     <section className="max-w-7xl mx-auto mt-6 md:mt-8">
       <h2 className="w-[287px] md:w-full text-left font-sahitya font-bold text-[20px] leading-[38px] md:text-[28px] md:leading-[38px] text-primary mb-4 md:mb-6 opacity-100">
-        Fill Up The Form To Match Kundali
+        Enter Birth Details to Match Kundali
       </h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 md:gap-6 items-stretch">
