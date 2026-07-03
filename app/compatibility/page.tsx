@@ -5,8 +5,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
-import Clarity from '@/components/pages/landing/clarity';
-import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import FindNowIcon from '@/components/icons/findnow_love_icon.png';
@@ -72,15 +70,15 @@ export default function CompatibilityPage() {
       <div className="container mx-auto px-6 lg:px-0">
         <section>
           <div className="w-full">
-            <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-[0%] text-[#6b2417] sm:text-[36px] sm:leading-[48px]">
+            <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
               {copy.title}
             </h1>
-            <p className="mt-2 font-mukta font-normal text-[14px] leading-[24px] tracking-[0%] text-[#111111] text-left max-sm:!text-[14px] max-sm:!leading-[24px] sm:text-[22px] sm:leading-[30px]">
+            <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] text-left max-sm:!text-[14px] max-sm:!leading-[24px] sm:text-[22px] sm:leading-[30px]">
               {copy.subtitle}
             </p>
 
             <div className="mt-4">
-              <p className="font-mukta text-[16px] leading-[28px] tracking-[0%] text-[#4f463f] text-justify sm:text-[24px] sm:leading-[34px]">
+              <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] text-justify sm:text-[24px] sm:leading-[34px]">
                 You may not always click effortlessly with everyone, but when you&apos;re with that
                 special someone, life feels brighter, calmer, and more meaningful. Throughout your
                 journey, you&apos;ll meet many wonderful people — friends, mentors, and companions —
@@ -349,22 +347,13 @@ export default function CompatibilityPage() {
             </div>
           </div>
 
-          <p className="mt-8 font-mukta font-normal text-[24px] leading-[34px] tracking-[0%] text-[#464646] text-justify">
+          <p className="mt-8 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] text-justify">
             {copy.outro}
           </p>
         </section>
 
-        <TalkToOurAstrologer className="mx-auto mt-14 max-w-[1180px]" />
-
-        <div className="mt-14">
-          <Clarity />
-        </div>
-
-        <div className="mt-14">
-          <Services />
-        </div>
-
-        <DownloadApp className="mx-auto mt-14 max-w-[1180px]" />
+        <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+        <DownloadApp />
       </div>
     </main>
   );

@@ -14,7 +14,7 @@ const Clarity: React.FC = () => {
   return (
     <section
       className={clsx(
-        'container mx-auto px-6 lg:px-0 pb-12 md:pb-16 lg:pb-[100px] border-b border-b-[#79787A]',
+        'container mx-auto px-6 lg:px-0 pb-6 md:pb-[50px] border-b border-b-[#79787A]',
       )}
     >
       <div
@@ -27,8 +27,9 @@ const Clarity: React.FC = () => {
           <h2 className="font-tiro-devanagari text-[26px] md:text-[48px] lg:text-[64px] xl:text-[80px] leading-[32px] md:leading-[56px] lg:leading-[80px] xl:leading-[122.57px] text-[#F8F3DF] text-center lg:text-left font-normal">
             Find Clarity today
           </h2>
-          <p className="font-mukta text-[16px] leading-[24px] text-[#FFFFFFCF] mt-2 md:mt-3 lg:mt-4 text-center lg:text-left whitespace-nowrap capitalize md:text-2xl lg:text-3xl xl:text-4xl">
-            Discover insights through Vedic astrology.
+          <p className="font-mukta text-sm leading-[24px] text-[#FFFFFFCF] mt-2 md:mt-3 lg:mt-4 text-center lg:text-left whitespace-normal md:text-base lg:text-lg xl:text-xl">
+            Whether it is love, career, health, or a big decision ahead, our astrologers are
+            ready to guide you. Chat now or explore your free tools below.
           </p>
           <div className="mt-6 md:mt-8 flex flex-row flex-nowrap items-center justify-center lg:justify-start gap-2 md:gap-6">
             <button

@@ -7,9 +7,17 @@ import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
-  title: 'Rashi Calculator',
+  title: 'Free Rashi Calculator | AstroSewa',
   description:
-    'Find your Rashi (moon sign) with your birth date and explore the Vedic astrology meaning behind it.',
+    'Discover your Rashi, your Vedic moon sign, calculated from your exact birth time and location. More accurate than a date-range table. Free on AstroSewa.',
+  keywords: [
+    'Rashi calculator',
+    'Vedic moon sign',
+    'Janma Rashi',
+    'moon sign astrology',
+    'birth moon sign calculator',
+    'Rashi finder',
+  ],
   alternates: {
     canonical: '/calculators/rashi-calculator',
   },

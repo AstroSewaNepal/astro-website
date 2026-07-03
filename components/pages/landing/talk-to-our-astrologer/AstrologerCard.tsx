@@ -5,7 +5,6 @@ import Image from 'next/image';
 
 import { AstrologerImage, VerifiedIcon } from '@/components/images';
 import { EducationIcon, GoldMedalIcon, LanguageIcon, SquareIcon } from '@/components/images/icons';
-import ChatIcon from '@/components/icons/chat-icon';
 import PhoneIcon from '@/components/icons/phone-icon';
 import StartIcon from '@/components/icons/start-icon';
 import CalendarIcon from '@/components/icons/calendar-icon';
@@ -100,9 +99,6 @@ const AstrologerCard = memo(function AstrologerCard({
     ],
   );
 
-  const showChat = Boolean(astrologer.chatAvailable);
-  const showCall = Boolean(astrologer.callAvailable);
-  const showSchedule = Boolean(astrologer.isBookingEnabled);
   const imageSrc = profileImage ?? AstrologerImage;
   const isRemoteProfileImage = Boolean(profileImage?.startsWith('http'));
 

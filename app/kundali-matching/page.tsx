@@ -8,9 +8,17 @@ import DownloadApp from '@/components/pages/landing/download-app';
 import KundaliMatching from '@/components/pages/kundali-matcing';
 
 export const metadata: Metadata = {
-  title: 'Kundali Matching',
+  title: 'Free Marriage Compatibility Check | AstroSewa',
   description:
-    'Discover your match through Kundali with Astro Sewa. Free online Kundali matching with insights on personality, career, relationships, and life path.',
+    'Check marriage compatibility using the 36 Guna Milan system. Enter both birth details and get your full Kundali matching report free now.',
+  keywords: [
+    'Kundali matching',
+    'Kundali Milan',
+    'marriage compatibility astrology',
+    '36 Guna Milan',
+    'horoscope matching free',
+    'Kundali matching online',
+  ],
   alternates: {
     canonical: '/kundali-matching',
   },

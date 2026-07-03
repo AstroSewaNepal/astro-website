@@ -129,9 +129,9 @@ export default function LoveCalculatorResultSection() {
 
   if (!result) {
     return (
-      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-24">
-        <div className="max-w-[1454px] mx-auto flex flex-col items-center justify-center text-center">
-          <h2 className="font-sahitya text-3xl md:text-4xl font-bold text-[#5D1409]">
+      <section className="pt-6 md:pt-12 pb-24">
+        <div className="flex flex-col items-center justify-center text-center">
+          <h2 className="font-tiro-devanagari text-[26px] md:text-[36px] font-bold text-[#5D1409] leading-[1.2]">
             No Data Found
           </h2>
           <p className="font-mukta mt-2 text-[#4a4a4a] text-[15px] md:text-[16px] leading-[1.8] max-w-[760px]">
@@ -149,14 +149,14 @@ export default function LoveCalculatorResultSection() {
   }
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
-      <div className="max-w-[1454px] mx-auto">
+    <section className="pt-6 md:pt-12 pb-12">
+      <div>
         {/* Header */}
-        <div className="mb-4">
-          <h1 className="font-sahitya font-bold text-[22px] md:text-[48px] leading-[32px] md:leading-[48px] tracking-[0%] text-[#471207]">
+        <div className="mb-6 md:mb-[50px]">
+          <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
             Lovers Report
           </h1>
-          <p className="font-mukta font-medium text-[14px] md:text-[24px] leading-[30px] tracking-[0%] text-[#4a4a4a] mt-0.5">
+          <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
             This calculation may or may not be true but you can analyze it.
           </p>
         </div>
@@ -228,7 +228,7 @@ export default function LoveCalculatorResultSection() {
                 />
               </div>
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
-                <span className="font-sahitya font-normal text-white text-[18px] leading-none tracking-[0%] text-center drop-shadow-md">
+                <span className="font-tiro-devanagari font-bold text-white text-[18px] leading-none tracking-[0%] text-center drop-shadow-md">
                   {result.score}%
                 </span>
                 <span className="font-mukta font-normal text-white text-[10px] leading-none tracking-[0%] text-center">
@@ -259,7 +259,7 @@ export default function LoveCalculatorResultSection() {
                 className="object-contain w-[205px] h-[188px]"
               />
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
-                <span className="font-sahitya font-normal text-white text-[64px] leading-none tracking-[0%] text-center drop-shadow-md">
+                <span className="font-tiro-devanagari font-bold text-white text-[64px] leading-none tracking-[0%] text-center drop-shadow-md">
                   {result.score}%
                 </span>
                 <span className="font-mukta font-normal text-white text-[24px] leading-none tracking-[0%] text-center">

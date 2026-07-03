@@ -7,9 +7,17 @@ import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
-  title: 'Mangal Dosha Calculator',
+  title: 'Check Your Manglik Status Free | AstroSewa',
   description:
-    'Check your Mangal Dosha from your birth date and understand how it may influence your marriage prospects.',
+    'Find out if you have Mangal Dosha in your birth chart. Real chart-based check using actual planetary positions. Get your result free on AstroSewa.',
+  keywords: [
+    'Mangal Dosha calculator',
+    'Manglik calculator',
+    'Kuja Dosha',
+    'check Mangal Dosha online',
+    'Manglik status',
+    'Mars Dosha astrology',
+  ],
   alternates: {
     canonical: '/calculators/mangal-dosha-calculator',
   },

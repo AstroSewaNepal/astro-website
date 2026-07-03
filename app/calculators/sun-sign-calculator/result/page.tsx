@@ -15,11 +15,10 @@ export const metadata: Metadata = {
 
 export default function SunSignCalculatorResultPage() {
   return (
-    <main className="container mx-auto space-y-12">
+    <main className="container mx-auto space-y-12 px-4 sm:px-6 lg:px-0">
       <SunSignCalculatorResultSection />
-      <section className="px-4 sm:px-6 lg:px-0 pb-8 md:pb-12">
-        <CalculatorChooserSection exclude="sun-sign" />
-      </section>
+      <CalculatorChooserSection exclude="sun-sign" />
+
       <Clarity />
       <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
       <Services />

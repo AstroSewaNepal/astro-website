@@ -7,9 +7,17 @@ import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
-  title: 'Numerology Calculator',
+  title: 'Find Your Life Path Number Free | AstroSewa',
   description:
-    'Discover your numerology profile using your full birth name and date of birth. Receive a detailed Pythagorean reading for life path, expression, and soul urge numbers.',
+    'Calculate your Life Path, Expression, and Soul Urge numbers free. Just your name and birth date needed. Try it on AstroSewa.',
+  keywords: [
+    'numerology calculator',
+    'Life Path Number calculator',
+    'numerology by name and birth date',
+    'Expression Number',
+    'Soul Urge Number',
+    'Pythagorean numerology',
+  ],
   alternates: {
     canonical: '/calculators/numerology-calculator',
   },

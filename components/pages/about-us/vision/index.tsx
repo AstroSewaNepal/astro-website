@@ -13,8 +13,7 @@ const AboutUsVision: React.FC = () => {
             Our Vision, Mission & Values
           </h2>
           <p className="w-full max-w-[883px] text-center text-[18px] md:text-[20px] lg:text-[24px] leading-[150%] tracking-[2%] text-[rgba(0,0,0,0.81)] font-mukta font-normal">
-            The guiding principles that shape everything we do bringing clarity, compassion, and
-            authenticity to every astrology experience.
+            The principles behind everything we do at AstroSewa.
           </p>
         </div>
 
@@ -39,13 +38,9 @@ const AboutUsVision: React.FC = () => {
                 Vision (Darshan)
               </h3>
               <p className="w-full text-center text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] leading-[150%] tracking-[2%] text-[#323232] font-mukta font-normal">
-                AstroSewa envisions a world where every individual can align their life with cosmic
-                rhythm (Rituchakra), guided by the light of Vedic astrology.
-                <br />
-                <br />
-                We dream of a society where decisions about career, marriage, health, and family are
-                taken with clarity, devotion, and astrological wisdom bridging ancient scriptures
-                and modern technology.
+                A world where people use the wisdom of the stars to make better decisions, understand
+                themselves more honestly, and live with greater intention. We want astrology to be a
+                tool for real life.
               </p>
             </div>
           </div>
@@ -69,13 +64,9 @@ const AboutUsVision: React.FC = () => {
                 Mission (Sankalpa)
               </h3>
               <p className="w-full text-center text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] leading-[150%] tracking-[2%] text-[#323232] font-mukta font-normal">
-                Our mission is to bring the spiritual strength of Jyotish Shastra into the hands of
-                every seeker through a simple and accessible mobile platform.
-                <br />
-                <br />
-                We offer personalized Kundali charts, Dasha analysis, 36 Guna Milan, remedies, and
-                live consultations all delivered with cultural respect, compassion, and trust rooted
-                in Sanatana Dharma.
+                To make Vedic astrology genuinely accessible and genuinely useful. That means verified
+                astrologers, accurate tools, and content written with care. We want every person who
+                comes to AstroSewa to leave with something real.
               </p>
             </div>
           </div>
@@ -99,12 +90,9 @@ const AboutUsVision: React.FC = () => {
                 Values (Moolya)
               </h3>
               <p className="w-full text-center text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] leading-[150%] tracking-[2%] text-[#323232] font-mukta font-normal">
-                We are guided by Satya (Truth), Karuna (Compassion), and Bodh (Clarity) offering
-                astrology rooted in Vedic wisdom, delivered with honesty, empathy, and simplicity.
-                <br />
-                <br />
-                Through Samāvesh (Inclusivity) and Vridhi (Growth), we welcome every seeker with
-                openness and support their spiritual journey with karmic insights, remedies.
+                Truth, compassion, and clarity. We do not over-promise. We do not treat astrology as
+                entertainment. Every interaction, from a free Kundali to a live consultation, is built
+                on genuine care for the person on the other side.
               </p>
             </div>
           </div>

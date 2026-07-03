@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 
 export default function DownloadAppPage() {
   return (
-    <main className="min-h-screen pt-6 sm:pt-8 lg:pt-10">
+    <main className="pt-2 md:pt-4">
       <div className="container mx-auto px-6 lg:px-0">
-        <DownloadApp />
+        <DownloadApp className="border-none !pb-0" paddingClassName="py-4 md:py-6 lg:py-8" />
       </div>
     </main>
   );

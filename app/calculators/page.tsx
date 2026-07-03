@@ -6,9 +6,17 @@ import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrolog
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 export const metadata: Metadata = {
-  title: 'Astrology Calculators',
+  title: 'Free Astrology Calculators | AstroSewa',
   description:
-    "Explore Astro Sewa's astrology calculators and discover deeper insights about your personality, relationships, career, and life journey.",
+    'Check Mangal Dosha, find your Rashi, calculate your Dasha, or explore numerology. Free Vedic calculators powered by real ephemeris data. Try one now.',
+  keywords: [
+    'free astrology calculator',
+    'Rashi calculator',
+    'Dasha calculator',
+    'Mangal Dosha calculator',
+    'numerology calculator',
+    'love compatibility calculator',
+  ],
   alternates: {
     canonical: '/calculators',
   },

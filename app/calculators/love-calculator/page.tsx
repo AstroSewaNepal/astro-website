@@ -7,9 +7,17 @@ import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
-  title: 'Love Calculator',
+  title: 'Free Love Compatibility Calculator | AstroSewa',
   description:
-    'Playfully explore name compatibility with Astro Sewa’s Love Calculator — for fun and curiosity, with the same trusted site experience.',
+    'Get your love compatibility score using Vedic Kuta matching. Enter names and birth details and see how your signs and Nakshatras align. Free on AstroSewa.',
+  keywords: [
+    'love compatibility calculator',
+    'astrology love match',
+    'Kuta matching score',
+    'relationship compatibility astrology',
+    'zodiac love calculator',
+    'love match by birth date',
+  ],
   alternates: {
     canonical: '/calculators/love-calculator',
   },

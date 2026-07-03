@@ -9,7 +9,7 @@ import ChevronRight from '@/components/icons/chevron-right';
 
 const WhoWeAre: React.FC = () => {
   return (
-    <section className="container mx-auto px-6 lg:px-0 border-b border-b-[#79787A] pb-[100px]">
+    <section className="container mx-auto px-6 lg:px-0 border-b border-b-[#79787A] pb-6 md:pb-[50px]">
       <div
         className={clsx(
           WhoWeAreCSS.container,
@@ -18,11 +18,13 @@ const WhoWeAre: React.FC = () => {
       >
         <div className="flex flex-col flex-1 w-full lg:w-auto text-center lg:text-left items-center lg:items-start">
           <h2 className="text-[34px] md:text-[48px] lg:text-[64px] xl:text-[80px] 2xl:text-[110px] leading-[42px] md:leading-[56px] lg:leading-[80px] xl:leading-[96px] 2xl:leading-[120%] text-[#F8F3DF] font-normal">
-            Who are we?
+            Who Is AstroSewa?
           </h2>
-          <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-[32px] leading-6 md:leading-7 lg:leading-8 xl:leading-10 2xl:leading-[52px] text-[#FFFFFFCF] max-w-[700px] mt-2 md:mt-3 lg:mt-4">
-            AstroSewa is Nepal&apos;s trusted online astrology platform, connecting people with over
-            1000+ verified and experienced astrologers.{' '}
+          <p className="font-mukta text-lg md:text-xl lg:text-2xl xl:text-2xl 2xl:text-[28px] leading-8 md:leading-9 lg:leading-10 xl:leading-[42px] 2xl:leading-[54px] text-[#FFFFFFCF] max-w-[700px] mt-2 md:mt-3 lg:mt-4">
+            AstroSewa is an online Vedic astrology platform that connects you with verified
+            astrologers for consultations, Kundali readings, horoscopes, compatibility reports,
+            and more. We combine the depth of classical Jyotish with tools that are simple enough
+            for anyone to use.
           </p>
           <button className="mt-4 md:mt-5 lg:mt-6 rounded-3xl bg-white max-w-full lg:max-w-[279px] w-full lg:w-auto py-2.5 md:py-3 lg:py-3.5 px-6 md:px-8 flex items-center justify-center gap-1 transition-all duration-300 hover:bg-gray-50">
             <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-primary font-normal">

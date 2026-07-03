@@ -7,6 +7,7 @@ import { isoDateToVedastroDate } from '@/lib/calculators/birth-query';
 import { fetchVedastroCalculator } from '@/lib/vedastro/fetch-calculator';
 import CalculatorChooserSection from '@/components/pages/calculators/shared/calculator-chooser-section';
 import CalculatorDatePicker from '@/components/pages/calculators/shared/calculator-date-picker';
+import QNASComponent from '@/components/common/qnas-component';
 
 const CALCULATOR_TYPES = [
   { value: 'life-path', label: 'Life Path Number' },
@@ -19,27 +20,26 @@ const FIELD_LABEL_CLASS =
 
 const ERROR_TEXT_CLASS = 'mt-0.5 h-[18px] text-xs leading-[18px] text-red-600';
 
-const INFO_SECTIONS_CLASS = 'mt-24 w-full space-y-8';
-
-const MUKTA_BODY_TEXT_CLASS =
-  'font-mukta text-[18px] font-normal leading-[30px] tracking-normal text-[#4a423d]';
-
-const HERO_TAGLINE_CLASS =
-  'font-mukta text-[14px] font-normal leading-[24px] tracking-normal text-[#4a423d] md:text-[18px] md:leading-[30px]';
-
-const HERO_DESCRIPTION_CLASS =
-  'font-mukta text-[16px] font-normal leading-[28px] tracking-normal text-[#4a423d] md:text-[18px] md:leading-[30px]';
-
-const INFO_BODY_CLASS = `mt-3 max-w-none text-left ${MUKTA_BODY_TEXT_CLASS}`;
-
 const INFO_SECTIONS = [
   {
-    title: 'What Is a Numerology Calculator?',
-    body: 'Discover meanings in your name and birth date using Pythagorean numerology (life path, expression, and soul urge numbers).',
+    title: 'What Is Numerology?',
+    body:
+      'Numerology is the study of how numbers derived from your name and birth date reveal patterns in your personality, life purpose, and inner motivations. The Pythagorean system assigns a value from 1 to 9 to each letter of the alphabet. These values are then used to calculate three core numbers.\n\nLife Path Number: Derived from your birth date. The most significant number in your chart. It describes your core purpose and the main themes running through your life.\n\nExpression Number: Derived from your full birth name. It reflects your natural abilities and the way you express yourself in the world.\n\nSoul Urge Number: Derived from only the vowels in your name. It reveals your deepest desires and inner motivations.',
   },
   {
-    title: 'How Does a Numerology Calculator Work?',
-    body: 'Enter your full name and date of birth. Letters and dates are converted to numbers and reduced to a single digit (or master number).',
+    title: 'How Is My Number Calculated?',
+    body:
+      'Each letter in the Pythagorean system has a fixed number value from 1 to 9. Your name is converted letter by letter, and the resulting digits are added together and reduced to a single digit. Master numbers (11, 22, and 33) are not reduced further because they carry special significance. Your birth date digits are summed and reduced the same way for your Life Path Number. This calculator does the maths instantly.',
+  },
+  {
+    title: 'What Are Master Numbers?',
+    body:
+      'Master numbers are 11, 22, and 33. When your Life Path Number or Expression Number reduces to one of these, it is not reduced further to a single digit. Master numbers are considered to carry amplified energy and greater potential. Number 11 is associated with intuition and spiritual insight. Number 22 is associated with building and practical mastery. Number 33 is associated with compassion and teaching. Not everyone has a master number and that is not a disadvantage. Single digit numbers are equally powerful.',
+  },
+  {
+    title: 'Which Name Should I Use?',
+    body:
+      'Use your full birth name as it appears on your birth certificate, including any middle names. Do not use a nickname or a married name. The birth name carries the numerological signature you were born with. If you have changed your name legally, some numerologists will calculate both the birth name and the current name to see how the energies interact, but the birth name is always the starting point.',
   },
 ];
 
@@ -130,27 +130,26 @@ export default function NumerologyCalculatorSection() {
   };
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
-      <div className="max-w-[1454px] mx-auto">
+    <section className="pt-6 md:pt-12 pb-12">
+      <div>
         {/* Hero */}
-        <div className="mb-12">
-          <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-normal text-[#4b1b16] md:text-[40px] md:leading-[1.1] lg:text-[44px]">
-            Numerology Calculator
+        <div className="mb-6 md:mb-[50px]">
+          <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
+            Numerology Calculator: Find Your Life Path and Core Numbers
           </h1>
-          <p className={`mt-3 w-full text-left ${HERO_TAGLINE_CLASS}`}>
-            Discover your personal numerology profile from your full birth name and date of birth.
+          <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
+            Calculate your Life Path Number, Expression Number, and Soul Urge Number using Pythagorean numerology.
           </p>
-          <p className={`mt-4 mb-8 w-full text-left ${HERO_DESCRIPTION_CLASS}`}>
-            Enter your full name and date of birth to receive a detailed Pythagorean numerology
-            reading that explains your life path, expression, soul urge, and more.
+          <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
+            Enter your full name and date of birth. Birthplace is not needed for this calculator.
           </p>
         </div>
 
         {/* Form wrapper */}
-        <div className="mx-auto mt-8 w-full flex flex-col items-center">
+        <div className="mx-auto mt-6 md:mt-[50px] w-full flex flex-col items-center">
           <div className="mb-5 text-center">
-            <p className="font-mukta text-[24px] font-semibold leading-[30px] tracking-normal text-primary">
-              Fill up the Details
+            <p className="font-mukta text-[24px] font-semibold leading-[30px] tracking-[0.02em] text-primary">
+              Enter Your Details
             </p>
           </div>
           <form
@@ -232,7 +231,14 @@ export default function NumerologyCalculatorSection() {
                 disabled={submitting}
                 className="flex h-[48px] sm:h-[60px] w-[175.5px] sm:w-[250px] items-center justify-center rounded-[32px] bg-[#5d1409] font-mukta text-[18px] font-semibold leading-[30px] tracking-normal text-white transition hover:opacity-95 disabled:opacity-60 pt-4 pb-4 px-2.5"
               >
-                {submitting ? 'Calculating...' : 'Calculate'}
+                {submitting ? (
+                  'Calculating...'
+                ) : (
+                  <>
+                    <span className="sm:hidden">Calculate</span>
+                    <span className="hidden sm:inline">Calculate My Numbers</span>
+                  </>
+                )}
               </button>
               <button
                 type="button"
@@ -245,17 +251,27 @@ export default function NumerologyCalculatorSection() {
           </form>
         </div>
 
-        {/* Info sections */}
-        <div className={INFO_SECTIONS_CLASS}>
-          {INFO_SECTIONS.map(section => (
-            <div key={section.title}>
-              <h2 className="text-left font-sahitya text-[22px] font-bold leading-[1.1] text-primary">
-                {section.title}
-              </h2>
-              <p className={INFO_BODY_CLASS}>{section.body}</p>
-            </div>
-          ))}
-        </div>
+        {/* FAQ */}
+        <section className="mt-16 border-b border-b-[#79787A] pt-12 pb-[100px]">
+          <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6 text-center">
+            <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary text-center">
+              Frequently Asked Questions
+            </h2>
+            <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px] text-center mt-2 md:mt-4 lg:mt-6 px-4">
+              Find quick answers to common questions about our numerology calculator and how to use your core numbers.
+            </p>
+          </div>
+          <div className="mt-6 md:mt-8 lg:mt-10 space-y-4 md:space-y-6 lg:space-y-[34px]">
+            {INFO_SECTIONS.map(section => (
+              <QNASComponent
+                key={section.title}
+                question={section.title}
+                answer={section.body}
+                isDefaultOpen={section.title === 'What Is Numerology?'}
+              />
+            ))}
+          </div>
+        </section>
 
         <CalculatorChooserSection exclude="numerology" />
       </div>

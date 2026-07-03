@@ -10,23 +10,24 @@ import Services from '@/components/pages/landing/services';
 import AboutUsWhyUs from '@/components/pages/about-us/why-us';
 
 export const metadata: Metadata = {
-  title: 'About Us',
+  title: 'Vedic Astrology Built for Real Life | AstroSewa',
   description:
-    "Learn about Astro Sewa — Nepal's trusted online astrology platform connecting seekers with 1000+ verified Vedic astrologers for personalized guidance.",
+    'Verified astrologers, honest readings, and Vedic tools built for real life. Learn who we are, what we believe, and why thousands use AstroSewa.',
   keywords: [
-    'about astro sewa',
-    'Nepal astrology platform',
-    'vedic astrologers Nepal',
-    'online astrology Nepal',
-    'astro sewa company',
+    'about AstroSewa',
+    'Vedic astrology platform',
+    'verified astrologers',
+    'online astrology service',
+    'Jyotish platform',
+    'astrology consultation service',
   ],
   alternates: {
     canonical: '/about-us',
   },
   openGraph: {
-    title: "About Astro Sewa — Nepal's Trusted Astrology Platform",
+    title: 'Vedic Astrology Built for Real Life | AstroSewa',
     description:
-      'Learn about Astro Sewa and how we connect you with verified Vedic astrologers for personalized horoscope, kundali, and spiritual guidance.',
+      'Verified astrologers, honest readings, and Vedic tools built for real life. Learn who we are, what we believe, and why thousands use AstroSewa.',
   },
 };
 

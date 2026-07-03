@@ -7,8 +7,17 @@ import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
-  title: 'Panchang Calendar',
-  description: 'Panchang information page',
+  title: 'Panchang Calendar | AstroSewa',
+  description:
+    "Check today's Panchang: Tithi, Nakshatra, Yoga, Karana, Rahu Kaal, and sunrise for your city. Updated daily. Plan your day now.",
+  keywords: [
+    'Panchang calendar',
+    'Panchang today',
+    'Tithi today',
+    'auspicious time today',
+    'Hindu calendar timings',
+    'Nakshatra today',
+  ],
 };
 
 export default function PanchangCalendarPage() {
