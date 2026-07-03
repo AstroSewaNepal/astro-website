@@ -6,17 +6,17 @@ import QNASComponent from '@/components/common/qnas-component';
 
 const KundaliDetails: React.FC = () => {
   return (
-    <section className="w-full px-0 pt-0 md:pt-2 pb-10">
-      <header className="max-w-4xl">
-        <h1 className="font-sahitya font-bold text-[20px] leading-[100%] md:text-[36px] md:leading-[48px] text-primary mb-1">
+    <section className="w-full px-0 pt-6 md:pt-12 pb-10">
+      <header className="w-full">
+        <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
           Kundali: Free Birth Chart and Kundali Matching
         </h1>
-          <p className="font-mukta font-medium text-[clamp(14px,1.6vw,26px)] leading-[30px] md:leading-[30px] text-[#141414] tracking-wide whitespace-nowrap overflow-visible">
-            Generate your free Janam Kundali or check Kundali matching for marriage compatibility. Complete Vedic analysis in minutes.
-          </p>
+        <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
+          Generate your free Janam Kundali or check Kundali matching for marriage compatibility. Complete Vedic analysis in minutes.
+        </p>
       </header>
 
-      <hr className="border-Trinary mt-4 mb-6" />
+      <hr className="border-Trinary mt-4 md:mt-6 mb-6" />
 
       {/* ── What is Kundali ── */}
       <section className="pt-2 pb-6 md:py-6">

@@ -68,7 +68,7 @@ const faqJsonLd = {
 
 export default function Home() {
   return (
-    <main className="container mx-auto min-h-screen overflow-hidden space-y-[100px] pb-16">
+    <main className="container mx-auto min-h-screen overflow-hidden space-y-12 pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}

@@ -9,11 +9,11 @@ const PanchangCalendarPageContent: React.FC = () => {
   return (
     <div className="min-h-screen pt-2 pb-10 text-[#2a1f1a]">
       <div className="container mx-auto px-6 lg:px-0">
-        <h1 className="break-words text-[24px] leading-[30px] md:text-[36px] md:leading-[44px] font-sahitya font-bold text-[#7b1c1c] mb-1 tracking-wide">
+        <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
           Panchang Calendar: Daily Vedic Timings and Auspicious Moments
         </h1>
 
-        <p className="text-[16px] leading-[24px] md:text-[24px] md:leading-[30px] font-medium font-mukta text-[#141414] mb-3 tracking-wide">
+        <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] mb-3">
           Check today&apos;s Tithi, Nakshatra, Yoga, Karana, Rahu Kaal, sunrise, and moonrise for your location. Updated daily with real ephemeris data.
         </p>
 

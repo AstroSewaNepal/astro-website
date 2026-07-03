@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function KundaliDetailsPage() {
   return (
-    <main className="container mx-auto min-h-screen pt-6 sm:pt-8 lg:pt-10">
+    <main className="container mx-auto min-h-screen">
       <div className="px-6 lg:px-0 space-y-10 md:space-y-[100px]">
         <KundaliDetails />
         <Clarity />

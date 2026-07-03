@@ -87,7 +87,7 @@ const Services = () => {
   };
 
   return (
-    <section id="services" className="border-b border-b-[#79787A] pb-6 md:pb-[50px]">
+    <section id="services" className="pb-6 md:pb-[45px]">
       <div className="max-w-[1450px] mx-auto px-5 flex flex-col items-center gap-12">
         {/* Header */}
         <div className="flex flex-col items-center gap-4 md:gap-5 lg:gap-6 max-w-[1405px] w-full">
@@ -213,9 +213,8 @@ const Services = () => {
                 type="button"
                 aria-label={`Go to page ${index + 1}`}
                 onClick={() => handlePageChange(index + 1)}
-                className={`rounded-full transition-colors shadow-sm ${
-                  currentPage === index + 1 ? 'bg-[#611508]' : 'bg-[#d9bdb7] hover:opacity-80'
-                }`}
+                className={`rounded-full transition-colors shadow-sm ${currentPage === index + 1 ? 'bg-[#611508]' : 'bg-[#d9bdb7] hover:opacity-80'
+                  }`}
                 style={{
                   width: '4.784643650054932px',
                   height: '4.784643650054932px',

@@ -327,13 +327,13 @@ const NepaliCalendarPageContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-2 sm:pt-4 md:pt-6 pb-8 sm:pb-10 md:pb-12 text-[#2a1f1a] relative">
+    <div className="min-h-screen pt-2 pb-8 sm:pb-10 md:pb-12 text-[#2a1f1a] relative">
       <div className="w-full">
-        <h1 className="break-words text-[22px] sm:text-[28px] md:text-[36px] lg:text-[42px] leading-[28px] sm:leading-[36px] md:leading-[44px] lg:leading-[52px] font-sahitya font-bold text-[#7b1c1c] mb-2 sm:mb-2 md:mb-3 lg:mb-4 tracking-wide">
+        <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
           Nepali Calendar 2083 BS: Bikram Sambat Dates and Festivals
         </h1>
 
-        <p className="text-[14px] sm:text-[18px] md:text-[24px] lg:text-[26px] leading-[20px] sm:leading-[26px] md:leading-[30px] lg:leading-[36px] font-medium font-mukta text-[#141414] mb-3 sm:mb-4 md:mb-5 lg:mb-6 tracking-wide">
+        <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] mb-3">
           Browse Bikram Sambat dates alongside Gregorian equivalents, track Nepali festivals, and find auspicious timings aligned with the Vedic calendar.
         </p>
 
@@ -484,24 +484,22 @@ const NepaliCalendarPageContent: React.FC = () => {
                 <div
                   key={`${date.key}-${idx}`}
                   onClick={e => handleDateClick(date, e)}
-                  className={`min-h-[72px] sm:min-h-[88px] md:min-h-[110px] lg:min-h-[120px] border-r border-b border-[#efe1d7] last:border-r-0 p-1 sm:p-1.5 md:p-2 lg:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${!date.isToday ? 'hover:bg-[#fff6ee]' : ''} ${
-                    date.isToday
+                  className={`min-h-[72px] sm:min-h-[88px] md:min-h-[110px] lg:min-h-[120px] border-r border-b border-[#efe1d7] last:border-r-0 p-1 sm:p-1.5 md:p-2 lg:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${!date.isToday ? 'hover:bg-[#fff6ee]' : ''} ${date.isToday
                       ? 'bg-primary border border-[#611508] text-secondary shadow-[0_6px_14px_rgba(97,21,8,0.12)] sm:shadow-[0_8px_18px_rgba(97,21,8,0.15)] md:shadow-[0_10px_24px_rgba(97,21,8,0.18)]'
                       : date.monthOffset === 0
                         ? 'bg-white'
                         : 'bg-[rgba(31,108,31,0.04)] text-[#7d7d7d]'
-                  }`}
+                    }`}
                 >
                   <span
-                    className={`font-mukta text-[24px] sm:text-[32px] md:text-[40px] lg:text-[46px] leading-none font-bold ${
-                      date.isToday
+                    className={`font-mukta text-[24px] sm:text-[32px] md:text-[40px] lg:text-[46px] leading-none font-bold ${date.isToday
                         ? 'text-white'
                         : date.monthOffset === 0 && date.weekDay === 6
                           ? 'text-[#611508]'
                           : date.monthOffset === 0
                             ? 'text-[#101010]'
                             : 'text-[#7d7d7d] opacity-30'
-                    }`}
+                      }`}
                   >
                     {getCellDisplayDay(date)}
                   </span>
@@ -515,7 +513,7 @@ const NepaliCalendarPageContent: React.FC = () => {
             </div>
           </div>
         </section>
-        
+
         <section className="mt-8 sm:mt-10 md:mt-12 lg:mt-16 mb-6">
           <h2 className="text-[26px] sm:text-[30px] md:text-[36px] lg:text-[40px] font-extrabold font-sahitya text-[#7b1c1c] mb-3">
             BS Months Guide
