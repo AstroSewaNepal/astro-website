@@ -328,7 +328,7 @@ const NepaliCalendarPageContent: React.FC = () => {
 
   return (
     <div className="min-h-screen pt-2 sm:pt-4 md:pt-6 pb-8 sm:pb-10 md:pb-12 text-[#2a1f1a] relative">
-      <div className="container mx-auto px-4 sm:px-5 md:px-6 lg:px-8">
+      <div className="w-full">
         <h1 className="break-words text-[22px] sm:text-[28px] md:text-[36px] lg:text-[42px] leading-[28px] sm:leading-[36px] md:leading-[44px] lg:leading-[52px] font-sahitya font-bold text-[#7b1c1c] mb-2 sm:mb-2 md:mb-3 lg:mb-4 tracking-wide">
           Nepali Calendar 2083 BS: Bikram Sambat Dates and Festivals
         </h1>
