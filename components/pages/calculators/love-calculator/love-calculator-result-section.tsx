@@ -129,8 +129,8 @@ export default function LoveCalculatorResultSection() {
 
   if (!result) {
     return (
-      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-24">
-        <div className="max-w-[1454px] mx-auto flex flex-col items-center justify-center text-center">
+      <section className="pt-6 md:pt-12 pb-24">
+        <div className="flex flex-col items-center justify-center text-center">
           <h2 className="font-sahitya text-3xl md:text-4xl font-bold text-[#5D1409]">
             No Data Found
           </h2>
@@ -149,8 +149,8 @@ export default function LoveCalculatorResultSection() {
   }
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
-      <div className="max-w-[1454px] mx-auto">
+    <section className="pt-6 md:pt-12 pb-12">
+      <div>
         {/* Header */}
         <div className="mb-4">
           <h1 className="font-sahitya font-bold text-[22px] md:text-[48px] leading-[32px] md:leading-[48px] tracking-[0%] text-[#471207]">

@@ -136,8 +136,8 @@ export default function NumerologyCalculatorSection() {
   };
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
-      <div className="max-w-[1454px] mx-auto">
+    <section className="pt-6 md:pt-12 pb-12">
+      <div>
         {/* Hero */}
         <div className="mb-12">
           <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-normal text-[#4b1b16] md:text-[40px] md:leading-[1.1] lg:text-[44px]">

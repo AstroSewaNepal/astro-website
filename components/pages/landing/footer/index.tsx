@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-[#5F1508] text-[#F8F3DF]">
       {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-0 py-16">
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-32 items-center lg:items-start text-center lg:text-left">
           {/* Left Section - Logo and Download */}
           <div className="flex flex-col gap-14 max-w-[278px] w-full lg:max-w-[278px] lg:w-auto mx-auto lg:mx-0 items-center lg:items-start text-center lg:text-left">
@@ -294,7 +294,7 @@ const Footer: React.FC = () => {
       <div className="border-t border-[#F8F3DF] border-opacity-20"></div>
 
       {/* Bottom Section */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-0 py-6">
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
           {/* Copyright */}
           <div className="flex items-center gap-1">

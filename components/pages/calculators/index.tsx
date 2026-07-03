@@ -12,8 +12,8 @@ import RashiCalculatorImage from '@/components/images/calculator/rashicalculator
 
 const Calculators: React.FC = () => {
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12">
-      <div className="max-w-[1454px] mx-auto">
+    <section className="pt-6 md:pt-12">
+      <div>
         <h1 className="font-sahitya font-bold text-[30px] md:text-[36px] lg:text-[44px] leading-[1.1] text-primary">
           Free Astrology Calculators
         </h1>

@@ -184,8 +184,8 @@ export default function LoveCalculatorSection() {
   );
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
-      <div className="max-w-[1454px] mx-auto">
+    <section className="pt-6 md:pt-12 pb-12">
+      <div>
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,482px)] lg:gap-10 xl:gap-14">
           <div>
             <h1 className="font-sahitya font-bold text-[22px] leading-[32px] md:text-[36px] md:leading-[48px] tracking-[0] text-primary">

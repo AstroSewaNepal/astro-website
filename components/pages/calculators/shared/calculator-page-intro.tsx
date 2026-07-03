@@ -41,8 +41,8 @@ export default function CalculatorPageIntro({
   ];
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
-      <div className="max-w-[1454px] mx-auto">
+    <section className="pt-6 md:pt-12 pb-12">
+      <div>
         <h1 className="font-sahitya text-[20px] sm:text-[24px] md:text-[30px] lg:text-[36px] xl:text-[40px] font-bold text-[#2f2f2f] leading-snug">
           {title}
         </h1>
