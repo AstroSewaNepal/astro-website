@@ -85,7 +85,7 @@ export default function Home() {
       <WhoWeAre />
       <LandingFAQ />
       <HotTopics />
-      <DownloadApp />
+      <DownloadApp className="border-none" paddingClassName="py-4 md:py-6" />
       {/* <CustomerFeedback /> */}
     </main>
   );

@@ -3,9 +3,7 @@
 import { useState } from 'react';
 import clsx from 'clsx';
 
-import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
-import Services from '@/components/pages/landing/services';
-import DownloadApp from '@/components/pages/landing/download-app';
+
 import LandingFAQ from '@/components/pages/landing/faq';
 import { CompatibilityHoroscopeSection } from '@/app/compatibility/compatibilityMatch/compatibility-horoscope-section';
 import { ELanguage } from '@/components/enums/language.enum';
@@ -114,9 +112,7 @@ export function ZodiacSignListing({ mode }: Props) {
             ) : null}
           </section>
 
-          {mode === 'hub-en' ? (
-            <TalkToOurAstrologer className="mx-auto mt-12 max-w-[1180px]" />
-          ) : null}
+         
 
           {mode === 'hub-ne' ? (
             <div className="mx-auto mt-16 max-w-[1180px]">
@@ -126,8 +122,6 @@ export function ZodiacSignListing({ mode }: Props) {
         </div>
       </div>
 
-      {mode === 'hub-en' ? <Services /> : null}
-      {mode === 'hub-en' ? <DownloadApp className="mx-auto mt-14 max-w-[1180px]" /> : null}
     </main>
   );
 }
