@@ -12,8 +12,8 @@ type CalculatorPageIntroProps = {
 };
 
 const DEFAULT_LONG = [
-  'In Vedic astrology, your life unfolds through a sequence of planetary periods called Dashas. The Vimshottari system divides life into nine cycles covering 120 years in total. Each cycle is governed by a different planet: Ketu for 7 years, Venus for 20 years, Sun for 6 years, Moon for 10 years, Mars for 7 years, Rahu for 18 years, Jupiter for 16 years, Saturn for 19 years, and Mercury for 17 years.',
-  'The planet ruling your Mahadasha at any given time sets the overall quality of that life phase. It shapes the themes, opportunities, and challenges of that period. Within each Mahadasha, shorter sub-periods called Antardasha cycle through all nine planets in sequence. Knowing your current Mahadasha and Antardasha helps you understand why certain areas of life feel active or difficult right now.',
+  'AstroSewa calculators use accurate Vedic astronomy and your birth details to generate personalized results for each chart-based calculation.',
+  'Enter your birth date, time, and birthplace to get a precise reading from our Vedic astrology engine, not a generic sun sign formula.',
 ];
 
 export default function CalculatorPageIntro({

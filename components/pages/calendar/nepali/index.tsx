@@ -6,6 +6,7 @@ import ArrowRight from '@/components/icons/arrow-right';
 import { createPortal } from 'react-dom';
 import NepaliDate from 'nepali-date-converter';
 import { fetchPanchangData, type PanchangData } from '@/lib/api/panchang';
+import QNASComponent from '@/components/common/qnas-component';
 
 type CalendarCell = {
   key: string;
@@ -329,24 +330,30 @@ const NepaliCalendarPageContent: React.FC = () => {
     <div className="min-h-screen pt-2 sm:pt-4 md:pt-6 pb-8 sm:pb-10 md:pb-12 text-[#2a1f1a] relative">
       <div className="container mx-auto px-4 sm:px-5 md:px-6 lg:px-8">
         <h1 className="break-words text-[22px] sm:text-[28px] md:text-[36px] lg:text-[42px] leading-[28px] sm:leading-[36px] md:leading-[44px] lg:leading-[52px] font-sahitya font-bold text-[#7b1c1c] mb-2 sm:mb-2 md:mb-3 lg:mb-4 tracking-wide">
-          Nepali Calendar
+          Nepali Calendar 2083 BS: Bikram Sambat Dates and Festivals
         </h1>
 
         <p className="text-[14px] sm:text-[18px] md:text-[24px] lg:text-[26px] leading-[20px] sm:leading-[26px] md:leading-[30px] lg:leading-[36px] font-medium font-mukta text-[#141414] mb-3 sm:mb-4 md:mb-5 lg:mb-6 tracking-wide">
-          Track Nepali dates, festivals, and auspicious timings
+          Browse Bikram Sambat dates alongside Gregorian equivalents, track Nepali festivals, and find auspicious timings aligned with the Vedic calendar.
         </p>
 
         <hr className="border-t border-[#c0785a] mb-4 sm:mb-5 md:mb-6 lg:mb-8" />
 
         <h2 className="text-[18px] sm:text-[24px] md:text-[28px] lg:text-[32px] leading-[26px] sm:leading-[32px] md:leading-[38px] lg:leading-[44px] font-bold font-sahitya text-[#7b1c1c] mb-2 sm:mb-3 md:mb-4 lg:mb-5 tracking-wide">
-          About Nepali Calendar
+          About the Nepali Calendar
         </h2>
 
         <p className="text-[14px] sm:text-[16px] md:text-[20px] lg:text-[24px] leading-[20px] sm:leading-[24px] md:leading-[28px] lg:leading-[34px] font-normal font-mukta text-Paragraph w-full mb-6 sm:mb-7 md:mb-8 lg:mb-10 text-justify">
-          The Nepali calendar (Bikram Sambat) is widely used in Nepal for everyday dates, festivals,
-          and religious planning. It helps you follow local months, important occasions, and
-          traditional timings while staying aligned with astrological guidance.
+          The Nepali calendar uses the Bikram Sambat (BS) system, a lunisolar calendar that runs
+          approximately 56 years and 8 months ahead of the Gregorian calendar. It is Nepal&apos;s
+          official civil calendar and is used for government, religion, and everyday life. Each BS
+          month begins when the Sun enters a new zodiac sign, which is called Sankranti. The month
+          names correspond to the Nakshatra where the full moon typically falls during that period.
+          AstroSewa shows BS and Gregorian dates side by side so you can track festivals, convert
+          dates, and find auspicious timings without manual conversion.
         </p>
+
+        {/* BS Months Guide moved below calendar for better visibility */}
 
         <section
           ref={calendarRef}
@@ -508,6 +515,97 @@ const NepaliCalendarPageContent: React.FC = () => {
             </div>
           </div>
         </section>
+        
+        <section className="mt-8 sm:mt-10 md:mt-12 lg:mt-16 mb-6">
+          <h2 className="text-[26px] sm:text-[30px] md:text-[36px] lg:text-[40px] font-extrabold font-sahitya text-[#7b1c1c] mb-3">
+            BS Months Guide
+          </h2>
+
+          <h3 className="text-[18px] sm:text-[22px] md:text-[24px] font-semibold font-sahitya text-[#7b1c1c] mb-3">
+            The 12 Months of Bikram Sambat
+          </h3>
+
+          <div className="space-y-4">
+            <div>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Baishakh (April to May):</p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">New Year month. A time of new beginnings across Nepal.</p>
+            </div>
+            <div>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Jestha (May to June):</p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">The start of the monsoon approach.</p>
+            </div>
+            <div>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Ashadh (June to July):</p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Pre-monsoon rains begin.</p>
+            </div>
+            <div>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Shrawan (July to August):</p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Full monsoon season. This is the month of Shrawan Somvar fasting for Lord Shiva.</p>
+            </div>
+            <div>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Bhadra (August to September):</p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Gai Jatra and Teej festivals fall in this month.</p>
+            </div>
+            <div>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Ashwin (September to October):</p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Autumn begins. Dashain, Nepal&apos;s biggest festival, falls in Ashwin.</p>
+            </div>
+            <div>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Kartik (October to November):</p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Tihar falls in Kartik.</p>
+            </div>
+            <div>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Mangsir (November to December):</p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Winter sets in.</p>
+            </div>
+            <div>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Poush (December to January):</p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Poush Purnima falls here.</p>
+            </div>
+            <div>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Magh (January to February):</p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Maghe Sankranti, a major Nepali festival.</p>
+            </div>
+            <div>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Falgun (February to March):</p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Holi is celebrated in Falgun.</p>
+            </div>
+            <div>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Chaitra (March to April):</p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">End of the year. Ram Navami falls in Chaitra.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="container mx-auto px-4 lg:px-0 border-b border-b-[#79787A] pb-[60px] pt-8 mt-6 sm:mt-8 md:mt-10 lg:mt-12">
+          <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6">
+            <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary text-center">
+              Frequently Asked Questions
+            </h2>
+            <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px] text-center mt-2 md:mt-4 lg:mt-6 px-4">
+              Find quick answers to common questions about the Nepali calendar, BS-to-Gregorian conversions, and festival dates.
+            </p>
+          </div>
+
+          <div className="mt-6 md:mt-8 lg:mt-10 space-y-4 md:space-y-6 lg:space-y-[34px]">
+            <QNASComponent
+              question="How Do I Convert BS Dates to Gregorian?"
+              answer={`The Bikram Sambat year runs approximately 56 years and 8 months ahead of the Gregorian year. So 2083 BS corresponds roughly to 2026 to 2027 AD. However, because the two calendars use different systems for counting months and days, the conversion is not a simple subtraction. The AstroSewa Nepali Calendar shows both dates side by side automatically, so you do not need to convert manually.`}
+              isDefaultOpen={true}
+            />
+
+            <QNASComponent
+              question="When Does the Nepali New Year Start?"
+              answer={`The Nepali New Year begins on the first day of Baishakh in the Bikram Sambat calendar. This usually falls in mid-April in the Gregorian calendar. The exact date changes slightly each year. New Year is one of the major celebrations in Nepal and marks the beginning of the first month of the BS year.`}
+            />
+
+            <QNASComponent
+              question="Is the Nepali Calendar the Same as the Hindu Calendar?"
+              answer={`The Bikram Sambat is a Hindu calendar system but it is specifically the official civil calendar of Nepal. India uses several regional Hindu calendar systems, and while they share some similarities with BS, they are not identical. The BS calendar is distinct in its month start dates, which are based on the Sun's entry into each zodiac sign (Sankranti), and in some of its festival dates.`}
+            />
+          </div>
+        </section>
+
       </div>
 
       {/* ── Date Info Card Dialog ── */}

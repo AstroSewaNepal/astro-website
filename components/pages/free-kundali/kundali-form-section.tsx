@@ -325,12 +325,12 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
 
             {/* Mobile Title */}
             <h2 className="md:hidden text-left w-full self-start font-sahitya text-primary text-[22px] sm:text-[28px] leading-[32px] font-bold mt-10 mb-4">
-              Fill up the Details Report
+              Generate Your Free Kundali
             </h2>
 
             {/* Tablet + Desktop Title */}
             <h2 className="hidden md:block font-sahitya text-left text-primary text-[28px] leading-[38px] tracking-[0] font-bold mt-6 mb-8 lg:mb-8">
-              Fill Up The Form To Generate Birth Kundali
+              Generate Your Free Kundali
             </h2>
 
             <div className="flex flex-col lg:grid lg:grid-cols-2 lg:w-full gap-6 lg:gap-6">
