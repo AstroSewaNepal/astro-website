@@ -64,7 +64,7 @@ export default function CalculatorCard({
           <div className={mobileHorizontal ? 'min-w-0 flex-1 md:min-w-0' : ''}>
             <h3
               className={[
-                'font-sahitya font-bold text-[14px] md:text-[16px] lg:text-[18px] max-[1279px]:text-[16px] text-primary',
+                'font-tiro-devanagari font-bold text-[14px] md:text-[16px] lg:text-[18px] max-[1279px]:text-[16px] text-primary leading-[1.2]',
                 titleClassName,
               ]
                 .filter(Boolean)

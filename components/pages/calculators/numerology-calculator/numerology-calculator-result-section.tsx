@@ -17,13 +17,13 @@ type NumerologyResult = {
 };
 
 const LABEL_CLASS =
-  'font-sahitya text-[16px] leading-[24px] text-[#9a8f87] md:text-[20px] md:leading-[30px] lg:text-[22px] lg:leading-[32px]';
+  'font-mukta text-[14px] leading-[22px] tracking-[0.02em] text-[#9a8f87] md:text-[16px] lg:text-[18px]';
 
 const VALUE_CLASS =
-  'font-sahitya text-[16px] leading-[24px] text-[#2f2f2f] md:text-[20px] md:leading-[30px] lg:text-[22px] lg:leading-[32px]';
+  'font-mukta text-[14px] leading-[22px] tracking-[0.02em] text-[#2f2f2f] md:text-[16px] lg:text-[18px]';
 
 const SECTION_TITLE_CLASS =
-  'font-sahitya text-[22px] font-bold leading-[30px] text-[#5D1409] md:text-[26px] md:leading-[34px] lg:text-[28px] lg:leading-[38px]';
+  'font-tiro-devanagari text-[22px] font-bold leading-[1.2] text-[#5D1409] md:text-[26px] lg:text-[28px]';
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -73,7 +73,7 @@ export default function NumerologyCalculatorResultSection() {
       <section className="pt-6 md:pt-12 pb-12">
         <div>
           <div className="rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center">
-            <h1 className="font-sahitya text-[32px] font-bold text-[#5D1409]">Numerology Result</h1>
+            <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">Numerology Result</h1>
             <p className="mt-4 font-mukta text-[16px] text-[#2f2f2f]">
               No result found. Please calculate again.
             </p>
@@ -158,11 +158,11 @@ export default function NumerologyCalculatorResultSection() {
   return (
     <section className="pt-6 md:pt-12 pb-12">
       <div>
-        <div className="pb-4 md:pb-6">
-          <h1 className="font-sahitya text-[24px] font-bold leading-[1.2] text-[#5D1409] md:text-[34px] lg:text-[40px]">
+        <div className="pb-6 md:pb-[50px]">
+          <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
             Numerology Calculator
           </h1>
-          <p className="mt-2 font-mukta text-[14px] leading-[22px] text-[#141414] md:text-[16px] md:leading-[28px] lg:text-lg">
+          <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
             Discover your numerology profile and unlock insights about your life path, expression,
             and soul urge
           </p>

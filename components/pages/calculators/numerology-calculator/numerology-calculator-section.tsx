@@ -20,12 +20,6 @@ const FIELD_LABEL_CLASS =
 
 const ERROR_TEXT_CLASS = 'mt-0.5 h-[18px] text-xs leading-[18px] text-red-600';
 
-const HERO_TAGLINE_CLASS =
-  'font-mukta text-[14px] font-normal leading-[24px] tracking-normal text-[#4a423d] md:text-[18px] md:leading-[30px]';
-
-const HERO_DESCRIPTION_CLASS =
-  'font-mukta text-[16px] font-normal leading-[28px] tracking-normal text-[#4a423d] md:text-[18px] md:leading-[30px]';
-
 const INFO_SECTIONS = [
   {
     title: 'What Is Numerology?',
@@ -139,22 +133,22 @@ export default function NumerologyCalculatorSection() {
     <section className="pt-6 md:pt-12 pb-12">
       <div>
         {/* Hero */}
-        <div className="mb-12">
-          <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-normal text-[#4b1b16] md:text-[40px] md:leading-[1.1] lg:text-[44px]">
+        <div className="mb-6 md:mb-[50px]">
+          <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
             Numerology Calculator: Find Your Life Path and Core Numbers
           </h1>
-          <p className={`mt-3 w-full text-left ${HERO_TAGLINE_CLASS}`}>
+          <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
             Calculate your Life Path Number, Expression Number, and Soul Urge Number using Pythagorean numerology.
           </p>
-          <p className={`mt-4 mb-8 w-full text-left ${HERO_DESCRIPTION_CLASS}`}>
+          <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
             Enter your full name and date of birth. Birthplace is not needed for this calculator.
           </p>
         </div>
 
         {/* Form wrapper */}
-        <div className="mx-auto mt-8 w-full flex flex-col items-center">
+        <div className="mx-auto mt-6 md:mt-[50px] w-full flex flex-col items-center">
           <div className="mb-5 text-center">
-            <p className="font-mukta text-[24px] font-semibold leading-[30px] tracking-normal text-primary">
+            <p className="font-mukta text-[24px] font-semibold leading-[30px] tracking-[0.02em] text-primary">
               Enter Your Details
             </p>
           </div>
@@ -237,7 +231,14 @@ export default function NumerologyCalculatorSection() {
                 disabled={submitting}
                 className="flex h-[48px] sm:h-[60px] w-[175.5px] sm:w-[250px] items-center justify-center rounded-[32px] bg-[#5d1409] font-mukta text-[18px] font-semibold leading-[30px] tracking-normal text-white transition hover:opacity-95 disabled:opacity-60 pt-4 pb-4 px-2.5"
               >
-                {submitting ? 'Calculating...' : 'Calculate My Numbers'}
+                {submitting ? (
+                  'Calculating...'
+                ) : (
+                  <>
+                    <span className="sm:hidden">Calculate</span>
+                    <span className="hidden sm:inline">Calculate My Numbers</span>
+                  </>
+                )}
               </button>
               <button
                 type="button"

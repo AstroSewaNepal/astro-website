@@ -138,7 +138,7 @@ const calculators: Array<{
 export default function CalculatorChooserSection({ exclude }: CalculatorChooserSectionProps) {
   return (
     <div className="mt-12">
-      <h2 className="font-sahitya font-bold text-[22px] md:text-[26px] leading-[1.1] text-primary">
+      <h2 className="font-tiro-devanagari font-bold text-[22px] md:text-[28px] leading-[1.2] text-primary">
         Explore more calculators
       </h2>
 

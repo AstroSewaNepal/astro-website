@@ -24,7 +24,7 @@ export type SunSignCalculatorResult = CalculatorFormValues & {
 
 const STORAGE_KEY = 'sunSignCalculatorResult';
 
-const ACCENT_VALUE_CLASS = 'font-sahitya text-[16px] font-normal text-[#c49a8f] md:text-[18px]';
+const ACCENT_VALUE_CLASS = 'font-mukta text-[16px] font-normal text-[#c49a8f] md:text-[18px]';
 
 type SunSignReportCardProps = {
   meta: SunSignMeta;
@@ -43,10 +43,10 @@ function SunSignReportCard({ meta, mirrored = false }: SunSignReportCardProps) {
           sizes="140px"
         />
       </div>
-      <p className="mt-3 font-sahitya text-[28px] font-bold uppercase leading-none text-[#5D1409] md:text-[32px]">
+      <p className="mt-3 font-tiro-devanagari text-[28px] font-bold uppercase leading-[1.2] text-[#5D1409] md:text-[32px]">
         {meta.englishName}
       </p>
-      <p className="mt-2 text-center font-sahitya text-[14px] font-normal text-[#5D1409] md:text-[16px]">
+      <p className="mt-2 text-center font-mukta text-[14px] font-normal leading-[1.2] tracking-[0.02em] text-[#5D1409] md:text-[16px]">
         {meta.dateRangeLong}
       </p>
     </div>
@@ -54,7 +54,7 @@ function SunSignReportCard({ meta, mirrored = false }: SunSignReportCardProps) {
 
   const signDetails = (
     <div className="flex w-full flex-col justify-center px-4 py-4 sm:w-[58%] sm:px-6">
-      <h3 className="font-sahitya text-[22px] font-bold text-[#5D1409] md:text-[26px]">
+      <h3 className="font-tiro-devanagari text-[22px] font-bold leading-[1.2] text-[#5D1409] md:text-[26px]">
         Vedic Sun Sign
       </h3>
       <p className="mt-1 font-mukta text-[12px] font-normal text-[#141414] md:text-[14px]">
@@ -196,7 +196,7 @@ export default function SunSignCalculatorResultSection() {
     return (
       <section className="pt-6 md:pt-12 pb-12">
         <div className="rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center shadow-[0_10px_30px_rgba(0,0,0,0.06)]">
-          <h1 className="font-sahitya text-[32px] font-bold text-[#5D1409] md:text-[40px]">
+          <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
             Sun Sign Result
           </h1>
           <p className="mt-4 font-mukta text-[16px] text-[#2f2f2f]">
@@ -241,17 +241,17 @@ export default function SunSignCalculatorResultSection() {
   return (
     <section className="pt-6 md:pt-12 pb-12">
       <div>
-        <h1 className="font-sahitya text-[28px] font-bold text-[#5D1409] md:text-[34px]">
+        <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
           {displayName}&apos;s Vedic Sun Sign Report
         </h1>
-        <p className="mt-2 font-mukta text-[15px] text-[#141414] md:text-[16px]">
+        <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
           Your sun sign is <span className="font-semibold">{meta.englishName}</span>, a{' '}
           {meta.element.toLowerCase()} sign ruled by {meta.rulingPlanet}.
         </p>
 
         <div className="mt-6 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="rounded-[24px] border border-[#e4d5c9] bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
-            <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409]">Birth details</h2>
+            <h2 className="font-tiro-devanagari text-[20px] font-bold leading-[1.2] text-[#5D1409]">Birth details</h2>
             <div className="mt-5 space-y-3 text-[14px] text-[#3d352f] md:text-[15px]">
               <p>
                 <span className="font-semibold">Name:</span> {displayName}
@@ -272,7 +272,7 @@ export default function SunSignCalculatorResultSection() {
           </div>
 
           <div className="rounded-[24px] border border-[#e4d5c9] bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
-            <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409]">Sun sign summary</h2>
+            <h2 className="font-tiro-devanagari text-[20px] font-bold leading-[1.2] text-[#5D1409]">Sun sign summary</h2>
             <p className="mt-4 text-[15px] text-[#3d352f] md:text-[16px]">
               {meta.englishName} is your Vedic sun sign. It is a {meta.element.toLowerCase()} sign
               ruled by {meta.rulingPlanet}.

@@ -188,10 +188,10 @@ export default function LoveCalculatorSection() {
       <div>
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,482px)] lg:gap-10 xl:gap-14">
           <div>
-            <h1 className="font-sahitya font-bold text-[22px] leading-[32px] md:text-[36px] md:leading-[48px] tracking-[0] text-primary">
+            <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
               Love Compatibility Calculator
             </h1>
-            <p className="mt-2 font-mukta font-normal text-[12px] leading-[20px] tracking-[0] capitalize md:text-lg lg:font-medium lg:text-[24px] lg:leading-[30px] lg:tracking-[0] text-[#141414] max-w-[950px]">
+            <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[950px]">
               Enter names and birth details for both partners to get a compatibility score based on the Vedic Kuta matching system.
             </p>
             <div className="relative mx-auto my-6 block w-[235px] h-[340px] lg:hidden mix-blend-darken">
@@ -207,14 +207,14 @@ export default function LoveCalculatorSection() {
               </div>
             </div>
 
-            <p className="mt-6 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
+            <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1400px]">
               This calculator uses the Ashtakoot or eight Kuta system from Vedic astrology to assess
               compatibility between two people. Each of the eight categories examines a different
               dimension, from temperament and instincts to emotional alignment and long-term
               harmony. Together they produce a score out of 36.
             </p>
 
-            <p className="mt-4 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
+            <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1400px]">
               A score of 18 or above is generally considered a positive match. Higher scores suggest
               stronger alignment across more areas. The score gives you a useful starting point for
               understanding the relationship. For deeper analysis, our astrologers can run a full
@@ -223,9 +223,9 @@ export default function LoveCalculatorSection() {
 
             <form
               onSubmit={onSubmit}
-              className="mt-6 flex w-full max-w-[632px] sm:max-w-[680px] md:max-w-[720px] lg:max-w-[800px] flex-col gap-4 rounded-[32px] border border-[#BE7B71] p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.08)]"
+              className="mt-6 md:mt-[50px] flex w-full max-w-[632px] sm:max-w-[680px] md:max-w-[720px] lg:max-w-[800px] flex-col gap-4 rounded-[32px] border border-[#BE7B71] p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.08)]"
             >
-              <h2 className="md:hidden text-center w-full self-start font-sahitya text-[#5D1409] text-[22px] sm:text-[28px] leading-[32px] font-bold mt-0 mb-0">
+              <h2 className="md:hidden text-center w-full self-start font-tiro-devanagari text-[#5D1409] text-[22px] sm:text-[28px] leading-[1.2] font-bold mt-0 mb-0">
                 Check Your Compatibility
               </h2>
               <h2 className="hidden md:block text-center font-mukta text-[28px] font-bold leading-[38px] tracking-[0%] text-[#5D1409]">

@@ -14,7 +14,7 @@ const Clarity: React.FC = () => {
   return (
     <section
       className={clsx(
-        'container mx-auto px-6 lg:px-0 pb-12 md:pb-16 lg:pb-[100px] border-b border-b-[#79787A]',
+        'container mx-auto px-6 lg:px-0 pb-6 md:pb-[50px] border-b border-b-[#79787A]',
       )}
     >
       <div

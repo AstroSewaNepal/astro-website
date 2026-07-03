@@ -133,7 +133,7 @@ export default function RashiCalculatorResultSection() {
     return (
       <section className="pt-6 md:pt-12 pb-12">
         <div className="rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center shadow-[0_10px_30px_rgba(0,0,0,0.06)]">
-          <h1 className="font-sahitya text-[32px] font-bold text-[#5D1409] md:text-[40px]">
+          <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
             Rashi Result
           </h1>
           <p className="mt-4 font-mukta text-[16px] text-[#2f2f2f]">
@@ -176,10 +176,10 @@ export default function RashiCalculatorResultSection() {
   return (
     <section className="pt-6 md:pt-12 pb-12">
       <div>
-        <h1 className="font-sahitya text-[28px] font-bold leading-snug text-[#2f2f2f] md:text-[34px]">
+        <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
           Rashi/Moon Sign Calculator
         </h1>
-        <p className="mt-3 w-full text-left font-mukta text-[14px] font-normal leading-[24px] text-[#4a423d] md:text-[18px] md:leading-[30px]">
+        <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
           Discover your Rashi (moon sign) from your birth date and explore what it reveals about
           your emotional nature in Vedic astrology.
         </p>
@@ -189,7 +189,7 @@ export default function RashiCalculatorResultSection() {
             <p className="font-mukta text-[16px] font-bold leading-[30px] text-[#141414] md:text-[18px]">
               {displayName}&apos;s Rashi Report
             </p>
-            <h2 className="mt-1 font-sahitya text-[40px] font-bold leading-[1.1] text-[#5D1409] md:text-[48px]">
+            <h2 className="mt-1 font-tiro-devanagari text-[40px] font-bold leading-[1.2] text-[#5D1409] md:text-[48px]">
               {signLabel}
             </h2>
             {dateRange ? (
@@ -215,7 +215,7 @@ export default function RashiCalculatorResultSection() {
                     priority
                   />
                 ) : (
-                  <span className="font-sahitya text-[32px] font-bold text-[#5D1409]">
+                  <span className="font-tiro-devanagari text-[32px] font-bold text-[#5D1409]">
                     {data.rashi}
                   </span>
                 )}
@@ -225,7 +225,7 @@ export default function RashiCalculatorResultSection() {
         </div>
 
         <div className="mt-12 lg:mt-16">
-          <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409] md:text-[22px]">
+          <h2 className="font-tiro-devanagari text-[20px] font-bold leading-[1.2] text-[#5D1409] md:text-[22px]">
             Personal Information
           </h2>
 

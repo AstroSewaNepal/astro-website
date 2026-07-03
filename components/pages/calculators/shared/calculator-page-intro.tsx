@@ -43,35 +43,35 @@ export default function CalculatorPageIntro({
   return (
     <section className="pt-6 md:pt-12 pb-12">
       <div>
-        <h1 className="font-sahitya text-[20px] sm:text-[24px] md:text-[30px] lg:text-[36px] xl:text-[40px] font-bold text-[#2f2f2f] leading-snug">
+        <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
           {title}
         </h1>
 
-        <p className="mt-2 sm:mt-2.5 md:mt-3 lg:mt-4 xl:mt-5 w-full text-left font-mukta text-[12px] sm:text-[13px] md:text-[14px] lg:text-[16px] xl:text-[18px] font-normal leading-[20px] sm:leading-[22px] md:leading-[24px] lg:leading-[28px] xl:leading-[30px] text-[#4a423d]">
+        <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
           {shortDescription}
         </p>
 
         {longDescription.map((paragraph, index) => (
           <p
             key={index}
-            className="mt-2.5 sm:mt-3 md:mt-4 lg:mt-5 xl:mt-6 w-full text-left font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] xl:text-[18px] font-normal leading-[22px] sm:leading-[24px] md:leading-[26px] lg:leading-[28px] xl:leading-[30px] text-[#4a423d]"
+            className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]"
           >
             {paragraph}
           </p>
         ))}
 
-        {children}
+        <div className="mt-6 md:mt-[50px]">{children}</div>
 
-        <div className="mt-8 sm:mt-10 md:mt-12 lg:mt-14 xl:mt-16">
+        <div className="mt-12 md:mt-[100px]">
           {infoHeading || infoDescription ? (
-            <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6 text-center">
+            <div className="flex flex-col items-center justify-center gap-[10px] md:gap-6 text-center">
               {infoHeading ? (
-                <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary">
+                <h2 className="font-tiro-devanagari font-bold text-[22px] md:text-[28px] lg:text-[34px] leading-[1.2] text-primary">
                   {infoHeading}
                 </h2>
               ) : null}
               {infoDescription ? (
-                <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px]">
+                <p className="font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[800px]">
                   {infoDescription}
                 </p>
               ) : null}

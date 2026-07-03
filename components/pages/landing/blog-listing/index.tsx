@@ -65,7 +65,7 @@ const AstrologerBlogListing: React.FC = () => {
   }, []);
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 border-b border-b-[#79787A] pb-[100px]">
+    <section className="container mx-auto px-6 lg:px-0 border-b border-b-[#79787A] pb-6 md:pb-[50px]">
       <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6">
         <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary text-center">
           Astrologer Blogs

@@ -61,14 +61,16 @@ export default function CalculatorSection({
     <section className="w-full pb-12">
       <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-start lg:gap-16">
         <div>
-          <h1 className="font-sahitya text-[32px] font-bold leading-[1.1] text-primary md:text-[40px] lg:text-[44px]">
+          <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
             {title}
           </h1>
-          <p className="mt-3 font-mukta text-[17px] text-[#2f2f2f] md:text-[18px]">{description}</p>
+          <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
+            {description}
+          </p>
 
           <form
             onSubmit={handleSubmit}
-            className="mt-8 rounded-[24px] border border-[#b8b0a8] bg-white/80 p-6 shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
+            className="mt-6 md:mt-[50px] rounded-[24px] border border-[#b8b0a8] bg-white/80 p-6 shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
           >
             <div className="space-y-5">
               {fields.map(field => (
@@ -130,7 +132,7 @@ export default function CalculatorSection({
 
               {resultText ? (
                 <div className="rounded-[20px] border border-[#e5c5b9] bg-[#fff8f2] p-5">
-                  <p className="font-sahitya text-[20px] font-bold text-[#5d1409]">{resultTitle}</p>
+                  <p className="font-tiro-devanagari text-[20px] font-bold text-[#5d1409] leading-[1.2]">{resultTitle}</p>
                   <p className="mt-2 font-mukta text-[16px] text-[#2f2f2f]">{resultText}</p>
                 </div>
               ) : null}

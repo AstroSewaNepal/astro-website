@@ -14,20 +14,20 @@ const Calculators: React.FC = () => {
   return (
     <section className="pt-6 md:pt-12">
       <div>
-        <h1 className="font-sahitya font-bold text-[30px] md:text-[36px] lg:text-[44px] leading-[1.1] text-primary">
+        <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
           Free Astrology Calculators
         </h1>
-        <p className="mt-2 font-mukta text-[14px] md:text-[16px] lg:text-[18px] leading-[1.5] text-[#141414]">
+        <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
           Find your moon sign, check Mangal Dosha, calculate your Dasha timeline, or explore numerology. All powered by real Vedic ephemeris data.
         </p>
 
-        <p className="mt-4 font-mukta text-[14px] md:text-[16px] lg:text-[18px] leading-[1.7] text-Paragraph max-w-[1200px]">
+        <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1200px]">
           Explore your destiny with Astro Sewa&apos;s powerful Vedic and Western astrology tools.
           Instantly discover deeper insights about your personality, relationships, career, and life
           journey — all designed to guide you toward clarity and self-understanding.
         </p>
 
-        <h2 className="mt-10 font-sahitya font-bold text-[22px] md:text-[26px] leading-[1.1] text-primary">
+        <h2 className="mt-6 md:mt-[50px] font-tiro-devanagari font-bold text-[22px] md:text-[28px] leading-[1.2] text-primary">
           Choose a Calculator
         </h2>
 
@@ -278,17 +278,17 @@ const Calculators: React.FC = () => {
           />
         </div>
 
-        <div className="mt-14 mb-14">
-          <h2 className="font-sahitya font-bold text-[26px] md:text-[30px] leading-[1.05] text-primary">
+        <div className="mt-12 md:mt-[100px] mb-12 md:mb-[100px]">
+          <h2 className="font-tiro-devanagari font-bold text-[22px] md:text-[28px] lg:text-[34px] leading-[1.2] text-primary">
             How They Work
           </h2>
-          <p className="mt-4 font-mukta text-[16px] md:text-[18px] lg:text-[20px] leading-[1.7] text-[#000000CF] max-w-[1400px]">
+          <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1400px]">
             Powered by Real Vedic Data
           </p>
-          <p className="mt-5 font-mukta text-[16px] md:text-[18px] lg:text-[20px] leading-[1.8] text-[#000000CF] max-w-[1400px]">
+          <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1400px]">
             Every calculator on this page uses VedAstro, a real ephemeris engine that computes planetary positions from your exact birth time, date, and location. This is not a date-range lookup table. The results reflect where the planets actually were when you were born.
           </p>
-          <p className="mt-5 font-mukta text-[16px] md:text-[18px] lg:text-[20px] leading-[1.8] text-[#000000CF] max-w-[1400px]">
+          <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1400px]">
             For the best accuracy, enter your exact birth time. If you do not know it, most calculators will still return a result and will tell you the confidence level. For readings where timing matters most, like Dasha periods or Mangal Dosha, a full chart consultation with one of our astrologers will give you the most complete picture.
           </p>
         </div>

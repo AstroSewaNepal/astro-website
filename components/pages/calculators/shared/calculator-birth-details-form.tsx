@@ -147,7 +147,7 @@ export default function CalculatorBirthDetailsForm({
 
   return (
     <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12">
-      <h2 className="font-mukta text-[18px] font-semibold leading-[28px] tracking-normal sm:font-sahitya sm:text-[28px] sm:font-bold sm:leading-[38px] text-[#5D1409] mb-3 sm:mb-4 md:mb-5 lg:mb-6">
+      <h2 className="font-tiro-devanagari text-[22px] font-bold leading-[1.2] text-[#5D1409] md:text-[28px] mb-[10px] md:mb-6">
         Enter Your Birth Details
       </h2>
 
