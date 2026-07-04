@@ -12,29 +12,29 @@ import RashiCalculatorImage from '@/components/images/calculator/rashicalculator
 
 const Calculators: React.FC = () => {
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12">
-      <div className="max-w-[1454px] mx-auto">
-        <h1 className="font-sahitya font-bold text-[30px] md:text-[36px] lg:text-[44px] leading-[1.1] text-primary">
-          Astrology Calculators
+    <section className="pt-6 md:pt-12">
+      <div>
+        <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
+          Free Astrology Calculators
         </h1>
-        <p className="mt-2 font-mukta text-[14px] md:text-[16px] lg:text-[18px] leading-[1.5] text-[#141414]">
-          Life is like a calculator, you don’t even know how much your partner loves you. 😅
+        <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
+          Find your moon sign, check Mangal Dosha, calculate your Dasha timeline, or explore numerology. All powered by real Vedic ephemeris data.
         </p>
 
-        <p className="mt-4 font-mukta text-[14px] md:text-[16px] lg:text-[18px] leading-[1.7] text-Paragraph max-w-[1200px]">
+        <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1200px]">
           Explore your destiny with Astro Sewa&apos;s powerful Vedic and Western astrology tools.
           Instantly discover deeper insights about your personality, relationships, career, and life
           journey — all designed to guide you toward clarity and self-understanding.
         </p>
 
-        <h2 className="mt-10 font-sahitya font-bold text-[22px] md:text-[26px] leading-[1.1] text-primary">
-          Choose Your Calculator
+        <h2 className="mt-6 md:mt-[50px] font-tiro-devanagari font-bold text-[22px] md:text-[28px] leading-[1.2] text-primary">
+          Choose a Calculator
         </h2>
 
         <div className="mt-5 md:hidden flex flex-nowrap gap-4 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
           <CalculatorCard
             title="Love Calculator"
-            description="Discover your compatibility with a partner or potential love interest."
+            description="Get a compatibility score based on Vedic Kuta matching. Enter names and birth details for both partners to see how your signs, Nakshatras, and planetary positions align."
             mobileHorizontal
             calculateHref="/calculators/love-calculator"
             icon={
@@ -50,7 +50,7 @@ const Calculators: React.FC = () => {
 
           <CalculatorCard
             title="Numerology Calculator"
-            description="Discover your life path number and explore numerology insights."
+            description="Calculate your Life Path Number, Expression Number, and Soul Urge Number using Pythagorean numerology. All you need is your full name and date of birth."
             mobileHorizontal
             calculateHref="/calculators/numerology-calculator"
             icon={
@@ -66,7 +66,7 @@ const Calculators: React.FC = () => {
 
           <CalculatorCard
             title="Sun Sign Calculator"
-            description="Discover your zodiac sign based on birth date and astrology insights."
+            description="Find your true Vedic sun sign using the sidereal zodiac and Lahiri ayanamsa. This gives you your real Jyotish sun sign, not the simplified date range from Western horoscopes."
             mobileHorizontal
             calculateHref="/calculators/sun-sign-calculator"
             icon={
@@ -82,7 +82,7 @@ const Calculators: React.FC = () => {
 
           <CalculatorCard
             title="Mangal Dosha Calculator"
-            description="Check Mangal dosha and marriage effects in your birth chart."
+            description="Check whether Mars creates Mangal Dosha in your birth chart. Chart-based analysis using real planetary positions, not a simplified birth date rule."
             mobileHorizontal
             calculateHref="/calculators/mangal-dosha-calculator"
             icon={
@@ -100,7 +100,7 @@ const Calculators: React.FC = () => {
             title="Dasha Calculator"
             titleClassName="md:text-[22px] md:leading-[32px] text-center"
             descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
-            description="Calculate planetary dasha periods and analyze timing of life events in Vedic astrology."
+            description="Find your current Mahadasha and Antardasha using the Vimshottari system. See which planet is shaping this phase of your life and what the timeline ahead looks like."
             mobileHorizontal
             calculateHref="/calculators/dasha-calculator"
             icon={
@@ -118,7 +118,7 @@ const Calculators: React.FC = () => {
             title="Moon Phase Calculator"
             titleClassName="md:text-[22px] md:leading-[32px] text-center"
             descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
-            description="Track each moon phase and explore current moon phases and lunar cycle changes over time."
+            description="See the exact lunar phase and Tithi at the time of your birth. Calculated using VedAstro Panchanga and real ephemeris data, not a calendar formula."
             mobileHorizontal
             calculateHref="/calculators/moon-phase-calculator"
             icon={
@@ -136,7 +136,7 @@ const Calculators: React.FC = () => {
             title="Rashi Calculator"
             titleClassName="md:text-[22px] md:leading-[32px] text-center"
             descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
-            description="Discover your moon sign and understand your Vedic astrology birth chart insights."
+            description="Find your Vedic moon sign (Rashi) calculated from your exact birth time and location. Your Rashi is the foundation for Dasha calculations and Kundali matching."
             mobileHorizontal
             calculateHref="/calculators/rashi-calculator"
             icon={
@@ -156,7 +156,7 @@ const Calculators: React.FC = () => {
             title="Love Calculator"
             titleClassName="md:text-[20px] md:leading-[28px] text-center"
             descriptionClassName="text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none"
-            description="Discover your compatibility with a partner or potential love interest."
+            description="Get a compatibility score based on Vedic Kuta matching. Enter names and birth details for both partners to see how your signs, Nakshatras, and planetary positions align."
             mobileHorizontal
             calculateHref="/calculators/love-calculator"
             icon={
@@ -174,7 +174,7 @@ const Calculators: React.FC = () => {
             title="Numerology Calculator"
             titleClassName="md:text-[20px] md:leading-[28px] text-center"
             descriptionClassName="text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none"
-            description="Discover your life path number and explore numerology insights."
+            description="Calculate your Life Path Number, Expression Number, and Soul Urge Number using Pythagorean numerology. All you need is your full name and date of birth."
             mobileHorizontal
             calculateHref="/calculators/numerology-calculator"
             icon={
@@ -192,7 +192,7 @@ const Calculators: React.FC = () => {
             title="Sun Sign Calculator"
             titleClassName="md:text-[20px] md:leading-[28px] text-center"
             descriptionClassName="text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none"
-            description="Discover your zodiac sign based on birth date and astrology insights."
+            description="Find your true Vedic sun sign using the sidereal zodiac and Lahiri ayanamsa. This gives you your real Jyotish sun sign, not the simplified date range from Western horoscopes."
             mobileHorizontal
             calculateHref="/calculators/sun-sign-calculator"
             icon={
@@ -210,7 +210,7 @@ const Calculators: React.FC = () => {
             title="Mangal Dosha Calculator"
             titleClassName="md:text-[20px] md:leading-[28px] text-center whitespace-nowrap"
             descriptionClassName="text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none"
-            description="Check Mangal dosha and marriage effects in your birth chart."
+            description="Check whether Mars creates Mangal Dosha in your birth chart. Chart-based analysis using real planetary positions, not a simplified birth date rule."
             mobileHorizontal
             calculateHref="/calculators/mangal-dosha-calculator"
             icon={
@@ -230,7 +230,7 @@ const Calculators: React.FC = () => {
             title="Dasha Calculator"
             titleClassName="md:text-[22px] md:leading-[32px] text-center"
             descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
-            description="Calculate planetary dasha periods and analyze timing of life events in Vedic astrology."
+            description="Find your current Mahadasha and Antardasha using the Vimshottari system. See which planet is shaping this phase of your life and what the timeline ahead looks like."
             calculateHref="/calculators/dasha-calculator"
             icon={
               <Image
@@ -247,7 +247,7 @@ const Calculators: React.FC = () => {
             title="Moon Phase Calculator"
             titleClassName="md:text-[22px] md:leading-[32px] text-center"
             descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
-            description="Track each moon phase and explore current moon phases and lunar cycle changes over time."
+            description="See the exact lunar phase and Tithi at the time of your birth. Calculated using VedAstro Panchanga and real ephemeris data, not a calendar formula."
             calculateHref="/calculators/moon-phase-calculator"
             icon={
               <Image
@@ -264,7 +264,7 @@ const Calculators: React.FC = () => {
             title="Rashi Calculator"
             titleClassName="md:text-[22px] md:leading-[32px] text-center"
             descriptionClassName="md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none"
-            description="Discover your Vedic Rashi and understand how it shapes your birth chart insights."
+            description="Find your Vedic moon sign (Rashi) calculated from your exact birth time and location. Your Rashi is the foundation for Dasha calculations and Kundali matching."
             calculateHref="/calculators/rashi-calculator"
             icon={
               <Image
@@ -276,6 +276,21 @@ const Calculators: React.FC = () => {
               />
             }
           />
+        </div>
+
+        <div className="mt-12 md:mt-[100px] mb-12 md:mb-[100px]">
+          <h2 className="font-tiro-devanagari font-bold text-[22px] md:text-[28px] lg:text-[34px] leading-[1.2] text-primary">
+            How They Work
+          </h2>
+          <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1400px]">
+            Powered by Real Vedic Data
+          </p>
+          <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1400px]">
+            Every calculator on this page uses VedAstro, a real ephemeris engine that computes planetary positions from your exact birth time, date, and location. This is not a date-range lookup table. The results reflect where the planets actually were when you were born.
+          </p>
+          <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1400px]">
+            For the best accuracy, enter your exact birth time. If you do not know it, most calculators will still return a result and will tell you the confidence level. For readings where timing matters most, like Dasha periods or Mangal Dosha, a full chart consultation with one of our astrologers will give you the most complete picture.
+          </p>
         </div>
       </div>
     </section>

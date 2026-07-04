@@ -4,28 +4,22 @@ import KundaliMatchingFormSection from './kundali-matching-form-section';
 const KundaliMatching: React.FC = () => {
   return (
     <section className="w-full px-0 lg:px-0">
-      <header className="max-w-4xl">
-        <h1 className="font-mukta font-semibold text-[18px] leading-[28px] md:font-sahitya md:font-bold md:text-[36px] md:leading-[48px] text-primary opacity-100">
-          Free Kundali Matching
-        </h1>
-        <p className="font-mukta font-normal text-[16px] leading-[20px] capitalize md:font-medium md:text-[24px] md:leading-[30px] text-[#141414] mt-2 md:mt-3">
-          Discover your match through Kundali
-        </p>
-      </header>
+      <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
+        Kundali Matching: Free Marriage Compatibility Check
+      </h1>
+      <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
+        Enter birth details for both partners to get a complete compatibility report with Guna Milan score, Dosha analysis, and Ashtakoot breakdown.
+      </p>
 
-      <section className="max-w-7xl mx-auto py-4 ml-4 md:ml-8 lg:ml-0">
-        {/* <h2 className="font-sahitya font-bold text-[20px] md:text-[20px] lg:text-[30px] xl:text-[20px] leading-[1.15] text-primary mb-3">What is Kundali?</h2> */}
-        <p className="font-mukta font-normal text-gray-500 text-[14px] leading-[24px] md:text-[18px] md:leading-[28px] py-4">
-          Kundali matching is an ancient practice that analyzes the compatibility between two
-          individuals based on their astrological birth charts. By examining the positions of
-          planets and stars at the time of birth, our Kundali matching system provides insights into
-          emotional connection, life goals, and long-term relationship potential. Whether
-          you&apos;re exploring marriage compatibility or seeking deeper understanding of your
-          connection with someone special, our comprehensive matching report evaluates essential
-          factors like Guna Milan, Mangal Dosha, and planetary influences to guide you on your
-          journey.
-        </p>
-      </section>
+      <hr className="border-t border-[#c0785a] mt-4 md:mt-6 mb-6" />
+
+      <h2 className="text-[20px] leading-[30px] md:text-[28px] md:leading-[38px] font-bold font-sahitya text-[#7b1c1c] mb-3 tracking-wide">
+        What is Kundali Matching?
+      </h2>
+
+      <p className="text-[16px] leading-6 md:text-[24px] md:leading-[34px] font-normal font-mukta text-Paragraph w-full mb-8 md:mb-10 text-justify">
+        Kundali matching, also called Kundali Milan or horoscope matching, is a Vedic method for assessing compatibility between two people before marriage. It compares both birth charts across eight compatibility categories, known as Ashtakoot, to produce a score out of 36. A score of 18 or above is generally considered sufficient for a compatible match. Higher scores indicate stronger alignment across more areas of life.
+      </p>
 
       <KundaliMatchingFormSection />
     </section>

@@ -1,13 +1,23 @@
 import type { Metadata } from 'next';
 
 import LoveCalculatorSection from '@/components/pages/calculators/love-calculator/love-calculator-section';
+import Clarity from '@/components/pages/landing/clarity';
+import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
 export const metadata: Metadata = {
-  title: 'Love Calculator',
+  title: 'Free Love Compatibility Calculator | AstroSewa',
   description:
-    'Playfully explore name compatibility with Astro Sewa’s Love Calculator — for fun and curiosity, with the same trusted site experience.',
+    'Get your love compatibility score using Vedic Kuta matching. Enter names and birth details and see how your signs and Nakshatras align. Free on AstroSewa.',
+  keywords: [
+    'love compatibility calculator',
+    'astrology love match',
+    'Kuta matching score',
+    'relationship compatibility astrology',
+    'zodiac love calculator',
+    'love match by birth date',
+  ],
   alternates: {
     canonical: '/calculators/love-calculator',
   },
@@ -15,9 +25,11 @@ export const metadata: Metadata = {
 
 export default function LoveCalculatorPage() {
   return (
-    <main className="space-y-12">
+    <main className="container mx-auto space-y-12 px-4 sm:px-6 lg:px-0">
       <LoveCalculatorSection />
       <Services />
+      <Clarity />
+      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
       <DownloadApp />
     </main>
   );

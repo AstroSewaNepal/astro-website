@@ -33,6 +33,8 @@ export interface Astrologer {
   services?: string[] | null;
   language?: string[] | null;
   yearsOfExperience?: number | null;
+  expertise?: string[] | null;
+  specialist?: string[] | null;
   chatAvailable?: boolean;
   callAvailable?: boolean;
   isBookingEnabled?: boolean;

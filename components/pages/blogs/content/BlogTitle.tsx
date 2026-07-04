@@ -67,13 +67,13 @@ const BlogTitle: React.FC<BlogTitleProps> = ({
   };
 
   return (
-    <section className="flex flex-col gap-7 container mx-auto px-6 lg:px-0">
+    <section className="flex flex-col gap-7 container mx-auto px-6 lg:px-0 mt-8 sm:mt-12 lg:mt-[50px]">
       {/* Breadcrumb Navigation */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 flex-wrap">
         <div className="flex items-center gap-1">
           <Link
             href="/"
-            className="font-mukta text-base font-medium leading-7 text-[#5B5B5B] hover:text-primary transition-colors"
+            className="font-mukta text-base font-medium leading-7 text-[#5B5B5B] hover:text-primary hover:underline transition-all"
           >
             Home
           </Link>
@@ -82,15 +82,20 @@ const BlogTitle: React.FC<BlogTitleProps> = ({
         <div className="flex items-center gap-1">
           <Link
             href="/blogs"
-            className="font-mukta text-base font-medium leading-7 text-[#5B5B5B] hover:text-primary transition-colors"
+            className="font-mukta text-base font-medium leading-7 text-[#5B5B5B] hover:text-primary hover:underline transition-all"
           >
             Blog
           </Link>
         </div>
         <ChevronIcon />
-        <span className="font-mukta text-base font-medium leading-7 text-[#5B5B5B]">
-          Blog Details
-        </span>
+        <div className="flex items-center gap-1">
+          <Link
+            href="#"
+            className="font-mukta text-base font-medium leading-7 text-[#5B5B5B] hover:text-primary hover:underline transition-all"
+          >
+            Blog Details
+          </Link>
+        </div>
       </div>
 
       {/* Blog Title */}

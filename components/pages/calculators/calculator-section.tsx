@@ -59,16 +59,18 @@ export default function CalculatorSection({
 
   return (
     <section className="w-full pb-12">
-      <div className="container mx-auto max-w-[1440px] px-6 lg:px-0 grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-start lg:gap-16">
+      <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-start lg:gap-16">
         <div>
-          <h1 className="font-sahitya text-[32px] font-bold leading-[1.1] text-primary md:text-[40px] lg:text-[44px]">
+          <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
             {title}
           </h1>
-          <p className="mt-3 font-mukta text-[17px] text-[#2f2f2f] md:text-[18px]">{description}</p>
+          <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
+            {description}
+          </p>
 
           <form
             onSubmit={handleSubmit}
-            className="mt-8 rounded-[24px] border border-[#b8b0a8] bg-white/80 p-6 shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
+            className="mt-6 md:mt-[50px] rounded-[24px] border border-[#b8b0a8] bg-white/80 p-6 shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
           >
             <div className="space-y-5">
               {fields.map(field => (
@@ -108,10 +110,10 @@ export default function CalculatorSection({
                 </div>
               ))}
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-row items-center gap-3">
                 <button
                   type="submit"
-                  className="min-h-[52px] rounded-full bg-[#5D1409] px-6 py-3.5 font-mukta text-[17px] font-bold text-white transition hover:opacity-95 disabled:opacity-60"
+                  className="flex-1 min-h-[52px] rounded-full bg-[#5D1409] px-6 py-3.5 font-mukta text-[17px] font-bold text-white transition hover:opacity-95 disabled:opacity-60"
                   disabled={!canSubmit}
                 >
                   {buttonLabel}
@@ -122,7 +124,7 @@ export default function CalculatorSection({
                     setValues(Object.fromEntries(fields.map(field => [field.id, ''])));
                     setSubmitted(false);
                   }}
-                  className="min-h-[52px] rounded-full border border-[#5D1409] bg-[#fff9ec] px-6 py-3.5 font-mukta text-[17px] font-bold text-[#5D1409] transition hover:bg-[#f5e9d7]"
+                  className="flex-1 min-h-[52px] rounded-full border border-[#5D1409] bg-[#fff9ec] px-6 py-3.5 font-mukta text-[17px] font-bold text-[#5D1409] transition hover:bg-[#f5e9d7]"
                 >
                   Reset
                 </button>
@@ -130,7 +132,7 @@ export default function CalculatorSection({
 
               {resultText ? (
                 <div className="rounded-[20px] border border-[#e5c5b9] bg-[#fff8f2] p-5">
-                  <p className="font-sahitya text-[20px] font-bold text-[#5d1409]">{resultTitle}</p>
+                  <p className="font-tiro-devanagari text-[20px] font-bold text-[#5d1409] leading-[1.2]">{resultTitle}</p>
                   <p className="mt-2 font-mukta text-[16px] text-[#2f2f2f]">{resultText}</p>
                 </div>
               ) : null}

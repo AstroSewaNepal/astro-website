@@ -44,6 +44,18 @@ export function getDisplayServices(services?: string[] | null): string {
   return list.slice(0, MAX_SERVICES).join(', ');
 }
 
+export function getDisplayExpertise(
+  expertise?: string[] | null,
+  specialist?: string[] | null,
+): string {
+  const list = [...(expertise ?? []), ...(specialist ?? [])]
+    .map(item => item.trim())
+    .filter(Boolean);
+  if (!list.length) return 'Expertise unavailable';
+
+  return Array.from(new Set(list)).slice(0, MAX_SPECIALIZATIONS).join(', ');
+}
+
 export function getRatingStars(rating?: number | null): {
   filled: number;
   empty: number;

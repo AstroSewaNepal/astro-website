@@ -13,8 +13,8 @@ interface TalkToOurAstrologerProps extends AstrologerCardActions {
 }
 
 const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
-  title = 'Talk To Our Top Astrologer',
-  description = 'Connect with our most trusted and experienced astrologers for personalized guidance, accurate predictions, and compassionate support on your life’s journey.',
+  title = 'Talk to a Verified Astrologer',
+  description = 'Choose an astrologer, pick chat or call, and get a reading tailored to your birth chart. Available in English, Hindi, and Nepali.',
   className,
   onChat,
   onCall,
@@ -34,7 +34,7 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
       `}</style>
       <section
         className={clsx(
-          'talk-to-our-astrologer-section container mx-auto max-w-full px-3 sm:px-5 lg:px-0',
+          'talk-to-our-astrologer-section container mx-auto max-w-full px-3 sm:px-5 lg:px-0 border-b border-b-[#79787A] pb-6 md:pb-[50px]',
           className,
         )}
       >

@@ -6,7 +6,11 @@ export {
   interpolate,
   parseUiLangParam,
   persistCardDisplayLanguage,
+  persistChromeUiLanguage,
+  persistZodiacDetailLanguage,
   readCardDisplayLanguage,
+  readChromeUiLanguage,
+  readZodiacDetailLanguage,
 } from './locale';
 export {
   HoroscopeLocaleProvider,

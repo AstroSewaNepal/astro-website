@@ -133,15 +133,15 @@ export function CompatibilitySignsGrid({
               className={clsx(
                 'group transition-colors snap-start flex-shrink-0',
                 variant === 'figma'
-                  ? 'flex min-h-[172px] min-w-[260px] items-center justify-center gap-4 rounded-[20px] border border-[#383838] bg-[#FFFFFF99] hover:bg-[#F8F3DF] p-4'
+                  ? 'flex min-h-[172px] w-[260px] sm:w-full items-center justify-center gap-2 lg:gap-4 rounded-[20px] border border-[#383838] bg-[#FFFFFF99] hover:bg-[#F8F3DF] p-3 lg:p-4'
                   : 'min-w-[220px] rounded-[10px] border border-[#d7c3b1] bg-[#fdf8f1] hover:border-[#f4a11a]/80 px-2 py-2',
               )}
             >
               {variant === 'figma' ? (
                 <>
-                  <div className="flex h-full w-[100px] flex-col items-center gap-4">
+                  <div className="flex h-full flex-1 min-w-0 flex-col items-center gap-2 sm:gap-4">
                     {renderSignImage(currentSignImage, currentLight, currentSignLabel, true)}
-                    <span className="font-mukta text-[18px] font-normal leading-7 text-[#611508]">
+                    <span className="font-mukta text-[16px] sm:text-[18px] font-normal leading-7 text-[#611508] truncate w-full text-center">
                       {currentSignLabel}
                     </span>
                   </div>
@@ -150,7 +150,7 @@ export function CompatibilitySignsGrid({
                     height="44"
                     viewBox="0 0 44 44"
                     fill="none"
-                    className="flex-shrink-0"
+                    className="flex-shrink-0 -translate-y-4 sm:-translate-y-5 w-[32px] h-[32px] sm:w-[44px] sm:h-[44px]"
                     aria-hidden="true"
                   >
                     <path
@@ -159,9 +159,9 @@ export function CompatibilitySignsGrid({
                     ></path>
                   </svg>
 
-                  <div className="flex h-full w-[110px] flex-col items-center gap-4">
+                  <div className="flex h-full flex-1 min-w-0 flex-col items-center gap-2 sm:gap-4">
                     {renderSignImage(item.image, itemLight, item.name)}
-                    <span className="font-mukta text-[18px] font-normal leading-7 text-[#611508]">
+                    <span className="font-mukta text-[16px] sm:text-[18px] font-normal leading-7 text-[#611508] truncate w-full text-center">
                       {item.name}
                     </span>
                   </div>
@@ -207,17 +207,24 @@ export function CompatibilitySignsGrid({
         })}
       </div>
       <div className="mt-3 flex justify-center gap-2 sm:hidden">
-        {dots.map(index => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => scrollToIndex(index)}
-            className={clsx(
-              'h-2 min-w-[8px] rounded-full transition-colors',
-              index === activeIndex ? 'bg-[#611508]' : 'bg-[#d7c3b1]',
-            )}
-          />
-        ))}
+        {(() => {
+          let startDot = Math.max(0, activeIndex - 1);
+          if (startDot + 3 > dots.length) {
+            startDot = Math.max(0, dots.length - 3);
+          }
+          const visibleDots = dots.slice(startDot, startDot + 3);
+          return visibleDots.map(index => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => scrollToIndex(index)}
+              className={clsx(
+                'h-2 min-w-[8px] rounded-full transition-all duration-300',
+                index === activeIndex ? 'bg-[#611508]' : 'bg-[#d7c3b1]',
+              )}
+            />
+          ));
+        })()}
       </div>
     </div>
   );

@@ -2,29 +2,29 @@ import type { Metadata } from 'next';
 import React from 'react';
 
 export const metadata: Metadata = {
-  title: 'Puja Bidhi — Hindu Rituals & Worship Guides',
+  title: 'Hindu Puja Guides, Rituals and Mantras | AstoSewa',
   description:
-    'Discover detailed Puja Bidhi (worship procedures) for Hindu rituals and festivals. Step-by-step puja guides, mantras, and spiritual practices from Astro Sewa Nepal.',
+    'Learn how to perform Shiva, Vishnu, and Ganesh pujas at home. Step-by-step Puja Bidhi guides with mantras and offerings. Start reading now.',
   keywords: [
-    'puja bidhi',
-    'hindu puja procedure',
-    'nepali puja',
-    'worship guide Nepal',
+    'Puja Bidhi',
+    'Hindu puja guide',
+    'Shiva puja Bidhi',
+    'Ganesh puja steps',
+    'Vishnu puja ritual',
     'puja mantra',
-    'hindu rituals Nepal',
-    'vedic puja',
   ],
   alternates: {
     canonical: '/puja-bidhi',
   },
   openGraph: {
-    title: 'Puja Bidhi — Hindu Rituals & Worship Guides | Astro Sewa',
+    title: 'Hindu Puja Guides, Rituals and Mantras | AstoSewa',
     description:
-      "Step-by-step Hindu puja procedures, mantras, and ritual guides for Nepal's festivals and daily worship.",
+      'Learn how to perform Shiva, Vishnu, and Ganesh pujas at home. Step-by-step Puja Bidhi guides with mantras and offerings. Start reading now.',
   },
 };
 
-// import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
+import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
+import Clarity from '@/components/pages/landing/clarity';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 import PujaBidhiHeader from '@/components/pages/puja-bidhi/header';
@@ -69,11 +69,12 @@ const PujaBidhiPage = async () => {
   const posts = await getPujaBidhiPosts();
 
   return (
-    <main className="min-h-screen space-y-[100px]">
+    <main className="container mx-auto min-h-screen overflow-hidden space-y-[100px] pb-16">
       <div>
         <PujaBidhiHeader posts={posts} />
       </div>
-      {/* <TalkToOurAstrologer /> */}
+      <Clarity />
+      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
       <Services />
       <DownloadApp />
     </main>
