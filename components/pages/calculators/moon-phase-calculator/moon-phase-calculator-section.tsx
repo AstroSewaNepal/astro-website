@@ -38,7 +38,7 @@ export default function MoonPhaseCalculatorSection() {
   return (
     <CalculatorPageIntro
       title="Moon Phase Calculator"
-      shortDescription="Lunar phase and tithi at your birth from precise panchanga data (real ephemeris, not a formula on the date alone)."
+      shortDescription="Lunar phase and tithi at your birth from VedAstro Panchanga (real ephemeris, not a formula on the date alone)."
     >
       <CalculatorBirthDetailsForm submitLabel="Check Moon Phase" onSubmit={handleSubmit} />
       <CalculatorChooserSection exclude="moon-phase" />

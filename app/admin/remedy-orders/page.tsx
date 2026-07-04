@@ -29,9 +29,7 @@ export default function RemedyOrdersPage() {
 
   const page = Math.max(1, Number(searchParams.get('page') ?? '1'));
   const limit = Math.max(1, Number(searchParams.get('limit') ?? String(DEFAULT_LIMIT)));
-  const rawStatus = searchParams.get('status');
-  // No param on first load → default to 'placed'; explicit 'all' → show everything
-  const statusFilter = rawStatus === null ? 'placed' : rawStatus === 'all' ? '' : rawStatus;
+  const statusFilter = searchParams.get('status') ?? '';
 
   const { data, isLoading, isFetching, isError } = useAdminRemedyOrders(
     page,
@@ -66,20 +64,21 @@ export default function RemedyOrdersPage() {
 
   function handleStatusFilter(value: string) {
     const params = new URLSearchParams(searchParams.toString());
-    // Empty value = "show all"; write 'all' so the page doesn't snap back to the placed default
-    params.set('status', value || 'all');
+    if (value) {
+      params.set('status', value);
+    } else {
+      params.delete('status');
+    }
     params.set('page', '1');
     router.push(`?${params.toString()}`);
   }
 
-  const activeLabel = statusFilter
-    ? STATUS_OPTIONS.find(o => o.value === statusFilter)?.label
-    : undefined;
+  const activeLabel = STATUS_OPTIONS.find(o => o.value === statusFilter)?.label;
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-mukta text-2xl font-semibold text-neutral-800">Remedies Orders</h1>
+        <h1 className="font-mukta text-2xl font-semibold text-neutral-800">Remedy Orders</h1>
         <p className="mt-0.5 font-mukta text-sm text-neutral-500">
           All user remedy orders — sorted by date (oldest first)
           {data && !isLoading && (

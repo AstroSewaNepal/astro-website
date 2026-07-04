@@ -53,7 +53,7 @@ function SunSignReportCard({ meta, mirrored = false }: SunSignReportCardProps) {
         Vedic Sun Sign
       </h3>
       <p className="mt-1 font-mukta text-[12px] font-normal text-[#141414] md:text-[14px]">
-        Sidereal chart based on accurate planetary positions at your birth time
+        Sidereal chart from VedAstro at your birth time
       </p>
       <p className="mt-5 font-mukta text-[15px] font-medium text-[#3d352f] md:text-[16px]">
         {meta.description}

@@ -216,10 +216,7 @@ export default function CompatibilityMatchPage() {
       setHoroscopeListLoading(true);
       setHoroscopeListError(null);
       setHoroscopeRows(null);
-      fetchVedastroHoroscopeList(
-        { type: 'today' },
-        { headers: { 'Accept-Language': uiLanguage === ELanguage.NEPALI ? 'ne' : 'en' } },
-      )
+      fetchVedastroHoroscopeList({ type: 'today' })
         .then(envelope => {
           if (cancelled) return;
           setHoroscopeRows(envelope.data?.data ?? []);
@@ -238,7 +235,7 @@ export default function CompatibilityMatchPage() {
     return () => {
       cancelled = true;
     };
-  }, [uiLanguage]);
+  }, []);
 
   const horoscopeSectionCards = useMemo(
     () =>
@@ -298,9 +295,7 @@ export default function CompatibilityMatchPage() {
       try {
         setLoading(true);
         setError(null);
-        const response = await postZodiacCompatibility(payload, {
-          headers: { 'Accept-Language': uiLanguage === ELanguage.NEPALI ? 'ne' : 'en' },
-        });
+        const response = await postZodiacCompatibility(payload);
         if (response.success && response.data) {
           setCompatibilityData(response.data);
           setPillYourSign(payload.your_sign);
@@ -315,7 +310,7 @@ export default function CompatibilityMatchPage() {
         setLoading(false);
       }
     },
-    [yourSign, partnerSign, yourGender, partnerGender, uiLanguage],
+    [yourSign, partnerSign, yourGender, partnerGender],
   );
 
   const currentQuery = searchParams.toString();

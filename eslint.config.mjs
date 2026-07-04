@@ -9,7 +9,6 @@ const eslintConfig = [
       'out/**',
       'build/**',
       'next-env.d.ts',
-      '.cursor/**',
     ],
   },
   ...coreWebVitals,
