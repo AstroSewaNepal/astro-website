@@ -153,7 +153,7 @@ export type SeedZodiacSignData = {
 export type VedastroZodiacSignRow = {
   slug: string;
   sign: string;
-  date_range: string;
+  date_range: string | { from?: string; to?: string };
   element: string;
   ruling_planet: string;
   card_summary: string;
