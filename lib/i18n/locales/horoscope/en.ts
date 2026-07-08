@@ -98,13 +98,13 @@ const horoscope = {
       },
     },
     compatibility: {
-      title: 'Compatibility',
-      subtitle: 'Check your love compatibility',
+      title: 'Zodiac Compatibility: Check Your Love Match',
+      subtitle: "Choose your zodiac sign and your partner's to explore how you connect in love, communication, and long-term partnership.",
       intro:
-        "You may not always click effortlessly with everyone, but when you're with that special someone, life feels brighter, calmer, and more meaningful. Throughout your journey, you'll meet many wonderful people - friends, mentors, and companions - but only one will truly be your life partner. Choosing the right person is important, because they should make you feel cherished, supported, and at peace, never lonely or uncared for. Do you ever feel your heart skip a beat when you meet someone? That spark could be a sign of destiny. Discover what the universe has in store for your love life by exploring your zodiac sign compatibility with Astro Sewa.",
+        "Some connections feel effortless from the start. Others need more understanding, patience, and honest communication. Your zodiac sign shapes how you express love, handle conflict, and what you need from a partner. Your partner's sign does the same. Comparing the two shows you where you naturally align and where you may need to meet each other halfway.",
       outro:
-        "Zodiac sign compatibility goes beyond just love matches — it uncovers deeper insights into how you and your partner connect emotionally, romantically, and even physically. By exploring both your signs, you can gain clarity on your love and sexual compatibility, helping to build a stronger foundation of trust, passion, and mutual understanding for a long-lasting relationship. With Astro Sewa, love compatibility doesn’t just show you where your relationship stands today — it also offers a glimpse into its future. It highlights the strength of your bond, what keeps it thriving, and whether you’re entering a phase of harmony or possible challenges. By simply checking the compatibility of your zodiac signs, you can understand how your connection is likely to grow and evolve. And if your signs align beautifully, consider it a cosmic green light for smooth and joyful times ahead.",
-      cardTitle: 'Find Your Compatible Partner?',
+        "Zodiac compatibility looks at how two sun signs interact across emotional, romantic, and day-to-day dimensions. It is a useful first read on a relationship, giving you a sense of the natural strengths and friction points between two sign energies.\n\nFor a much more detailed picture, Kundali matching compares the full birth charts of both partners, including moon signs, Doshas, Nakshatra compatibility, and planetary timings. If you want to go deeper, our astrologers can run a complete Kundali matching report for you.",
+      cardTitle: 'Check Your Compatibility',
       cardSubtitle: "Choose your and your partner's zodiac sign to check compatibility",
       yourSignLabel: 'Your Sign',
       partnerSignLabel: "Partner's Sign",

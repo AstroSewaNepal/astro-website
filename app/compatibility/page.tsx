@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import DownloadApp from '@/components/pages/landing/download-app';
+import QNASComponent from '@/components/common/qnas-component';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import FindNowIcon from '@/components/icons/findnow_love_icon.png';
 import {
@@ -352,7 +353,38 @@ export default function CompatibilityPage() {
           </p>
         </section>
 
-        <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+        <section className="container mx-auto px-6 lg:px-0 border-b border-b-[#79787A] pb-6 md:pb-[50px] mt-10 md:mt-14">
+          <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6">
+            <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary text-center">
+              Frequently Asked Questions
+            </h2>
+            <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px] text-center mt-2 md:mt-4 lg:mt-6 px-4">
+              Find quick answers to common questions about zodiac compatibility and Kundali matching.
+            </p>
+          </div>
+          <div className="mt-6 md:mt-8 lg:mt-10 space-y-4 md:space-y-6 lg:space-y-[34px]">
+            <QNASComponent
+              question="What Is Zodiac Sign Compatibility Based On?"
+              answer="Zodiac compatibility in Vedic astrology is based on the relationship between the signs of the two people. The system looks at the natural friendship or enmity between the ruling planets of each sign, the elements (fire, earth, air, water) of both signs, and the Guna (quality) of each sign whether cardinal, fixed, or mutable. These factors together determine how naturally the energy of two signs works together."
+              isDefaultOpen={true}
+            />
+            <QNASComponent
+              question="How Is Zodiac Compatibility Different from Kundali Matching?"
+              answer="Zodiac compatibility uses your sun signs or moon signs to give a general sense of how two people's energies interact. It is quick and useful as a starting point. Kundali matching is a much deeper and more thorough process. It compares the full birth charts of both partners across eight compatibility categories, checks for Doshas, looks at Lagna compatibility, and analyses the planetary positions and timings of both people together. For a serious relationship or marriage, Kundali matching is the more complete tool."
+            />
+            <QNASComponent
+              question="Which Zodiac Signs Are Most Compatible?"
+              answer="In Vedic astrology, signs are compatible based on the friendship between their ruling planets. For example, Aries and Leo share a natural affinity because both are fire signs ruled by friendly planets. Cancer and Scorpio tend to connect well as both are water signs with emotional depth. However, compatibility depends heavily on the full birth chart and not just the sun sign. Two people with less compatible sun signs can still have strong chart compatibility once the full Kundali is compared."
+            />
+          </div>
+        </section>
+
+        <TalkToOurAstrologer 
+          title="Want a Deeper Compatibility Reading?"
+          description="Zodiac sign comparison gives you the overview. A Kundali matching report gives you the full picture, including Guna Milan score, Dosha analysis, and long-term planetary cycles for both partners. Book a session with one of our verified astrologers."
+          descriptionClassName="max-w-full"
+          className="mx-auto mt-10 max-w-[1180px] sm:mt-14" 
+        />
         <DownloadApp />
       </div>
     </main>
