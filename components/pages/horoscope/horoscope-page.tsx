@@ -12,30 +12,22 @@ import QNASComponent from '@/components/common/qnas-component';
 import { useHoroscopeLocale } from '@/lib/i18n';
 
 function HoroscopePageContent() {
-  const { dict } = useHoroscopeLocale();
+  useHoroscopeLocale();
 
   return (
     <main className="container mx-auto min-h-screen overflow-hidden">
       <div className="relative isolate">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-64 sm:h-72" />
         <div className="mx-auto px-3">
-          <HoroscopeHeroSignsSection />
-
-          <section className={clsx('mx-auto mt-8 px-2 sm:mt-10 sm:px-3 lg:mt-12 lg:px-4')}>
-            <h2
-              className={clsx(
-                'font-tiro-devanagari leading-tight text-[#611508] text-left',
-                'text-[22px] sm:text-[26px] font-bold lg:text-[32px]',
-              )}
-            >
-              {dict.section.whatIsTitle}
-            </h2>
-
-            <div className="mx-auto mt-3 space-y-4 text-left font-mukta text-[20px] leading-7 text-[#5f5248] sm:mt-4 sm:space-y-5 sm:text-[15px] sm:leading-8 lg:mt-5 lg:text-[16px] lg:leading-8">
-              <p>{dict.section.whatIsP1}</p>
-              <p>{dict.section.whatIsP2}</p>
+          <section className="mx-auto mt-4 px-2 sm:mt-6 sm:px-3 lg:mt-8 lg:px-4">
+            <div className="mx-auto max-w-5xl text-center">
+              <h1 className="font-tiro-devanagari font-normal text-[24px] leading-[1.1] text-[#6b2417] text-center mb-0 sm:text-[56px] sm:leading-[1.05] sm:mb-0">
+                Daily Horoscope: Today&apos;s Predictions for All 12 Signs
+              </h1>
             </div>
           </section>
+
+          <HoroscopeHeroSignsSection hideTitle={true} />
 
           <section className={clsx('container mx-auto px-6 lg:px-0 border-b border-b-[#79787A] pb-6 md:pb-[50px] mt-10 sm:mt-12 lg:mt-14')}>
             <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6">

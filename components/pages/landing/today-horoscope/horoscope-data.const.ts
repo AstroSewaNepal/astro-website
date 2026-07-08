@@ -19,7 +19,8 @@ export const HOROSCOPE_DATA: Record<
   [ELanguage.ENGLISH]: [
     {
       name: 'Aries',
-      detail: 'Your spark can move mountains, start bold today',
+      detail:
+        'Bold, direct, and driven by instinct. Aries leads from the front and thrives when pursuing something new.',
       link: '',
       image: ZodiacSignImageEnglish.EnglishAriesLight,
       imageColor: ZodiacSignImageEnglish.EnglishAriesColor,
@@ -27,7 +28,8 @@ export const HOROSCOPE_DATA: Record<
     },
     {
       name: 'Taurus',
-      detail: 'Your spark can move mountains, start bold today',
+      detail:
+        'Patient, grounded, and deeply loyal. Taurus builds slowly but creates things that last.',
       link: '',
       image: ZodiacSignImageEnglish.EnglishTaurusLight,
       imageColor: ZodiacSignImageEnglish.EnglishTaurusColor,
@@ -35,7 +37,8 @@ export const HOROSCOPE_DATA: Record<
     },
     {
       name: 'Gemini',
-      detail: 'Your spark can move mountains, start bold today',
+      detail:
+        'Curious, quick, and endlessly adaptable. Gemini thrives on ideas, conversation, and connection.',
       link: '',
       image: ZodiacSignImageEnglish.EnglishGeminiLight,
       imageColor: ZodiacSignImageEnglish.EnglishGeminiColor,
@@ -43,7 +46,8 @@ export const HOROSCOPE_DATA: Record<
     },
     {
       name: 'Cancer',
-      detail: 'Your spark can move mountains, start bold today',
+      detail:
+        'Intuitive, protective, and emotionally deep. Cancer feels everything intensely and cares fiercely for those close.',
       link: '',
       image: ZodiacSignImageEnglish.EnglishCancerLight,
       imageColor: ZodiacSignImageEnglish.EnglishCancerColor,
@@ -51,7 +55,8 @@ export const HOROSCOPE_DATA: Record<
     },
     {
       name: 'Leo',
-      detail: 'Your spark can move mountains, start bold today',
+      detail:
+        'Generous, expressive, and naturally magnetic. Leo brings warmth into every room and shines brightest when lifting others.',
       link: '',
       image: ZodiacSignImageEnglish.EnglishLeoLight,
       imageColor: ZodiacSignImageEnglish.EnglishLeoColor,
@@ -59,7 +64,8 @@ export const HOROSCOPE_DATA: Record<
     },
     {
       name: 'Virgo',
-      detail: 'Your spark can move mountains, start bold today',
+      detail:
+        'Precise, thoughtful, and quietly powerful. Virgo finds meaning in the details others overlook.',
       link: '',
       image: ZodiacSignImageEnglish.EnglishVirgoLight,
       imageColor: ZodiacSignImageEnglish.EnglishVirgoColor,
@@ -67,7 +73,8 @@ export const HOROSCOPE_DATA: Record<
     },
     {
       name: 'Libra',
-      detail: 'Your spark can move mountains, start bold today',
+      detail:
+        'Balanced, diplomatic, and drawn to beauty. Libra seeks harmony and weighs every side before committing.',
       link: '',
       image: ZodiacSignImageEnglish.EnglishLibraLight,
       imageColor: ZodiacSignImageEnglish.EnglishLibraColor,
@@ -75,7 +82,8 @@ export const HOROSCOPE_DATA: Record<
     },
     {
       name: 'Scorpio',
-      detail: 'Your spark can move mountains, start bold today',
+      detail:
+        'Intense, perceptive, and deeply loyal. Scorpio sees beneath the surface and is not afraid of difficult truths.',
       link: '',
       image: ZodiacSignImageEnglish.EnglishScorpioLight,
       imageColor: ZodiacSignImageEnglish.EnglishScorpioColor,
@@ -83,7 +91,8 @@ export const HOROSCOPE_DATA: Record<
     },
     {
       name: 'Sagittarius',
-      detail: 'Your spark can move mountains, start bold today',
+      detail:
+        'Adventurous, honest, and always looking forward. Sagittarius lives for growth, freedom, and the next horizon.',
       link: '',
       image: ZodiacSignImageEnglish.EnglishSagittariusLight,
       imageColor: ZodiacSignImageEnglish.EnglishSagittariusColor,
@@ -91,7 +100,8 @@ export const HOROSCOPE_DATA: Record<
     },
     {
       name: 'Capricorn',
-      detail: 'Your spark can move mountains, start bold today',
+      detail:
+        'Disciplined, ambitious, and built for the long run. Capricorn earns everything through sustained, deliberate effort.',
       link: '',
       image: ZodiacSignImageEnglish.EnglishCapricornLight,
       imageColor: ZodiacSignImageEnglish.EnglishCapricornColor,
@@ -99,7 +109,8 @@ export const HOROSCOPE_DATA: Record<
     },
     {
       name: 'Aquarius',
-      detail: 'Your spark can move mountains, start bold today',
+      detail:
+        'Independent, original, and driven by ideas. Aquarius thinks about the collective even when standing alone.',
       link: '',
       image: ZodiacSignImageEnglish.EnglishAquariusLight,
       imageColor: ZodiacSignImageEnglish.EnglishAquariusColor,
@@ -107,7 +118,8 @@ export const HOROSCOPE_DATA: Record<
     },
     {
       name: 'Pisces',
-      detail: 'Your spark can move mountains, start bold today',
+      detail:
+        'Sensitive, imaginative, and spiritually attuned. Pisces navigates the world through emotion and deep intuition.',
       link: '',
       image: ZodiacSignImageEnglish.EnglishPiscesLight,
       imageColor: ZodiacSignImageEnglish.EnglishPiscesColor,

@@ -190,9 +190,11 @@ export function HoroscopeHeroSignsSection({
         headingLevel={selectedRange === 'today' ? 'h1' : 'h2'}
         headingAlign="center"
         title={
-          selectedRange === 'today'
-            ? "Daily Horoscope: Today's Predictions for All 12 Signs"
-            : dict.range[selectedRange].title
+          hideTitle ? '' : (
+            selectedRange === 'today'
+              ? "Daily Horoscope: Today's Predictions for All 12 Signs"
+              : dict.range[selectedRange].title
+          )
         }
         subtitleHeading={
           selectedRange === 'today'
