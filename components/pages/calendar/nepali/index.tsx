@@ -247,12 +247,22 @@ const NepaliCalendarPageContent: React.FC = () => {
     return { adRangeLabel, cells };
   }, [today, visibleMonth.month, visibleMonth.year]);
 
-  const handlePrevYear = () => {
-    setVisibleMonth(prev => ({ year: clampNepaliYear(prev.year - 1), month: prev.month }));
+  const handlePrevMonth = () => {
+    setVisibleMonth(prev => {
+      if (prev.month === 0) {
+        return { year: clampNepaliYear(prev.year - 1), month: 11 };
+      }
+      return { ...prev, month: prev.month - 1 };
+    });
   };
 
-  const handleNextYear = () => {
-    setVisibleMonth(prev => ({ year: clampNepaliYear(prev.year + 1), month: prev.month }));
+  const handleNextMonth = () => {
+    setVisibleMonth(prev => {
+      if (prev.month === 11) {
+        return { year: clampNepaliYear(prev.year + 1), month: 0 };
+      }
+      return { ...prev, month: prev.month + 1 };
+    });
   };
 
   const handleGoToToday = () => {
@@ -373,12 +383,12 @@ const NepaliCalendarPageContent: React.FC = () => {
               {/* Center: < Year▼ Month▼ > */}
               <div className="flex items-center justify-center gap-1.5 sm:gap-2 md:gap-3">
 
-                {/* < Prev Year */}
+                {/* < Prev Month */}
                 <button
                   type="button"
-                  onClick={handlePrevYear}
+                  onClick={handlePrevMonth}
                   className="flex h-7 sm:h-8 md:h-9 lg:h-10 w-7 sm:w-8 md:w-9 lg:w-10 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white shadow-sm transition-colors hover:bg-white/15 active:bg-white/25"
-                  aria-label="Previous year"
+                  aria-label="Previous month"
                 >
                   <ArrowLeft className="h-3 sm:h-3.5 md:h-4 lg:h-5 w-3 sm:w-3.5 md:w-4 lg:w-5" />
                 </button>
@@ -432,12 +442,12 @@ const NepaliCalendarPageContent: React.FC = () => {
                   </svg>
                 </div>
 
-                {/* > Next Year */}
+                {/* > Next Month */}
                 <button
                   type="button"
-                  onClick={handleNextYear}
+                  onClick={handleNextMonth}
                   className="flex h-7 sm:h-8 md:h-9 lg:h-10 w-7 sm:w-8 md:w-9 lg:w-10 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white shadow-sm transition-colors hover:bg-white/15 active:bg-white/25"
-                  aria-label="Next year"
+                  aria-label="Next month"
                 >
                   <ArrowRight className="h-3 sm:h-3.5 md:h-4 lg:h-5 w-3 sm:w-3.5 md:w-4 lg:w-5" />
                 </button>
