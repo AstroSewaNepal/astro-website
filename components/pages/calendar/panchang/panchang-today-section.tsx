@@ -27,11 +27,13 @@ import {
 async function fetchPanchangaForDate(
   calendarDay: Date,
   cityLabel: string,
+  lat: number,
+  lon: number,
 ): Promise<{ table: Record<string, unknown>; moonSign: string }> {
   const attemptErrors: string[] = [];
   const params = new URLSearchParams({
-    lat: String(PANCHANG_DEFAULT_GEO.lat),
-    lon: String(PANCHANG_DEFAULT_GEO.lon),
+    lat: String(lat),
+    lon: String(lon),
     date: formatDdMmYyyy(calendarDay),
     time: '12:00',
     offset: utcOffsetHmFromLocalDate(calendarDay),
@@ -155,9 +157,54 @@ const ChevronDown: React.FC<{ className?: string }> = ({ className }) => (
 
 const PanchangTodaySection: React.FC = () => {
   const [calendarDay, setCalendarDay] = useState(() => new Date());
-  const [city] = useState<string>(PANCHANG_DEFAULT_GEO.label);
+  const [city, setCity] = useState<string>(PANCHANG_DEFAULT_GEO.label);
+  const [geoLat, setGeoLat] = useState<number>(PANCHANG_DEFAULT_GEO.lat);
+  const [geoLon, setGeoLon] = useState<number>(PANCHANG_DEFAULT_GEO.lon);
   const cityRef = useRef(city);
+  const geoLatRef = useRef(geoLat);
+  const geoLonRef = useRef(geoLon);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+
+  // Fetch user's geolocation on mount
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          setGeoLat(latitude);
+          setGeoLon(longitude);
+          geoLatRef.current = latitude;
+          geoLonRef.current = longitude;
+          
+          // Try to get city name from reverse geocoding
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+              { headers: { 'Accept-Language': 'en' } }
+            );
+            const data = (await response.json()) as Record<string, unknown>;
+            const address = data.address as Record<string, unknown> | undefined;
+            const cityName = (
+              (address?.city as string) ||
+              (address?.town as string) ||
+              (address?.village as string) ||
+              (address?.county as string) ||
+              'Your Location'
+            );
+            setCity(cityName);
+            cityRef.current = cityName;
+          } catch {
+            console.log('Could not reverse geocode, using default location name');
+            setCity('Your Location');
+          }
+        },
+        () => {
+          // Silently fail and keep Kathmandu as default
+          console.log('Geolocation not available, using Kathmandu');
+        },
+      );
+    }
+  }, []);
 
   useEffect(() => {
     cityRef.current = city;
@@ -174,7 +221,12 @@ const PanchangTodaySection: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchPanchangaForDate(calendarDay, cityRef.current);
+      const data = await fetchPanchangaForDate(
+        calendarDay,
+        cityRef.current,
+        geoLatRef.current,
+        geoLonRef.current,
+      );
       setPanchanga(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load.');
