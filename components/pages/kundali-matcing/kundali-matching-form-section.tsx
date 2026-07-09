@@ -366,7 +366,7 @@ const SectionPillHeader = ({
 }) => (
   <div
     className={[
-      'w-full rounded-full bg-primary py-2 text-center shadow-[0_8px_24px_rgba(97,21,8,0.14)]',
+      'w-full rounded-full bg-primary py-2 flex items-center justify-center shadow-[0_8px_24px_rgba(97,21,8,0.14)]',
       className,
     ]
       .filter(Boolean)
@@ -416,7 +416,7 @@ const PersonSection = ({
 }: PersonSectionProps) => (
   <div className="space-y-3 md:space-y-3.5">
     <SectionPillHeader
-      className="max-w-[397.649px] h-[61.573px] rounded-[32.41px] px-[19.44px] pt-[12.96px] pb-[12.96px] border-b-[0.81px] border-b-primary/50"
+      className="mx-auto max-w-[397.649px] h-[61.573px] rounded-[32.41px] px-[19.44px] pt-[12.96px] pb-[12.96px] border-b-[0.81px] border-b-primary/50"
       style={{ gap: '8px', opacity: 1 }}
     >
       <span className="inline-flex items-center justify-center gap-2 font-sahitya font-bold text-[19.44px] leading-[30.79px] tracking-normal text-secondary">
@@ -736,7 +736,7 @@ const KundaliMatchingFormSection: React.FC = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto mt-6 md:mt-8">
+    <section className="w-full mt-6 md:mt-8">
       <h2 className="w-full text-left font-sahitya font-bold text-[20px] leading-[38px] md:text-[28px] md:leading-[38px] text-primary mb-4 md:mb-6 opacity-100">
         Enter Birth Details to Match Kundali
       </h2>
@@ -857,6 +857,7 @@ const KundaliMatchingFormSection: React.FC = () => {
         </form>
 
         <aside className="w-full max-w-[398px] h-[392px] mx-auto lg:mx-0 lg:max-w-none lg:h-auto lg:col-span-4 rounded-[40px] md:rounded-[32px] border border-primary bg-primary text-secondary shadow-[0_12px_34px_rgba(97,21,8,0.22)] p-4 md:p-7 lg:pt-8 lg:pb-6 flex flex-col items-center justify-center lg:justify-between gap-4 md:gap-6 lg:gap-4">
+          <div className="hidden lg:block lg:h-2" />
           <div className="flex flex-col items-center gap-4 lg:gap-6">
             <div
               className="relative p-2"

@@ -94,10 +94,10 @@ export default function KundaliCard({
         </p>
       </div>
 
-      <div className="mt-auto pt-0 md:pt-0">
+      <div className="mt-auto pt-0 md:pt-0 flex justify-center">
         <Link
           href={href}
-          className="inline-flex w-full max-w-[380px] md:max-w-[673px] h-[60px] gap-[32px] items-center justify-center rounded-full bg-primary px-6 font-mukta text-[18px] font-semibold leading-[30px] text-secondary shadow-[0_10px_26px_rgba(97,21,8,0.18)] transition-colors hover:bg-[#8e2f27] opacity-100 transform -translate-y-4 md:-translate-y-6"
+          className="inline-flex h-[60px] gap-[32px] items-center justify-center rounded-full bg-primary px-10 font-mukta text-[18px] font-semibold leading-[30px] text-secondary shadow-[0_10px_26px_rgba(97,21,8,0.18)] transition-colors hover:bg-[#8e2f27] opacity-100 transform -translate-y-4 md:-translate-y-6"
         >
           {cta}
         </Link>
