@@ -280,10 +280,10 @@ export default function LoveCalculatorResultSection() {
               inspiring others to seek their own cosmic love.
             </p>
 
-            <div className="flex w-full flex-row items-center gap-3 mt-5 px-2 sm:px-0 flex-nowrap">
+            <div className="flex w-full flex-row items-center justify-center xl:justify-start gap-3 mt-5 px-2 sm:px-0 flex-nowrap">
               <button
                 onClick={handleShareReport}
-                className="flex flex-1 min-w-0 items-center justify-center gap-[10px] rounded-[40px] h-[50px] p-[12px] bg-[#471207] font-mukta font-semibold text-[16px] xl:text-[18px] leading-[30px] tracking-[0%] text-white transition-colors hover:bg-[#5D1409] whitespace-nowrap"
+                className="flex flex-1 md:flex-none min-w-0 items-center justify-center gap-[10px] rounded-[40px] h-[50px] px-[16px] md:px-[28px] xl:px-[36px] bg-[#471207] font-mukta font-semibold text-[16px] xl:text-[18px] leading-[30px] tracking-[0%] text-white transition-colors hover:bg-[#5D1409] whitespace-nowrap"
               >
                 <IoShareOutline className="text-lg shrink-0" />
                 Share your match
@@ -291,7 +291,7 @@ export default function LoveCalculatorResultSection() {
 
               <button
                 onClick={handleCalculateAnother}
-                className="flex flex-1 min-w-0 items-center justify-center gap-[10px] rounded-[32px] border-[2px] border-[#471207] bg-transparent px-[16px] xl:px-[24px] py-[12px] h-[50px] font-mukta font-semibold text-[16px] xl:text-[18px] leading-[30px] tracking-[0%] text-[#471207] transition-colors hover:bg-[#471207] hover:text-white whitespace-nowrap"
+                className="flex flex-1 md:flex-none min-w-0 items-center justify-center gap-[10px] rounded-[32px] border-[2px] border-[#471207] bg-transparent px-[16px] md:px-[24px] xl:px-[32px] py-[12px] h-[50px] font-mukta font-semibold text-[16px] xl:text-[18px] leading-[30px] tracking-[0%] text-[#471207] transition-colors hover:bg-[#471207] hover:text-white whitespace-nowrap"
               >
                 <FiRefreshCcw className="text-base shrink-0" />
                 Calculate Another
