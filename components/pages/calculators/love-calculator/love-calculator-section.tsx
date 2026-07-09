@@ -186,7 +186,7 @@ export default function LoveCalculatorSection() {
   return (
     <section className="pt-6 md:pt-12 pb-12">
       <div>
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,482px)] lg:gap-10 xl:gap-14">
+        <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(360px,482px)] xl:items-center xl:gap-14">
           <div>
             <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
               Love Compatibility Calculator
@@ -194,14 +194,14 @@ export default function LoveCalculatorSection() {
             <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[950px]">
               Enter names and birth details for both partners to get a compatibility score based on the Vedic Kuta matching system.
             </p>
-            <div className="relative mx-auto my-6 block w-[235px] h-[340px] lg:hidden mix-blend-darken">
+            <div className="relative mx-auto my-6 block w-[235px] h-[340px] sm:w-[300px] sm:h-[430px] md:w-[360px] md:h-[520px] xl:hidden mix-blend-darken">
               <div className="relative w-full h-full overflow-hidden rounded-[20px]">
                 <Image
                   src={LoveHeroImage}
                   alt="Illustration of a couple embracing"
                   fill
                   className="object-cover object-center"
-                  sizes="235px"
+                  sizes="(min-width: 768px) 360px, (min-width: 640px) 300px, 235px"
                   priority
                 />
               </div>
@@ -221,34 +221,44 @@ export default function LoveCalculatorSection() {
               Kundali matching report.
             </p>
 
+            {/*
+              FORM WRAPPER — fix applied here.
+              The outer form no longer carries its own rounded border; the two
+              inner "Your Details" / "Partner Details" cards are the visual
+              boundary. This removes the nested-double-border effect that was
+              causing the mismatched/overlapping outline at in-between zoom
+              levels. `overflow-hidden` on this wrapper and on each inner card
+              also guarantees icons/badges from child components (date picker,
+              city autocomplete) can never visually escape their container.
+            */}
             <form
               onSubmit={onSubmit}
-              className="mt-6 md:mt-[50px] flex w-full max-w-[632px] sm:max-w-[680px] md:max-w-[720px] lg:max-w-[800px] flex-col gap-4 rounded-[32px] border border-[#BE7B71] p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.08)]"
+              className="mt-6 md:mt-[50px] flex w-full max-w-[800px] flex-col gap-4 sm:gap-5 md:gap-6 rounded-[32px] bg-[#FBF4F1] p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.06)]"
             >
               <h2 className="md:hidden text-center w-full self-start font-tiro-devanagari text-[#5D1409] text-[22px] sm:text-[28px] leading-[1.2] font-bold mt-0 mb-0">
                 Check Your Compatibility
               </h2>
-              <h2 className="hidden md:block text-center font-mukta text-[28px] font-bold leading-[38px] tracking-[0%] text-[#5D1409]">
+              <h2 className="hidden md:block text-center font-mukta text-[24px] lg:text-[28px] font-bold leading-[1.3] tracking-[0%] text-[#5D1409]">
                 Check Your Compatibility
               </h2>
 
-              <div className="grid gap-4 lg:grid-cols-2">
-                <div className="rounded-[32px] border border-[#BE7B71] p-4 sm:p-5 shadow-[0_8px_24px_rgba(105,23,9,0.08)]">
-                  <p className="font-mukta text-[15px] font-semibold text-[#5D1409] mb-4">
+              <div className="grid gap-4 sm:gap-5 md:grid-cols-2">
+                <div className="min-w-0 overflow-hidden rounded-[28px] border border-[#BE7B71] bg-white/40 p-4 sm:p-5 shadow-[0_8px_24px_rgba(105,23,9,0.06)]">
+                  <p className="font-mukta text-[14px] sm:text-[15px] font-semibold text-[#5D1409] mb-4">
                     Your Details
                   </p>
                   <div className="grid gap-4">
-                    <div>
+                    <div className="min-w-0">
                       <label
                         htmlFor="love-your-name"
                         className="mb-2 block font-mukta text-sm text-Trinary"
                       >
                         Your Name
                       </label>
-                      <div className="flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] transition-colors duration-200 focus-within:border-[#BE7B71] focus-within:ring-1 focus-within:ring-[#BE7B71]/20">
+                      <div className="flex h-[48px] sm:h-[50px] md:h-[52px] w-full min-w-0 box-border items-center justify-between overflow-hidden rounded-[32px] border border-[#BE7B71] bg-transparent px-4 transition-colors duration-200 focus-within:border-[#BE7B71] focus-within:ring-1 focus-within:ring-[#BE7B71]/20">
                         <input
                           id="love-your-name"
-                          className="min-w-0 flex-1 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] outline-none placeholder:text-[#464646]"
+                          className="min-w-0 flex-1 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] text-[#2f2f2f] outline-none placeholder:text-[#464646] placeholder:truncate"
                           placeholder="Enter your Full Name"
                           value={yourName}
                           onChange={e => {
@@ -257,7 +267,7 @@ export default function LoveCalculatorSection() {
                           }}
                           autoComplete="name"
                         />
-                        <span className="shrink-0 self-center pr-2 sm:pr-3 lg:pr-4 font-mukta text-[12px] sm:text-[13px] md:text-[14px] font-medium text-[#D47F2C]">
+                        <span className="shrink-0 self-center pl-2 font-mukta text-[11px] sm:text-[12px] md:text-[13px] font-medium text-[#D47F2C]">
                           Man
                         </span>
                       </div>
@@ -266,7 +276,7 @@ export default function LoveCalculatorSection() {
                       )}
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <CalculatorDatePicker
                         id="love-your-dob"
                         label="Your birth date"
@@ -281,7 +291,7 @@ export default function LoveCalculatorSection() {
                       />
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <CityAutocompleteInput
                         label="Your birth place"
                         placeholder="Where were you born?"
@@ -301,22 +311,22 @@ export default function LoveCalculatorSection() {
                   </div>
                 </div>
 
-                <div className="rounded-[32px] border border-[#BE7B71] p-4 sm:p-5 shadow-[0_8px_24px_rgba(105,23,9,0.08)]">
-                  <p className="font-mukta text-[15px] font-semibold text-[#5D1409] mb-4">
+                <div className="min-w-0 overflow-hidden rounded-[28px] border border-[#BE7B71] bg-white/40 p-4 sm:p-5 shadow-[0_8px_24px_rgba(105,23,9,0.06)]">
+                  <p className="font-mukta text-[14px] sm:text-[15px] font-semibold text-[#5D1409] mb-4">
                     Partner Details
                   </p>
                   <div className="grid gap-4">
-                    <div>
+                    <div className="min-w-0">
                       <label
                         htmlFor="love-partner-name"
                         className="mb-2 block font-mukta text-sm text-Trinary"
                       >
                         Partner&apos;s Name
                       </label>
-                      <div className="flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] transition-colors duration-200 focus-within:border-[#BE7B71] focus-within:ring-1 focus-within:ring-[#BE7B71]/20">
+                      <div className="flex h-[48px] sm:h-[50px] md:h-[52px] w-full min-w-0 box-border items-center justify-between overflow-hidden rounded-[32px] border border-[#BE7B71] bg-transparent px-4 transition-colors duration-200 focus-within:border-[#BE7B71] focus-within:ring-1 focus-within:ring-[#BE7B71]/20">
                         <input
                           id="love-partner-name"
-                          className="min-w-0 flex-1 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] outline-none placeholder:text-[#464646]"
+                          className="min-w-0 flex-1 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] text-[#2f2f2f] outline-none placeholder:text-[#464646] placeholder:truncate"
                           placeholder="Enter your Partner's Full Name"
                           value={partnerName}
                           onChange={e => {
@@ -325,7 +335,7 @@ export default function LoveCalculatorSection() {
                           }}
                           autoComplete="off"
                         />
-                        <span className="shrink-0 self-center pr-2 sm:pr-3 lg:pr-4 font-mukta text-[12px] sm:text-[13px] md:text-[14px] font-medium text-[#D47F2C]">
+                        <span className="shrink-0 self-center pl-2 font-mukta text-[11px] sm:text-[12px] md:text-[13px] font-medium text-[#D47F2C]">
                           Woman
                         </span>
                       </div>
@@ -334,7 +344,7 @@ export default function LoveCalculatorSection() {
                       )}
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <CalculatorDatePicker
                         id="love-partner-dob"
                         label="Partner birth date"
@@ -349,7 +359,7 @@ export default function LoveCalculatorSection() {
                       />
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <CityAutocompleteInput
                         label="Partner birth place"
                         placeholder="Where were you born?"
@@ -390,14 +400,14 @@ export default function LoveCalculatorSection() {
             </form>
           </div>
 
-          <div className="relative hidden w-[482px] h-[740px] lg:block lg:-translate-y-20 mix-blend-darken opacity-100">
+          <div className="relative hidden w-full max-w-[482px] aspect-[482/620] xl:block xl:justify-self-end mix-blend-darken opacity-100">
             <div className="relative w-full h-full overflow-hidden rounded-[20px]">
               <Image
                 src={LoveHeroImage}
                 alt="Illustration of a couple embracing"
                 fill
                 className="object-contain object-center"
-                sizes="511px"
+                sizes="482px"
                 priority
               />
             </div>
