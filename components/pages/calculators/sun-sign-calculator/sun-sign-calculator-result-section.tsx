@@ -250,7 +250,7 @@ export default function SunSignCalculatorResultSection() {
         </p>
 
         <div className="mt-6 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="rounded-[24px] border border-[#e4d5c9] bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+          <div className="rounded-[24px] border border-[#e4d5c9] bg-[#fffdf9] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
             <h2 className="font-tiro-devanagari text-[20px] font-bold leading-[1.2] text-[#5D1409]">Birth details</h2>
             <div className="mt-5 space-y-3 text-[14px] text-[#3d352f] md:text-[15px]">
               <p>
@@ -271,7 +271,7 @@ export default function SunSignCalculatorResultSection() {
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-[#e4d5c9] bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+          <div className="rounded-[24px] border border-[#e4d5c9] bg-[#fffdf9] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
             <h2 className="font-tiro-devanagari text-[20px] font-bold leading-[1.2] text-[#5D1409]">Sun sign summary</h2>
             <p className="mt-4 text-[15px] text-[#3d352f] md:text-[16px]">
               {meta.englishName} is your Vedic sun sign. It is a {meta.element.toLowerCase()} sign
