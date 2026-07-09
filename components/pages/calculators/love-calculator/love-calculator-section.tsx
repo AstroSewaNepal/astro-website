@@ -186,7 +186,7 @@ export default function LoveCalculatorSection() {
   return (
     <section className="pt-6 md:pt-12 pb-12">
       <div>
-        <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(360px,482px)] xl:items-center xl:gap-14">
+        <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(360px,482px)] xl:items-start xl:gap-14">
           <div>
             <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
               Love Compatibility Calculator
