@@ -251,6 +251,8 @@ export default function NumerologyCalculatorSection() {
           </form>
         </div>
 
+        <CalculatorChooserSection exclude="numerology" />
+
         {/* FAQ */}
         <section className="mt-16 border-b border-b-[#79787A] pt-12 pb-[100px]">
           <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6 text-center">
@@ -272,8 +274,6 @@ export default function NumerologyCalculatorSection() {
             ))}
           </div>
         </section>
-
-        <CalculatorChooserSection exclude="numerology" />
       </div>
     </section>
   );

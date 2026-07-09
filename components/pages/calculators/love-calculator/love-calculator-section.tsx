@@ -421,7 +421,7 @@ export default function LoveCalculatorSection() {
               Frequently Asked Questions
             </h2>
             <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px]">
-              Find quick answers to common questions about our services, consultations, and how AstroSewa works.
+              Find quick answers to common questions about love compatibility, Kuta matching scores, and how to interpret your results.
             </p>
           </div>
           <div className="mt-6 md:mt-8 lg:mt-10 space-y-4 md:space-y-6 lg:space-y-[34px]">
