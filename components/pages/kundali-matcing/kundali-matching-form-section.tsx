@@ -366,7 +366,7 @@ const SectionPillHeader = ({
 }) => (
   <div
     className={[
-      'w-full rounded-full bg-primary py-2 text-center shadow-[0_8px_24px_rgba(97,21,8,0.14)]',
+      'w-full rounded-full bg-primary py-2 flex items-center justify-center shadow-[0_8px_24px_rgba(97,21,8,0.14)]',
       className,
     ]
       .filter(Boolean)
@@ -416,7 +416,7 @@ const PersonSection = ({
 }: PersonSectionProps) => (
   <div className="space-y-3 md:space-y-3.5">
     <SectionPillHeader
-      className="max-w-[397.649px] h-[61.573px] rounded-[32.41px] px-[19.44px] pt-[12.96px] pb-[12.96px] border-b-[0.81px] border-b-primary/50"
+      className="mx-auto max-w-[397.649px] h-[61.573px] rounded-[32.41px] px-[19.44px] pt-[12.96px] pb-[12.96px] border-b-[0.81px] border-b-primary/50"
       style={{ gap: '8px', opacity: 1 }}
     >
       <span className="inline-flex items-center justify-center gap-2 font-sahitya font-bold text-[19.44px] leading-[30.79px] tracking-normal text-secondary">
