@@ -278,7 +278,7 @@ export default function LoveCalculatorResultSection() {
             <p className="font-mukta font-normal text-[#2d2d2d] text-[16px] md:text-[24px] leading-[30px] md:leading-[34px] tracking-[0%] max-w-full text-justify px-2 md:px-0">
               Like a love meteorite, your connection will leave a profound impact on the world,
               inspiring others to seek their own cosmic love.
-              </p>
+            </p>
 
             <div className="flex w-full flex-row items-center gap-3 mt-5 px-2 sm:px-0 flex-nowrap">
               <button
