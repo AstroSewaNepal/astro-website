@@ -857,6 +857,7 @@ const KundaliMatchingFormSection: React.FC = () => {
         </form>
 
         <aside className="w-full max-w-[398px] h-[392px] mx-auto lg:mx-0 lg:max-w-none lg:h-auto lg:col-span-4 rounded-[40px] md:rounded-[32px] border border-primary bg-primary text-secondary shadow-[0_12px_34px_rgba(97,21,8,0.22)] p-4 md:p-7 lg:pt-8 lg:pb-6 flex flex-col items-center justify-center lg:justify-between gap-4 md:gap-6 lg:gap-4">
+          <div className="hidden lg:block lg:h-2" />
           <div className="flex flex-col items-center gap-4 lg:gap-6">
             <div
               className="relative p-2"
