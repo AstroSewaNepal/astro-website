@@ -233,7 +233,7 @@ export default function LoveCalculatorSection() {
             */}
             <form
               onSubmit={onSubmit}
-              className="mt-6 md:mt-[50px] flex w-full max-w-[800px] flex-col gap-4 sm:gap-5 md:gap-6 rounded-[32px] bg-[#FBF4F1] p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.06)]"
+              className="mt-6 md:mt-[50px] flex w-full max-w-[800px] flex-col gap-4 sm:gap-5 md:gap-6 rounded-[32px] border-2 border-[#BE7B71] p-4 sm:p-5 md:p-6 lg:p-8"
             >
               <h2 className="md:hidden text-center w-full self-start font-tiro-devanagari text-[#5D1409] text-[22px] sm:text-[28px] leading-[1.2] font-bold mt-0 mb-0">
                 Check Your Compatibility
@@ -243,7 +243,7 @@ export default function LoveCalculatorSection() {
               </h2>
 
               <div className="grid gap-4 sm:gap-5 md:grid-cols-2">
-                <div className="min-w-0 overflow-hidden rounded-[28px] border border-[#BE7B71] bg-white/40 p-4 sm:p-5 shadow-[0_8px_24px_rgba(105,23,9,0.06)]">
+                <div className="min-w-0 overflow-hidden rounded-[28px] border border-[#BE7B71] p-4 sm:p-5 shadow-[0_8px_24px_rgba(105,23,9,0.06)]">
                   <p className="font-mukta text-[14px] sm:text-[15px] font-semibold text-[#5D1409] mb-4">
                     Your Details
                   </p>
@@ -311,7 +311,7 @@ export default function LoveCalculatorSection() {
                   </div>
                 </div>
 
-                <div className="min-w-0 overflow-hidden rounded-[28px] border border-[#BE7B71] bg-white/40 p-4 sm:p-5 shadow-[0_8px_24px_rgba(105,23,9,0.06)]">
+                <div className="min-w-0 overflow-hidden rounded-[28px] border border-[#BE7B71] p-4 sm:p-5 shadow-[0_8px_24px_rgba(105,23,9,0.06)]">
                   <p className="font-mukta text-[14px] sm:text-[15px] font-semibold text-[#5D1409] mb-4">
                     Partner Details
                   </p>
