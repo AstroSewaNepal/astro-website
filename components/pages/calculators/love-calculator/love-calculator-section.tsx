@@ -233,7 +233,7 @@ export default function LoveCalculatorSection() {
             */}
             <form
               onSubmit={onSubmit}
-              className="mt-6 md:mt-[50px] flex w-full max-w-[800px] flex-col gap-4 sm:gap-5 md:gap-6 rounded-[32px] border-2 border-[#BE7B71] p-4 sm:p-5 md:p-6 lg:p-8"
+              className="mx-auto xl:mx-0 mt-6 md:mt-[50px] flex w-full max-w-[800px] flex-col gap-4 sm:gap-5 md:gap-6 rounded-[32px] border-2 border-[#BE7B71] p-4 sm:p-5 md:p-6 lg:p-8"
             >
               <h2 className="md:hidden text-center w-full self-start font-tiro-devanagari text-[#5D1409] text-[22px] sm:text-[28px] leading-[1.2] font-bold mt-0 mb-0">
                 Check Your Compatibility

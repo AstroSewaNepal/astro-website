@@ -162,11 +162,11 @@ export default function LoveCalculatorResultSection() {
         </div>
 
         {/* Result Card */}
-        <div className="rounded-[16px] border border-[#d4c4b8] p-4 md:p-6 flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-8">
+        <div className="rounded-[16px] border border-[#d4c4b8] p-4 md:p-6 flex flex-col xl:flex-row items-center xl:items-start gap-5 xl:gap-8">
           {/* Photo */}
           <label
             htmlFor="love-photo-upload"
-            className="shrink-0 relative rounded-[19px] overflow-hidden w-full max-w-[320px] h-[332px] md:w-[318px] md:h-[333px] cursor-pointer group"
+            className="shrink-0 relative rounded-[19px] overflow-hidden w-full max-w-[320px] h-[332px] xl:w-[318px] xl:h-[333px] cursor-pointer group"
           >
             {photoPreview ? (
               <Image
@@ -245,7 +245,7 @@ export default function LoveCalculatorResultSection() {
           </div>
 
           {/* Desktop / tablet: stacked names with heart between */}
-          <div className="hidden md:flex flex-col items-center justify-center shrink-0 gap-4 -ml-0 md:-ml-8 self-center md:self-auto w-full md:w-[426px]">
+          <div className="hidden md:flex flex-col items-center justify-center shrink-0 gap-4 -ml-0 xl:-ml-8 self-center xl:self-auto w-full xl:w-[426px]">
             <h2 className="font-mukta font-semibold text-[20px] md:text-[36px] uppercase text-[#471207] text-center tracking-[0%] leading-[38px] md:leading-[38px]">
               {result.yourName}
             </h2>
@@ -274,13 +274,13 @@ export default function LoveCalculatorResultSection() {
           </div>
 
           {/* Narrative + Buttons */}
-          <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left pt-6 md:pt-20 ml-0 md:-ml-12">
+          <div className="flex-1 flex flex-col items-center xl:items-start text-center xl:text-left pt-6 xl:pt-20 ml-0 xl:-ml-12">
             <p className="font-mukta font-normal text-[#2d2d2d] text-[16px] md:text-[24px] leading-[30px] md:leading-[34px] tracking-[0%] max-w-full text-justify px-2 md:px-0">
               Like a love meteorite, your connection will leave a profound impact on the world,
               inspiring others to seek their own cosmic love.
-            </p>
+              </p>
 
-            <div className="flex w-full flex-col sm:flex-row items-center gap-3 mt-5 px-2 sm:px-0">
+            <div className="flex w-full flex-col sm:flex-row xl:flex-col 2xl:flex-row items-center gap-3 mt-5 px-2 sm:px-0">
               <button
                 onClick={handleShareReport}
                 className="flex items-center justify-center gap-[10px] rounded-[40px] w-full sm:w-[204px] h-[50px] p-[12px] bg-[#471207] font-mukta font-semibold text-[18px] leading-[30px] tracking-[0%] text-white transition-colors hover:bg-[#5D1409]"
