@@ -244,31 +244,31 @@ export default function LoveCalculatorResultSection() {
             </div>
           </div>
 
-          {/* Desktop / tablet: stacked names with heart between */}
-          <div className="hidden md:flex flex-col items-center justify-center shrink-0 gap-4 -ml-0 xl:-ml-8 self-center xl:self-auto w-full xl:w-[426px]">
-            <h2 className="font-mukta font-semibold text-[20px] md:text-[36px] uppercase text-[#471207] text-center tracking-[0%] leading-[38px] md:leading-[38px]">
+          {/* Desktop / tablet layout: horizontal on tablet (iPad Pro), stacked on desktop */}
+          <div className="hidden md:flex md:flex-row xl:flex-col items-center justify-center shrink-0 gap-6 lg:gap-8 xl:gap-4 -ml-0 xl:-ml-8 self-center xl:self-auto w-full xl:w-[426px]">
+            <h2 className="md:flex-1 xl:flex-none font-mukta font-semibold text-[24px] lg:text-[32px] xl:text-[36px] uppercase text-[#471207] md:text-right xl:text-center tracking-[0%] leading-[1.2] xl:leading-[38px]">
               {result.yourName}
             </h2>
 
-            <div className="relative flex items-center justify-center w-[205px] h-[188px]">
+            <div className="relative flex-shrink-0 flex items-center justify-center w-[140px] h-[128px] lg:w-[170px] lg:h-[156px] xl:w-[205px] xl:h-[188px]">
               <Image
                 src={LoveMatchIcon}
                 alt="Heart"
                 width={205}
                 height={188}
-                className="object-contain w-[205px] h-[188px]"
+                className="object-contain w-full h-full"
               />
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
-                <span className="font-tiro-devanagari font-bold text-white text-[64px] leading-none tracking-[0%] text-center drop-shadow-md">
+                <span className="font-tiro-devanagari font-bold text-white text-[32px] lg:text-[48px] xl:text-[64px] leading-none tracking-[0%] text-center drop-shadow-md">
                   {result.score}%
                 </span>
-                <span className="font-mukta font-normal text-white text-[24px] leading-none tracking-[0%] text-center">
+                <span className="font-mukta font-normal text-white text-[12px] lg:text-[18px] xl:text-[24px] leading-none tracking-[0%] text-center">
                   Matched
                 </span>
               </div>
             </div>
 
-            <h2 className="font-mukta font-semibold text-[20px] md:text-[36px] uppercase text-[#471207] text-center tracking-[0%] leading-[38px] md:leading-[38px]">
+            <h2 className="md:flex-1 xl:flex-none font-mukta font-semibold text-[24px] lg:text-[32px] xl:text-[36px] uppercase text-[#471207] md:text-left xl:text-center tracking-[0%] leading-[1.2] xl:leading-[38px]">
               {result.partnerName}
             </h2>
           </div>
