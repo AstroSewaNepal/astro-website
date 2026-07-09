@@ -64,14 +64,14 @@ export default function CalculatorPageIntro({
 
         <div className="mt-12 md:mt-[100px]">
           {infoHeading || infoDescription ? (
-            <div className="flex flex-col items-center justify-center gap-[10px] md:gap-6 text-center">
+            <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6 text-center">
               {infoHeading ? (
-                <h2 className="font-tiro-devanagari font-bold text-[22px] md:text-[28px] lg:text-[34px] leading-[1.2] text-primary">
+                <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary">
                   {infoHeading}
                 </h2>
               ) : null}
               {infoDescription ? (
-                <p className="font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[800px]">
+                <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px]">
                   {infoDescription}
                 </p>
               ) : null}

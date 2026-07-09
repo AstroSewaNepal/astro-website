@@ -49,7 +49,7 @@ export default function MangalDoshaCalculatorSection() {
         'Mangal Dosha is not a simple yes or no condition. Its strength depends on the sign Mars occupies, other planets aspecting it, and whether classical cancellation conditions apply. Many people with Mangal Dosha have long and stable marriages. This calculator checks all six houses using your actual planetary positions and will flag any cancellation factors found in your chart.',
       ]}
       infoHeading="Frequently Asked Questions"
-      infoDescription="Find quick answers to common questions about our services, consultations, and how AstroSewa works."
+      infoDescription="Find quick answers to common questions about Mangal Dosha, how it affects marriage, and what cancellation factors mean."
       infoSections={[
         {
           title: 'What Exactly Is Mangal Dosha?',

@@ -64,6 +64,8 @@ export default function RashiCalculatorSection() {
           body: 'Each Rashi contains two and a quarter Nakshatras. The 27 Nakshatras are lunar mansions that divide the zodiac into finer sections. While your Rashi gives the broad sign of your Moon, your Nakshatra gives a much more precise description of your emotional nature and character. Both are used together in Vedic astrology for detailed personality analysis, Dasha calculations, and Kundali matching.',
         },
       ]}
+      infoHeading="Frequently Asked Questions"
+      infoDescription="Find quick answers to common questions about your Rashi (moon sign), its importance in Vedic astrology, and how to interpret your result."
     >
       <CalculatorBirthDetailsForm submitLabel="Find Your Rashi" onSubmit={handleSubmit} />
       <CalculatorChooserSection exclude="rashi" />

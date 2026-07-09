@@ -27,9 +27,9 @@ export default function SunSignCalculatorPage() {
   return (
     <main className="container mx-auto space-y-12 px-4 sm:px-6 lg:px-0">
       <SunSignCalculatorSection />
-      <Services />
       <Clarity />
       <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+      <Services />
       <DownloadApp />
     </main>
   );

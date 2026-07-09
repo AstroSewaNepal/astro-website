@@ -19,9 +19,9 @@ export default function MangalDoshaCalculatorResultPage() {
       <MangalDoshaCalculatorResultSection />
       <CalculatorChooserSection exclude="mangal-dosha" />
 
-      <Services />
       <Clarity />
       <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+      <Services />
       <DownloadApp />
     </main>
   );

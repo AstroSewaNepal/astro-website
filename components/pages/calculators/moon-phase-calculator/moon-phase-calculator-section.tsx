@@ -44,7 +44,7 @@ export default function MoonPhaseCalculatorSection() {
         'Your birth Tithi shows the lunar energy you arrived with. It influences your instinctive emotional patterns, your relationship with cycles and timing, and which days of the month naturally feel more aligned for you. This calculator uses real ephemeris data from VedAstro, not a simplified calendar formula.',
       ]}
       infoHeading="Frequently Asked Questions"
-      infoDescription="Find quick answers to common questions about our services, consultations, and how AstroSewa works."
+      infoDescription="Find quick answers to common questions about lunar phases, Tithis, and how the Panchanga influences your birth energy."
       infoSections={[
         {
           title: 'What Is a Tithi in Vedic Astrology?',

@@ -47,7 +47,7 @@ export default function DashaCalculatorSection() {
       title="Dasha Calculator: Find Your Mahadasha and Antardasha"
       shortDescription="Enter your birth details to calculate your full Vimshottari Dasha timeline using the Lahiri ayanamsa. See which planet rules your current period and what comes next."
       infoHeading="Frequently Asked Questions"
-      infoDescription="Find quick answers to common questions about our services, consultations, and how AstroSewa works."
+      infoDescription="Find quick answers to common questions about Vimshottari Dasha, your current planetary period, and how to use your Mahadasha timeline."
       infoSections={[
         {
           title: 'What Is a Mahadasha?',

@@ -63,6 +63,8 @@ export default function SunSignCalculatorSection() {
           body: 'Yes, exact birth time is important. The Sun moves slowly through the zodiac, about one degree per day, but it does move. If you were born near the end or beginning of a month, even a few hours can affect whether the Sun was in one sign or the next. If you do not know your exact birth time, the calculator will still give a result, but it may flag the result as uncertain if you were born near a sign boundary.',
         },
       ]}
+      infoHeading="Frequently Asked Questions"
+      infoDescription="Find quick answers to common questions about your Vedic sun sign, the Lahiri ayanamsa, and how it differs from Western astrology."
     >
       <CalculatorBirthDetailsForm submitLabel="Find Your Sun Sign" onSubmit={handleSubmit} />
       <CalculatorChooserSection exclude="sun-sign" />
