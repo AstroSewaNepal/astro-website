@@ -129,12 +129,7 @@ const CalendarIcon: React.FC<{ className?: string }> = ({ className }) => (
 
 /** Pin / location SVG icon */
 const PinIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg
-    className={className}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    aria-hidden
-  >
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
   </svg>
 );
@@ -165,7 +160,6 @@ const PanchangTodaySection: React.FC = () => {
   const geoLonRef = useRef(geoLon);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
-  // Fetch user's geolocation on mount
   useEffect(() => {
     if (typeof navigator !== 'undefined' && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -175,8 +169,7 @@ const PanchangTodaySection: React.FC = () => {
           setGeoLon(longitude);
           geoLatRef.current = latitude;
           geoLonRef.current = longitude;
-          
-          // Try to get city name from reverse geocoding
+
           try {
             const response = await fetch(
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
@@ -199,7 +192,6 @@ const PanchangTodaySection: React.FC = () => {
           }
         },
         () => {
-          // Silently fail and keep Kathmandu as default
           console.log('Geolocation not available, using Kathmandu');
         },
       );
@@ -276,74 +268,68 @@ const PanchangTodaySection: React.FC = () => {
 
   return (
     <>
-      <section className="w-full max-w-full box-border min-h-[580px] min-w-0 flex flex-col lg:flex-row items-start gap-8 md:gap-10 opacity-100">
-        <div className="w-full min-w-0 min-h-[580px] flex flex-col gap-7 md:gap-10 opacity-100">
-
+      <section className="w-full max-w-full box-border min-w-0 flex flex-col gap-7 md:gap-10 opacity-100">
           {/* ── Unified nav bar ── */}
-          <div className="w-full flex justify-start">
+          <div className="w-full flex justify-center lg:justify-start">
             <div
-              className="flex items-center w-full max-w-[620px] px-2 py-1.5 sm:px-4 sm:py-2.5"
+              className="flex flex-wrap sm:flex-nowrap items-center justify-center w-full max-w-[620px] px-2 py-1.5 sm:px-4 sm:py-2.5 gap-y-1"
               style={{
                 background: '#fbf6ef',
-                borderRadius: '999px',
+                borderRadius: '20px',
                 border: '1px solid #e8dfc8',
-                gap: '0',
                 boxShadow: '0 2px 6px 0 rgba(97,21,8,0.06)',
               }}
             >
-              {/* Previous Day */}
-              <button
-                type="button"
-                onClick={() => shiftDay(-1)}
-                aria-label="Previous day"
-                className="flex flex-col items-center justify-center text-primary hover:opacity-70 transition-opacity min-w-[32px] sm:min-w-[56px]"
-                style={{ padding: '4px 8px', gap: '2px', background: 'none', border: 'none', cursor: 'pointer' }}
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span className="hidden sm:inline" style={{ fontSize: '11px', fontFamily: 'var(--font-mukta, sans-serif)', color: 'var(--color-primary, #7b1c1c)', lineHeight: 1.2 }}>
-                  Previous Day
-                </span>
-              </button>
-
-              {/* Divider */}
-              <div className="hidden sm:block" style={{ width: '1px', height: '36px', background: '#e8dfc8', flexShrink: 0, margin: '0 12px' }} />
-
-              {/* Calendar icon pill (tappable, opens date picker) */}
-              <div className="relative">
+              {/* Left group: Previous Day + calendar icon (equal-basis flank) */}
+              <div className="flex items-center flex-1 min-w-0 justify-start">
                 <button
-                  id="panchang-date-btn"
                   type="button"
-                  onClick={() => setIsDatePickerOpen(o => !o)}
-                  aria-label="Select date"
-                  className="flex items-center justify-center hover:opacity-80 transition-opacity w-9 h-9 sm:w-12 sm:h-12 ml-1 mr-2 sm:ml-2 sm:mr-3"
-                  style={{
-                    background: '#f5ede0',
-                    border: '1px solid #e8dfc8',
-                    borderRadius: '999px',
-                    cursor: 'pointer',
-                    color: 'var(--color-primary, #7b1c1c)',
-                    flexShrink: 0,
-                  }}
+                  onClick={() => shiftDay(-1)}
+                  aria-label="Previous day"
+                  className="flex flex-col items-center justify-center text-primary hover:opacity-70 transition-opacity flex-shrink-0"
+                  style={{ padding: '4px 6px', gap: '2px', background: 'none', border: 'none', cursor: 'pointer' }}
                 >
-                  <CalendarIcon className="w-5 h-5" />
+                  <ArrowLeft className="w-5 h-5" />
+                  <span className="hidden md:inline" style={{ fontSize: '11px', fontFamily: 'var(--font-mukta, sans-serif)', color: 'var(--color-primary, #7b1c1c)', lineHeight: 1.2, whiteSpace: 'nowrap' }}>
+                    Previous Day
+                  </span>
                 </button>
-                <DatePickerDropdown
-                  open={isDatePickerOpen}
-                  onOpenChange={setIsDatePickerOpen}
-                  onDateSelect={onDatePickerSelect}
-                  value={dateToPickerValue(calendarDay)}
-                  anchorId="panchang-date-btn"
-                />
+
+                <div className="hidden sm:block flex-shrink-0" style={{ width: '1px', height: '36px', background: '#e8dfc8', margin: '0 8px' }} />
+
+                <div className="relative flex-shrink-0">
+                  <button
+                    id="panchang-date-btn"
+                    type="button"
+                    onClick={() => setIsDatePickerOpen(o => !o)}
+                    aria-label="Select date"
+                    className="flex items-center justify-center hover:opacity-80 transition-opacity w-9 h-9 sm:w-11 sm:h-11"
+                    style={{
+                      background: '#f5ede0',
+                      border: '1px solid #e8dfc8',
+                      borderRadius: '999px',
+                      cursor: 'pointer',
+                      color: 'var(--color-primary, #7b1c1c)',
+                    }}
+                  >
+                    <CalendarIcon className="w-5 h-5" />
+                  </button>
+                  <DatePickerDropdown
+                    open={isDatePickerOpen}
+                    onOpenChange={setIsDatePickerOpen}
+                    onDateSelect={onDatePickerSelect}
+                    value={dateToPickerValue(calendarDay)}
+                    anchorId="panchang-date-btn"
+                  />
+                </div>
               </div>
 
-              {/* Date + location centre block — centered, do not expand */}
+              {/* Center block — date + location, truly centered because both flanks are flex-1 */}
               <div
-                className="flex flex-col items-start justify-center min-w-0"
-                style={{ padding: '0 8px', margin: '0 auto' }}
+                className="flex flex-col items-center justify-center min-w-0 flex-shrink-0 px-2 order-first basis-full sm:order-none sm:basis-auto"
               >
-                {/* Bold date */}
                 <span
-                  className="text-base sm:text-xl font-extrabold whitespace-nowrap"
+                  className="text-base sm:text-lg md:text-xl font-extrabold whitespace-nowrap"
                   style={{
                     fontFamily: 'var(--font-mukta, sans-serif)',
                     color: 'var(--color-primary, #7b1c1c)',
@@ -352,9 +338,8 @@ const PanchangTodaySection: React.FC = () => {
                 >
                   {displayDdMmYy}
                 </span>
-                {/* Location row */}
                 <span
-                  className="flex items-center gap-0.5 sm:gap-1 text-xs sm:text-sm"
+                  className="flex items-center gap-0.5 sm:gap-1 text-xs sm:text-sm max-w-full"
                   style={{
                     fontFamily: 'var(--font-mukta, sans-serif)',
                     color: 'var(--color-primary, #7b1c1c)',
@@ -362,61 +347,58 @@ const PanchangTodaySection: React.FC = () => {
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    maxWidth: '100%',
                   }}
                 >
                   <PinIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0 opacity-70" />
-                  {city}
+                  <span className="truncate max-w-[110px] sm:max-w-[160px]">{city}</span>
                   <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0 ml-0.5" />
                 </span>
               </div>
 
-              {/* Divider */}
-              <div className="hidden sm:block" style={{ width: '1px', height: '36px', background: '#e8dfc8', flexShrink: 0, margin: '0 8px' }} />
+              {/* Right group: Next Day + Today (equal-basis flank) */}
+              <div className="flex items-center flex-1 min-w-0 justify-end">
+                <div className="hidden sm:block flex-shrink-0" style={{ width: '1px', height: '36px', background: '#e8dfc8', margin: '0 8px' }} />
 
-              {/* Next Day */}
-              <button
-                type="button"
-                onClick={() => shiftDay(1)}
-                aria-label="Next day"
-                className="flex flex-col items-center justify-center text-primary hover:opacity-70 transition-opacity min-w-[32px] sm:min-w-[56px]"
-                style={{ padding: '4px 8px', gap: '2px', background: 'none', border: 'none', cursor: 'pointer' }}
-              >
-                <ArrowRight className="w-5 h-5" />
-                <span className="hidden sm:inline" style={{ fontSize: '11px', fontFamily: 'var(--font-mukta, sans-serif)', color: 'var(--color-primary, #7b1c1c)', lineHeight: 1.2 }}>
-                  Next Day
-                </span>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => shiftDay(1)}
+                  aria-label="Next day"
+                  className="flex flex-col items-center justify-center text-primary hover:opacity-70 transition-opacity flex-shrink-0"
+                  style={{ padding: '4px 6px', gap: '2px', background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  <ArrowRight className="w-5 h-5" />
+                  <span className="hidden md:inline" style={{ fontSize: '11px', fontFamily: 'var(--font-mukta, sans-serif)', color: 'var(--color-primary, #7b1c1c)', lineHeight: 1.2, whiteSpace: 'nowrap' }}>
+                    Next Day
+                  </span>
+                </button>
 
-              {/* Divider */}
-              <div className="hidden sm:block" style={{ width: '1px', height: '36px', background: '#e8dfc8', flexShrink: 0, margin: '0 8px' }} />
+                <div className="hidden sm:block flex-shrink-0" style={{ width: '1px', height: '36px', background: '#e8dfc8', margin: '0 8px' }} />
 
-              {/* Today button */}
-              <button
-                type="button"
-                onClick={onTodayClick}
-                className="flex items-center gap-2 hover:opacity-80 transition-opacity py-2 px-3 sm:py-3 sm:px-7 text-sm sm:text-base ml-1 sm:ml-3 mr-1"
-                style={{
-                  background: '#7b1c1c',
-                  color: '#F8F3DF',
-                  border: 'none',
-                  borderRadius: '999px',
-                  fontFamily: 'var(--font-mukta, sans-serif)',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  boxShadow: '0 6px 18px rgba(97,21,8,0.12)',
-                  flexShrink: 0,
-                }}
-              >
-                Today
-              </button>
+                <button
+                  type="button"
+                  onClick={onTodayClick}
+                  className="flex items-center gap-2 hover:opacity-80 transition-opacity py-2 px-3 sm:py-2.5 sm:px-5 text-xs sm:text-sm md:text-base flex-shrink-0"
+                  style={{
+                    background: '#7b1c1c',
+                    color: '#F8F3DF',
+                    border: 'none',
+                    borderRadius: '999px',
+                    fontFamily: 'var(--font-mukta, sans-serif)',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    boxShadow: '0 6px 18px rgba(97,21,8,0.12)',
+                  }}
+                >
+                  Today
+                </button>
+              </div>
             </div>
           </div>
           {/* ── End nav bar ── */}
 
           <div>
-            <h2 className="text-[24px] leading-[32px] md:text-[36px] md:leading-[44px] font-bold font-sahitya text-primary mb-4 md:mb-6">
+            <h2 className="text-[22px] leading-[30px] sm:text-[24px] sm:leading-[32px] md:text-[36px] md:leading-[44px] font-bold font-sahitya text-primary mb-5 sm:mb-6 md:mb-8">
               Panchangam for {displayDdMmYy}
             </h2>
 
@@ -429,78 +411,62 @@ const PanchangTodaySection: React.FC = () => {
               </p>
             )}
 
-            <div className="mx-auto mb-5 md:hidden w-[220px] h-[220px] flex items-center justify-center overflow-hidden rounded-full">
-              <Image
-                src={PanchangCircleImage}
-                alt="Panchang zodiac circle"
-                className="h-full w-full object-contain"
-                priority
-              />
-            </div>
-
-            <div className="border border-Trinary rounded-lg w-full mt-5 md:mt-8">
-              <div className="px-4 md:px-6 pt-2 pb-2">
-                <h3 className="text-[18px] leading-[24px] md:text-[26px] md:leading-[34px] font-mukta font-medium text-primary">
-                  {titleLine}
-                </h3>
-              </div>
-              <div className="border-b border-Trinary"></div>
-              <div className="px-4 md:px-6 py-4">
-                <p className="text-[20px] leading-[28px] md:text-[28px] md:leading-[36px] text-[#7b1c1c] font-medium mb-2 md:mb-3">
-                  {longDateLabelNoWeekday}
-                </p>
-                <p className="text-[20px] leading-[28px] md:text-[28px] md:leading-[36px] text-Trinary font-medium mb-2 md:mb-3">
-                  {varaLabel}
-                </p>
-                <p className="text-[20px] leading-[28px] md:text-[28px] md:leading-[36px] text-Trinary font-medium">
-                  {pakshaLine}
-                </p>
-              </div>
-            </div>
-
-            <div className="w-full max-w-full mt-3 md:mt-4 px-2 md:px-6 py-4">
-              <div className="grid grid-cols-2 gap-2 md:gap-0">
-                <div>
-                  <p className="font-mukta text-primary text-[18px] leading-[26px] md:text-[28px] md:leading-[36px] mb-2 md:mb-3">
-                    <span className="font-mukta font-semibold text-Trinary text-[18px] md:text-[28px]">
-                      Nakshatra:
-                    </span>{' '}
-                    {nakshatra}
+            {/* Three-column row: info box | panchang details | zodiac wheel */}
+            <div className="flex flex-col lg:flex-row items-stretch lg:items-start gap-4 lg:gap-6 xl:gap-8 w-full">
+              {/* Left — date details box (slightly wider rectangle) */}
+              <div className="border border-Trinary rounded-lg w-full lg:w-[360px] xl:w-[400px] 2xl:w-[440px] lg:flex-shrink-0">
+                <div className="px-4 md:px-5 pt-3 pb-2">
+                  <h3 className="text-[18px] leading-[24px] md:text-[22px] md:leading-[30px] font-mukta font-medium text-primary">
+                    {titleLine}
+                  </h3>
+                </div>
+                <div className="border-b border-Trinary" />
+                <div className="px-4 md:px-5 py-4">
+                  <p className="text-[18px] leading-[26px] sm:text-[20px] sm:leading-[28px] md:text-[26px] md:leading-[34px] text-[#7b1c1c] font-medium mb-2 md:mb-3">
+                    {longDateLabelNoWeekday}
                   </p>
-                  <p className="font-mukta text-primary text-[18px] leading-[26px] md:text-[28px] md:leading-[36px] mb-2 md:mb-3">
-                    <span className="font-mukta font-semibold text-Trinary text-[18px] md:text-[28px]">
-                      Yoga:
-                    </span>{' '}
-                    {yogaLbl}
+                  <p className="text-[16px] leading-[24px] sm:text-[18px] sm:leading-[26px] md:text-[24px] md:leading-[32px] text-[#7b1c1c] font-medium mb-2 md:mb-3">
+                    {varaLabel}
+                  </p>
+                  <p className="text-[16px] leading-[24px] sm:text-[18px] sm:leading-[26px] md:text-[24px] md:leading-[32px] text-[#7b1c1c] font-medium">
+                    {pakshaLine}
                   </p>
                 </div>
-                <div>
-                  <p className="font-mukta text-primary text-[18px] leading-[26px] md:text-[28px] md:leading-[36px] mb-2 md:mb-3">
-                    <span className="font-mukta font-semibold text-Trinary text-[18px] md:text-[28px]">
-                      Karana:
-                    </span>{' '}
-                    {karana}
+              </div>
+
+              {/* Center — Nakshatra / Yoga / Karana / Rashi grid, shifted right to close the gap */}
+              <div className="flex-1 flex items-start justify-start px-1 sm:px-2 md:px-4 lg:pl-8 xl:pl-14 2xl:pl-20 pt-1 lg:pt-3 min-w-0">
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-x-6 gap-y-3 sm:gap-y-4 md:gap-x-10 md:gap-y-6 w-full max-w-[480px]">
+                  <p className="font-mukta text-[15px] leading-[22px] sm:text-[16px] sm:leading-[24px] md:text-[22px] md:leading-[32px]">
+                    <span className="font-semibold text-Trinary">Nakshatra:</span>{' '}
+                    <span className="text-primary">{nakshatra}</span>
                   </p>
-                  <p className="font-mukta text-primary text-[18px] leading-[26px] md:text-[28px] md:leading-[36px] mb-2 md:mb-3">
-                    <span className="font-mukta font-semibold text-Trinary text-[18px] md:text-[28px]">
-                      Rashi (Moon):
-                    </span>{' '}
-                    {moonRashi}
+                  <p className="font-mukta text-[15px] leading-[22px] sm:text-[16px] sm:leading-[24px] md:text-[22px] md:leading-[32px]">
+                    <span className="font-semibold text-Trinary">Karana:</span>{' '}
+                    <span className="text-primary">{karana}</span>
+                  </p>
+                  <p className="font-mukta text-[15px] leading-[22px] sm:text-[16px] sm:leading-[24px] md:text-[22px] md:leading-[32px]">
+                    <span className="font-semibold text-Trinary">Yoga:</span>{' '}
+                    <span className="text-primary">{yogaLbl}</span>
+                  </p>
+                  <p className="font-mukta text-[15px] leading-[22px] sm:text-[16px] sm:leading-[24px] md:text-[22px] md:leading-[32px]">
+                    <span className="font-semibold text-Trinary">Rashi (Moon):</span>{' '}
+                    <span className="text-primary">{moonRashi}</span>
                   </p>
                 </div>
+              </div>
+
+              {/* Right — zodiac wheel */}
+              <div className="flex flex-shrink-0 self-center lg:self-start items-start justify-center lg:justify-end mx-auto lg:mx-0 w-[160px] sm:w-[200px] md:w-[240px] lg:w-[260px] xl:w-[340px] 2xl:w-[400px] aspect-square lg:-mt-10 xl:-mt-14">
+                <Image
+                  src={PanchangCircleImage}
+                  alt="Panchang zodiac circle"
+                  className="h-full w-full object-contain object-top lg:-translate-y-12 xl:-translate-y-16"
+                  priority
+                />
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="hidden md:flex mx-auto w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] lg:w-[432px] lg:h-[432px] flex-shrink-0 items-center justify-center overflow-hidden rounded-full">
-          <Image
-            src={PanchangCircleImage}
-            alt="Panchang zodiac circle"
-            className="h-full w-full object-contain"
-            priority
-          />
-        </div>
       </section>
 
       <PanchangTimingStrip timings={timings} />
