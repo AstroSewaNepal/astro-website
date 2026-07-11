@@ -5,7 +5,7 @@ import { DarshanImage, SankalpaImage, MoolyaImage } from '@/components/images/ab
 
 const AboutUsVision: React.FC = () => {
   return (
-    <section className="container mx-auto px-6 lg:px-0 py-[70px] lg:py-[80px]">
+    <section className="container mx-auto px-6 lg:px-0 py-8 md:py-10 lg:py-12">
       <div className="flex flex-col items-center gap-[36px] lg:gap-[40px]">
         {/* Header section */}
         <div className="flex flex-col items-center gap-[24px] w-full max-w-[1405px]">

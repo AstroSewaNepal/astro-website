@@ -7,7 +7,11 @@ import {
 import Image from 'next/image';
 import React from 'react';
 
-const AboutUsWhyUs: React.FC = () => {
+type Props = {
+  compact?: boolean;
+};
+
+const AboutUsWhyUs: React.FC<Props> = ({ compact = false }) => {
   const features = [
     {
       title: 'Fully Private',
@@ -35,8 +39,10 @@ const AboutUsWhyUs: React.FC = () => {
     },
   ];
 
+  const sectionPadding = compact ? 'w-full py-4 md:py-6 lg:py-8 xl:py-8' : 'w-full py-8 md:py-12 lg:py-16 xl:py-24';
+
   return (
-    <section className="w-full py-8 md:py-12 lg:py-16 xl:py-[100px]">
+    <section className={sectionPadding}>
       <div className="container mx-auto px-6 lg:px-0">
         <div className="flex flex-col gap-6 md:gap-8 lg:gap-10 xl:gap-[50px] w-full">
           {/* Header Section */}
@@ -51,7 +57,7 @@ const AboutUsWhyUs: React.FC = () => {
           </div>
 
           {/* Features Grid */}
-          <div className="w-full max-w-[1455px] border border-[#79787A] rounded-2xl md:rounded-3xl lg:rounded-[41px] mx-auto p-4 md:p-6 lg:p-8 xl:p-[104px]">
+          <div className="w-full max-w-[1455px] border border-[#79787A] rounded-2xl md:rounded-3xl lg:rounded-[41px] mx-auto p-4 md:p-6 lg:p-8 xl:p-16">
             <div className="flex flex-col gap-4 md:gap-6 lg:gap-8 xl:gap-[47px] w-full h-full">
               {/* Top Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8 xl:gap-[47px]">
