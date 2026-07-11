@@ -89,9 +89,7 @@ export default function GiftsTable({ data, isLoading, onEdit, onDelete }: GiftsT
               <TableCell>
                 <span
                   className={`font-mukta text-xs px-2 py-0.5 rounded-full ${
-                    row.isActive
-                      ? 'bg-green-50 text-green-700'
-                      : 'bg-neutral-100 text-neutral-500'
+                    row.isActive ? 'bg-green-50 text-green-700' : 'bg-neutral-100 text-neutral-500'
                   }`}
                 >
                   {row.isActive ? 'Active' : 'Inactive'}

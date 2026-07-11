@@ -1,12 +1,7 @@
 'use client';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import {
-  useCreateGift,
-  useDeleteMedia,
-  useUpdateGift,
-  useUploadMedia,
-} from '@/hooks/use-gifts';
+import { useCreateGift, useDeleteMedia, useUpdateGift, useUploadMedia } from '@/hooks/use-gifts';
 import type { Gift } from '@/lib/gifts-api';
 import GiftForm, { type GiftFormValues } from './gift-form';
 

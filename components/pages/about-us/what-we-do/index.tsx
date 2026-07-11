@@ -34,10 +34,11 @@ const AboutUsWhatWeDo: React.FC = () => {
                     What We Offer
                   </h2>
                   <p className="w-full text-left text-sm md:text-base lg:text-lg xl:text-[24px] leading-[150%] tracking-[2%] text-[#F8F3DF] font-mukta font-normal">
-                    AstroSewa brings together everything you need for a complete astrology experience
-                    in one place. You can generate your free Kundali, book a live astrologer
-                    consultation, check Kundali matching, read your daily horoscope, use our astrology
-                    calculators, browse Puja Bidhi guides, and read our blog. All in one place.
+                    AstroSewa brings together everything you need for a complete astrology
+                    experience in one place. You can generate your free Kundali, book a live
+                    astrologer consultation, check Kundali matching, read your daily horoscope, use
+                    our astrology calculators, browse Puja Bidhi guides, and read our blog. All in
+                    one place.
                   </p>
                 </div>
 

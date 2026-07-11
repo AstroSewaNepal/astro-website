@@ -49,4 +49,3 @@ export {
   XLogo,
   LinkedinLogo,
 };
-

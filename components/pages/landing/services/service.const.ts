@@ -18,7 +18,8 @@ export const SERVICES_LIST: Array<{
 }> = [
   {
     id: 1,
-    title: 'Order a personalised report built from your complete birth chart. Covers personality, yearly forecasts, planetary positions, and life predictions written for you.',
+    title:
+      'Order a personalised report built from your complete birth chart. Covers personality, yearly forecasts, planetary positions, and life predictions written for you.',
     buttonText: 'Get My Reports',
     icon: ServiceReport,
     action: { type: 'link', href: '/kundali-details' },
@@ -33,7 +34,8 @@ export const SERVICES_LIST: Array<{
   },
   {
     id: 3,
-    title: 'Not ready for a full consultation? Submit one specific question and get a focused, personal answer from our astrologers without booking a full session.',
+    title:
+      'Not ready for a full consultation? Submit one specific question and get a focused, personal answer from our astrologers without booking a full session.',
     buttonText: 'Ask a Question',
     icon: ServiceAskQuestion,
     action: { type: 'app-store' },

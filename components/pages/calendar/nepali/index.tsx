@@ -344,7 +344,8 @@ const NepaliCalendarPageContent: React.FC = () => {
         </h1>
 
         <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] mb-3">
-          Browse Bikram Sambat dates alongside Gregorian equivalents, track Nepali festivals, and find auspicious timings aligned with the Vedic calendar.
+          Browse Bikram Sambat dates alongside Gregorian equivalents, track Nepali festivals, and
+          find auspicious timings aligned with the Vedic calendar.
         </p>
 
         <hr className="border-t border-[#c0785a] mb-4 sm:mb-5 md:mb-6 lg:mb-8" />
@@ -372,7 +373,6 @@ const NepaliCalendarPageContent: React.FC = () => {
           {/* ── Calendar Header ── */}
           <div className="bg-[linear-gradient(135deg,#611508_0%,#7a2516_45%,#b04832_100%)] px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-5">
             <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3">
-
               {/* Left: AD date range */}
               <div className="flex items-center justify-start">
                 <p className="font-mukta text-[12px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-[#fff5ee] opacity-90 whitespace-nowrap">
@@ -382,7 +382,6 @@ const NepaliCalendarPageContent: React.FC = () => {
 
               {/* Center: < Year▼ Month▼ > */}
               <div className="flex items-center justify-center gap-1.5 sm:gap-2 md:gap-3">
-
                 {/* < Prev Month */}
                 <button
                   type="button"
@@ -412,7 +411,15 @@ const NepaliCalendarPageContent: React.FC = () => {
                       );
                     })}
                   </select>
-                  <svg className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-white/80" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <svg
+                    className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-white/80"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M6 9l6 6 6-6" />
                   </svg>
                 </div>
@@ -437,7 +444,15 @@ const NepaliCalendarPageContent: React.FC = () => {
                       </option>
                     ))}
                   </select>
-                  <svg className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-white/80" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <svg
+                    className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-white/80"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M6 9l6 6 6-6" />
                   </svg>
                 </div>
@@ -451,7 +466,6 @@ const NepaliCalendarPageContent: React.FC = () => {
                 >
                   <ArrowRight className="h-3 sm:h-3.5 md:h-4 lg:h-5 w-3 sm:w-3.5 md:w-4 lg:w-5" />
                 </button>
-
               </div>
 
               {/* Right: Today button */}
@@ -464,7 +478,6 @@ const NepaliCalendarPageContent: React.FC = () => {
                   Today
                 </button>
               </div>
-
             </div>
           </div>
 
@@ -494,22 +507,24 @@ const NepaliCalendarPageContent: React.FC = () => {
                 <div
                   key={`${date.key}-${idx}`}
                   onClick={e => handleDateClick(date, e)}
-                  className={`min-h-[72px] sm:min-h-[88px] md:min-h-[110px] lg:min-h-[120px] border-r border-b border-[#efe1d7] last:border-r-0 p-1 sm:p-1.5 md:p-2 lg:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${!date.isToday ? 'hover:bg-[#fff6ee]' : ''} ${date.isToday
+                  className={`min-h-[72px] sm:min-h-[88px] md:min-h-[110px] lg:min-h-[120px] border-r border-b border-[#efe1d7] last:border-r-0 p-1 sm:p-1.5 md:p-2 lg:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${!date.isToday ? 'hover:bg-[#fff6ee]' : ''} ${
+                    date.isToday
                       ? 'bg-primary border border-[#611508] text-secondary shadow-[0_6px_14px_rgba(97,21,8,0.12)] sm:shadow-[0_8px_18px_rgba(97,21,8,0.15)] md:shadow-[0_10px_24px_rgba(97,21,8,0.18)]'
                       : date.monthOffset === 0
                         ? 'bg-white'
                         : 'bg-[rgba(31,108,31,0.04)] text-[#7d7d7d]'
-                    }`}
+                  }`}
                 >
                   <span
-                    className={`font-mukta text-[24px] sm:text-[32px] md:text-[40px] lg:text-[46px] leading-none font-bold ${date.isToday
+                    className={`font-mukta text-[24px] sm:text-[32px] md:text-[40px] lg:text-[46px] leading-none font-bold ${
+                      date.isToday
                         ? 'text-white'
                         : date.monthOffset === 0 && date.weekDay === 6
                           ? 'text-[#611508]'
                           : date.monthOffset === 0
                             ? 'text-[#101010]'
                             : 'text-[#7d7d7d] opacity-30'
-                      }`}
+                    }`}
                   >
                     {getCellDisplayDay(date)}
                   </span>
@@ -535,52 +550,100 @@ const NepaliCalendarPageContent: React.FC = () => {
 
           <div className="space-y-4">
             <div>
-              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Baishakh (April to May):</p>
-              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">New Year month. A time of new beginnings across Nepal.</p>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">
+                Baishakh (April to May):
+              </p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">
+                New Year month. A time of new beginnings across Nepal.
+              </p>
             </div>
             <div>
-              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Jestha (May to June):</p>
-              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">The start of the monsoon approach.</p>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">
+                Jestha (May to June):
+              </p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">
+                The start of the monsoon approach.
+              </p>
             </div>
             <div>
-              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Ashadh (June to July):</p>
-              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Pre-monsoon rains begin.</p>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">
+                Ashadh (June to July):
+              </p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">
+                Pre-monsoon rains begin.
+              </p>
             </div>
             <div>
-              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Shrawan (July to August):</p>
-              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Full monsoon season. This is the month of Shrawan Somvar fasting for Lord Shiva.</p>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">
+                Shrawan (July to August):
+              </p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">
+                Full monsoon season. This is the month of Shrawan Somvar fasting for Lord Shiva.
+              </p>
             </div>
             <div>
-              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Bhadra (August to September):</p>
-              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Gai Jatra and Teej festivals fall in this month.</p>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">
+                Bhadra (August to September):
+              </p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">
+                Gai Jatra and Teej festivals fall in this month.
+              </p>
             </div>
             <div>
-              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Ashwin (September to October):</p>
-              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Autumn begins. Dashain, Nepal&apos;s biggest festival, falls in Ashwin.</p>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">
+                Ashwin (September to October):
+              </p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">
+                Autumn begins. Dashain, Nepal&apos;s biggest festival, falls in Ashwin.
+              </p>
             </div>
             <div>
-              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Kartik (October to November):</p>
-              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Tihar falls in Kartik.</p>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">
+                Kartik (October to November):
+              </p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">
+                Tihar falls in Kartik.
+              </p>
             </div>
             <div>
-              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Mangsir (November to December):</p>
-              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Winter sets in.</p>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">
+                Mangsir (November to December):
+              </p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">
+                Winter sets in.
+              </p>
             </div>
             <div>
-              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Poush (December to January):</p>
-              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Poush Purnima falls here.</p>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">
+                Poush (December to January):
+              </p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">
+                Poush Purnima falls here.
+              </p>
             </div>
             <div>
-              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Magh (January to February):</p>
-              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Maghe Sankranti, a major Nepali festival.</p>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">
+                Magh (January to February):
+              </p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">
+                Maghe Sankranti, a major Nepali festival.
+              </p>
             </div>
             <div>
-              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Falgun (February to March):</p>
-              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">Holi is celebrated in Falgun.</p>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">
+                Falgun (February to March):
+              </p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">
+                Holi is celebrated in Falgun.
+              </p>
             </div>
             <div>
-              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">Chaitra (March to April):</p>
-              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">End of the year. Ram Navami falls in Chaitra.</p>
+              <p className="font-mukta text-base md:text-lg lg:text-xl text-[#7b1c1c] font-semibold">
+                Chaitra (March to April):
+              </p>
+              <p className="font-mukta text-sm md:text-base lg:text-lg xl:text-2xl text-[#5B5B5B] mt-1">
+                End of the year. Ram Navami falls in Chaitra.
+              </p>
             </div>
           </div>
         </section>
@@ -591,7 +654,8 @@ const NepaliCalendarPageContent: React.FC = () => {
               Frequently Asked Questions
             </h2>
             <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px] text-center mt-2 md:mt-4 lg:mt-6 px-4">
-              Find quick answers to common questions about the Nepali calendar, BS-to-Gregorian conversions, and festival dates.
+              Find quick answers to common questions about the Nepali calendar, BS-to-Gregorian
+              conversions, and festival dates.
             </p>
           </div>
 
@@ -613,7 +677,6 @@ const NepaliCalendarPageContent: React.FC = () => {
             />
           </div>
         </section>
-
       </div>
 
       {/* ── Date Info Card Dialog ── */}

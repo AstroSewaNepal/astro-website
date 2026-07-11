@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import clsx from 'clsx';
 
-
 import LandingFAQ from '@/components/pages/landing/faq';
 import QNASComponent from '@/components/common/qnas-component';
 import { CompatibilityHoroscopeSection } from '@/app/compatibility/compatibilityMatch/compatibility-horoscope-section';
@@ -50,7 +49,8 @@ export function ZodiacSignListing({ mode }: Props) {
                 Zodiac Signs: Explore All 12 Signs and Their Meanings
               </h1>
               <p className="mx-auto max-w-[760px] text-base leading-7 text-[#5f5248] sm:text-[16px] sm:leading-8 lg:text-[18px] lg:leading-9">
-                Explore Your Sign Select your zodiac sign below to discover personality traits, strengths, compatibility, and today&apos;s horoscope reading.
+                Explore Your Sign Select your zodiac sign below to discover personality traits,
+                strengths, compatibility, and today&apos;s horoscope reading.
               </p>
             </div>
 
@@ -123,7 +123,8 @@ export function ZodiacSignListing({ mode }: Props) {
                   Frequently Asked Questions
                 </h2>
                 <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px] text-center mt-2 md:mt-4 lg:mt-6 px-4">
-                  Find quick answers to common questions about sun signs, moon signs, and how Vedic astrology differs from Western astrology.
+                  Find quick answers to common questions about sun signs, moon signs, and how Vedic
+                  astrology differs from Western astrology.
                 </p>
               </div>
               <div className="mt-6 md:mt-8 lg:mt-10 space-y-4 md:space-y-6 lg:space-y-[34px]">
@@ -151,7 +152,6 @@ export function ZodiacSignListing({ mode }: Props) {
           ) : null}
         </div>
       </div>
-
     </main>
   );
 }

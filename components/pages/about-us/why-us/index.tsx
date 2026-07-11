@@ -29,8 +29,7 @@ const AboutUsWhyUs: React.FC = () => {
     },
     {
       title: 'Accessible Anywhere',
-      description:
-        'Web, iOS, and Android ready. Available in English, Hindi, and Nepali.',
+      description: 'Web, iOS, and Android ready. Available in English, Hindi, and Nepali.',
       icon: SecurePaymentIcon,
     },
   ];

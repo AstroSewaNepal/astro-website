@@ -359,7 +359,8 @@ export default function CompatibilityPage() {
               Frequently Asked Questions
             </h2>
             <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px] text-center mt-2 md:mt-4 lg:mt-6 px-4">
-              Find quick answers to common questions about zodiac compatibility and Kundali matching.
+              Find quick answers to common questions about zodiac compatibility and Kundali
+              matching.
             </p>
           </div>
           <div className="mt-6 md:mt-8 lg:mt-10 space-y-4 md:space-y-6 lg:space-y-[34px]">
@@ -379,11 +380,11 @@ export default function CompatibilityPage() {
           </div>
         </section>
 
-        <TalkToOurAstrologer 
+        <TalkToOurAstrologer
           title="Want a Deeper Compatibility Reading?"
           description="Zodiac sign comparison gives you the overview. A Kundali matching report gives you the full picture, including Guna Milan score, Dosha analysis, and long-term planetary cycles for both partners. Book a session with one of our verified astrologers."
           descriptionClassName="max-w-full"
-          className="mx-auto mt-10 max-w-[1180px] sm:mt-14" 
+          className="mx-auto mt-10 max-w-[1180px] sm:mt-14"
         />
         <DownloadApp />
       </div>

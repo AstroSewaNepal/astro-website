@@ -43,8 +43,8 @@ export default function DeleteDialog({ open, onClose, gift }: DeleteDialogProps)
           <DialogTitle className="font-mukta text-neutral-800">Delete Gift</DialogTitle>
           <DialogDescription className="font-mukta">
             Are you sure you want to delete <strong>{gift?.title}</strong>? This will also
-            permanently delete the associated image. This action cannot be undone. If this gift
-            has already been sent by users, deletion will be blocked — deactivate it instead.
+            permanently delete the associated image. This action cannot be undone. If this gift has
+            already been sent by users, deletion will be blocked — deactivate it instead.
           </DialogDescription>
         </DialogHeader>
 

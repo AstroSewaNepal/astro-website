@@ -369,7 +369,9 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                     <div
                       className={clsx(
                         'flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20',
-                        fieldErrors.fullName ? 'border-red-500 focus-within:border-red-500' : 'border-Trinary focus-within:border-Trinary',
+                        fieldErrors.fullName
+                          ? 'border-red-500 focus-within:border-red-500'
+                          : 'border-Trinary focus-within:border-Trinary',
                       )}
                     >
                       <input
@@ -404,10 +406,17 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                       type="button"
                       className={clsx(
                         'w-full flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20 cursor-pointer text-left font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px]',
-                        fieldErrors.dateOfBirth ? 'border-red-500 focus-within:border-red-500' : 'border-Trinary focus-within:border-Trinary',
+                        fieldErrors.dateOfBirth
+                          ? 'border-red-500 focus-within:border-red-500'
+                          : 'border-Trinary focus-within:border-Trinary',
                       )}
                     >
-                      <span className={clsx('flex-1 min-w-0', dateOfBirthValue ? 'text-[#2f2f2f]' : 'text-[#464646]')}>
+                      <span
+                        className={clsx(
+                          'flex-1 min-w-0',
+                          dateOfBirthValue ? 'text-[#2f2f2f]' : 'text-[#464646]',
+                        )}
+                      >
                         {dateOfBirthValue || 'Select date of birth'}
                       </span>
                       <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary" />
@@ -465,7 +474,9 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                     <div
                       className={clsx(
                         'relative flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20',
-                        fieldErrors.gender ? 'border-red-500 focus-within:border-red-500' : 'border-Trinary focus-within:border-Trinary',
+                        fieldErrors.gender
+                          ? 'border-red-500 focus-within:border-red-500'
+                          : 'border-Trinary focus-within:border-Trinary',
                       )}
                     >
                       <select
@@ -506,8 +517,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                 />
 
                 <p className="font-mukta text-[10px] sm:text-[11px] md:text-[12px] lg:text-[13px] text-[#5D1409]">
-                  <span className="font-bold">Note:</span> Without time of birth, we can still achieve up to{' '}
-                  <span className="font-bold">80% accurate</span> prediction
+                  <span className="font-bold">Note:</span> Without time of birth, we can still
+                  achieve up to <span className="font-bold">80% accurate</span> prediction
                 </p>
 
                 <button

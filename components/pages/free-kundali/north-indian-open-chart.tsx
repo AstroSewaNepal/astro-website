@@ -360,7 +360,11 @@ export function NorthIndianOpenChartWithPlanets({
                 {signLabel ? (
                   <span
                     className="font-mukta font-semibold text-primary [text-shadow:0_0_4px_rgba(255,255,255,0.9)]"
-                    style={{ fontSize: Math.round(fzSign * dense), lineHeight: 1, marginBottom: '0.18rem' }}
+                    style={{
+                      fontSize: Math.round(fzSign * dense),
+                      lineHeight: 1,
+                      marginBottom: '0.18rem',
+                    }}
                   >
                     {signLabel}
                   </span>

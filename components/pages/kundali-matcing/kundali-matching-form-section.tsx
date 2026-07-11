@@ -238,7 +238,9 @@ const InputPill = ({
     <span
       className={clsx(
         'flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20',
-        error ? 'border-red-500 focus-within:border-red-500' : 'border-Trinary focus-within:border-Trinary',
+        error
+          ? 'border-red-500 focus-within:border-red-500'
+          : 'border-Trinary focus-within:border-Trinary',
       )}
     >
       <input
@@ -253,11 +255,7 @@ const InputPill = ({
         onInput={onInput}
         className="flex-1 min-w-0 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] placeholder:text-[#464646] outline-none disabled:opacity-50 disabled:cursor-not-allowed"
       />
-      {rightIcon ? (
-        <span className="shrink-0 self-center text-primary">
-          {rightIcon}
-        </span>
-      ) : null}
+      {rightIcon ? <span className="shrink-0 self-center text-primary">{rightIcon}</span> : null}
     </span>
     <FieldError message={error} />
   </div>
@@ -302,10 +300,14 @@ const DatePickerPill = ({
       onClick={() => onOpenChange(true)}
       className={clsx(
         'w-full flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20 cursor-pointer text-left font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px]',
-        error ? 'border-red-500 focus-within:border-red-500' : 'border-Trinary focus-within:border-Trinary',
+        error
+          ? 'border-red-500 focus-within:border-red-500'
+          : 'border-Trinary focus-within:border-Trinary',
       )}
     >
-      <span className={clsx('flex-1 min-w-0 truncate', value ? 'text-[#2f2f2f]' : 'text-[#464646]')}>
+      <span
+        className={clsx('flex-1 min-w-0 truncate', value ? 'text-[#2f2f2f]' : 'text-[#464646]')}
+      >
         {value || 'Select date of birth'}
       </span>
       <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary" />
@@ -329,7 +331,9 @@ const SelectPill = ({ id, label, name, className, error }: SelectPillProps) => (
     <span
       className={clsx(
         'relative flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20',
-        error ? 'border-red-500 focus-within:border-red-500' : 'border-Trinary focus-within:border-Trinary',
+        error
+          ? 'border-red-500 focus-within:border-red-500'
+          : 'border-Trinary focus-within:border-Trinary',
       )}
     >
       <select
@@ -341,9 +345,15 @@ const SelectPill = ({ id, label, name, className, error }: SelectPillProps) => (
         <option value="" disabled className="text-[#464646]">
           Select
         </option>
-        <option value="male" className="text-[#2f2f2f]">Male</option>
-        <option value="female" className="text-[#2f2f2f]">Female</option>
-        <option value="other" className="text-[#2f2f2f]">Other</option>
+        <option value="male" className="text-[#2f2f2f]">
+          Male
+        </option>
+        <option value="female" className="text-[#2f2f2f]">
+          Female
+        </option>
+        <option value="other" className="text-[#2f2f2f]">
+          Other
+        </option>
       </select>
       <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-primary">
         <ChevronIcon />

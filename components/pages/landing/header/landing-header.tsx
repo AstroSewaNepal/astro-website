@@ -87,7 +87,11 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
         { title: 'Rashi Calculator', link: '/calculators/rashi-calculator' },
       ],
     },
-    { title: d.header.nav.aboutUs, link: '/about-us', children: [{ title: 'Download App', link: '/download-app' }] },
+    {
+      title: d.header.nav.aboutUs,
+      link: '/about-us',
+      children: [{ title: 'Download App', link: '/download-app' }],
+    },
     { title: d.header.nav.blog, link: '/blogs' },
     {
       title: uiLanguage === ELanguage.NEPALI ? 'क्यालेन्डर' : 'Calendar',
