@@ -14,7 +14,8 @@ const PanchangCalendarPageContent: React.FC = () => {
         </h1>
 
         <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] mb-3">
-          Check today&apos;s Tithi, Nakshatra, Yoga, Karana, Rahu Kaal, sunrise, and moonrise for your location. Updated daily with real ephemeris data.
+          Check today&apos;s Tithi, Nakshatra, Yoga, Karana, Rahu Kaal, sunrise, and moonrise for
+          your location. Updated daily with real ephemeris data.
         </p>
 
         <hr className="border-t border-[#c0785a] mb-6" />
@@ -24,13 +25,13 @@ const PanchangCalendarPageContent: React.FC = () => {
         </h2>
 
         <p className="text-[16px] leading-6 md:text-[24px] md:leading-[34px] font-normal font-mukta text-Paragraph w-full mb-8 md:mb-10 text-justify">
-          The Panchang, also written Panchagam, is the Hindu almanac used to identify auspicious
-          and inauspicious timings for daily life. It is computed from the positions of the Sun,
-          Moon, and planets and rests on five elements: Tithi (lunar day), Vara (day of the week),
-          Nakshatra (the Moon&apos;s current lunar mansion), Yoga (a quality derived from the combined
-          positions of Sun and Moon), and Karana (half a Tithi, used for finer timing). Knowing the
-          Panchang helps you choose the right moment for rituals, new beginnings, travel, signing
-          agreements, and important conversations.
+          The Panchang, also written Panchagam, is the Hindu almanac used to identify auspicious and
+          inauspicious timings for daily life. It is computed from the positions of the Sun, Moon,
+          and planets and rests on five elements: Tithi (lunar day), Vara (day of the week),
+          Nakshatra (the Moon&apos;s current lunar mansion), Yoga (a quality derived from the
+          combined positions of Sun and Moon), and Karana (half a Tithi, used for finer timing).
+          Knowing the Panchang helps you choose the right moment for rituals, new beginnings,
+          travel, signing agreements, and important conversations.
         </p>
 
         <PanchangTodaySection />
@@ -43,10 +44,10 @@ const PanchangCalendarPageContent: React.FC = () => {
           <div className="mb-4">
             <h3 className="text-[16px] font-sahitya font-bold text-[#7b1c1c] mb-2">Tithi:</h3>
             <p className="text-[16px] leading-6 md:text-[20px] md:leading-[30px] font-normal font-mukta text-Paragraph text-justify">
-              The lunar day. It changes roughly once every 24 hours based on the Moon&apos;s movement
-              relative to the Sun. Different Tithis are auspicious for different activities. Some
-              are good for starting new things and others are better for rest, ritual, or
-              completion.
+              The lunar day. It changes roughly once every 24 hours based on the Moon&apos;s
+              movement relative to the Sun. Different Tithis are auspicious for different
+              activities. Some are good for starting new things and others are better for rest,
+              ritual, or completion.
             </p>
           </div>
 

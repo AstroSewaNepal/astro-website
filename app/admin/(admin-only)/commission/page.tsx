@@ -18,7 +18,10 @@ import { Input } from '@/components/ui/input';
 import { useCommission, useUpdateCommission } from '@/hooks/use-commission';
 
 const schema = z.object({
-  commissionPercentage: z.coerce.number().min(0, 'Must be 0 or greater').max(100, 'Must be 100 or less'),
+  commissionPercentage: z.coerce
+    .number()
+    .min(0, 'Must be 0 or greater')
+    .max(100, 'Must be 100 or less'),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -27,7 +30,13 @@ function formatDate(iso: string | null) {
   if (!iso) return '—';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 export default function CommissionPage() {

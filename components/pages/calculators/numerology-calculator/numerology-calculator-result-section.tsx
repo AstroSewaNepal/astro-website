@@ -73,7 +73,9 @@ export default function NumerologyCalculatorResultSection() {
       <section className="pt-6 md:pt-12 pb-12">
         <div>
           <div className="rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center">
-            <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">Numerology Result</h1>
+            <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
+              Numerology Result
+            </h1>
             <p className="mt-4 font-mukta text-[16px] text-[#2f2f2f]">
               No result found. Please calculate again.
             </p>

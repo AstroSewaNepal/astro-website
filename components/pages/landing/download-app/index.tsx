@@ -13,11 +13,15 @@ const APPLE_STORE_URL = 'https://apps.apple.com/us/search?term=Astro%20Sewa';
 
 const DownloadApp: React.FC<DownloadAppProps> = ({ className, paddingClassName }) => {
   return (
-    <section className={clsx(className, 'w-full px-0 border-b border-b-[#79787A] pb-6 md:pb-[50px]')}>
-      <div className={clsx(
-        'w-full max-w-full mx-auto flex flex-col items-center justify-between gap-8 px-4 md:gap-12 md:px-6 lg:flex-row lg:items-center lg:gap-24 lg:px-4 xl:gap-36',
-        paddingClassName || 'py-6 md:py-8 lg:py-10'
-      )}>
+    <section
+      className={clsx(className, 'w-full px-0 border-b border-b-[#79787A] pb-6 md:pb-[50px]')}
+    >
+      <div
+        className={clsx(
+          'w-full max-w-full mx-auto flex flex-col items-center justify-between gap-8 px-4 md:gap-12 md:px-6 lg:flex-row lg:items-center lg:gap-24 lg:px-4 xl:gap-36',
+          paddingClassName || 'py-6 md:py-8 lg:py-10',
+        )}
+      >
         {/* Left Content */}
         <div className="flex flex-col gap-4 md:gap-5 lg:gap-6 max-w-full lg:max-w-[684px] w-full lg:w-auto text-center lg:text-left">
           {/* Title */}

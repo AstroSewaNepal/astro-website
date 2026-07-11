@@ -32,7 +32,6 @@ const AboutUsHero: React.FC = () => {
               to understand your birth chart more deeply, our astrologers meet you where you are.
               Every session is personalised to your chart, not a script.
             </p>
-
           </div>
         </div>
       </div>

@@ -49,7 +49,7 @@ export default function RashiCalculatorSection() {
         },
         {
           title: 'Why Might My Rashi Differ from My Western Zodiac Sign?',
-          body: 'Vedic and Western astrology use different zodiac systems. Western astrology uses the tropical zodiac, fixed to the seasons. Vedic astrology uses the sidereal zodiac, aligned with the actual positions of the stars. Because of the precession of the equinoxes, the two systems are currently offset by about 23 to 24 degrees. This means most people\'s Vedic moon sign is one sign earlier than their Western sun sign.',
+          body: "Vedic and Western astrology use different zodiac systems. Western astrology uses the tropical zodiac, fixed to the seasons. Vedic astrology uses the sidereal zodiac, aligned with the actual positions of the stars. Because of the precession of the equinoxes, the two systems are currently offset by about 23 to 24 degrees. This means most people's Vedic moon sign is one sign earlier than their Western sun sign.",
         },
         {
           title: 'What If I Do Not Know My Exact Birth Time?',

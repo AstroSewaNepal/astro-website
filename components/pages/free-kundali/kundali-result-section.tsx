@@ -743,8 +743,6 @@ const KundaliResultSection: React.FC = () => {
             No generated kundali result found. Please generate your kundali first.
           </p>
         )}
-
-
       </div>
     </section>
   );

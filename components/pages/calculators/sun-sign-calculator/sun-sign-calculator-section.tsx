@@ -39,7 +39,7 @@ export default function SunSignCalculatorSection() {
       shortDescription="Find your true Vedic sun sign using the Lahiri ayanamsa and your exact birth time. Not the newspaper date range from Western astrology."
       longDescription={[
         'Most people know their sun sign from Western horoscopes. In Vedic astrology, the sun sign is calculated differently. Western astrology uses the tropical zodiac, which is tied to the seasons and the spring equinox. Vedic astrology uses the sidereal zodiac, which tracks the actual positions of the stars in the sky.',
-        'Because Earth\'s axis shifts slowly over thousands of years, the two zodiac systems have drifted apart by about 23 to 24 degrees. This difference is called the ayanamsa. It means your Vedic sun sign is often one sign earlier than your Western sign. This calculator uses the Lahiri ayanamsa, which is the standard in Vedic astrology, to give you an accurate sidereal result from your exact birth time and place.',
+        "Because Earth's axis shifts slowly over thousands of years, the two zodiac systems have drifted apart by about 23 to 24 degrees. This difference is called the ayanamsa. It means your Vedic sun sign is often one sign earlier than your Western sign. This calculator uses the Lahiri ayanamsa, which is the standard in Vedic astrology, to give you an accurate sidereal result from your exact birth time and place.",
       ]}
       infoSections={[
         {
@@ -56,7 +56,7 @@ export default function SunSignCalculatorSection() {
         },
         {
           title: 'What Is the Lahiri Ayanamsa?',
-          body: 'The ayanamsa is the difference in degrees between the tropical zodiac used in Western astrology and the sidereal zodiac used in Vedic astrology. The Lahiri ayanamsa is the most widely used standard for calculating this difference in Vedic astrology. It was officially adopted by the Indian government for the national calendar in 1955. Currently the Lahiri ayanamsa is approximately 23 to 24 degrees, which is why most people\'s Vedic sun sign is one sign behind their Western sun sign.',
+          body: "The ayanamsa is the difference in degrees between the tropical zodiac used in Western astrology and the sidereal zodiac used in Vedic astrology. The Lahiri ayanamsa is the most widely used standard for calculating this difference in Vedic astrology. It was officially adopted by the Indian government for the national calendar in 1955. Currently the Lahiri ayanamsa is approximately 23 to 24 degrees, which is why most people's Vedic sun sign is one sign behind their Western sun sign.",
         },
         {
           title: 'Do I Need My Exact Birth Time for This Calculator?',

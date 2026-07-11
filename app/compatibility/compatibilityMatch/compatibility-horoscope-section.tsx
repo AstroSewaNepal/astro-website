@@ -254,7 +254,7 @@ export function CompatibilityHoroscopeSection({
           </button>
         </div>
 
-        {(subtitleHeading || subtitle) ? (
+        {subtitleHeading || subtitle ? (
           <div
             className={clsx(
               'px-1',
@@ -272,7 +272,12 @@ export function CompatibilityHoroscopeSection({
                   {subtitle}
                 </h2>
               ) : (
-                <p className={clsx('mt-3 font-mukta text-[16px] leading-[28px] text-[#5f5248] sm:text-[18px] sm:leading-[30px]', subtitleHeading ? 'mt-2' : '')}>
+                <p
+                  className={clsx(
+                    'mt-3 font-mukta text-[16px] leading-[28px] text-[#5f5248] sm:text-[18px] sm:leading-[30px]',
+                    subtitleHeading ? 'mt-2' : '',
+                  )}
+                >
                   {subtitle}
                 </p>
               )

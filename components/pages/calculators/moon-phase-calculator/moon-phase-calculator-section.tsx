@@ -48,28 +48,23 @@ export default function MoonPhaseCalculatorSection() {
       infoSections={[
         {
           title: 'What Is a Tithi in Vedic Astrology?',
-          body:
-            'A Tithi is a lunar day defined by the angular distance between the Sun and Moon. Every 12 degrees of separation between them equals one Tithi. There are 15 Tithis in the waxing half (Shukla Paksha) and 15 in the waning half (Krishna Paksha). Each Tithi has a ruling deity and a general quality. Some are auspicious for new beginnings and others are better for rest or spiritual practice.',
+          body: 'A Tithi is a lunar day defined by the angular distance between the Sun and Moon. Every 12 degrees of separation between them equals one Tithi. There are 15 Tithis in the waxing half (Shukla Paksha) and 15 in the waning half (Krishna Paksha). Each Tithi has a ruling deity and a general quality. Some are auspicious for new beginnings and others are better for rest or spiritual practice.',
         },
         {
           title: 'What Does My Birth Moon Phase Tell Me?',
-          body:
-            'People born during a waxing moon tend to have outward, building energy. They often thrive when initiating and growing things. Those born in the waning phase may be more reflective and attuned to completion and release. The specific Tithi adds a further layer of detail, describing the quality of the lunar energy present at your birth.',
+          body: 'People born during a waxing moon tend to have outward, building energy. They often thrive when initiating and growing things. Those born in the waning phase may be more reflective and attuned to completion and release. The specific Tithi adds a further layer of detail, describing the quality of the lunar energy present at your birth.',
         },
         {
           title: 'How Do I Use the Panchanga for Daily Timing?',
-          body:
-            'Once you know your birth Tithi, you can use the daily Panchanga on AstroSewa to identify which days of each month naturally resonate with your birth energy. The Panchanga lists the current Tithi, Nakshatra, Yoga, Karana, and auspicious windows for each day. This helps you align important actions with the natural rhythm of the lunar cycle.',
+          body: 'Once you know your birth Tithi, you can use the daily Panchanga on AstroSewa to identify which days of each month naturally resonate with your birth energy. The Panchanga lists the current Tithi, Nakshatra, Yoga, Karana, and auspicious windows for each day. This helps you align important actions with the natural rhythm of the lunar cycle.',
         },
         {
           title: 'What Is the Difference Between Moon Phase and Moon Sign?',
-          body:
-            'Moon phase (Tithi) tells you the relationship between the Sun and Moon at your birth, specifically how much of the Moon was illuminated. Moon sign (Rashi) tells you which zodiac sign the Moon was positioned in at the time of your birth. Both are important in Vedic astrology but they tell you different things. Your Rashi is used for personality analysis, Dasha calculations, and Kundali matching. Your birth Tithi adds detail about your emotional rhythms and the quality of the lunar energy you carry.',
+          body: 'Moon phase (Tithi) tells you the relationship between the Sun and Moon at your birth, specifically how much of the Moon was illuminated. Moon sign (Rashi) tells you which zodiac sign the Moon was positioned in at the time of your birth. Both are important in Vedic astrology but they tell you different things. Your Rashi is used for personality analysis, Dasha calculations, and Kundali matching. Your birth Tithi adds detail about your emotional rhythms and the quality of the lunar energy you carry.',
         },
         {
           title: 'Do I Need an Exact Birth Time for This Calculator?',
-          body:
-            'Yes, birth time matters for an accurate Tithi result. A Tithi changes roughly once every 24 hours but the transition can happen at any point during the day or night. If your birth was close to the moment a Tithi changed, an incorrect birth time could give you the wrong Tithi. If you are unsure of your birth time, enter what you know and the calculator will flag the level of confidence in the result.',
+          body: 'Yes, birth time matters for an accurate Tithi result. A Tithi changes roughly once every 24 hours but the transition can happen at any point during the day or night. If your birth was close to the moment a Tithi changed, an incorrect birth time could give you the wrong Tithi. If you are unsure of your birth time, enter what you know and the calculator will flag the level of confidence in the result.',
         },
       ]}
     >

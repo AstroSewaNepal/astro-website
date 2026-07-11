@@ -267,7 +267,9 @@ export function createColumns({
       cell: ({ row }) => {
         const astrologerId = row.original.astrologerId;
         const isPending = pendingId === astrologerId;
-        return <RowActions astrologerId={astrologerId} isPending={isPending} onDecision={onDecision} />;
+        return (
+          <RowActions astrologerId={astrologerId} isPending={isPending} onDecision={onDecision} />
+        );
       },
     },
   ];

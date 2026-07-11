@@ -12,7 +12,8 @@ const KundaliDetails: React.FC = () => {
           Kundali: Free Birth Chart and Kundali Matching
         </h1>
         <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
-          Generate your free Janam Kundali or check Kundali matching for marriage compatibility. Complete Vedic analysis in minutes.
+          Generate your free Janam Kundali or check Kundali matching for marriage compatibility.
+          Complete Vedic analysis in minutes.
         </p>
       </header>
 

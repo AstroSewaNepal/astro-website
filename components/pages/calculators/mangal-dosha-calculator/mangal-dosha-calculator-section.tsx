@@ -53,28 +53,23 @@ export default function MangalDoshaCalculatorSection() {
       infoSections={[
         {
           title: 'What Exactly Is Mangal Dosha?',
-          body:
-            'Mangal Dosha occurs when Mars is placed in the 1st, 2nd, 4th, 7th, 8th, or 12th house of the Lagna chart. These houses relate to the self, family, home, marriage, longevity, and emotional wellbeing. A strongly placed Mars in these houses can affect partnership dynamics. The 7th and 8th house placements are generally considered most significant for marriage.',
+          body: 'Mangal Dosha occurs when Mars is placed in the 1st, 2nd, 4th, 7th, 8th, or 12th house of the Lagna chart. These houses relate to the self, family, home, marriage, longevity, and emotional wellbeing. A strongly placed Mars in these houses can affect partnership dynamics. The 7th and 8th house placements are generally considered most significant for marriage.',
         },
         {
           title: 'Can Mangal Dosha Be Cancelled?',
-          body:
-            'Yes, and this is important to know before drawing any conclusions. If both partners have Mangal Dosha, it is traditionally considered neutralised. Mars in its own signs (Aries, Scorpio) or exaltation (Capricorn) significantly reduces its negative expression. Jupiter aspecting Mars is another common cancellation factor. Our calculator checks for these conditions and flags them in your result.',
+          body: 'Yes, and this is important to know before drawing any conclusions. If both partners have Mangal Dosha, it is traditionally considered neutralised. Mars in its own signs (Aries, Scorpio) or exaltation (Capricorn) significantly reduces its negative expression. Jupiter aspecting Mars is another common cancellation factor. Our calculator checks for these conditions and flags them in your result.',
         },
         {
           title: 'Should I Be Worried If My Result Shows Mangal Dosha?',
-          body:
-            'Not necessarily. Mangal Dosha is one factor among many in a birth chart and does not determine the outcome of a marriage on its own. Many people with uncancelled Mangal Dosha have strong, lasting relationships, especially when other compatibility factors are positive. If you want to understand its specific strength in your chart, book a consultation with one of our astrologers for a full reading.',
+          body: 'Not necessarily. Mangal Dosha is one factor among many in a birth chart and does not determine the outcome of a marriage on its own. Many people with uncancelled Mangal Dosha have strong, lasting relationships, especially when other compatibility factors are positive. If you want to understand its specific strength in your chart, book a consultation with one of our astrologers for a full reading.',
         },
         {
           title: 'Which Houses Create the Most Serious Mangal Dosha?',
-          body:
-            'All six house placements create Mangal Dosha to some degree, but they are not all equally serious. Placement in the 7th house, which governs marriage, and the 8th house, which governs longevity, are generally considered the strongest forms. Placement in the 1st or 4th house is usually considered milder. The final assessment always depends on other factors in the chart, including the sign Mars is in and any aspects it receives.',
+          body: 'All six house placements create Mangal Dosha to some degree, but they are not all equally serious. Placement in the 7th house, which governs marriage, and the 8th house, which governs longevity, are generally considered the strongest forms. Placement in the 1st or 4th house is usually considered milder. The final assessment always depends on other factors in the chart, including the sign Mars is in and any aspects it receives.',
         },
         {
           title: 'Do Both Partners Need to Be Checked?',
-          body:
-            'Yes. Kundali matching for marriage checks both partners for Mangal Dosha. If only one partner has it, traditional astrology recommends careful evaluation. If both partners have it, the Dosha is generally considered to cancel out. This is why checking both charts together, which our Kundali matching tool does, gives you a more complete picture than checking one chart alone.',
+          body: 'Yes. Kundali matching for marriage checks both partners for Mangal Dosha. If only one partner has it, traditional astrology recommends careful evaluation. If both partners have it, the Dosha is generally considered to cancel out. This is why checking both charts together, which our Kundali matching tool does, gives you a more complete picture than checking one chart alone.',
         },
       ]}
     >
