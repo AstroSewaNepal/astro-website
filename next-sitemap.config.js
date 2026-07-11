@@ -35,7 +35,7 @@ module.exports = {
         lastmod: post.updated_at || new Date().toISOString(),
       }));
     } catch (error) {
-      console.error("Sitemap Ghost Fetch Error:", error);
+      console.warn("Sitemap Ghost Fetch Error:", error.message);
       return []; 
     }
   },
