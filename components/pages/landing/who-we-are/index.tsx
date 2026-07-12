@@ -22,9 +22,9 @@ const WhoWeAre: React.FC = () => {
           </h2>
           <p className="font-mukta text-lg md:text-xl lg:text-2xl xl:text-2xl 2xl:text-[28px] leading-8 md:leading-9 lg:leading-10 xl:leading-[42px] 2xl:leading-[54px] text-[#FFFFFFCF] max-w-[700px] mt-2 md:mt-3 lg:mt-4">
             AstroSewa is an online Vedic astrology platform that connects you with verified
-            astrologers for consultations, Kundali readings, horoscopes, compatibility reports,
-            and more. We combine the depth of classical Jyotish with tools that are simple enough
-            for anyone to use.
+            astrologers for consultations, Kundali readings, horoscopes, compatibility reports, and
+            more. We combine the depth of classical Jyotish with tools that are simple enough for
+            anyone to use.
           </p>
           <button className="mt-4 md:mt-5 lg:mt-6 rounded-3xl bg-white max-w-full lg:max-w-[279px] w-full lg:w-auto py-2.5 md:py-3 lg:py-3.5 px-6 md:px-8 flex items-center justify-center gap-1 transition-all duration-300 hover:bg-gray-50">
             <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-primary font-normal">

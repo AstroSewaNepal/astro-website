@@ -15,31 +15,26 @@ const CALCULATOR_TYPES = [
   { value: 'soul-urge', label: 'Soul Urge Number' },
 ];
 
-const FIELD_LABEL_CLASS =
-  'mb-2 block font-mukta text-sm text-Trinary';
+const FIELD_LABEL_CLASS = 'mb-2 block font-mukta text-sm text-Trinary';
 
 const ERROR_TEXT_CLASS = 'mt-0.5 h-[18px] text-xs leading-[18px] text-red-600';
 
 const INFO_SECTIONS = [
   {
     title: 'What Is Numerology?',
-    body:
-      'Numerology is the study of how numbers derived from your name and birth date reveal patterns in your personality, life purpose, and inner motivations. The Pythagorean system assigns a value from 1 to 9 to each letter of the alphabet. These values are then used to calculate three core numbers.\n\nLife Path Number: Derived from your birth date. The most significant number in your chart. It describes your core purpose and the main themes running through your life.\n\nExpression Number: Derived from your full birth name. It reflects your natural abilities and the way you express yourself in the world.\n\nSoul Urge Number: Derived from only the vowels in your name. It reveals your deepest desires and inner motivations.',
+    body: 'Numerology is the study of how numbers derived from your name and birth date reveal patterns in your personality, life purpose, and inner motivations. The Pythagorean system assigns a value from 1 to 9 to each letter of the alphabet. These values are then used to calculate three core numbers.\n\nLife Path Number: Derived from your birth date. The most significant number in your chart. It describes your core purpose and the main themes running through your life.\n\nExpression Number: Derived from your full birth name. It reflects your natural abilities and the way you express yourself in the world.\n\nSoul Urge Number: Derived from only the vowels in your name. It reveals your deepest desires and inner motivations.',
   },
   {
     title: 'How Is My Number Calculated?',
-    body:
-      'Each letter in the Pythagorean system has a fixed number value from 1 to 9. Your name is converted letter by letter, and the resulting digits are added together and reduced to a single digit. Master numbers (11, 22, and 33) are not reduced further because they carry special significance. Your birth date digits are summed and reduced the same way for your Life Path Number. This calculator does the maths instantly.',
+    body: 'Each letter in the Pythagorean system has a fixed number value from 1 to 9. Your name is converted letter by letter, and the resulting digits are added together and reduced to a single digit. Master numbers (11, 22, and 33) are not reduced further because they carry special significance. Your birth date digits are summed and reduced the same way for your Life Path Number. This calculator does the maths instantly.',
   },
   {
     title: 'What Are Master Numbers?',
-    body:
-      'Master numbers are 11, 22, and 33. When your Life Path Number or Expression Number reduces to one of these, it is not reduced further to a single digit. Master numbers are considered to carry amplified energy and greater potential. Number 11 is associated with intuition and spiritual insight. Number 22 is associated with building and practical mastery. Number 33 is associated with compassion and teaching. Not everyone has a master number and that is not a disadvantage. Single digit numbers are equally powerful.',
+    body: 'Master numbers are 11, 22, and 33. When your Life Path Number or Expression Number reduces to one of these, it is not reduced further to a single digit. Master numbers are considered to carry amplified energy and greater potential. Number 11 is associated with intuition and spiritual insight. Number 22 is associated with building and practical mastery. Number 33 is associated with compassion and teaching. Not everyone has a master number and that is not a disadvantage. Single digit numbers are equally powerful.',
   },
   {
     title: 'Which Name Should I Use?',
-    body:
-      'Use your full birth name as it appears on your birth certificate, including any middle names. Do not use a nickname or a married name. The birth name carries the numerological signature you were born with. If you have changed your name legally, some numerologists will calculate both the birth name and the current name to see how the energies interact, but the birth name is always the starting point.',
+    body: 'Use your full birth name as it appears on your birth certificate, including any middle names. Do not use a nickname or a married name. The birth name carries the numerological signature you were born with. If you have changed your name legally, some numerologists will calculate both the birth name and the current name to see how the energies interact, but the birth name is always the starting point.',
   },
 ];
 
@@ -138,7 +133,8 @@ export default function NumerologyCalculatorSection() {
             Numerology Calculator: Find Your Life Path and Core Numbers
           </h1>
           <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
-            Calculate your Life Path Number, Expression Number, and Soul Urge Number using Pythagorean numerology.
+            Calculate your Life Path Number, Expression Number, and Soul Urge Number using
+            Pythagorean numerology.
           </p>
           <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
             Enter your full name and date of birth. Birthplace is not needed for this calculator.
@@ -260,7 +256,8 @@ export default function NumerologyCalculatorSection() {
               Frequently Asked Questions
             </h2>
             <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px] text-center mt-2 md:mt-4 lg:mt-6 px-4">
-              Find quick answers to common questions about our numerology calculator and how to use your core numbers.
+              Find quick answers to common questions about our numerology calculator and how to use
+              your core numbers.
             </p>
           </div>
           <div className="mt-6 md:mt-8 lg:mt-10 space-y-4 md:space-y-6 lg:space-y-[34px]">

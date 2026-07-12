@@ -190,17 +190,13 @@ export function HoroscopeHeroSignsSection({
         headingLevel={selectedRange === 'today' ? 'h1' : 'h2'}
         headingAlign="center"
         title={
-          hideTitle ? '' : (
-            selectedRange === 'today'
+          hideTitle
+            ? ''
+            : selectedRange === 'today'
               ? "Daily Horoscope: Today's Predictions for All 12 Signs"
               : dict.range[selectedRange].title
-          )
         }
-        subtitleHeading={
-          selectedRange === 'today'
-            ? 'Select Your Zodiac Sign'
-            : undefined
-        }
+        subtitleHeading={selectedRange === 'today' ? 'Select Your Zodiac Sign' : undefined}
         subtitle={
           selectedRange === 'today'
             ? "Find your sign below for today's horoscope. Each reading covers love, career, health, and energy based on current planetary movements."

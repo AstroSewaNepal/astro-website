@@ -132,7 +132,9 @@ export default function CalculatorSection({
 
               {resultText ? (
                 <div className="rounded-[20px] border border-[#e5c5b9] bg-[#fff8f2] p-5">
-                  <p className="font-tiro-devanagari text-[20px] font-bold text-[#5d1409] leading-[1.2]">{resultTitle}</p>
+                  <p className="font-tiro-devanagari text-[20px] font-bold text-[#5d1409] leading-[1.2]">
+                    {resultTitle}
+                  </p>
                   <p className="mt-2 font-mukta text-[16px] text-[#2f2f2f]">{resultText}</p>
                 </div>
               ) : null}

@@ -33,8 +33,7 @@ const AboutUsWhyUs: React.FC<Props> = ({ compact = false }) => {
     },
     {
       title: 'Accessible Anywhere',
-      description:
-        'Web, iOS, and Android ready. Available in English, Hindi, and Nepali.',
+      description: 'Web, iOS, and Android ready. Available in English, Hindi, and Nepali.',
       icon: SecurePaymentIcon,
     },
   ];

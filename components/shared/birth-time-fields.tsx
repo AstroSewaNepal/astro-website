@@ -211,10 +211,7 @@ export function UnknownBirthTimeCheckbox({
   className,
 }: UnknownBirthTimeCheckboxProps) {
   const borderColor = variant === 'calculator' ? 'border-[#5D1409]' : 'border-primary';
-  const textColor =
-    variant === 'calculator'
-      ? 'text-[#2f2f2f]'
-      : 'text-primary';
+  const textColor = variant === 'calculator' ? 'text-[#2f2f2f]' : 'text-primary';
 
   return (
     <label

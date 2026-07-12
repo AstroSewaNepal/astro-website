@@ -56,7 +56,13 @@ const Footer: React.FC = () => {
                 className="w-[40px] h-[40px] flex items-center justify-center hover:opacity-85 transition-opacity"
                 aria-label="Astro Sewa on Facebook"
               >
-                <Image src={FBLogo} alt="Facebook" width={40} height={40} className="object-contain" />
+                <Image
+                  src={FBLogo}
+                  alt="Facebook"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
               </a>
 
               {/* Instagram */}
@@ -67,7 +73,13 @@ const Footer: React.FC = () => {
                 className="w-[40px] h-[40px] flex items-center justify-center hover:opacity-85 transition-opacity"
                 aria-label="Astro Sewa on Instagram"
               >
-                <Image src={InstagramLogo} alt="Instagram" width={40} height={40} className="object-contain" />
+                <Image
+                  src={InstagramLogo}
+                  alt="Instagram"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
               </a>
 
               {/* TikTok */}
@@ -78,7 +90,13 @@ const Footer: React.FC = () => {
                 className="w-[40px] h-[40px] flex items-center justify-center hover:opacity-85 transition-opacity"
                 aria-label="Astro Sewa on TikTok"
               >
-                <Image src={TiktokLogo} alt="TikTok" width={40} height={40} className="object-contain" />
+                <Image
+                  src={TiktokLogo}
+                  alt="TikTok"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
               </a>
 
               {/* YouTube */}
@@ -89,7 +107,13 @@ const Footer: React.FC = () => {
                 className="w-[40px] h-[40px] flex items-center justify-center hover:opacity-85 transition-opacity"
                 aria-label="Astro Sewa on YouTube"
               >
-                <Image src={YoutubeLogo} alt="YouTube" width={40} height={40} className="object-contain" />
+                <Image
+                  src={YoutubeLogo}
+                  alt="YouTube"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
               </a>
 
               {/* X */}
@@ -111,7 +135,13 @@ const Footer: React.FC = () => {
                 className="w-[40px] h-[40px] flex items-center justify-center hover:opacity-85 transition-opacity"
                 aria-label="Astro Sewa on LinkedIn"
               >
-                <Image src={LinkedinLogo} alt="LinkedIn" width={40} height={40} className="object-contain" />
+                <Image
+                  src={LinkedinLogo}
+                  alt="LinkedIn"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
               </a>
             </div>
           </div>

@@ -18,7 +18,8 @@ const Calculators: React.FC = () => {
           Free Astrology Calculators
         </h1>
         <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
-          Find your moon sign, check Mangal Dosha, calculate your Dasha timeline, or explore numerology. All powered by real Vedic ephemeris data.
+          Find your moon sign, check Mangal Dosha, calculate your Dasha timeline, or explore
+          numerology. All powered by real Vedic ephemeris data.
         </p>
 
         <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1200px]">
@@ -286,10 +287,16 @@ const Calculators: React.FC = () => {
             Powered by Real Vedic Data
           </p>
           <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1400px]">
-            Every calculator on this page uses VedAstro, a real ephemeris engine that computes planetary positions from your exact birth time, date, and location. This is not a date-range lookup table. The results reflect where the planets actually were when you were born.
+            Every calculator on this page uses VedAstro, a real ephemeris engine that computes
+            planetary positions from your exact birth time, date, and location. This is not a
+            date-range lookup table. The results reflect where the planets actually were when you
+            were born.
           </p>
           <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1400px]">
-            For the best accuracy, enter your exact birth time. If you do not know it, most calculators will still return a result and will tell you the confidence level. For readings where timing matters most, like Dasha periods or Mangal Dosha, a full chart consultation with one of our astrologers will give you the most complete picture.
+            For the best accuracy, enter your exact birth time. If you do not know it, most
+            calculators will still return a result and will tell you the confidence level. For
+            readings where timing matters most, like Dasha periods or Mangal Dosha, a full chart
+            consultation with one of our astrologers will give you the most complete picture.
           </p>
         </div>
       </div>

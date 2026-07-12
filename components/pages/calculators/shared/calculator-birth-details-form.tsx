@@ -154,9 +154,7 @@ export default function CalculatorBirthDetailsForm({
       <div className="rounded-[32px] border border-[#BE7B71] bg-transparent p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.08)]">
         <div className="grid grid-cols-2 gap-x-3 sm:gap-x-4 md:gap-x-5 lg:gap-x-6 gap-y-0 sm:gap-y-1 lg:gap-y-2 mb-2 sm:mb-3">
           <div>
-            <label className="mb-2 block font-mukta text-sm text-Trinary">
-              Enter full name
-            </label>
+            <label className="mb-2 block font-mukta text-sm text-Trinary">Enter full name</label>
             <div className="flex h-[52px] box-border items-center overflow-hidden rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] transition-colors duration-200 focus-within:border-[#BE7B71] focus-within:ring-1 focus-within:ring-[#BE7B71]/20">
               <input
                 type="text"
@@ -188,9 +186,7 @@ export default function CalculatorBirthDetailsForm({
           </div>
 
           <div>
-            <label className="mb-2 block font-mukta text-sm text-Trinary">
-              Select gender
-            </label>
+            <label className="mb-2 block font-mukta text-sm text-Trinary">Select gender</label>
             <div className="relative w-full">
               <select
                 value={form.gender}

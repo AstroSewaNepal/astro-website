@@ -122,7 +122,9 @@ export const CityAutocompleteInput = ({
       <div
         className={clsx(
           'flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20',
-          error ? 'border-red-500 focus-within:border-red-500' : 'border-Trinary focus-within:border-Trinary',
+          error
+            ? 'border-red-500 focus-within:border-red-500'
+            : 'border-Trinary focus-within:border-Trinary',
         )}
       >
         <input

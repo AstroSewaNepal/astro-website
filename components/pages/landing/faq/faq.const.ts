@@ -20,8 +20,7 @@ export const FAQ_LIST = [
   {
     id: 4,
     question: 'Are my birth details and consultations kept private?',
-    answer:
-      'Yes. Your information is fully confidential and is never shared with third parties.',
+    answer: 'Yes. Your information is fully confidential and is never shared with third parties.',
   },
   {
     id: 5,

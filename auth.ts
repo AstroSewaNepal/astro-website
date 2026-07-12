@@ -66,6 +66,7 @@ providers.push(
               email: string;
               fullName?: string;
               profilePicture?: { url: string };
+              roles?: string[];
             };
           };
 
@@ -76,6 +77,7 @@ providers.push(
             image: user.profilePicture?.url ?? null,
             backendAccessToken: accessToken,
             backendRefreshToken: refreshToken,
+            roles: user.roles ?? [],
           };
         } catch {
           return null;
@@ -111,6 +113,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 const u = user as UserWithTokens;
                 u.backendAccessToken = json.data.accessToken;
                 u.backendRefreshToken = json.data.refreshToken;
+                u.roles = json.data.user?.roles ?? [];
                 if (json.data.user?._id) user.id = json.data.user._id;
               }
             }
@@ -129,6 +132,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           token.backendAccessToken = u.backendAccessToken;
           token.backendRefreshToken = u.backendRefreshToken;
         }
+        token.roles = u.roles ?? [];
       }
       return token;
     },
@@ -140,6 +144,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.backendAccessToken = token.backendAccessToken as string;
         session.backendRefreshToken = token.backendRefreshToken as string;
       }
+      session.user.roles = (token.roles as string[]) ?? [];
       return session;
     },
     authorized({ auth: session, request: { nextUrl } }) {
@@ -163,6 +168,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 interface UserWithTokens {
   backendAccessToken?: string;
   backendRefreshToken?: string;
+  roles?: string[];
 }
 
 declare module 'next-auth' {
@@ -174,5 +180,6 @@ declare module 'next-auth' {
   interface User {
     backendAccessToken?: string;
     backendRefreshToken?: string;
+    roles?: string[];
   }
 }

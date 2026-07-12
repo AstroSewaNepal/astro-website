@@ -67,11 +67,7 @@ export default function CalculatorDatePicker({
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        <span
-          className={`flex-1 min-w-0 ${
-            value ? 'text-[#2f2f2f]' : 'text-Paragraph'
-          }`}
-        >
+        <span className={`flex-1 min-w-0 ${value ? 'text-[#2f2f2f]' : 'text-Paragraph'}`}>
           {displayValue}
         </span>
 

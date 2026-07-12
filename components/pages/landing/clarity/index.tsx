@@ -28,8 +28,8 @@ const Clarity: React.FC = () => {
             Find Clarity today
           </h2>
           <p className="font-mukta text-sm leading-[24px] text-[#FFFFFFCF] mt-2 md:mt-3 lg:mt-4 text-center lg:text-left whitespace-normal md:text-base lg:text-lg xl:text-xl">
-            Whether it is love, career, health, or a big decision ahead, our astrologers are
-            ready to guide you. Chat now or explore your free tools below.
+            Whether it is love, career, health, or a big decision ahead, our astrologers are ready
+            to guide you. Chat now or explore your free tools below.
           </p>
           <div className="mt-6 md:mt-8 flex flex-row flex-nowrap items-center justify-center lg:justify-start gap-2 md:gap-6">
             <button

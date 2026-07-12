@@ -20,7 +20,7 @@ const LOVE_CALCULATOR_FAQ = [
   {
     question: 'What Is the Kuta Matching System?',
     answer:
-      'Kuta matching is a Vedic method for comparing two people\'s birth charts across eight compatibility categories. These categories are Varna (spiritual nature), Vashya (natural influence), Tara (birth star compatibility), Yoni (instinctive nature), Graha Maitri (mental compatibility), Gana (temperament), Bhakut (emotional and financial compatibility), and Nadi (physical health and progeny). Each category carries a different point value and together they total 36 points.',
+      "Kuta matching is a Vedic method for comparing two people's birth charts across eight compatibility categories. These categories are Varna (spiritual nature), Vashya (natural influence), Tara (birth star compatibility), Yoni (instinctive nature), Graha Maitri (mental compatibility), Gana (temperament), Bhakut (emotional and financial compatibility), and Nadi (physical health and progeny). Each category carries a different point value and together they total 36 points.",
   },
   {
     question: 'What Does a High Score Mean?',
@@ -30,7 +30,7 @@ const LOVE_CALCULATOR_FAQ = [
   {
     question: 'Is a Low Score a Problem?',
     answer:
-      'A low score does not mean a relationship cannot work. It simply highlights areas where two people may need more understanding and effort. Many couples with lower compatibility scores build very happy relationships by understanding each other\'s differences. If you want a complete picture, a full Kundali matching consultation with one of our astrologers will look at all the factors together and give you honest guidance.',
+      "A low score does not mean a relationship cannot work. It simply highlights areas where two people may need more understanding and effort. Many couples with lower compatibility scores build very happy relationships by understanding each other's differences. If you want a complete picture, a full Kundali matching consultation with one of our astrologers will look at all the factors together and give you honest guidance.",
   },
   {
     question: 'How Is This Different from Kundali Matching?',
@@ -192,7 +192,8 @@ export default function LoveCalculatorSection() {
               Love Compatibility Calculator
             </h1>
             <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[950px]">
-              Enter names and birth details for both partners to get a compatibility score based on the Vedic Kuta matching system.
+              Enter names and birth details for both partners to get a compatibility score based on
+              the Vedic Kuta matching system.
             </p>
             <div className="relative mx-auto my-6 block w-[235px] h-[340px] sm:w-[300px] sm:h-[430px] md:w-[360px] md:h-[520px] xl:hidden mix-blend-darken">
               <div className="relative w-full h-full overflow-hidden rounded-[20px]">
@@ -421,7 +422,8 @@ export default function LoveCalculatorSection() {
               Frequently Asked Questions
             </h2>
             <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px]">
-              Find quick answers to common questions about love compatibility, Kuta matching scores, and how to interpret your results.
+              Find quick answers to common questions about love compatibility, Kuta matching scores,
+              and how to interpret your results.
             </p>
           </div>
           <div className="mt-6 md:mt-8 lg:mt-10 space-y-4 md:space-y-6 lg:space-y-[34px]">

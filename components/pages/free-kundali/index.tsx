@@ -10,7 +10,8 @@ const FreeKundali: React.FC = () => {
             Free Kundali: Generate Your Janam Kundali Online
           </h1>
           <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
-            Enter your birth date, time, and place to generate your complete Vedic birth chart instantly and free.
+            Enter your birth date, time, and place to generate your complete Vedic birth chart
+            instantly and free.
           </p>
         </header>
         <hr className="w-full border-0 border-b-2 border-[#BE7B71] opacity-100 mt-4 md:mt-6" />
@@ -27,10 +28,10 @@ const FreeKundali: React.FC = () => {
             date, time, and place.
           </p>
           <p className="hidden md:block font-normal md:text-[24px] md:leading-[34px] md:tracking-[0]">
-            A Kundali is not a prediction set in stone. It is a starting point for self-understanding.
-            Many people find that reading their birth chart helps them make sense of patterns they
-            have always felt but never been able to name. It can help you approach important decisions
-            with more clarity and confidence.
+            A Kundali is not a prediction set in stone. It is a starting point for
+            self-understanding. Many people find that reading their birth chart helps them make
+            sense of patterns they have always felt but never been able to name. It can help you
+            approach important decisions with more clarity and confidence.
           </p>
         </div>
         <div className="lg:col-span-5 hidden md:flex justify-center lg:justify-end">

@@ -125,8 +125,6 @@ export default function LoveCalculatorResultSection() {
     }
   };
 
-
-
   if (!result) {
     return (
       <section className="pt-6 md:pt-12 pb-24">

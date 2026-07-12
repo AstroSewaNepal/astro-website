@@ -213,8 +213,9 @@ const Services = () => {
                 type="button"
                 aria-label={`Go to page ${index + 1}`}
                 onClick={() => handlePageChange(index + 1)}
-                className={`rounded-full transition-colors shadow-sm ${currentPage === index + 1 ? 'bg-[#611508]' : 'bg-[#d9bdb7] hover:opacity-80'
-                  }`}
+                className={`rounded-full transition-colors shadow-sm ${
+                  currentPage === index + 1 ? 'bg-[#611508]' : 'bg-[#d9bdb7] hover:opacity-80'
+                }`}
                 style={{
                   width: '4.784643650054932px',
                   height: '4.784643650054932px',
