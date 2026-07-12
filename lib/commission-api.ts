@@ -6,6 +6,14 @@ export interface CommissionSettings {
   updatedAt: string | null;
 }
 
+export type CommissionSource = 'consultation' | 'remedy' | 'gift';
+
+export interface AllCommissionSettings {
+  consultation: CommissionSettings;
+  remedy: CommissionSettings;
+  gift: CommissionSettings;
+}
+
 export interface UpdateCommissionInput {
   commissionPercentage: number;
 }
@@ -54,6 +62,23 @@ export async function updateCommission(
 ): Promise<CommissionSettings> {
   return backendRequest<CommissionSettings>(
     'subscriptions/admin/commission',
+    token,
+    'PUT',
+    input,
+  );
+}
+
+export async function fetchAllCommissions(token: string): Promise<AllCommissionSettings> {
+  return backendRequest<AllCommissionSettings>('subscriptions/admin/commissions', token);
+}
+
+export async function updateCommissionBySource(
+  token: string,
+  source: CommissionSource,
+  input: UpdateCommissionInput,
+): Promise<CommissionSettings> {
+  return backendRequest<CommissionSettings>(
+    `subscriptions/admin/commission/${source}`,
     token,
     'PUT',
     input,
