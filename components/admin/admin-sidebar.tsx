@@ -10,6 +10,8 @@ import {
   Percent,
   BadgeCheck,
   Gift,
+  Users,
+  Banknote,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -23,6 +25,8 @@ const NAV_ITEMS = [
   { href: '/admin/delivery-charges', icon: Truck, label: 'Delivery Charges' },
   { href: '/admin/commission', icon: Percent, label: 'Commission' },
   { href: '/admin/astrologer-verification', icon: BadgeCheck, label: 'Astrologer Verification' },
+  { href: '/admin/astrologers', icon: Users, label: 'Astrologers' },
+  { href: '/admin/payouts', icon: Banknote, label: 'Payouts' },
 ];
 
 export default function AdminSidebar() {

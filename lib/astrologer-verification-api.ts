@@ -61,6 +61,8 @@ export interface UpdateFinalDecisionInput {
   decision: 'APPROVED' | 'REJECTED';
   reason?: string;
   notes?: string;
+  /** Required by the backend when decision is APPROVED */
+  tierTagId?: string;
 }
 
 interface ApiResponse<T> {
