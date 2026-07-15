@@ -11,9 +11,18 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Eye, Loader2 } from 'lucide-react';
 import { OnboardingStatusDetail } from '@/lib/astrologer-verification-api';
 import { useOnboardingStatusDetail } from '@/hooks/use-astrologer-verification';
+import { useTierTags } from '@/hooks/use-tier-tags';
+import { formatTierName } from '@/lib/tier-tag-utils';
 
 const STAGE_STATE_STYLES: Record<string, string> = {
   DONE: 'bg-green-50 text-green-700',
@@ -208,10 +217,86 @@ function RejectReasonDialog({
   );
 }
 
+function ApproveTierDialog({
+  open,
+  onOpenChange,
+  onConfirm,
+  isPending,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: (tierTagId: string) => void;
+  isPending: boolean;
+}) {
+  const [tierTagId, setTierTagId] = useState('');
+  const { data: tierTags, isPending: tierTagsPending } = useTierTags();
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={next => {
+        if (!next) setTierTagId('');
+        onOpenChange(next);
+      }}
+    >
+      <DialogContent className="max-w-md font-mukta">
+        <DialogHeader>
+          <DialogTitle className="font-mukta text-base">Approve Application</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-2">
+          <label className="font-mukta text-sm text-neutral-700">
+            Tier <span className="text-red-500">*</span>
+          </label>
+          <Select value={tierTagId} onValueChange={setTierTagId}>
+            <SelectTrigger className="font-mukta">
+              <SelectValue
+                placeholder={tierTagsPending ? 'Loading tiers…' : 'Select a tier'}
+              />
+            </SelectTrigger>
+            <SelectContent className="font-mukta">
+              {tierTags?.map(tag => (
+                <SelectItem key={tag._id} value={tag._id}>
+                  {formatTierName(tag.name)}
+                  {typeof tag.commissionPercentage === 'number'
+                    ? ` — ${tag.commissionPercentage}% commission`
+                    : ' — global rate'}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="font-mukta text-xs text-neutral-400">
+            The tier determines the consultation commission taken from this astrologer&apos;s
+            earnings.
+          </p>
+        </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="font-mukta"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            disabled={!tierTagId || isPending}
+            onClick={() => onConfirm(tierTagId)}
+            className="font-mukta text-white"
+            style={{ backgroundColor: '#611508' }}
+          >
+            {isPending ? 'Approving…' : 'Approve'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 interface ColumnActions {
   onDecision: (
     astrologerId: string,
-    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string },
+    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierTagId?: string },
   ) => void;
   pendingId: string | null;
 }
@@ -285,6 +370,7 @@ function RowActions({
   onDecision: ColumnActions['onDecision'];
 }) {
   const [rejectOpen, setRejectOpen] = useState(false);
+  const [approveOpen, setApproveOpen] = useState(false);
 
   return (
     <div className="flex items-center gap-1">
@@ -293,12 +379,21 @@ function RowActions({
         type="button"
         size="sm"
         disabled={isPending}
-        onClick={() => onDecision(astrologerId, { decision: 'APPROVED' })}
+        onClick={() => setApproveOpen(true)}
         className="h-7 font-mukta text-xs text-white"
         style={{ backgroundColor: '#611508' }}
       >
         {isPending ? <Loader2 size={13} className="animate-spin" /> : 'Approve'}
       </Button>
+      <ApproveTierDialog
+        open={approveOpen}
+        onOpenChange={setApproveOpen}
+        isPending={isPending}
+        onConfirm={tierTagId => {
+          onDecision(astrologerId, { decision: 'APPROVED', tierTagId });
+          setApproveOpen(false);
+        }}
+      />
       <Button
         type="button"
         size="sm"

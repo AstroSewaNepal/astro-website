@@ -1,6 +1,6 @@
 'use client';
 
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -10,6 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -18,14 +19,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from 'lucide-react';
-import { createColumns } from './columns';
-import type { OnboardingStatusDetail } from '@/lib/astrologer-verification-api';
+import { MarkPaidDialog } from './mark-paid-dialog';
+import { formatEarningAmount } from '@/lib/format-earning-amount';
+import type { UnpaidEarningsRow } from '@/lib/payouts-api';
 
 const ROWS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
 const SKELETON_ROW_IDS = ['sk-1', 'sk-2', 'sk-3', 'sk-4', 'sk-5'];
+const COLUMN_COUNT = 6;
 
-interface AstrologerVerificationTableProps {
-  data: OnboardingStatusDetail[];
+interface PayoutsTableProps {
+  data: UnpaidEarningsRow[];
   isLoading: boolean;
   isFetching: boolean;
   page: number;
@@ -33,14 +36,27 @@ interface AstrologerVerificationTableProps {
   total: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onDecision: (
-    astrologerId: string,
-    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierTagId?: string },
-  ) => void;
-  pendingId: string | null;
 }
 
-export default function AstrologerVerificationTable({
+function PayoutActionCell({ row }: { row: UnpaidEarningsRow }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button
+        type="button"
+        size="sm"
+        onClick={() => setOpen(true)}
+        className="h-7 font-mukta text-xs text-white"
+        style={{ backgroundColor: '#611508' }}
+      >
+        Mark as Paid
+      </Button>
+      <MarkPaidDialog open={open} onOpenChange={setOpen} row={row} />
+    </>
+  );
+}
+
+export default function PayoutsTable({
   data,
   isLoading,
   isFetching,
@@ -49,45 +65,34 @@ export default function AstrologerVerificationTable({
   total,
   onPageChange,
   onLimitChange,
-  onDecision,
-  pendingId,
-}: AstrologerVerificationTableProps) {
+}: PayoutsTableProps) {
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const from = total === 0 ? 0 : (page - 1) * limit + 1;
   const to = Math.min(page * limit, total);
-
-  const columns = createColumns({ onDecision, pendingId });
-
-  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table returns non-memoizable helpers
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
 
   return (
     <div className={isFetching && !isLoading ? 'opacity-60 transition-opacity duration-150' : ''}>
       <Table>
         <TableHeader>
-          {table.getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id} className="border-neutral-100">
-              {headerGroup.headers.map(header => (
+          <TableRow className="border-neutral-100">
+            {['Astrologer', 'Unpaid Earnings', 'Gross', 'Commission', 'Net Payable', ''].map(
+              (label, i) => (
                 <TableHead
-                  key={header.id}
+                  key={label || `col-${i}`}
                   className="font-mukta text-xs uppercase tracking-wide text-neutral-500"
                 >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
+                  {label}
                 </TableHead>
-              ))}
-            </TableRow>
-          ))}
+              ),
+            )}
+          </TableRow>
         </TableHeader>
         <TableBody>
           {isLoading &&
             SKELETON_ROW_IDS.slice(0, Math.min(limit, SKELETON_ROW_IDS.length)).map(rowId => (
               <TableRow key={rowId} className="border-neutral-100">
-                {table.getAllColumns().map(col => (
-                  <TableCell key={col.id}>
+                {Array.from({ length: COLUMN_COUNT }, (_, i) => (
+                  <TableCell key={`${rowId}-${i}`}>
                     <Skeleton className="h-4 w-full rounded" />
                   </TableCell>
                 ))}
@@ -95,23 +100,45 @@ export default function AstrologerVerificationTable({
             ))}
 
           {!isLoading &&
-            table.getRowModel().rows.map(row => (
-              <TableRow key={row.id} className="border-neutral-100 hover:bg-neutral-50">
-                {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+            data.map(row => (
+              <TableRow key={row.astrologerId} className="border-neutral-100 hover:bg-neutral-50">
+                <TableCell>
+                  <div className="font-mukta">
+                    <p className="text-sm text-neutral-800">{row.fullName ?? '—'}</p>
+                    <p className="text-xs text-neutral-400">{row.email ?? '—'}</p>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span className="font-mukta text-sm text-neutral-600">{row.count}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="font-mukta text-sm text-neutral-600">
+                    {formatEarningAmount(row.totalGross)}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="font-mukta text-sm text-neutral-600">
+                    {formatEarningAmount(row.totalCommission)}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="font-mukta text-sm font-semibold text-neutral-800">
+                    {formatEarningAmount(row.totalNet)}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <PayoutActionCell row={row} />
+                </TableCell>
               </TableRow>
             ))}
 
           {!isLoading && data.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={columns.length}
+                colSpan={COLUMN_COUNT}
                 className="py-10 text-center font-mukta text-sm text-neutral-400"
               >
-                No pending applications
+                No unpaid earnings
               </TableCell>
             </TableRow>
           )}

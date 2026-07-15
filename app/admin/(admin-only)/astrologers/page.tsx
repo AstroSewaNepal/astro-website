@@ -4,15 +4,12 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import {
-  usePendingOnboardingAstrologers,
-  useUpdateFinalDecision,
-} from '@/hooks/use-astrologer-verification';
-import AstrologerVerificationTable from '@/components/admin/astrologer-verification/astrologer-verification-table';
+import { useAdminAstrologers } from '@/hooks/use-astrologers';
+import AstrologersTable from '@/components/admin/astrologers/astrologers-table';
 
 const DEFAULT_LIMIT = 20;
 
-export default function AstrologerVerificationPage() {
+export default function AstrologersPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -21,22 +18,11 @@ export default function AstrologerVerificationPage() {
   const search = searchParams.get('search') ?? '';
   const [searchInput, setSearchInput] = useState(search);
 
-  const { data, isLoading, isFetching, isError } = usePendingOnboardingAstrologers(
+  const { data, isLoading, isFetching, isError } = useAdminAstrologers(
     page,
     limit,
     search || undefined,
   );
-  const decisionMutation = useUpdateFinalDecision();
-  const pendingId = decisionMutation.isPending
-    ? (decisionMutation.variables?.astrologerId ?? null)
-    : null;
-
-  function handleDecision(
-    astrologerId: string,
-    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierTagId?: string },
-  ) {
-    decisionMutation.mutate({ astrologerId, input });
-  }
 
   function handlePageChange(next: number) {
     const params = new URLSearchParams(searchParams.toString());
@@ -66,14 +52,12 @@ export default function AstrologerVerificationPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-mukta text-2xl font-semibold text-neutral-800">
-          Astrologer Verification
-        </h1>
+        <h1 className="font-mukta text-2xl font-semibold text-neutral-800">Astrologers</h1>
         <p className="mt-0.5 font-mukta text-sm text-neutral-500">
-          Review and approve or reject pending astrologer applications
+          Approved astrologers and their tiers — the tier sets the consultation commission
           {data && !isLoading && (
             <span className="ml-2 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600">
-              {data.total} pending
+              {data.total} astrologers
             </span>
           )}
         </p>
@@ -92,10 +76,10 @@ export default function AstrologerVerificationPage() {
         <CardContent className="p-0">
           {isError ? (
             <p className="px-6 py-10 text-center font-mukta text-sm text-red-500">
-              Failed to load pending applications. Please try again.
+              Failed to load astrologers. Please try again.
             </p>
           ) : (
-            <AstrologerVerificationTable
+            <AstrologersTable
               data={data?.items ?? []}
               isLoading={isLoading}
               isFetching={isFetching}
@@ -104,8 +88,6 @@ export default function AstrologerVerificationPage() {
               total={data?.total ?? 0}
               onPageChange={handlePageChange}
               onLimitChange={handleLimitChange}
-              onDecision={handleDecision}
-              pendingId={pendingId}
             />
           )}
         </CardContent>

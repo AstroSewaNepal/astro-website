@@ -1,6 +1,6 @@
 'use client';
 
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -10,6 +10,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -18,14 +20,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from 'lucide-react';
-import { createColumns } from './columns';
-import type { OnboardingStatusDetail } from '@/lib/astrologer-verification-api';
+import { ChangeTierDialog } from './change-tier-dialog';
+import { findTierTag, formatTierName } from '@/lib/tier-tag-utils';
+import type { AdminAstrologer } from '@/lib/astrologers-admin-api';
 
 const ROWS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
 const SKELETON_ROW_IDS = ['sk-1', 'sk-2', 'sk-3', 'sk-4', 'sk-5'];
+const COLUMN_COUNT = 5;
 
-interface AstrologerVerificationTableProps {
-  data: OnboardingStatusDetail[];
+interface AstrologersTableProps {
+  data: AdminAstrologer[];
   isLoading: boolean;
   isFetching: boolean;
   page: number;
@@ -33,14 +37,47 @@ interface AstrologerVerificationTableProps {
   total: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onDecision: (
-    astrologerId: string,
-    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierTagId?: string },
-  ) => void;
-  pendingId: string | null;
 }
 
-export default function AstrologerVerificationTable({
+function TierCell({ astrologer }: { astrologer: AdminAstrologer }) {
+  const [open, setOpen] = useState(false);
+  const tierTag = findTierTag(astrologer.tags);
+  const userId = astrologer.user?._id ?? undefined;
+
+  return (
+    <div className="flex items-center gap-2">
+      {tierTag ? (
+        <Badge className="bg-amber-50 font-mukta text-xs text-amber-800">
+          {formatTierName(tierTag.name)}
+        </Badge>
+      ) : (
+        <Badge className="bg-neutral-100 font-mukta text-xs text-neutral-500">No tier</Badge>
+      )}
+      {userId && (
+        <>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => setOpen(true)}
+            className="h-7 font-mukta text-xs"
+          >
+            Change Tier
+          </Button>
+          <ChangeTierDialog
+            open={open}
+            onOpenChange={setOpen}
+            astrologerUserId={userId}
+            astrologerName={astrologer.user?.fullName ?? astrologer.user?.email ?? 'astrologer'}
+            currentTierTagId={tierTag?._id}
+          />
+        </>
+      )}
+    </div>
+  );
+}
+
+export default function AstrologersTable({
   data,
   isLoading,
   isFetching,
@@ -49,45 +86,32 @@ export default function AstrologerVerificationTable({
   total,
   onPageChange,
   onLimitChange,
-  onDecision,
-  pendingId,
-}: AstrologerVerificationTableProps) {
+}: AstrologersTableProps) {
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const from = total === 0 ? 0 : (page - 1) * limit + 1;
   const to = Math.min(page * limit, total);
-
-  const columns = createColumns({ onDecision, pendingId });
-
-  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table returns non-memoizable helpers
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
 
   return (
     <div className={isFetching && !isLoading ? 'opacity-60 transition-opacity duration-150' : ''}>
       <Table>
         <TableHeader>
-          {table.getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id} className="border-neutral-100">
-              {headerGroup.headers.map(header => (
-                <TableHead
-                  key={header.id}
-                  className="font-mukta text-xs uppercase tracking-wide text-neutral-500"
-                >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
+          <TableRow className="border-neutral-100">
+            {['Astrologer', 'Tier', 'Other Tags', 'Experience', 'Booking'].map(label => (
+              <TableHead
+                key={label}
+                className="font-mukta text-xs uppercase tracking-wide text-neutral-500"
+              >
+                {label}
+              </TableHead>
+            ))}
+          </TableRow>
         </TableHeader>
         <TableBody>
           {isLoading &&
             SKELETON_ROW_IDS.slice(0, Math.min(limit, SKELETON_ROW_IDS.length)).map(rowId => (
               <TableRow key={rowId} className="border-neutral-100">
-                {table.getAllColumns().map(col => (
-                  <TableCell key={col.id}>
+                {Array.from({ length: COLUMN_COUNT }, (_, i) => (
+                  <TableCell key={`${rowId}-${i}`}>
                     <Skeleton className="h-4 w-full rounded" />
                   </TableCell>
                 ))}
@@ -95,23 +119,60 @@ export default function AstrologerVerificationTable({
             ))}
 
           {!isLoading &&
-            table.getRowModel().rows.map(row => (
-              <TableRow key={row.id} className="border-neutral-100 hover:bg-neutral-50">
-                {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            data.map(astrologer => {
+              const otherTags = (astrologer.tags ?? []).filter(tag => tag.type !== 'tier');
+              return (
+                <TableRow key={astrologer._id} className="border-neutral-100 hover:bg-neutral-50">
+                  <TableCell>
+                    <div className="font-mukta">
+                      <p className="text-sm text-neutral-800">
+                        {astrologer.user?.fullName ?? '—'}
+                      </p>
+                      <p className="text-xs text-neutral-400">{astrologer.user?.email ?? '—'}</p>
+                    </div>
                   </TableCell>
-                ))}
-              </TableRow>
-            ))}
+                  <TableCell>
+                    <TierCell astrologer={astrologer} />
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-mukta text-sm text-neutral-600">
+                      {otherTags.length > 0
+                        ? otherTags
+                            .slice(0, 3)
+                            .map(tag => tag.name)
+                            .join(', ') + (otherTags.length > 3 ? '…' : '')
+                        : '—'}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-mukta text-sm text-neutral-600">
+                      {typeof astrologer.yearsOfExperience === 'number'
+                        ? `${astrologer.yearsOfExperience} yrs`
+                        : '—'}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      className={`font-mukta text-xs ${
+                        astrologer.isBookingEnabled
+                          ? 'bg-green-50 text-green-700'
+                          : 'bg-neutral-100 text-neutral-500'
+                      }`}
+                    >
+                      {astrologer.isBookingEnabled ? 'Enabled' : 'Disabled'}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
 
           {!isLoading && data.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={columns.length}
+                colSpan={COLUMN_COUNT}
                 className="py-10 text-center font-mukta text-sm text-neutral-400"
               >
-                No pending applications
+                No astrologers found
               </TableCell>
             </TableRow>
           )}
