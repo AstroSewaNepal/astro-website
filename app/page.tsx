@@ -79,6 +79,9 @@ export default function Home() {
       {/* <TodayHoroscope /> */}
       {/* <EventsPage /> */}
       <Services />
+      <section className="container mx-auto px-6 lg:px-0">
+        <hr className="border-t border-[#79787A] opacity-70 my-8" />
+      </section>
       <Clarity />
       <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
       <AstrologerBlogListing />
