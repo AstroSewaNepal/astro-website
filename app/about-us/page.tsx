@@ -33,17 +33,20 @@ export const metadata: Metadata = {
 
 const AboutUsPage = () => {
   return (
-    <main className="container mx-auto min-h-screen overflow-hidden space-y-[100px] pb-16">
+    <main className="container mx-auto min-h-screen overflow-hidden pb-16">
       <div>
         <AboutUsHero />
       </div>
       <AboutUsVision />
-      <AboutUsWhatWeDo />
-      <AboutUsWhyUs />
+      <AboutUsWhatWeDo compact />
+      <div className="w-full flex items-center justify-center py-4 md:py-6">
+        <div className="w-full border-t border-[#79787A]" />
+      </div>
+      <AboutUsWhyUs compact />
       <Clarity />
-      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14 border-b-0" />
       <Services />
-      <DownloadApp />
+      <DownloadApp noBorder />
     </main>
   );
 };

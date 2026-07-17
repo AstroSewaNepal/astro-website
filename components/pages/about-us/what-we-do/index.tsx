@@ -4,7 +4,11 @@ import Image from 'next/image';
 import { MandalaImage } from '@/components/images/about-us';
 import { CheckImageIcon } from '@/components/images/icons';
 
-const AboutUsWhatWeDo: React.FC = () => {
+type Props = {
+  compact?: boolean;
+};
+
+const AboutUsWhatWeDo: React.FC<Props> = ({ compact = false }) => {
   const services = [
     'Live astrology chat and call consultations',
     'Free Kundali and birth chart generation',
@@ -15,8 +19,10 @@ const AboutUsWhatWeDo: React.FC = () => {
     'Astrology blog written by our verified astrologers',
   ];
 
+  const sectionPadding = compact ? 'w-full py-4 md:py-6 lg:py-8 xl:py-8' : 'w-full py-8 md:py-12 lg:py-16 xl:py-24';
+
   return (
-    <section className="w-full py-8 md:py-12 lg:py-16 xl:py-[100px]">
+    <section className={sectionPadding}>
       <div className="container mx-auto px-6 lg:px-0">
         {/* Mandala Banner with Text Overlay */}
         <div className="relative w-full max-w-[1455px] h-auto min-h-[720px] md:h-[760px] lg:h-[999px] mx-auto rounded-3xl md:rounded-[50px] lg:rounded-[74px] overflow-hidden">

@@ -6,20 +6,26 @@ import React from 'react';
 type DownloadAppProps = {
   className?: string;
   paddingClassName?: string;
+  noBorder?: boolean;
 };
 
 const GOOGLE_PLAY_URL = 'https://play.google.com/store/search?q=Astro%20Sewa&c=apps';
 const APPLE_STORE_URL = 'https://apps.apple.com/us/search?term=Astro%20Sewa';
 
-const DownloadApp: React.FC<DownloadAppProps> = ({ className, paddingClassName }) => {
+const DownloadApp: React.FC<DownloadAppProps> = ({ className, paddingClassName, noBorder }) => {
   return (
     <section
-      className={clsx(className, 'w-full px-0 border-b border-b-[#79787A] pb-6 md:pb-[50px]')}
+      className={clsx(
+        className,
+        'w-full px-0',
+        { 'pb-6 md:pb-[50px]': !noBorder },
+        { 'border-b border-b-[#79787A]': !noBorder }
+      )}
     >
       <div
         className={clsx(
           'w-full max-w-full mx-auto flex flex-col items-center justify-between gap-8 px-4 md:gap-12 md:px-6 lg:flex-row lg:items-center lg:gap-24 lg:px-4 xl:gap-36',
-          paddingClassName || 'py-6 md:py-8 lg:py-10',
+          paddingClassName || (noBorder ? 'py-4 md:py-6 lg:py-8' : 'py-6 md:py-8 lg:py-10')
         )}
       >
         {/* Left Content */}
