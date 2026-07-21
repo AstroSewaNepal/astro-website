@@ -33,7 +33,7 @@ export default function AstrologerVerificationPage() {
 
   function handleDecision(
     astrologerId: string,
-    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierTagId?: string },
+    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierId?: string },
   ) {
     decisionMutation.mutate({ astrologerId, input });
   }

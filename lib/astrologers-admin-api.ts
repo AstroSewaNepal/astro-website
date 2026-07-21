@@ -15,6 +15,7 @@ export interface AdminAstrologer {
     email?: string;
   } | null;
   tags?: AstrologerListTag[];
+  tierId?: string | null;
   yearsOfExperience?: number;
   isAstrologerActive?: boolean;
   isBookingEnabled?: boolean;

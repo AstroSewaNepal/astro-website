@@ -6,10 +6,9 @@ export interface CommissionSettings {
   updatedAt: string | null;
 }
 
-export type CommissionSource = 'consultation' | 'remedy' | 'gift';
+export type CommissionSource = 'remedy' | 'gift';
 
 export interface AllCommissionSettings {
-  consultation: CommissionSettings;
   remedy: CommissionSettings;
   gift: CommissionSettings;
 }
@@ -50,22 +49,6 @@ async function backendRequest<T>(
     // ignore parse errors
   }
   throw new Error(message);
-}
-
-export async function fetchCommission(token: string): Promise<CommissionSettings> {
-  return backendRequest<CommissionSettings>('subscriptions/admin/commission', token);
-}
-
-export async function updateCommission(
-  token: string,
-  input: UpdateCommissionInput,
-): Promise<CommissionSettings> {
-  return backendRequest<CommissionSettings>(
-    'subscriptions/admin/commission',
-    token,
-    'PUT',
-    input,
-  );
 }
 
 export async function fetchAllCommissions(token: string): Promise<AllCommissionSettings> {

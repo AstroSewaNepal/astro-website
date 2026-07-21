@@ -16,15 +16,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useTierTags, useUpdateAstrologerTier } from '@/hooks/use-tier-tags';
-import { formatTierName } from '@/lib/tier-tag-utils';
+import { useAssignTier, useTiers } from '@/hooks/use-tiers';
 
 type ChangeTierDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   astrologerUserId: string;
   astrologerName: string;
-  currentTierTagId?: string;
+  currentTierId?: string;
 };
 
 export function ChangeTierDialog({
@@ -32,15 +31,15 @@ export function ChangeTierDialog({
   onOpenChange,
   astrologerUserId,
   astrologerName,
-  currentTierTagId,
+  currentTierId,
 }: ChangeTierDialogProps) {
-  const [tierTagId, setTierTagId] = useState(currentTierTagId ?? '');
-  const { data: tierTags, isPending: tierTagsPending } = useTierTags();
-  const updateMutation = useUpdateAstrologerTier();
+  const [tierId, setTierId] = useState(currentTierId ?? '');
+  const { data: tiers, isPending: tiersPending } = useTiers();
+  const assignMutation = useAssignTier();
 
   function handleConfirm() {
-    updateMutation.mutate(
-      { astrologerId: astrologerUserId, tierTagId },
+    assignMutation.mutate(
+      { astrologerId: astrologerUserId, tierId },
       { onSuccess: () => onOpenChange(false) },
     );
   }
@@ -49,8 +48,8 @@ export function ChangeTierDialog({
     <Dialog
       open={open}
       onOpenChange={next => {
-        if (!next) setTierTagId(currentTierTagId ?? '');
-        updateMutation.reset();
+        if (!next) setTierId(currentTierId ?? '');
+        assignMutation.reset();
         onOpenChange(next);
       }}
     >
@@ -63,23 +62,20 @@ export function ChangeTierDialog({
             Set the tier for <span className="font-semibold">{astrologerName}</span>. The tier
             determines the consultation commission taken from their earnings.
           </p>
-          <Select value={tierTagId} onValueChange={setTierTagId}>
+          <Select value={tierId} onValueChange={setTierId}>
             <SelectTrigger className="font-mukta">
-              <SelectValue placeholder={tierTagsPending ? 'Loading tiers…' : 'Select a tier'} />
+              <SelectValue placeholder={tiersPending ? 'Loading tiers…' : 'Select a tier'} />
             </SelectTrigger>
             <SelectContent className="font-mukta">
-              {tierTags?.map(tag => (
-                <SelectItem key={tag._id} value={tag._id}>
-                  {formatTierName(tag.name)}
-                  {typeof tag.commissionPercentage === 'number'
-                    ? ` — ${tag.commissionPercentage}% commission`
-                    : ' — global rate'}
+              {tiers?.map(tier => (
+                <SelectItem key={tier._id} value={tier._id}>
+                  {tier.name} — {tier.commissionPercentage}% commission
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {updateMutation.error && (
-            <p className="font-mukta text-sm text-red-600">{updateMutation.error.message}</p>
+          {assignMutation.error && (
+            <p className="font-mukta text-sm text-red-600">{assignMutation.error.message}</p>
           )}
         </div>
         <DialogFooter>
@@ -93,12 +89,12 @@ export function ChangeTierDialog({
           </Button>
           <Button
             type="button"
-            disabled={!tierTagId || tierTagId === currentTierTagId || updateMutation.isPending}
+            disabled={!tierId || tierId === currentTierId || assignMutation.isPending}
             onClick={handleConfirm}
             className="font-mukta text-white"
             style={{ backgroundColor: '#611508' }}
           >
-            {updateMutation.isPending ? 'Saving…' : 'Save'}
+            {assignMutation.isPending ? 'Saving…' : 'Save'}
           </Button>
         </DialogFooter>
       </DialogContent>
