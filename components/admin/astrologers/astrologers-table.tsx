@@ -193,10 +193,7 @@ export default function AstrologersTable({
           </span>
           <Select
             value={String(limit)}
-            onValueChange={val => {
-              onLimitChange(Number(val));
-              onPageChange(1);
-            }}
+            onValueChange={val => onLimitChange(Number(val))}
             disabled={isLoading}
           >
             <SelectTrigger className="h-7 w-16 border-none font-mukta text-sm shadow-none focus:ring-0">
