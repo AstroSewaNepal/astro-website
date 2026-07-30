@@ -89,7 +89,8 @@ export function ZodiacSignDetailNepaliClient() {
 
   const description = row?.intro ?? row?.card_summary ?? '';
   const shouldTruncate = description.length > 300;
-  const displayedDescription = shouldTruncate && !isExpanded ? description.slice(0, 300) + '...' : description;
+  const displayedDescription =
+    shouldTruncate && !isExpanded ? description.slice(0, 300) + '...' : description;
 
   return (
     <main className="container mx-auto min-h-screen overflow-hidden">

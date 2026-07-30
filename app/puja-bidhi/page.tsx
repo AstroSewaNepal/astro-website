@@ -51,9 +51,14 @@ async function getPujaBidhiPosts() {
       order: 'published_at desc',
     });
 
-    const viewCounts = await fetchBlogViewCounts(posts.map(post => post.slug ?? '').filter(Boolean));
+    const viewCounts = await fetchBlogViewCounts(
+      posts.map(post => post.slug ?? '').filter(Boolean),
+    );
 
-    return posts.map(post => ({ ...mapGhostBlogPost(post, viewCounts), link: `/puja-bidhi/${post.slug ?? ''}` }));
+    return posts.map(post => ({
+      ...mapGhostBlogPost(post, viewCounts),
+      link: `/puja-bidhi/${post.slug ?? ''}`,
+    }));
   } catch (error) {
     console.error('Error fetching puja bidhi posts:', error);
     return [];

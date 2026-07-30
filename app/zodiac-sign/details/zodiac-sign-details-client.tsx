@@ -33,7 +33,7 @@ function capitalizeSign(slug: string): string {
 
 function formatZodiacDateRange(raw: string | { from?: string; to?: string }): string {
   if (!raw) return '';
-  
+
   if (typeof raw === 'object') {
     const from = raw.from || '';
     const to = raw.to || '';
@@ -216,7 +216,10 @@ export function ZodiacSignDetailsClient() {
                 </div>
               </div>
 
-              <div className="hidden lg:block order-1 shrink-0 lg:order-none lg:justify-self-end mb-6" style={{ width: '308.29px' }}>
+              <div
+                className="hidden lg:block order-1 shrink-0 lg:order-none lg:justify-self-end mb-6"
+                style={{ width: '308.29px' }}
+              >
                 <Image
                   src={signColorMap[slug]}
                   alt={displayName}

@@ -73,7 +73,9 @@ export function ZodiacSignMiniCard({
                 </div>
               ) : null}
             </div>
-            <p className="mt-0.5 font-mukta font-light text-[14px] leading-[120%] text-[#7b6b61]">{blurb}</p>
+            <p className="mt-0.5 font-mukta font-light text-[14px] leading-[120%] text-[#7b6b61]">
+              {blurb}
+            </p>
             <span className="mt-1 inline-flex items-center gap-1 border-b border-[#7b3b27] pb-0.5 font-mukta font-semibold text-[14px] leading-[28px] text-[#7b3b27]">
               {readMoreLabel}
               <ArrowRight className="h-2.5 w-2.5 text-[#7b3b27]" />
