@@ -62,7 +62,7 @@ export interface UpdateFinalDecisionInput {
   reason?: string;
   notes?: string;
   /** Required by the backend when decision is APPROVED */
-  tierTagId?: string;
+  tierId?: string;
 }
 
 interface ApiResponse<T> {

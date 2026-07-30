@@ -15,6 +15,7 @@ export interface AdminAstrologer {
     email?: string;
   } | null;
   tags?: AstrologerListTag[];
+  tierId?: string | null;
   yearsOfExperience?: number;
   isAstrologerActive?: boolean;
   isBookingEnabled?: boolean;
@@ -71,6 +72,11 @@ export async function fetchAdminAstrologers(
     // Any non-boolean value clears the backend's default isBookingEnabled=true
     // filter, so booking-disabled (e.g. freshly approved) astrologers show too.
     isBookingEnabled: 'all',
+    // Backend defaults to sorting by averageRating, which buries astrologers
+    // with no ratings yet (e.g. newly approved) on the last page. Admin
+    // browsing should surface newest first instead.
+    sortField: 'createdAt',
+    sortOrder: 'desc',
   });
   if (search) params.set('search', search);
   const res = await backendRequest<AdminAstrologer[]>(

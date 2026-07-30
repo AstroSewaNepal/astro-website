@@ -21,8 +21,7 @@ import {
 import { Eye, Loader2 } from 'lucide-react';
 import { OnboardingStatusDetail } from '@/lib/astrologer-verification-api';
 import { useOnboardingStatusDetail } from '@/hooks/use-astrologer-verification';
-import { useTierTags } from '@/hooks/use-tier-tags';
-import { formatTierName } from '@/lib/tier-tag-utils';
+import { useTiers } from '@/hooks/use-tiers';
 
 const STAGE_STATE_STYLES: Record<string, string> = {
   DONE: 'bg-green-50 text-green-700',
@@ -225,17 +224,17 @@ function ApproveTierDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (tierTagId: string) => void;
+  onConfirm: (tierId: string) => void;
   isPending: boolean;
 }) {
-  const [tierTagId, setTierTagId] = useState('');
-  const { data: tierTags, isPending: tierTagsPending } = useTierTags();
+  const [tierId, setTierId] = useState('');
+  const { data: tiers, isPending: tiersPending } = useTiers();
 
   return (
     <Dialog
       open={open}
       onOpenChange={next => {
-        if (!next) setTierTagId('');
+        if (!next) setTierId('');
         onOpenChange(next);
       }}
     >
@@ -247,17 +246,14 @@ function ApproveTierDialog({
           <label className="font-mukta text-sm text-neutral-700">
             Tier <span className="text-red-500">*</span>
           </label>
-          <Select value={tierTagId} onValueChange={setTierTagId}>
+          <Select value={tierId} onValueChange={setTierId}>
             <SelectTrigger className="font-mukta">
-              <SelectValue placeholder={tierTagsPending ? 'Loading tiers…' : 'Select a tier'} />
+              <SelectValue placeholder={tiersPending ? 'Loading tiers…' : 'Select a tier'} />
             </SelectTrigger>
             <SelectContent className="font-mukta">
-              {tierTags?.map(tag => (
-                <SelectItem key={tag._id} value={tag._id}>
-                  {formatTierName(tag.name)}
-                  {typeof tag.commissionPercentage === 'number'
-                    ? ` — ${tag.commissionPercentage}% commission`
-                    : ' — global rate'}
+              {tiers?.map(tier => (
+                <SelectItem key={tier._id} value={tier._id}>
+                  {tier.name} — {tier.commissionPercentage}% commission
                 </SelectItem>
               ))}
             </SelectContent>
@@ -278,8 +274,8 @@ function ApproveTierDialog({
           </Button>
           <Button
             type="button"
-            disabled={!tierTagId || isPending}
-            onClick={() => onConfirm(tierTagId)}
+            disabled={!tierId || isPending}
+            onClick={() => onConfirm(tierId)}
             className="font-mukta text-white"
             style={{ backgroundColor: '#611508' }}
           >
@@ -294,7 +290,7 @@ function ApproveTierDialog({
 interface ColumnActions {
   onDecision: (
     astrologerId: string,
-    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierTagId?: string },
+    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierId?: string },
   ) => void;
   pendingId: string | null;
 }
@@ -387,8 +383,8 @@ function RowActions({
         open={approveOpen}
         onOpenChange={setApproveOpen}
         isPending={isPending}
-        onConfirm={tierTagId => {
-          onDecision(astrologerId, { decision: 'APPROVED', tierTagId });
+        onConfirm={tierId => {
+          onDecision(astrologerId, { decision: 'APPROVED', tierId });
           setApproveOpen(false);
         }}
       />

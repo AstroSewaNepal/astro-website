@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import { ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from 'lucide-react';
 import { ChangeTierDialog } from './change-tier-dialog';
-import { findTierTag, formatTierName } from '@/lib/tier-tag-utils';
+import { useTiers } from '@/hooks/use-tiers';
 import type { AdminAstrologer } from '@/lib/astrologers-admin-api';
 
 const ROWS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
@@ -41,15 +41,14 @@ interface AstrologersTableProps {
 
 function TierCell({ astrologer }: { astrologer: AdminAstrologer }) {
   const [open, setOpen] = useState(false);
-  const tierTag = findTierTag(astrologer.tags);
+  const { data: tiers } = useTiers();
+  const tier = tiers?.find(t => t._id === astrologer.tierId);
   const userId = astrologer.user?._id ?? undefined;
 
   return (
     <div className="flex items-center gap-2">
-      {tierTag ? (
-        <Badge className="bg-amber-50 font-mukta text-xs text-amber-800">
-          {formatTierName(tierTag.name)}
-        </Badge>
+      {tier ? (
+        <Badge className="bg-amber-50 font-mukta text-xs text-amber-800">{tier.name}</Badge>
       ) : (
         <Badge className="bg-neutral-100 font-mukta text-xs text-neutral-500">No tier</Badge>
       )}
@@ -69,7 +68,7 @@ function TierCell({ astrologer }: { astrologer: AdminAstrologer }) {
             onOpenChange={setOpen}
             astrologerUserId={userId}
             astrologerName={astrologer.user?.fullName ?? astrologer.user?.email ?? 'astrologer'}
-            currentTierTagId={tierTag?._id}
+            currentTierId={astrologer.tierId ?? undefined}
           />
         </>
       )}
@@ -120,7 +119,7 @@ export default function AstrologersTable({
 
           {!isLoading &&
             data.map(astrologer => {
-              const otherTags = (astrologer.tags ?? []).filter(tag => tag.type !== 'tier');
+              const otherTags = astrologer.tags ?? [];
               return (
                 <TableRow key={astrologer._id} className="border-neutral-100 hover:bg-neutral-50">
                   <TableCell>
@@ -192,10 +191,7 @@ export default function AstrologersTable({
           </span>
           <Select
             value={String(limit)}
-            onValueChange={val => {
-              onLimitChange(Number(val));
-              onPageChange(1);
-            }}
+            onValueChange={val => onLimitChange(Number(val))}
             disabled={isLoading}
           >
             <SelectTrigger className="h-7 w-16 border-none font-mukta text-sm shadow-none focus:ring-0">
