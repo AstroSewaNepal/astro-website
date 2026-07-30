@@ -68,27 +68,42 @@ const faqJsonLd = {
 
 export default function Home() {
   return (
-    <main className="container mx-auto min-h-screen overflow-hidden space-y-12 pb-16">
+    <main className="container mx-auto min-h-screen overflow-hidden space-y-12 md:space-y-[100px] pb-12 md:pb-[100px]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+
       <div className="overflow-hidden">
         <LandingHero />
       </div>
+
+      <hr className="border-t border-[#79787A] opacity-70" />
+
       {/* <TodayHoroscope /> */}
       {/* <EventsPage /> */}
+
       <Services />
-      <section className="container mx-auto px-6 lg:px-0">
-        <hr className="border-t border-[#79787A] opacity-70 my-8" />
-      </section>
+
+      <hr className="border-t border-[#79787A] opacity-70" />
+
       <Clarity />
-      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+      <hr className="border-t border-[#79787A] opacity-70" />
+
+      <TalkToOurAstrologer className="mx-auto max-w-[1180px]" />
+      <hr className="border-t border-[#79787A] opacity-70" />
+
       <AstrologerBlogListing />
+      <hr className="border-t border-[#79787A] opacity-70" />
+
       <WhoWeAre />
+
       <LandingFAQ />
+
       <HotTopics />
+
       <DownloadApp className="border-none" paddingClassName="py-4 md:py-6" />
+
       {/* <CustomerFeedback /> */}
     </main>
   );
