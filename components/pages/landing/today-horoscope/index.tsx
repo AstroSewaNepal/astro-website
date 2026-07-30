@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 
-import Link from 'next/link';
 import {
   EnglishLeoLight,
   EnglishAriesLight,
@@ -27,8 +26,6 @@ import Pagination from '@/components/common/pagination';
 import { ELanguage } from '@/components/enums/language.enum';
 import type { HoroscopeRecord } from '@/lib/types/horoscope';
 import { fetchActiveHoroscopes } from '@/lib/api/horoscope';
-import { horoscopeDetailPageHref } from '@/lib/constants/horoscope-range-nav';
-import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
 
 import 'swiper/css';
 
@@ -86,33 +83,18 @@ const TodayHoroscope: React.FC = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const result = await fetchActiveHoroscopes('today', {
-          headers: { 'Accept-Language': language === ELanguage.NEPALI ? 'ne' : 'en' },
-        });
+        const result = await fetchActiveHoroscopes();
 
         if (result.success && result.data) {
           const transformedData: HoroscopeItem[] = result.data
             .filter((item: HoroscopeRecord) => item.isActive)
-            .map((item: HoroscopeRecord) => {
-              // Find matching static data for translated name
-              const staticData = HOROSCOPE_DATA[language].find(
-                s =>
-                  s.name.toLowerCase() === item.sign.toLowerCase() ||
-                  HOROSCOPE_DATA[ELanguage.ENGLISH].find(
-                    e => e.name.toLowerCase() === item.sign.toLowerCase(),
-                  )?.name === s.name,
-              );
-
-              const translatedName = staticData ? staticData.name : capitalizeSign(item.sign);
-
-              return {
-                name: translatedName,
-                detail: getShortDescription(item.content),
-                image: getZodiacImage(item.sign),
-                sign: item.sign,
-                content: item.content,
-              };
-            });
+            .map((item: HoroscopeRecord) => ({
+              name: capitalizeSign(item.sign),
+              detail: getShortDescription(item.content),
+              image: getZodiacImage(item.sign),
+              sign: item.sign,
+              content: item.content,
+            }));
           setHoroscopeData(transformedData);
         } else {
           throw new Error('Invalid API response');
@@ -127,7 +109,7 @@ const TodayHoroscope: React.FC = () => {
     };
 
     fetchHoroscope();
-  }, [language]);
+  }, []);
 
   // Calculate pagination based on current slidesPerView
   const totalPages = useMemo(() => {
@@ -230,9 +212,9 @@ const TodayHoroscope: React.FC = () => {
               'border border-solid border-primary rounded-3xl px-[35px] py-2.5 text-primary font-mukta text-xl leading-7 font-normal cursor-pointer transition-all duration-300 ease-in-out',
               language === ELanguage.NEPALI && 'bg-primary text-white',
             )}
-            onClick={() => setLanguage(ELanguage.NEPALI)}
+            disabled={true}
           >
-            Nepali
+            Nepali (Coming Soon)
           </button>
         </div>
       </div>
@@ -274,15 +256,12 @@ const TodayHoroscope: React.FC = () => {
                   <p className="font-mukta text-sm leading-[120%] font-light text-[#5b5b5b]">
                     {item.detail}
                   </p>
-                  <Link
-                    href={horoscopeDetailPageHref(item.sign, 'today', language)}
-                    className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF] w-fit"
-                  >
+                  <button className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF]">
                     <p className="font-mukta text-sm leading-7 font-semibold text-primary">
-                      {language === ELanguage.NEPALI ? 'थप पढ्नुहोस्' : 'Read More'}
+                      Read More
                     </p>
                     <ArrowRight />
-                  </Link>
+                  </button>
                 </div>
               </div>
             </SwiperSlide>
@@ -330,15 +309,10 @@ const TodayHoroscope: React.FC = () => {
               <p className="font-mukta text-sm leading-[120%] font-light text-[#5b5b5b]">
                 {item.detail}
               </p>
-              <Link
-                href={horoscopeDetailPageHref(item.sign, 'today', language)}
-                className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF] w-fit"
-              >
-                <p className="font-mukta text-sm leading-7 font-semibold text-primary">
-                  {language === ELanguage.NEPALI ? 'थप पढ्नुहोस्' : 'Read More'}
-                </p>
+              <button className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF]">
+                <p className="font-mukta text-sm leading-7 font-semibold text-primary">Read More</p>
                 <ArrowRight />
-              </Link>
+              </button>
             </div>
           </div>
         ))}

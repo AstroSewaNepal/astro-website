@@ -153,6 +153,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
   const [selectedBirthCity, setSelectedBirthCity] = useState<CitySearchResult | null>(null);
 
   const nameRegex = /^[A-Za-z ]+$/;
+  const placeRegex = /^[A-Za-z\s,.'-]+$/;
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -191,6 +192,10 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
 
     if (!birthPlace) {
       errors.birthPlace = 'Birth place is required.';
+      valid = false;
+    } else if (!placeRegex.test(birthPlace) || !/[A-Za-z]/.test(birthPlace)) {
+      errors.birthPlace =
+        'Only letters, commas, spaces, hyphens, apostrophes, and periods are allowed.';
       valid = false;
     }
 
@@ -254,7 +259,6 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
         time: parsedTime!,
         offset,
         location,
-        lang: 'ne',
       });
 
       const bundle = await fetchFreeKundaliBundle(query);

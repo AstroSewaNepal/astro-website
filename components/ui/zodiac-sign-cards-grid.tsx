@@ -231,7 +231,11 @@ export function ZodiacSignCardsGrid<T>({
               }
               className={clsx(
                 'horoscope-cards-swiper pb-12 sm:pb-14',
-                alignStart ? 'max-w-full px-0' : compact ? 'max-w-full px-5' : 'px-10',
+                alignStart
+                  ? 'max-w-full px-0'
+                  : compact
+                    ? 'max-w-full px-5'
+                    : 'px-10',
               )}
               pagination={swiperPagination}
               onSwiper={swiper => {

@@ -67,32 +67,29 @@ export function ZodiacSignDetailNepaliClient() {
   const signIndex = HOROSCOPE_SIGNS.indexOf(slug);
   const nepaliName = HOROSCOPE_DATA[ELanguage.NEPALI][signIndex]?.name ?? slug;
 
-  const neTrans = row?.translations?.ne;
   const traits = row
     ? [
         { label: 'तत्व', value: row.element },
-        { label: 'राशिको ग्रह', value: row.ruling_planets?.[0] },
+        { label: 'राशिको ग्रह', value: row.ruling_planet },
         {
           label: 'सामञ्जस्यपूर्ण राशि',
           value: row.compatibility?.length ? row.compatibility.join(', ') : '—',
         },
         {
           label: 'बलियो पक्ष',
-          value: neTrans?.strengths?.length ? neTrans.strengths.join(', ') : '—',
+          value: row.strengths?.length ? row.strengths.join(', ') : '—',
         },
         {
           label: 'चुनौतीपूर्ण पक्ष',
-          value: neTrans?.weaknesses?.length ? neTrans.weaknesses.join(', ') : '—',
+          value: row.weaknesses?.length ? row.weaknesses.join(', ') : '—',
         },
-        { label: 'व्यक्तित्व', value: neTrans?.personality_traits || '—' },
+        { label: 'व्यक्तित्व', value: row.personality_traits || '—' },
       ]
     : [];
 
-  const description = neTrans?.intro ?? neTrans?.card_summary ?? '';
-  const descriptionWords = description.split(/\s+/);
-  const shouldTruncate = descriptionWords.length > 150;
-  const displayedDescription =
-    !isExpanded && shouldTruncate ? descriptionWords.slice(0, 150).join(' ') + '...' : description;
+  const description = row?.intro ?? row?.card_summary ?? '';
+  const shouldTruncate = description.length > 300;
+  const displayedDescription = shouldTruncate && !isExpanded ? description.slice(0, 300) + '...' : description;
 
   return (
     <main className="container mx-auto min-h-screen overflow-hidden">
@@ -116,7 +113,11 @@ export function ZodiacSignDetailNepaliClient() {
                 </h1>
                 <p className="mt-1 font-mukta text-[16px] text-[#101010] sm:text-[18px] sm:leading-[30px]">
                   {row?.slug ? `${row.slug} · ` : null}
-                  {row?.date_range ? `${row.date_range.from} - ${row.date_range.to}` : ''}
+                  {row?.date_range
+                    ? typeof row.date_range === 'object'
+                      ? `${row.date_range.from || ''} - ${row.date_range.to || ''}`
+                      : row.date_range
+                    : ''}
                 </p>
 
                 <div className="mt-4 max-w-[1120px]">

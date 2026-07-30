@@ -9,7 +9,7 @@ import {
 } from '@/lib/api/vedastro/zodiac-sign';
 import type { VedastroFetchOptions } from '@/lib/api/vedastro/http';
 import type { VedastroZodiacSignRow } from '@/lib/types/vedastro';
-import type { ZodiacSignRecord, ZodiacType, AstroSewaZodiacSignResponse } from '@/lib/types/zodiac-signs';
+import type { ZodiacSignRecord, ZodiacType } from '@/lib/types/zodiac-signs';
 import { unwrapResult } from '@/lib/utils/vedastro-result';
 import { getPublicBackendBaseUrl, joinUrl } from '@/lib/utils/url';
 
@@ -47,7 +47,7 @@ function parseVedastroDateRange(
 
 function mapVedastroDetailRow(
   row: VedastroZodiacSignRow,
-): AstroSewaZodiacSignResponse {
+): any {
   const date_range = parseVedastroDateRange(row.date_range);
 
   const translation = {
@@ -160,7 +160,7 @@ export async function fetchZodiacSignById(
 export async function fetchAstroSewaZodiacSignBySlug(
   slug: string,
   init?: VedastroFetchOptions,
-): Promise<AstroSewaZodiacSignResponse> {
+): Promise<any> {
   const envelope = await fetchVedastroZodiacSignBySlug(slug, init);
   const row = unwrapResult(envelope);
   return mapVedastroDetailRow(row);

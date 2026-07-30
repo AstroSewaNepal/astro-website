@@ -284,9 +284,9 @@ export function ClockTimePicker({
       : clsx(
           'rounded-full border px-4 py-2.5 font-mukta text-[15px]',
           open ? 'border-primary' : error ? 'border-red-500' : 'border-[#c9b9aa]',
-          'text-primary font-medium',
+          'text-primary font-medium'
         ),
-    disabled && 'opacity-50 pointer-events-none',
+    disabled && 'opacity-50 pointer-events-none'
   );
 
   return (
@@ -298,11 +298,7 @@ export function ClockTimePicker({
         onClick={() => setOpen(o => !o)}
         className={buttonClass}
       >
-        <span
-          className={
-            variant === 'calculator' ? 'flex-1 text-left min-w-0' : 'text-primary font-medium'
-          }
-        >
+        <span className={variant === 'calculator' ? 'flex-1 text-left min-w-0' : 'text-primary font-medium'}>
           {displayVal}
         </span>
         <svg
@@ -312,7 +308,7 @@ export function ClockTimePicker({
           fill="none"
           stroke={variant === 'calculator' ? 'currentColor' : '#720A0B'}
           strokeWidth="1.8"
-          className={clsx('opacity-60', variant === 'calculator' && 'text-[#5D1409]')}
+          className={clsx("opacity-60", variant === 'calculator' && 'text-[#5D1409]')}
           aria-hidden="true"
         >
           <circle cx="12" cy="12" r="10" />
@@ -321,10 +317,7 @@ export function ClockTimePicker({
       </button>
 
       {error ? (
-        <p
-          className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]"
-          role="alert"
-        >
+        <p className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]" role="alert">
           {error}
         </p>
       ) : null}

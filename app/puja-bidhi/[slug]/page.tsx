@@ -107,20 +107,18 @@ async function getPost(slug: string): Promise<PostData | null> {
       twitter_description: post.twitter_description ?? null,
       meta_title: post.meta_title ?? null,
       meta_description: post.meta_description ?? null,
-      tags:
-        post.tags?.map(tag => ({ name: tag.name ?? undefined, slug: tag.slug ?? undefined })) ?? [],
-      authors:
-        post.authors?.map(author => ({
-          name: author.name ?? undefined,
-          profile_image: author.profile_image ?? undefined,
-          bio: author.bio ?? undefined,
-          facebook: (author as { facebook?: string | null }).facebook ?? null,
-          twitter: (author as { twitter?: string | null }).twitter ?? null,
-          linkedin: (author as { linkedin?: string | null }).linkedin ?? null,
-          instagram: (author as { instagram?: string | null }).instagram ?? null,
-          youtube: (author as { youtube?: string | null }).youtube ?? null,
-          tiktok: (author as { tiktok?: string | null }).tiktok ?? null,
-        })) ?? [],
+      tags: post.tags?.map(tag => ({ name: tag.name ?? undefined, slug: tag.slug ?? undefined })) ?? [],
+      authors: post.authors?.map(author => ({
+        name: author.name ?? undefined,
+        profile_image: author.profile_image ?? undefined,
+        bio: author.bio ?? undefined,
+        facebook: (author as { facebook?: string | null }).facebook ?? null,
+        twitter: (author as { twitter?: string | null }).twitter ?? null,
+        linkedin: (author as { linkedin?: string | null }).linkedin ?? null,
+        instagram: (author as { instagram?: string | null }).instagram ?? null,
+        youtube: (author as { youtube?: string | null }).youtube ?? null,
+        tiktok: (author as { tiktok?: string | null }).tiktok ?? null,
+      })) ?? [],
       primary_author: post.primary_author
         ? {
             name: post.primary_author.name ?? undefined,
