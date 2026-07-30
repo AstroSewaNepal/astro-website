@@ -125,9 +125,7 @@ export default function AstrologersTable({
                 <TableRow key={astrologer._id} className="border-neutral-100 hover:bg-neutral-50">
                   <TableCell>
                     <div className="font-mukta">
-                      <p className="text-sm text-neutral-800">
-                        {astrologer.user?.fullName ?? '—'}
-                      </p>
+                      <p className="text-sm text-neutral-800">{astrologer.user?.fullName ?? '—'}</p>
                       <p className="text-xs text-neutral-400">{astrologer.user?.email ?? '—'}</p>
                     </div>
                   </TableCell>

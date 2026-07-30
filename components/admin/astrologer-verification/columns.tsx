@@ -249,9 +249,7 @@ function ApproveTierDialog({
           </label>
           <Select value={tierTagId} onValueChange={setTierTagId}>
             <SelectTrigger className="font-mukta">
-              <SelectValue
-                placeholder={tierTagsPending ? 'Loading tiers…' : 'Select a tier'}
-              />
+              <SelectValue placeholder={tierTagsPending ? 'Loading tiers…' : 'Select a tier'} />
             </SelectTrigger>
             <SelectContent className="font-mukta">
               {tierTags?.map(tag => (

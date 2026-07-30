@@ -12,11 +12,7 @@ import { openAppStore } from '@/lib/constants/app-store';
 
 const Clarity: React.FC = () => {
   return (
-    <section
-      className={clsx(
-        'container mx-auto px-6 lg:px-0 pb-8 md:pb-10 lg:pb-12',
-      )}
-    >
+    <section className={clsx('container mx-auto px-6 lg:px-0 pb-8 md:pb-10 lg:pb-12')}>
       <div
         className={clsx(
           ClarityCSS.background,

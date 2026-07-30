@@ -68,48 +68,43 @@ const faqJsonLd = {
 
 export default function Home() {
   return (
-<main className="container mx-auto min-h-screen overflow-hidden space-y-12 md:space-y-[100px] pb-12 md:pb-[100px]">
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-  />
+    <main className="container mx-auto min-h-screen overflow-hidden space-y-12 md:space-y-[100px] pb-12 md:pb-[100px]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
 
-  <div className="overflow-hidden">
-    <LandingHero />
-  </div>
+      <div className="overflow-hidden">
+        <LandingHero />
+      </div>
 
-  <hr className="border-t border-[#79787A] opacity-70" />
+      <hr className="border-t border-[#79787A] opacity-70" />
 
-  {/* <TodayHoroscope /> */}
-  {/* <EventsPage /> */}
+      {/* <TodayHoroscope /> */}
+      {/* <EventsPage /> */}
 
-  <Services />
+      <Services />
 
-  <hr className="border-t border-[#79787A] opacity-70" />
+      <hr className="border-t border-[#79787A] opacity-70" />
 
-  <Clarity />
-  <hr className="border-t border-[#79787A] opacity-70" />
+      <Clarity />
+      <hr className="border-t border-[#79787A] opacity-70" />
 
-  <TalkToOurAstrologer
-    className="mx-auto max-w-[1180px]"
-  />
-  <hr className="border-t border-[#79787A] opacity-70" />
+      <TalkToOurAstrologer className="mx-auto max-w-[1180px]" />
+      <hr className="border-t border-[#79787A] opacity-70" />
 
-  <AstrologerBlogListing />
-  <hr className="border-t border-[#79787A] opacity-70" />
+      <AstrologerBlogListing />
+      <hr className="border-t border-[#79787A] opacity-70" />
 
-  <WhoWeAre />
+      <WhoWeAre />
 
-  <LandingFAQ />
+      <LandingFAQ />
 
-  <HotTopics />
+      <HotTopics />
 
-  <DownloadApp
-    className="border-none"
-    paddingClassName="py-4 md:py-6"
-  />
+      <DownloadApp className="border-none" paddingClassName="py-4 md:py-6" />
 
-  {/* <CustomerFeedback /> */}
-</main>
+      {/* <CustomerFeedback /> */}
+    </main>
   );
 }
