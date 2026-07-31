@@ -680,7 +680,6 @@ export default function CompatibilityMatchPage() {
               emptyLabel={dict.list.empty}
               errorFallbackSuffix={dict.list.errorFallbackSuffix}
               horoscopeCardLang={horoscopeCardLang}
-              onLanguageChange={setHoroscopeCardLang}
             />
           </div>
 

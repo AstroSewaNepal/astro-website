@@ -54,6 +54,7 @@ type DisplayCard = {
   imageColor: (typeof HOROSCOPE_DATA)[ELanguage.ENGLISH][number]['image'];
   summary: string;
   stars: number;
+  href?: string;
 };
 
 export type HoroscopeHeroSignsSectionProps = {
@@ -230,7 +231,6 @@ export function HoroscopeHeroSignsSection({
         emptyLabel={dict.list.empty}
         errorFallbackSuffix={dict.list.errorFallbackSuffix}
         horoscopeCardLang={signLanguage}
-        onLanguageChange={setSignLanguage}
       />
     </section>
   );

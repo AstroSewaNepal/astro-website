@@ -69,7 +69,6 @@ export function ZodiacSignListing({ mode }: Props) {
               emptyLabel="No zodiac signs available."
               errorFallbackSuffix=""
               horoscopeCardLang={horoscopeCardLang}
-              onLanguageChange={setHoroscopeCardLang}
             />
 
             <section className="mx-auto mt-8 px-2 sm:mt-10 sm:px-3 lg:mt-12 lg:px-4">
