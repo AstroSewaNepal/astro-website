@@ -75,8 +75,8 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
           </p>
         </div>
 
-      <TopAstrologers onChat={onChat} onCall={onCall} onSchedule={onSchedule} />
-    </section>
+        <TopAstrologers onChat={onChat} onCall={onCall} onSchedule={onSchedule} />
+      </section>
     </>
   );
 };

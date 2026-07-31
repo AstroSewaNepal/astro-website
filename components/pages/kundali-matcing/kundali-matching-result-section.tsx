@@ -51,8 +51,9 @@ type TabButtonProps = {
 
 /** Same pill classes as `free-kundali/kundali-result-section.tsx` tab buttons. */
 function freeKundaliTabButtonClass(active: boolean): string {
-  return `inline-flex items-center justify-center h-[34px] min-w-[118px] max-w-full rounded-[32px] border border-[#720A0B] px-4 py-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 whitespace-nowrap md:h-[46px] md:min-w-[334.25px] md:px-2 ${active ? 'bg-[#720A0B] text-white' : 'bg-[#FFFAE6] text-[#720A0B]'
-    } hover:bg-[#720A0B] hover:text-white`;
+  return `inline-flex items-center justify-center h-[34px] min-w-[118px] max-w-full rounded-[32px] border border-[#720A0B] px-4 py-2 rotate-0 opacity-100 font-mukta text-[18px] leading-[30px] tracking-[0] font-medium cursor-pointer transition-colors duration-200 whitespace-nowrap md:h-[46px] md:min-w-[334.25px] md:px-2 ${
+    active ? 'bg-[#720A0B] text-white' : 'bg-[#FFFAE6] text-[#720A0B]'
+  } hover:bg-[#720A0B] hover:text-white`;
 }
 
 function TabButton({ id, label, activeTab, onSelect }: TabButtonProps) {
@@ -204,10 +205,7 @@ const KutaTable: React.FC<{
           const femaleInfo = row.FemaleInfo?.trim() || (row.Nature ?? '-');
 
           return (
-            <div
-              key={rowKey}
-              className="border border-solid border-[#C8A9A0] rounded-xl px-4 py-4"
-            >
+            <div key={rowKey} className="border border-solid border-[#C8A9A0] rounded-xl px-4 py-4">
               {/* Header row — identical layout to QNASComponent */}
               <button
                 type="button"
@@ -245,19 +243,21 @@ const KutaTable: React.FC<{
                       <p className="font-mukta text-[10px] font-semibold uppercase tracking-wide text-[#720A0B] mb-1">
                         {manFirstName}
                       </p>
-                      <p className="font-mukta text-[13px] leading-snug text-[#3a3a3a]">{maleInfo}</p>
+                      <p className="font-mukta text-[13px] leading-snug text-[#3a3a3a]">
+                        {maleInfo}
+                      </p>
                     </div>
                     <div className="rounded-[10px] border border-[#e5d9bc] bg-[#fffdf6] px-3 py-2">
                       <p className="font-mukta text-[10px] font-semibold uppercase tracking-wide text-[#720A0B] mb-1">
                         {womanFirstName}
                       </p>
-                      <p className="font-mukta text-[13px] leading-snug text-[#3a3a3a]">{femaleInfo}</p>
+                      <p className="font-mukta text-[13px] leading-snug text-[#3a3a3a]">
+                        {femaleInfo}
+                      </p>
                     </div>
                   </div>
                   {/* Detailed info */}
-                  {info && (
-                    <p className="font-mukta text-sm text-[#5B5B5B] mt-3">{info}</p>
-                  )}
+                  {info && <p className="font-mukta text-sm text-[#5B5B5B] mt-3">{info}</p>}
                 </div>
               </div>
             </div>
@@ -321,7 +321,9 @@ const KutaTable: React.FC<{
                   {isOpen && info && (
                     <tr>
                       <td colSpan={4} className="px-4 py-3 border border-[#C8A9A0]">
-                        <p className="font-mukta text-[16px] leading-[28px] text-[#5B5B5B]">{info}</p>
+                        <p className="font-mukta text-[16px] leading-[28px] text-[#5B5B5B]">
+                          {info}
+                        </p>
                       </td>
                     </tr>
                   )}
@@ -448,10 +450,11 @@ const IndividualPlanetsTable: React.FC<{ rows: string[][]; title: string }> = ({
               <th
                 key={`planet-header-${header}`}
                 scope="col"
-                className={`border-b border-r border-[#f0e6d0] bg-[#fff9ed] px-2 py-2.5 align-bottom font-mukta text-[10px] font-semibold uppercase leading-tight tracking-wide text-[#5c4033] last:border-r-0 sm:px-3 sm:py-3 sm:text-[11px] md:text-xs ${hi === 0
+                className={`border-b border-r border-[#f0e6d0] bg-[#fff9ed] px-2 py-2.5 align-bottom font-mukta text-[10px] font-semibold uppercase leading-tight tracking-wide text-[#5c4033] last:border-r-0 sm:px-3 sm:py-3 sm:text-[11px] md:text-xs ${
+                  hi === 0
                     ? 'sticky left-0 z-10 min-w-[4.5rem] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.12)]'
                     : ''
-                  }`}
+                }`}
               >
                 {header}
               </th>
@@ -464,12 +467,15 @@ const IndividualPlanetsTable: React.FC<{ rows: string[][]; title: string }> = ({
               {row.map((cell, cellIdx) => (
                 <td
                   key={`planet-cell-${rowIdx}-${cellIdx}`}
-                  className={`border-b border-r border-[#f0e6d0] px-2 py-1.5 align-top font-mukta text-xs leading-snug last:border-r-0 sm:px-3 sm:py-2 sm:text-sm md:leading-normal ${cellIdx === 0
-                      ? `sticky left-0 z-10 min-w-[4.5rem] whitespace-nowrap font-semibold text-[#720A0B] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] ${rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
-                      }`
-                      : `max-w-[8.5rem] break-words text-[#2d2d2d] sm:max-w-[11rem] md:max-w-none tabular-nums ${rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
-                      }`
-                    }`}
+                  className={`border-b border-r border-[#f0e6d0] px-2 py-1.5 align-top font-mukta text-xs leading-snug last:border-r-0 sm:px-3 sm:py-2 sm:text-sm md:leading-normal ${
+                    cellIdx === 0
+                      ? `sticky left-0 z-10 min-w-[4.5rem] whitespace-nowrap font-semibold text-[#720A0B] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] ${
+                          rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
+                        }`
+                      : `max-w-[8.5rem] break-words text-[#2d2d2d] sm:max-w-[11rem] md:max-w-none tabular-nums ${
+                          rowIdx % 2 === 0 ? 'bg-[#fffdf6]' : 'bg-[#fffaf2]'
+                        }`
+                  }`}
                 >
                   {cell}
                 </td>
@@ -505,7 +511,7 @@ function readKundaliMatchingResult(): StoredKundaliMatchingResult | null {
   return __lastKundaliParsed;
 }
 
-const subscribeKundaliMatchingResult = () => () => { };
+const subscribeKundaliMatchingResult = () => () => {};
 
 const KundaliMatchingResultSection: React.FC = () => {
   const result = useSyncExternalStore(
@@ -826,7 +832,6 @@ const KundaliMatchingResultSection: React.FC = () => {
             </div>
           )}
         </div>
-
       </div>
     </section>
   );

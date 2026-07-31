@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 
-import { CompatibilityHoroscopeCardLink } from '@/app/compatibility/compatibilityMatch/compatibility-horoscope-section';
+import { CompatibilityHoroscopeCardLink } from '@/app/compatibility/[slug]/compatibility-horoscope-section';
 import { ZodiacSignMiniCard } from '@/components/pages/zodiac-sign/zodiac-sign-mini-card';
 import { ZodiacSignCardsGrid } from '@/components/ui/zodiac-sign-cards-grid';
 import { ELanguage } from '@/components/enums/language.enum';

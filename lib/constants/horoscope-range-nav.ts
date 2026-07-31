@@ -41,22 +41,25 @@ export function horoscopeListPageHref(
   return q ? `/horoscope?${q}` : '/horoscope';
 }
 
-/** `/horoscope/details?sign=&type=` — `sign` is lowercase slug (`aries`, …). */
 export function horoscopeDetailPageHref(
   signSlug: string,
   range: VedastroHoroscopeRangeType,
   uiLang?: ELanguage,
 ): string {
   const s = signSlug.trim().toLowerCase();
-  const params = new URLSearchParams();
-  params.set('sign', s);
+  
+  let path = `/horoscope/${s}`;
   if (range !== 'today') {
-    params.set('type', range);
+    path += `/${range}`;
   }
+
+  const params = new URLSearchParams();
   if (uiLang && uiLang !== ELanguage.ENGLISH) {
     params.set('lang', uiLang);
   }
-  return `/horoscope/details?${params.toString()}`;
+  
+  const query = params.toString();
+  return query ? `${path}?${query}` : path;
 }
 
 export const HOROSCOPE_RANGE_NAV_OPTIONS: {

@@ -4,6 +4,8 @@ import { useCallback, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import { compatibilityMatchHref } from '@/lib/constants/compatibility-nav';
+
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import DownloadApp from '@/components/pages/landing/download-app';
 import QNASComponent from '@/components/common/qnas-component';
@@ -56,14 +58,7 @@ export default function CompatibilityPage() {
 
   const findNow = useCallback(() => {
     setIsFinding(true);
-    const searchParams = new URLSearchParams({
-      your_sign: yourSign,
-      partner_sign: partnerSign,
-      your_gender: yourGender,
-      partner_gender: partnerGender,
-    });
-
-    router.push(`/compatibility/compatibilityMatch?${searchParams.toString()}`);
+    router.push(compatibilityMatchHref(yourSign, partnerSign, yourGender, partnerGender));
   }, [partnerGender, partnerSign, router, yourGender, yourSign]);
 
   return (
