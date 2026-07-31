@@ -47,7 +47,7 @@ const RANGE_TAB_TYPES = [
 
 type HoroscopeBodyKey = 'general' | 'love' | 'career' | 'health';
 
-const SECTION_PILL_IDS: HoroscopeBodyKey[] = ['love', 'career', 'health', 'general'];
+const SECTION_PILL_IDS: HoroscopeBodyKey[] = ['general', 'love', 'career', 'health'];
 
 function HoroscopeDetailsFallback() {
   return (
@@ -85,10 +85,10 @@ function HoroscopeDetailsContent() {
   const [activeSectionByView, setActiveSectionByView] = useState<{
     key: string;
     section: HoroscopeBodyKey;
-  }>({ key: '', section: 'love' });
+  }>({ key: '', section: 'general' });
   const activeViewKey = `${validSign ?? 'none'}:${rangeType}`;
   const activeSection =
-    activeSectionByView.key === activeViewKey ? activeSectionByView.section : 'love';
+    activeSectionByView.key === activeViewKey ? activeSectionByView.section : 'general';
 
   useEffect(() => {
     if (!validSign) {
@@ -102,11 +102,7 @@ function HoroscopeDetailsContent() {
       setLoading(true);
       setError(null);
       setDetail(null);
-      fetchVedastroHoroscopeDetail(
-        validSign,
-        { type: rangeType },
-        { headers: { 'Accept-Language': uiLanguage === ELanguage.NEPALI ? 'ne' : 'en' } },
-      )
+      fetchVedastroHoroscopeDetail(validSign, { type: rangeType })
         .then(envelope => {
           if (cancelled) {
             return;
@@ -128,7 +124,7 @@ function HoroscopeDetailsContent() {
     return () => {
       cancelled = true;
     };
-  }, [validSign, rangeType, uiLanguage]);
+  }, [validSign, rangeType]);
 
   const sectionBody = useMemo(() => {
     if (!detail) {
@@ -292,10 +288,10 @@ function HoroscopeDetailsContent() {
                       priority={false}
                     />
                     <Link
-                      href={zodiacDetailHref(validSign, uiLanguage)}
-                      className="flex w-fit mx-auto h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[24px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
+                      href={zodiacDetailHref(validSign, uiLanguage, uiLanguage)}
+                      className="inline-flex w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px] lg:-translate-x-10"
                     >
-                      Explore {capitalizeSign(validSign)}
+                      Know More About {capitalizeSign(validSign)} Zodiac
                       <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
                     </Link>
                   </div>
@@ -357,6 +353,7 @@ function HoroscopeDetailsContent() {
                       title={''}
                       className="mt-4"
                       contentLanguage={uiLanguage as ELanguage}
+                      headerLanguage={uiLanguage as ELanguage}
                       signSlug={(validSign ?? HOROSCOPE_SIGNS[0]) as HoroscopeSign}
                       isNepali={uiLanguage === ELanguage.NEPALI}
                       onContentLanguageChange={() => {}}

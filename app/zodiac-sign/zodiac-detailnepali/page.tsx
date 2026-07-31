@@ -1,27 +1,23 @@
-import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
 
-import { ZodiacSignDetailNepaliClient } from './zodiac-sign-detail-nepali-client';
+import { ELanguage } from '@/components/enums/language.enum';
 
-export const metadata: Metadata = {
-  title: 'Zodiac Sign Details (Nepali)',
-  description:
-    'Get in-depth details about your zodiac sign in Nepali — personality traits, compatibility, strengths, and weaknesses based on Vedic astrology.',
-  alternates: {
-    canonical: '/zodiac-sign/zodiac-detailnepali',
-  },
+type Props = {
+  searchParams?: Record<string, string | string[] | undefined>;
 };
 
-export default function ZodiacDetailNepaliPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-[40vh] items-center justify-center font-mukta text-[#6f2618]">
-          Loading…
-        </div>
-      }
-    >
-      <ZodiacSignDetailNepaliClient />
-    </Suspense>
-  );
+export default function ZodiacDetailNepaliPage({ searchParams }: Props) {
+  const sign = searchParams?.sign;
+  const signValue = Array.isArray(sign) ? sign[0] : sign;
+  const lang = searchParams?.lang;
+  const langValue = Array.isArray(lang) ? lang[0] : lang;
+  const params = new URLSearchParams();
+  if (signValue) {
+    params.set('sign', signValue);
+  }
+  if (langValue) {
+    params.set('lang', langValue);
+  }
+  params.set('content_lang', ELanguage.NEPALI);
+  redirect(`/zodiac-sign/details?${params.toString()}`);
 }
