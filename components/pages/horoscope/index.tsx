@@ -68,6 +68,8 @@ export type HoroscopeHeroSignsSectionProps = {
   swiperKeySuffix?: string;
   /** Optional `data-qa-id` for the cards grid wrapper. */
   dataQaId?: string;
+  /** Where the cards should link to. Defaults to 'horoscope'. */
+  linkTo?: 'horoscope' | 'zodiac-sign';
 };
 
 /**
@@ -80,6 +82,7 @@ export function HoroscopeHeroSignsSection({
   sectionClassName,
   swiperKeySuffix = '',
   dataQaId = 'horoscope-sign-cards-grid',
+  linkTo = 'horoscope',
 }: HoroscopeHeroSignsSectionProps) {
   void highlightSign;
   void swiperKeySuffix;
@@ -145,7 +148,7 @@ export function HoroscopeHeroSignsSection({
         summary: c.detail,
         stars: c.numberOfStars,
         href:
-          selectedRange === 'today'
+          linkTo === 'zodiac-sign'
             ? zodiacDetailHref(c.name.toLowerCase(), signLanguage, uiLanguage)
             : horoscopeDetailPageHref(c.name.toLowerCase(), selectedRange, uiLanguage),
       }));
@@ -179,12 +182,12 @@ export function HoroscopeHeroSignsSection({
         summary: row.summary,
         stars: starCountFromRating(row.rating),
         href:
-          selectedRange === 'today'
+          linkTo === 'zodiac-sign'
             ? zodiacDetailHref(slug, signLanguage, uiLanguage)
             : horoscopeDetailPageHref(slug, selectedRange, uiLanguage),
       };
     });
-  }, [signLanguage, listError, listLoading, rows, selectedRange, uiLanguage]);
+  }, [signLanguage, listError, listLoading, rows, selectedRange, uiLanguage, linkTo]);
 
   return (
     <section

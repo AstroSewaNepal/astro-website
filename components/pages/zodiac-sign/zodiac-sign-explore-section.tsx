@@ -9,6 +9,7 @@ import { ZodiacSignCardsGrid } from '@/components/ui/zodiac-sign-cards-grid';
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
 import { zodiacDetailHref } from '@/lib/constants/zodiac-sign-nav';
+import { horoscopeDetailPageHref } from '@/lib/constants/horoscope-range-nav';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 import type { HoroscopeSign } from '@/lib/types/horoscope';
 
@@ -22,6 +23,7 @@ type Props = {
   isNepali: boolean;
   onContentLanguageChange: (lang: ELanguage) => void;
   className?: string;
+  linkTo?: 'horoscope' | 'zodiac-sign';
 };
 
 export function ZodiacSignExploreSection({
@@ -32,6 +34,7 @@ export function ZodiacSignExploreSection({
   isNepali,
   onContentLanguageChange,
   className,
+  linkTo = 'zodiac-sign',
 }: Props) {
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
@@ -48,10 +51,13 @@ export function ZodiacSignExploreSection({
           imageLight: card.image,
           summary: card.detail || cardBaseText,
           stars: card.numberOfStars ?? 3,
-          href: zodiacDetailHref(sign, contentLanguage, headerLanguage),
+          href:
+            linkTo === 'zodiac-sign'
+              ? zodiacDetailHref(sign, contentLanguage, headerLanguage)
+              : horoscopeDetailPageHref(sign, 'today', headerLanguage),
         };
       }),
-    [contentLanguage, headerLanguage],
+    [contentLanguage, headerLanguage, linkTo],
   );
 
   const updateActiveCarouselIndex = () => {
@@ -140,7 +146,11 @@ export function ZodiacSignExploreSection({
           return (
             <div key={sign} className="min-w-[260px] shrink-0 snap-start">
               <ZodiacSignMiniCard
-                href={zodiacDetailHref(sign, contentLanguage, headerLanguage)}
+                href={
+                  linkTo === 'zodiac-sign'
+                    ? zodiacDetailHref(sign, contentLanguage, headerLanguage)
+                    : horoscopeDetailPageHref(sign, 'today', headerLanguage)
+                }
                 image={card.image}
                 name={card.name}
                 blurb={card.detail || cardBaseText}

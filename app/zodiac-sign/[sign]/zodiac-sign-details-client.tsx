@@ -294,6 +294,7 @@ export function ZodiacSignDetailsClient() {
               sectionClassName="mt-4 min-w-0 max-w-full bg-transparent py-0"
               swiperKeySuffix="zodiac-details-read-other"
               dataQaId="zodiac-details-other-signs-grid"
+              linkTo="zodiac-sign"
             />
           </div>
           <div className="md:hidden">
