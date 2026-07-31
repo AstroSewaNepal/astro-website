@@ -88,7 +88,7 @@ export default function CalculatorDatePicker({
       <DatePickerDropdown
         open={open}
         onOpenChange={setOpen}
-        onDateSelect={date => onChange(ddMmYyyyToIso(date))}
+        onDateSelect={(date) => onChange(ddMmYyyyToIso(date))}
         value={calendarValue || undefined}
         anchorId={id}
       />

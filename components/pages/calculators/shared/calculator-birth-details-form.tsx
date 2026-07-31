@@ -177,10 +177,7 @@ export default function CalculatorBirthDetailsForm({
                 </svg>
               </span>
             </div>
-            <p
-              className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]"
-              role="alert"
-            >
+            <p className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]" role="alert">
               {fieldErrors.fullName || '\u00a0'}
             </p>
           </div>
@@ -213,10 +210,7 @@ export default function CalculatorBirthDetailsForm({
                 </svg>
               </span>
             </div>
-            <p
-              className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]"
-              role="alert"
-            >
+            <p className="mt-1 sm:mt-2 font-mukta text-[12px] text-red-600 min-h-[16px] sm:min-h-[18px]" role="alert">
               {fieldErrors.gender || '\u00a0'}
             </p>
           </div>

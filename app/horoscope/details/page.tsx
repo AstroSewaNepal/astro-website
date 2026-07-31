@@ -200,9 +200,7 @@ function HoroscopeDetailsContent() {
                 </h1>
                 {detail?.horoscope?.start_date ? (
                   <h2 className="mt-2 font-sahitya text-[22px] font-bold leading-[30px] text-[#D47F2C] sm:text-[26px] sm:leading-[34px]">
-                    {['today', 'tomorrow', 'yesterday'].includes(
-                      detail.horoscope.type?.toLowerCase(),
-                    )
+                    {['today', 'tomorrow', 'yesterday'].includes(detail.horoscope.type?.toLowerCase())
                       ? new Date(detail.horoscope.start_date).toLocaleDateString('en-US', {
                           month: 'long',
                           day: 'numeric',
@@ -334,8 +332,8 @@ function HoroscopeDetailsContent() {
 
                 <div className="mt-9 min-w-0">
                   <h3 className="hidden md:block font-mukta text-center text-[18px] font-semibold text-[#6f2618] md:text-left">
-                    {dict.details.readOtherSigns}
-                  </h3>
+                      {dict.details.readOtherSigns}
+                    </h3>
                   <div className="hidden md:block">
                     <HoroscopeHeroSignsSection
                       hideTitle
