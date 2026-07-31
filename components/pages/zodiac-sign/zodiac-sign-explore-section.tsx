@@ -153,18 +153,25 @@ export function ZodiacSignExploreSection({
       </div>
 
       <div className="mt-3 flex justify-center gap-2 sm:hidden">
-        {HOROSCOPE_SIGNS.map((_, index) => (
-          <button
-            key={index}
-            type="button"
-            aria-label={`Go to card ${index + 1}`}
-            onClick={() => scrollToCarouselIndex(index)}
-            className={clsx(
-              'h-2 min-w-[8px] rounded-full transition-colors',
-              index === activeCarouselIndex ? 'bg-[#611508]' : 'bg-[#d7c3b1]',
-            )}
-          />
-        ))}
+        {(() => {
+          let startDot = Math.max(0, activeCarouselIndex - 1);
+          if (startDot + 3 > HOROSCOPE_SIGNS.length) {
+            startDot = Math.max(0, HOROSCOPE_SIGNS.length - 3);
+          }
+          const visibleDots = HOROSCOPE_SIGNS.map((_, i) => i).slice(startDot, startDot + 3);
+          return visibleDots.map(index => (
+            <button
+              key={index}
+              type="button"
+              aria-label={`Go to card ${index + 1}`}
+              onClick={() => scrollToCarouselIndex(index)}
+              className={clsx(
+                'h-2 min-w-[8px] rounded-full transition-all duration-300',
+                index === activeCarouselIndex ? 'bg-[#611508]' : 'bg-[#d7c3b1]',
+              )}
+            />
+          ));
+        })()}
       </div>
 
       {/* Desktop: horoscope-style card grid */}

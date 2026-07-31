@@ -9,13 +9,6 @@ import { FiRefreshCcw } from 'react-icons/fi';
 
 import UploadPhotoImg from '@/components/images/uploadyourphoto.png';
 import LoveMatchIcon from '@/components/images/icons/lovematch.png';
-import CalculatorCard from '@/components/pages/calculators/calculator-card';
-import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
-import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
-import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
-import DashaImage from '@/components/images/calculator/dasha.png';
-import MoonPhaseImage from '@/components/images/calculator/moonphase.png';
-import RashiCalculatorImage from '@/components/images/calculator/rashicalculator.png';
 
 type LoveResult = {
   yourName: string;
@@ -68,172 +61,75 @@ export default function LoveCalculatorResultSection() {
     router.push('/calculators/love-calculator');
   };
 
-  const otherCalculators = [
-    {
-      title: 'Numerology Calculator',
-      description: 'Discover your life path number and explore numerology insights.',
-      calculateHref: '/calculators/numerology-calculator',
-      mobileIcon: (
-        <Image
-          src={NumerologyCalculatorImage}
-          alt="Numerology calculator"
-          width={84}
-          height={84}
-          className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
-        />
-      ),
-      desktopIcon: (
-        <Image
-          src={NumerologyCalculatorImage}
-          alt="Numerology calculator"
-          width={100}
-          height={100}
-          className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
-        />
-      ),
-      titleClassName: 'md:text-[20px] md:leading-[28px] text-center',
-      descriptionClassName:
-        'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
-    },
-    {
-      title: 'Sun Sign Calculator',
-      description: 'Discover your zodiac sign based on birth date and astrology insights.',
-      calculateHref: '/calculators/sun-sign-calculator',
-      mobileIcon: (
-        <Image
-          src={SunSignCalculatorImage}
-          alt="Sun sign calculator"
-          width={84}
-          height={84}
-          className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
-        />
-      ),
-      desktopIcon: (
-        <Image
-          src={SunSignCalculatorImage}
-          alt="Sun sign calculator"
-          width={100}
-          height={100}
-          className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
-        />
-      ),
-      titleClassName: 'md:text-[20px] md:leading-[28px] text-center',
-      descriptionClassName:
-        'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
-    },
-    {
-      title: 'Mangal Dosha Calculator',
-      description: 'Check Mangal dosha and marriage effects in your birth chart.',
-      calculateHref: '/calculators/mangal-dosha-calculator',
-      mobileIcon: (
-        <Image
-          src={MangalDoshaImage}
-          alt="Mangal dosha calculator"
-          width={84}
-          height={84}
-          className="h-[130px] w-[128px] md:h-[84px] md:w-[84px] object-contain"
-        />
-      ),
-      desktopIcon: (
-        <Image
-          src={MangalDoshaImage}
-          alt="Mangal dosha calculator"
-          width={100}
-          height={100}
-          className="h-[100px] w-[100px] md:h-[100px] md:w-[100px] object-contain"
-        />
-      ),
-      titleClassName: 'md:text-[20px] md:leading-[28px] text-center whitespace-nowrap',
-      descriptionClassName:
-        'text-[13px] md:text-[14px] md:leading-[24px] text-center font-normal md:max-w-none',
-    },
-    {
-      title: 'Dasha Calculator',
-      description:
-        'Calculate planetary dasha periods and analyze timing of life events in Vedic astrology.',
-      calculateHref: '/calculators/dasha-calculator',
-      mobileIcon: (
-        <Image
-          src={DashaImage}
-          alt="Dasha calculator"
-          width={130}
-          height={130}
-          className="h-[130px] w-[128px] object-contain opacity-100"
-        />
-      ),
-      desktopIcon: (
-        <Image
-          src={DashaImage}
-          alt="Dasha calculator"
-          width={120}
-          height={120}
-          className="h-[120px] w-[120px] object-contain opacity-100"
-        />
-      ),
-      titleClassName: 'md:text-[22px] md:leading-[32px] text-center',
-      descriptionClassName:
-        'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
-    },
-    {
-      title: 'Moon Phase Calculator',
-      description: 'Track and explore current moon phases and lunar cycle changes over time.',
-      calculateHref: '/calculators/moon-phase-calculator',
-      mobileIcon: (
-        <Image
-          src={MoonPhaseImage}
-          alt="Moon phase calculator"
-          width={130}
-          height={130}
-          className="h-[130px] w-[128px] object-contain opacity-100"
-        />
-      ),
-      desktopIcon: (
-        <Image
-          src={MoonPhaseImage}
-          alt="Moon phase calculator"
-          width={120}
-          height={120}
-          className="h-[120px] w-[120px] object-contain opacity-100"
-        />
-      ),
-      titleClassName: 'md:text-[22px] md:leading-[32px] text-center',
-      descriptionClassName:
-        'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
-    },
-    {
-      title: 'Rashi Calculator',
-      description:
-        'Discover your Vedic Rashi and understand how it shapes your birth chart insights.',
-      calculateHref: '/calculators/rashi-calculator',
-      mobileIcon: (
-        <Image
-          src={RashiCalculatorImage}
-          alt="Rashi calculator"
-          width={130}
-          height={130}
-          className="h-[130px] w-[128px] object-contain opacity-100"
-        />
-      ),
-      desktopIcon: (
-        <Image
-          src={RashiCalculatorImage}
-          alt="Rashi calculator"
-          width={120}
-          height={120}
-          className="h-[120px] w-[120px] object-contain opacity-100"
-        />
-      ),
-      titleClassName: 'md:text-[22px] md:leading-[32px] text-center',
-      descriptionClassName:
-        'md:text-[18px] md:leading-[28px] text-center font-normal md:max-w-none',
-    },
-  ];
+  const copyTextToClipboard = async (text: string) => {
+    if (typeof window === 'undefined') return false;
+
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        // Fall back to legacy copy behavior below.
+      }
+    }
+
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.setAttribute('readonly', '');
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    textArea.style.top = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      return document.execCommand('copy');
+    } catch {
+      return false;
+    } finally {
+      document.body.removeChild(textArea);
+    }
+  };
+
+  const handleShareReport = async () => {
+    if (typeof window === 'undefined' || !result) return;
+
+    const shareData = {
+      title: 'Love Calculator Match',
+      text: `Check out our love match! ${result.yourName} & ${result.partnerName} scored ${result.score}%!`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      const copied = await copyTextToClipboard(shareData.url);
+      if (copied) {
+        return;
+      }
+
+      window.prompt('Copy this result link:', shareData.url);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+
+      const copied = await copyTextToClipboard(shareData.url);
+      if (!copied) {
+        window.prompt('Copy this result link:', shareData.url);
+      }
+    }
+  };
 
   if (!result) {
     return (
-      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-24">
-        <div className="max-w-[1454px] mx-auto flex flex-col items-center justify-center text-center">
-          <h2 className="font-sahitya text-3xl md:text-4xl font-bold text-[#5D1409]">
+      <section className="pt-6 md:pt-12 pb-24">
+        <div className="flex flex-col items-center justify-center text-center">
+          <h2 className="font-tiro-devanagari text-[26px] md:text-[36px] font-bold text-[#5D1409] leading-[1.2]">
             No Data Found
           </h2>
           <p className="font-mukta mt-2 text-[#4a4a4a] text-[15px] md:text-[16px] leading-[1.8] max-w-[760px]">
@@ -251,24 +147,24 @@ export default function LoveCalculatorResultSection() {
   }
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
-      <div className="max-w-[1454px] mx-auto">
+    <section className="pt-6 md:pt-12 pb-12">
+      <div>
         {/* Header */}
-        <div className="mb-4">
-          <h1 className="font-sahitya font-bold text-[22px] md:text-[48px] leading-[32px] md:leading-[48px] tracking-[0%] text-[#471207]">
+        <div className="mb-6 md:mb-[50px]">
+          <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
             Lovers Report
           </h1>
-          <p className="font-mukta font-medium text-[14px] md:text-[24px] leading-[30px] tracking-[0%] text-[#4a4a4a] mt-0.5">
+          <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
             This calculation may or may not be true but you can analyze it.
           </p>
         </div>
 
         {/* Result Card */}
-        <div className="rounded-[16px] border border-[#d4c4b8] p-4 md:p-6 flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-8">
+        <div className="rounded-[16px] border border-[#d4c4b8] p-4 md:p-6 flex flex-col xl:flex-row items-center xl:items-start gap-5 xl:gap-8">
           {/* Photo */}
           <label
             htmlFor="love-photo-upload"
-            className="shrink-0 relative rounded-[19px] overflow-hidden w-full max-w-[320px] h-[332px] md:w-[318px] md:h-[333px] cursor-pointer group"
+            className="shrink-0 relative rounded-[19px] overflow-hidden w-full max-w-[320px] h-[332px] xl:w-[318px] xl:h-[333px] cursor-pointer group"
           >
             {photoPreview ? (
               <Image
@@ -330,7 +226,7 @@ export default function LoveCalculatorResultSection() {
                 />
               </div>
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
-                <span className="font-sahitya font-normal text-white text-[18px] leading-none tracking-[0%] text-center drop-shadow-md">
+                <span className="font-tiro-devanagari font-bold text-white text-[18px] leading-none tracking-[0%] text-center drop-shadow-md">
                   {result.score}%
                 </span>
                 <span className="font-mukta font-normal text-white text-[10px] leading-none tracking-[0%] text-center">
@@ -346,103 +242,59 @@ export default function LoveCalculatorResultSection() {
             </div>
           </div>
 
-          {/* Desktop / tablet: stacked names with heart between */}
-          <div className="hidden md:flex flex-col items-center justify-center shrink-0 gap-4 -ml-0 md:-ml-8 self-center md:self-auto w-full md:w-[426px]">
-            <h2 className="font-mukta font-semibold text-[20px] md:text-[36px] uppercase text-[#471207] text-center tracking-[0%] leading-[38px] md:leading-[38px]">
+          {/* Desktop / tablet layout: horizontal on tablet (iPad Pro), stacked on desktop */}
+          <div className="hidden md:flex md:flex-row xl:flex-col items-center justify-center shrink-0 gap-6 lg:gap-8 xl:gap-4 -ml-0 xl:-ml-8 self-center xl:self-auto w-full xl:w-[426px]">
+            <h2 className="md:flex-1 xl:flex-none font-mukta font-semibold text-[24px] lg:text-[32px] xl:text-[36px] uppercase text-[#471207] md:text-right xl:text-center tracking-[0%] leading-[1.2] xl:leading-[38px]">
               {result.yourName}
             </h2>
 
-            <div className="relative flex items-center justify-center w-[205px] h-[188px]">
+            <div className="relative flex-shrink-0 flex items-center justify-center w-[140px] h-[128px] lg:w-[170px] lg:h-[156px] xl:w-[205px] xl:h-[188px]">
               <Image
                 src={LoveMatchIcon}
                 alt="Heart"
                 width={205}
                 height={188}
-                className="object-contain w-[205px] h-[188px]"
+                className="object-contain w-full h-full"
               />
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
-                <span className="font-sahitya font-normal text-white text-[64px] leading-none tracking-[0%] text-center drop-shadow-md">
+                <span className="font-tiro-devanagari font-bold text-white text-[32px] lg:text-[48px] xl:text-[64px] leading-none tracking-[0%] text-center drop-shadow-md">
                   {result.score}%
                 </span>
-                <span className="font-mukta font-normal text-white text-[24px] leading-none tracking-[0%] text-center">
+                <span className="font-mukta font-normal text-white text-[12px] lg:text-[18px] xl:text-[24px] leading-none tracking-[0%] text-center">
                   Matched
                 </span>
               </div>
             </div>
 
-            <h2 className="font-mukta font-semibold text-[20px] md:text-[36px] uppercase text-[#471207] text-center tracking-[0%] leading-[38px] md:leading-[38px]">
+            <h2 className="md:flex-1 xl:flex-none font-mukta font-semibold text-[24px] lg:text-[32px] xl:text-[36px] uppercase text-[#471207] md:text-left xl:text-center tracking-[0%] leading-[1.2] xl:leading-[38px]">
               {result.partnerName}
             </h2>
           </div>
 
           {/* Narrative + Buttons */}
-          <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left pt-6 md:pt-20 ml-0 md:-ml-12">
+          <div className="flex-1 flex flex-col items-center xl:items-start text-center xl:text-left pt-6 xl:pt-20 ml-0 xl:-ml-12">
             <p className="font-mukta font-normal text-[#2d2d2d] text-[16px] md:text-[24px] leading-[30px] md:leading-[34px] tracking-[0%] max-w-full text-justify px-2 md:px-0">
               Like a love meteorite, your connection will leave a profound impact on the world,
               inspiring others to seek their own cosmic love.
             </p>
 
-            <div className="flex w-full flex-col sm:flex-row items-center gap-3 mt-5 px-2 sm:px-0">
+            <div className="flex w-full flex-row items-center justify-center xl:justify-start gap-3 mt-5 px-2 sm:px-0 flex-nowrap">
               <button
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator
-                      .share({
-                        title: 'Love Calculator Match',
-                        text: `Check out our love match! ${result.yourName} & ${result.partnerName} scored ${result.score}%!`,
-                        url: window.location.href,
-                      })
-                      .catch(console.error);
-                  }
-                }}
-                className="flex items-center justify-center gap-[10px] rounded-[40px] w-full sm:w-[204px] h-[50px] p-[12px] bg-[#471207] font-mukta font-semibold text-[18px] leading-[30px] tracking-[0%] text-white transition-colors hover:bg-[#5D1409]"
+                onClick={handleShareReport}
+                className="flex flex-1 md:flex-none min-w-0 items-center justify-center gap-[10px] rounded-[40px] h-[50px] px-[16px] md:px-[28px] xl:px-[36px] bg-[#471207] font-mukta font-semibold text-[16px] xl:text-[18px] leading-[30px] tracking-[0%] text-white transition-colors hover:bg-[#5D1409] whitespace-nowrap"
               >
-                <IoShareOutline className="text-lg" />
+                <IoShareOutline className="text-lg shrink-0" />
                 Share your match
               </button>
 
               <button
                 onClick={handleCalculateAnother}
-                className="flex items-center justify-center gap-[10px] rounded-[32px] border-[2px] border-[#471207] bg-transparent px-[24px] py-[12px] w-full sm:w-[240px] h-[50px] font-mukta font-semibold text-[18px] leading-[30px] tracking-[0%] text-[#471207] transition-colors hover:bg-[#471207] hover:text-white"
+                className="flex flex-1 md:flex-none min-w-0 items-center justify-center gap-[10px] rounded-[32px] border-[2px] border-[#471207] bg-transparent px-[16px] md:px-[24px] xl:px-[32px] py-[12px] h-[50px] font-mukta font-semibold text-[16px] xl:text-[18px] leading-[30px] tracking-[0%] text-[#471207] transition-colors hover:bg-[#471207] hover:text-white whitespace-nowrap"
               >
-                <FiRefreshCcw className="text-base" />
+                <FiRefreshCcw className="text-base shrink-0" />
                 Calculate Another
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* Other Calculators */}
-        <div className="mt-10">
-          <h2 className="font-sahitya font-bold text-[22px] md:text-[26px] leading-[1.1] text-primary">
-            Other Calculators
-          </h2>
-
-          <div className="mt-5 md:hidden flex flex-nowrap gap-4 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
-            {otherCalculators.map(card => (
-              <CalculatorCard
-                key={card.calculateHref}
-                title={card.title}
-                description={card.description}
-                mobileHorizontal
-                calculateHref={card.calculateHref}
-                icon={card.mobileIcon}
-              />
-            ))}
-          </div>
-
-          <div className="mt-5 hidden md:grid md:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-            {otherCalculators.map(card => (
-              <CalculatorCard
-                key={card.calculateHref}
-                title={card.title}
-                description={card.description}
-                titleClassName={card.titleClassName}
-                descriptionClassName={card.descriptionClassName}
-                calculateHref={card.calculateHref}
-                icon={card.desktopIcon}
-              />
-            ))}
           </div>
         </div>
       </div>

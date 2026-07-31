@@ -12,6 +12,11 @@ import type { TodayHoroscopeDisplayCard } from '@/lib/horoscope/build-today-horo
 
 interface CompatibilityHoroscopeSectionProps {
   title?: string | null;
+  subtitleHeading?: string | null;
+  subtitle?: string | null;
+  subtitleAsHeading?: boolean;
+  headingLevel?: 'h1' | 'h2';
+  headingAlign?: 'center' | 'left';
   cards: TodayHoroscopeDisplayCard[] | 'loading';
   listError: string | null;
   uiLanguage: ELanguage;
@@ -173,6 +178,11 @@ export function CompatibilityHoroscopeCardLink({
 
 export function CompatibilityHoroscopeSection({
   title,
+  subtitleHeading,
+  subtitle,
+  subtitleAsHeading = false,
+  headingLevel = 'h2',
+  headingAlign = 'left',
   cards,
   listError,
   uiLanguage,
@@ -187,18 +197,34 @@ export function CompatibilityHoroscopeSection({
     cards === 'loading' ? 'loading' : cards.map(card => card.key).join(',')
   }`;
 
+  const HeadingTag = headingLevel;
+
   return (
     <div className="w-full min-w-0 max-w-full overflow-visible">
       <div className="flex flex-col gap-2 sm:gap-8">
         {title ? (
-          <h2 className="px-1 text-center font-sahitya text-[20px] font-bold leading-[28px] text-primary text-balance sm:text-left sm:text-[26px] sm:leading-[34px] md:text-[28px] md:leading-[38px]">
-            {title}
-          </h2>
+          <div
+            className={clsx(
+              'px-1',
+              headingAlign === 'center' ? 'text-center' : 'text-left sm:text-left',
+            )}
+          >
+            <HeadingTag
+              className={clsx(
+                'font-sahitya text-primary text-balance tracking-[0em]',
+                headingLevel === 'h1'
+                  ? 'font-semibold text-[38px] leading-[44px] sm:text-[56px] sm:leading-[47.83px]'
+                  : 'font-semibold text-[20px] leading-[28px] sm:text-[26px] sm:leading-[34px] md:text-[28px] md:leading-[38px]',
+              )}
+            >
+              {title}
+            </HeadingTag>
+          </div>
         ) : null}
 
         <div
           className={clsx(
-            'mx-auto flex w-full flex-row flex-wrap justify-center gap-[10px]',
+            'mx-auto flex w-full flex-row flex-wrap justify-center gap-[10px] mt-3 sm:mt-4',
             mobileButtonsWrapperClass,
           )}
         >
@@ -206,7 +232,7 @@ export function CompatibilityHoroscopeSection({
             type="button"
             onClick={() => onLanguageChange(ELanguage.ENGLISH)}
             className={clsx(
-              'flex h-[38px] sm:h-[48px] w-[130px] items-center justify-center rounded-[28px] border font-mukta font-normal text-[20px] leading-[28px] tracking-[0em] transition-colors gap-[10px] rotate-0 opacity-100 py-[10px] px-[35px]',
+              'flex h-[38px] sm:h-[48px] w-full max-w-[130px] items-center justify-center rounded-[28px] border font-mukta font-normal text-[20px] leading-[28px] tracking-[0em] transition-colors gap-[10px] rotate-0 opacity-100 py-[10px] px-[35px]',
               horoscopeCardLang === ELanguage.ENGLISH
                 ? 'border-[#6f2618] bg-[#6f2618] text-white shadow-sm'
                 : 'border-[#6f2618] bg-white text-[#6f2618] hover:bg-white/90',
@@ -218,7 +244,7 @@ export function CompatibilityHoroscopeSection({
             type="button"
             onClick={() => onLanguageChange(ELanguage.NEPALI)}
             className={clsx(
-              'flex h-[38px] sm:h-[48px] w-[130px] items-center justify-center rounded-[28px] border font-mukta font-normal text-[20px] leading-[28px] tracking-[0em] transition-colors gap-[10px] rotate-0 opacity-100 py-[10px] px-[35px]',
+              'flex h-[38px] sm:h-[48px] w-full max-w-[130px] items-center justify-center rounded-[28px] border font-mukta font-normal text-[20px] leading-[28px] tracking-[0em] transition-colors gap-[10px] rotate-0 opacity-100 py-[10px] px-[35px]',
               horoscopeCardLang === ELanguage.NEPALI
                 ? 'border-[#6f2618] bg-[#6f2618] text-white shadow-sm'
                 : 'border-[#6f2618] bg-white text-[#6f2618] hover:bg-white/90',
@@ -227,6 +253,37 @@ export function CompatibilityHoroscopeSection({
             Nepali
           </button>
         </div>
+
+        {subtitleHeading || subtitle ? (
+          <div
+            className={clsx(
+              'px-1',
+              headingAlign === 'center' ? 'text-center' : 'text-left sm:text-left',
+            )}
+          >
+            {subtitleHeading ? (
+              <h2 className="mt-3 font-sahitya font-semibold text-[24px] leading-[32px] text-primary sm:text-[26px] sm:leading-[36px] md:text-[28px] md:leading-[40px]">
+                {subtitleHeading}
+              </h2>
+            ) : null}
+            {subtitle ? (
+              subtitleAsHeading && !subtitleHeading ? (
+                <h2 className="mt-3 font-sahitya font-semibold text-[24px] leading-[32px] text-primary sm:text-[26px] sm:leading-[36px] md:text-[28px] md:leading-[40px]">
+                  {subtitle}
+                </h2>
+              ) : (
+                <p
+                  className={clsx(
+                    'mt-3 font-mukta text-[16px] leading-[28px] text-[#5f5248] sm:text-[18px] sm:leading-[30px]',
+                    subtitleHeading ? 'mt-2' : '',
+                  )}
+                >
+                  {subtitle}
+                </p>
+              )
+            ) : null}
+          </div>
+        ) : null}
 
         <ZodiacSignCardsGrid
           cards={cards}

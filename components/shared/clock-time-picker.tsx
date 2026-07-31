@@ -264,17 +264,22 @@ export function ClockTimePicker({
       ? `${pad(hour)} : ${pad(minute)} ${draft.ampm.toUpperCase()}`
       : 'hh / mm / am';
 
-  const labelClass = variant === 'calculator'
-    ? 'block font-mukta text-[14px] font-bold leading-[24px] tracking-normal text-[#2f2f2f] mb-1.5 sm:mb-2 sm:font-lato sm:text-[18px] sm:font-semibold sm:leading-[30px]'
-    : 'block font-mukta text-[14px] text-primary mb-1.5';
+  const labelClass =
+    variant === 'calculator'
+      ? 'mb-2 block font-mukta text-sm text-Trinary'
+      : 'block font-mukta text-[14px] text-primary mb-1.5';
 
   const buttonClass = clsx(
     'w-full flex items-center justify-between transition-colors',
     variant === 'calculator'
       ? clsx(
-          'rounded-[32px] border-2 sm:border bg-transparent px-4 h-[48px] sm:h-auto sm:py-3 font-mukta text-[18px] font-normal leading-[30px] tracking-normal',
-          open ? 'border-[#A13924] ring-2 ring-[#A13924]/10' : error ? 'border-red-600' : 'border-[#BE7B71]',
-          draft.hh && draft.mm ? 'text-[#2f2f2f]' : 'text-[#464646]'
+          'box-border h-[52px] rounded-[32px] border bg-transparent px-[16px] font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-normal leading-[30px] tracking-normal',
+          open
+            ? 'border-[#BE7B71] ring-1 ring-[#BE7B71]/20'
+            : error
+              ? 'border-red-600'
+              : 'border-[#BE7B71]',
+          draft.hh && draft.mm ? 'text-[#2f2f2f]' : 'text-[#464646]',
         )
       : clsx(
           'rounded-full border px-4 py-2.5 font-mukta text-[15px]',

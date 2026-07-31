@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useSyncExternalStore } from 'react';
-import Link from 'next/link';
 import {
   NorthIndianOpenChartWithPlanets,
   OPEN_CHART_FRAME_CLASS,
@@ -725,15 +724,6 @@ const KundaliResultSection: React.FC = () => {
             No generated kundali result found. Please generate your kundali first.
           </p>
         )}
-
-        <div className="mt-6 flex justify-center">
-          <Link
-            href="/free-kundali"
-            className="inline-flex h-[48px] items-center justify-center rounded-full bg-[#6d1510] px-6 font-mukta text-base font-semibold text-secondary transition-colors hover:bg-[#8e2f27]"
-          >
-            Create Another Free Kundali
-          </Link>
-        </div>
       </div>
     </section>
   );

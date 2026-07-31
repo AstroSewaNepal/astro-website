@@ -1,31 +1,43 @@
 export const FAQ_LIST = [
   {
     id: 1,
-    question: 'What services does your astrology platform offer?',
+    question: 'What is Vedic astrology?',
     answer:
-      'We offer personalized horoscope readings, kundali matching, tarot readings, numerology, career and love guidance, live chat/video consultations with astrologers, and more.',
+      'Vedic astrology, also called Jyotish, is the ancient Indian system of astrology. It uses your exact birth date, time, and place to map the positions of the planets. It then interprets how those positions influence your personality, relationships, career, health, and the timing of life events.',
   },
   {
     id: 2,
-    question: 'How accurate are your astrologers’ predictions?',
+    question: 'How is AstroSewa different from a regular horoscope website?',
     answer:
-      'Our astrologers are trained professionals with years of experience. They use traditional Vedic astrology methods to provide accurate predictions.',
+      'Most horoscope sites give generic readings based on your sun sign alone. AstroSewa gives you access to verified astrologers who read your actual birth chart and answer your specific questions. You also get free Vedic tools like Kundali generation and Dasha calculation.',
   },
   {
     id: 3,
-    question: 'Are my consultations and personal details kept private?',
+    question: 'Do I need to know about astrology to use this?',
     answer:
-      'Yes, all consultations and personal details are kept private. We do not share your information with third parties.',
+      'No. Just bring your birth date, time, and place. The astrologer or the tools will handle the rest and explain everything in plain language.',
   },
   {
     id: 4,
-    question: 'How do I book and pay for a session online?',
-    answer:
-      'You can book and pay for a session online by visiting our website and selecting the session you want to book. You can then pay for the session using your preferred payment method.',
+    question: 'Are my birth details and consultations kept private?',
+    answer: 'Yes. Your information is fully confidential and is never shared with third parties.',
   },
   {
     id: 5,
-    question: 'Can I talk to astrologers in Nepali, Hindi, or English?',
-    answer: 'Yes, you can talk to astrologers in Nepali, Hindi, or English.',
+    question: 'How do I get started?',
+    answer:
+      'You can generate your free Kundali right now without signing in. To talk to an astrologer, create an account, choose your astrologer, and start a chat or call directly.',
+  },
+  {
+    id: 6,
+    question: 'Which languages are available?',
+    answer:
+      'Our astrologers consult in English, Hindi, and Nepali. Horoscopes are also available in Nepali.',
+  },
+  {
+    id: 7,
+    question: 'How much does a consultation cost?',
+    answer:
+      'Consultation rates vary by astrologer and session length. You can see each astrologer’s rate on their profile before you book. There is no minimum session length.',
   },
 ];

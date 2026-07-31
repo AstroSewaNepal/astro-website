@@ -13,6 +13,8 @@ import type { ZodiacSignRecord, ZodiacType } from '@/lib/types/zodiac-signs';
 import { unwrapResult } from '@/lib/utils/vedastro-result';
 import { getPublicBackendBaseUrl, joinUrl } from '@/lib/utils/url';
 
+
+
 function mapRow(row: VedastroZodiacSignRow): ZodiacSignRecord {
   return {
     _id: row.slug,

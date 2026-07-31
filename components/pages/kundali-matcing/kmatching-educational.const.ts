@@ -1,18 +1,26 @@
 export const KMATCHING_EDUCATIONAL_BLOCKS = [
   {
     title: 'What Is Kundali Matching for Marriage?',
-    body: 'Kundali Matching, also known as Kundli Milan or Guna Milan, is a traditional Vedic astrology methodology used to assess the compatibility of two individuals planning to marry. By comparing the birth charts (Kundali) of the prospective bride and groom, astrologers evaluate eight specific aspects of compatibility (Ashta Koota), culminating in a score out of 36 points. This helps couples understand their potential synergy, marital longevity, and shared destiny.',
+    body: 'Kundali matching for marriage uses the Ashtakoot system to assess compatibility across eight categories. These are Varna (spiritual nature, 1 point), Vashya (natural influence, 2 points), Tara (birth star compatibility, 3 points), Yoni (instinctive nature, 4 points), Graha Maitri (mental and intellectual compatibility, 5 points), Gana (temperament, 6 points), Bhakut (emotional and financial compatibility, 7 points), and Nadi (physical health and progeny, 8 points). Together these total 36 points.',
   },
   {
-    title: 'Is Kundali Matching Done Just for Marriage?',
-    body: 'While Kundali Matching is most commonly associated with marriage, its principles can also be applied to other long-term partnerships, such as business relationships, joint ventures, or lifelong friendships. Assessing planetary alignment and compatibility factors helps determine how two personalities will communicate, resolve conflicts, and collaborate over time, offering valuable insights into any major collaborative life choice.',
+    title: 'Is Kundali Matching Only for Marriage?',
+    body: 'Traditionally Kundali matching is used for marriage, but the same compatibility analysis can be applied to any important long-term relationship, including business partnerships. The Ashtakoot categories examine temperament, communication style, emotional compatibility, and instinctive understanding. These all matter in any close, sustained relationship and not just marriage.',
   },
   {
-    title: 'Why Is Kundli Matching Crucial?',
-    body: 'Marriage is a sacred and lifelong commitment. Kundli matching plays a vital role by highlighting potential areas of alignment and friction between the couple, such as health, mutual understanding, prosperity, and family values. It also identifies astrological challenges like Manglik Dosha or Nadi Dosha, allowing couples to seek timely remedies (such as pujas or gemstone suggestions) to build a stable and harmonious life together.',
+    title: 'What Does a Low Score Mean?',
+    body: 'A score below 18 does not automatically mean a relationship cannot work. Kundali matching captures one part of the compatibility picture. Equally important are the strength of the 7th house in both charts, the placement of Venus and Jupiter, and whether any Dosha cancellation conditions apply. If your score is low or Doshas are flagged, we recommend a full consultation with one of our astrologers before drawing conclusions.',
   },
   {
-    title: 'How Does Kundli Milan Work?',
-    body: 'Kundli Milan utilizes the Ashta Koota matching framework based on the position of the Moon in both birth charts. The system measures eight key dimensions: Varna (ego compatibility), Vashya (mutual attraction), Tara (health/destiny), Yoni (temperament and intimacy), Graha Maitri (intellectual compatibility), Gana (temperament), Bhakoot (emotional connection/wealth), and Nadi (physiological harmony/childbearing). Each dimension is assigned points (ranging from 1 to 8), contributing to the final score out of 36.',
+    title: 'What Is Nadi Dosha and How Serious Is It?',
+    body: 'Nadi Dosha is the most heavily weighted issue in Kundali matching. It carries 8 of the 36 total points. It occurs when both partners share the same Nadi, which is either Aadi, Madhya, or Antya, determined by their birth Nakshatra. Traditional astrology considers it significant for health and fertility. However, several conditions can cancel Nadi Dosha, including both partners sharing the same Nakshatra or the same Rashi. Our calculator checks for these cancellation conditions and flags them in your result.',
+  },
+  {
+    title: 'What Are the Eight Kootas in Simple Terms?',
+    body: 'The eight Kootas or compatibility categories each examine a different dimension of a relationship. Varna looks at spiritual compatibility. Vashya looks at who naturally leads and who follows in the relationship. Tara checks birth star compatibility. Yoni looks at sexual and instinctive compatibility. Graha Maitri checks the friendship between the ruling planets of both moon signs. Gana looks at temperament, whether each person is divine, human, or demonic in nature according to Vedic classification. Bhakut checks the angle between the two moon signs and its impact on prosperity and family life. Nadi checks physical health and fertility compatibility.',
+  },
+  {
+    title: 'How Long Does Kundali Matching Take?',
+    body: 'Generating a Kundali matching report on AstroSewa takes just a few minutes. You enter the birth details for both partners and the report is generated instantly. If you want a detailed interpretation of what the results mean for your specific relationship, you can book a consultation with one of our verified astrologers who will walk you through the report and answer your questions.',
   },
 ] as const;

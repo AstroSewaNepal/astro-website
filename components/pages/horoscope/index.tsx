@@ -176,26 +176,29 @@ export function HoroscopeHeroSignsSection({
   return (
     <section
       className={
-        sectionClassName != null ? clsx(sectionClassName) : clsx('mt-0 bg-transparent py-4 sm:mt-2')
+        sectionClassName != null
+          ? clsx(sectionClassName)
+          : clsx('mt-0 bg-transparent pt-6 pb-4 sm:mt-2 sm:pt-8 sm:pb-6 md:pt-10')
       }
     >
-      {hideTitle ? null : (
-        <div className="mx-auto max-w-5xl text-center mb-8">
-          <h1
-            className={clsx(
-              'w-full text-center font-tiro-devanagari font-normal tracking-[0em]',
-              'text-[24px] leading-[47.83px] text-[#691709]',
-              'sm:text-[32px] sm:leading-snug',
-              'md:text-[44px] md:leading-[1.08] md:text-[#611508]',
-              'lg:text-[56px] lg:leading-[1.05]',
-            )}
-          >
-            {dict.range[selectedRange].title}
-          </h1>
-        </div>
-      )}
+      {hideTitle ? null : null}
 
       <CompatibilityHoroscopeSection
+        headingLevel={selectedRange === 'today' ? 'h1' : 'h2'}
+        headingAlign="center"
+        title={
+          hideTitle
+            ? ''
+            : selectedRange === 'today'
+              ? "Daily Horoscope: Today's Predictions for All 12 Signs"
+              : dict.range[selectedRange].title
+        }
+        subtitleHeading={selectedRange === 'today' ? 'Select Your Zodiac Sign' : undefined}
+        subtitle={
+          selectedRange === 'today'
+            ? "Find your sign below for today's horoscope. Each reading covers love, career, health, and energy based on current planetary movements."
+            : undefined
+        }
         cards={
           cards === 'loading'
             ? 'loading'

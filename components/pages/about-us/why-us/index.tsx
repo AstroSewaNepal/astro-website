@@ -7,42 +7,49 @@ import {
 import Image from 'next/image';
 import React from 'react';
 
-const AboutUsWhyUs: React.FC = () => {
+type Props = {
+  compact?: boolean;
+};
+
+const AboutUsWhyUs: React.FC<Props> = ({ compact = false }) => {
   const features = [
     {
-      title: 'Private & Confidential',
+      title: 'Fully Private',
       description:
-        'Whether it&apos;s love, career, finance, or health our astrologers provide insights tailored to your birth chart and life situation.',
+        'Your birth details and consultation history are completely confidential. We do not share your data.',
       icon: LockIcon,
     },
     {
-      title: '1000+ Verified Astrologers',
+      title: 'Verified Astrologers',
       description:
-        'Your conversations and personal information are fully protected. We respect your privacy as much as we value your trust.',
+        'Every astrologer is reviewed before going live. You can see their experience, languages, specialisations, and ratings before you book.',
       icon: VerifiedIcon,
     },
     {
-      title: 'Private & Confidential',
+      title: 'Honest Readings',
       description:
-        'Whether it&apos;s love, career, finance, or health our astrologers provide insights tailored to your birth chart and life situation.',
+        'Our astrologers give direct, grounded answers. No vague predictions and no manufactured urgency.',
       icon: ChatContentIcon,
     },
     {
-      title: 'Secure Payment',
-      description:
-        'No need to wait! Get connected with a trusted astrologer instantly all from the comfort of your phone or laptop.',
+      title: 'Accessible Anywhere',
+      description: 'Web, iOS, and Android ready. Available in English, Hindi, and Nepali.',
       icon: SecurePaymentIcon,
     },
   ];
 
+  const sectionPadding = compact
+    ? 'w-full py-4 md:py-6 lg:py-8 xl:py-8'
+    : 'w-full py-8 md:py-12 lg:py-16 xl:py-24';
+
   return (
-    <section className="w-full py-8 md:py-12 lg:py-16 xl:py-[100px]">
+    <section className={sectionPadding}>
       <div className="container mx-auto px-6 lg:px-0">
         <div className="flex flex-col gap-6 md:gap-8 lg:gap-10 xl:gap-[50px] w-full">
           {/* Header Section */}
           <div className="flex flex-col items-center gap-4 md:gap-5 lg:gap-6 xl:gap-[24px] w-full">
             <h2 className="w-full text-center text-[34px] md:text-[40px] lg:text-[48px] xl:text-[56px] leading-[85%] text-[#691709] font-tiro-devanagari font-normal px-4">
-              Why Choose Us?
+              Why People Use AstroSewa
             </h2>
             <p className="w-full max-w-[883px] text-center text-sm md:text-base lg:text-lg xl:text-[24px] leading-[150%] tracking-[2%] text-[rgba(0,0,0,0.81)] font-mukta font-normal px-4">
               Connect With Our Most Trusted And Experienced Astrologers For Personalized Guidance,
@@ -51,7 +58,7 @@ const AboutUsWhyUs: React.FC = () => {
           </div>
 
           {/* Features Grid */}
-          <div className="w-full max-w-[1455px] border border-[#79787A] rounded-2xl md:rounded-3xl lg:rounded-[41px] mx-auto p-4 md:p-6 lg:p-8 xl:p-[104px]">
+          <div className="w-full max-w-[1455px] border border-[#79787A] rounded-2xl md:rounded-3xl lg:rounded-[41px] mx-auto p-4 md:p-6 lg:p-8 xl:p-16">
             <div className="flex flex-col gap-4 md:gap-6 lg:gap-8 xl:gap-[47px] w-full h-full">
               {/* Top Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8 xl:gap-[47px]">

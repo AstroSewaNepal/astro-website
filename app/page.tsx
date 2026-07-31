@@ -16,39 +16,36 @@ import DownloadApp from '@/components/pages/landing/download-app';
 import AstrologerBlogListing from '@/components/pages/landing/blog-listing';
 
 export const metadata: Metadata = {
+  title: 'Astrologer, Free Kundali and Horoscope | AstroSewa',
   description:
-    'Astro Sewa combines ancient Vedic wisdom with modern insight to help you transform uncertainty into opportunity. Get daily horoscopes, connect with verified astrologers, and access personalized astrology guidance for love, career, health, and finances.',
+    "Talk to a verified Vedic astrologer, get your free Kundali, and read today's horoscope. Your complete astrology platform. Start exploring now.",
   keywords: [
-    'astrology Nepal',
-    'online astrology consultation',
+    'talk to an astrologer online',
+    'free Kundali',
     'daily horoscope',
-    'vedic astrology',
-    'astrologer chat',
-    'birth chart reading',
-    'astrology app',
-    'Nepal astrologer',
-    'astrology services',
-    'horoscope today',
+    'online astrology consultation',
+    'Kundali matching',
+    'Vedic astrology',
   ],
   openGraph: {
-    title: 'Astro Sewa - Astrology Made Personal',
+    title: 'Astrologer, Free Kundali and Horoscope | AstroSewa',
     description:
-      'Transform uncertainty into opportunity with personalized Vedic astrology guidance. Connect with 1000+ verified astrologers, get daily horoscopes, and expert consultations.',
+      "Talk to a verified Vedic astrologer, get your free Kundali, and read today's horoscope. Your complete astrology platform. Start exploring now.",
     images: [
       {
         url: HeroSectionImage.src,
         width: 516,
         height: 516,
-        alt: 'Astro Sewa - Astrology Made Personal',
+        alt: 'Astrologer, Free Kundali and Horoscope | AstroSewa',
       },
     ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Astro Sewa - Astrology Made Personal',
+    title: 'Astrologer, Free Kundali and Horoscope | AstroSewa',
     description:
-      'Transform uncertainty into opportunity with personalized Vedic astrology guidance. Connect with 1000+ verified astrologers.',
+      "Talk to a verified Vedic astrologer, get your free Kundali, and read today's horoscope. Your complete astrology platform. Start exploring now.",
     images: [HeroSectionImage.src],
   },
   alternates: {
@@ -71,24 +68,42 @@ const faqJsonLd = {
 
 export default function Home() {
   return (
-    <main className="container mx-auto min-h-screen overflow-hidden space-y-[100px] pb-16">
+    <main className="container mx-auto min-h-screen overflow-hidden space-y-12 md:space-y-[100px] pb-12 md:pb-[100px]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+
       <div className="overflow-hidden">
         <LandingHero />
       </div>
+
+      <hr className="border-t border-[#79787A] opacity-70" />
+
       {/* <TodayHoroscope /> */}
       {/* <EventsPage /> */}
+
       <Services />
+
+      <hr className="border-t border-[#79787A] opacity-70" />
+
       <Clarity />
-      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+      <hr className="border-t border-[#79787A] opacity-70" />
+
+      <TalkToOurAstrologer className="mx-auto max-w-[1180px]" />
+      <hr className="border-t border-[#79787A] opacity-70" />
+
       <AstrologerBlogListing />
+      <hr className="border-t border-[#79787A] opacity-70" />
+
       <WhoWeAre />
+
       <LandingFAQ />
+
       <HotTopics />
-      <DownloadApp />
+
+      <DownloadApp className="border-none" paddingClassName="py-4 md:py-6" />
+
       {/* <CustomerFeedback /> */}
     </main>
   );

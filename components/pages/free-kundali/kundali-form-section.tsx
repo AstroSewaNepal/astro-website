@@ -329,12 +329,12 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
 
             {/* Mobile Title */}
             <h2 className="md:hidden text-left w-full self-start font-sahitya text-primary text-[22px] sm:text-[28px] leading-[32px] font-bold mt-10 mb-4">
-              Fill up the Details Report
+              Generate Your Free Kundali
             </h2>
 
             {/* Tablet + Desktop Title */}
             <h2 className="hidden md:block font-sahitya text-left text-primary text-[28px] leading-[38px] tracking-[0] font-bold mt-6 mb-8 lg:mb-8">
-              Fill Up The Form To Generate Birth Kundali
+              Generate Your Free Kundali
             </h2>
 
             <div className="flex flex-col lg:grid lg:grid-cols-2 lg:w-full gap-6 lg:gap-6">
@@ -366,14 +366,16 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                   <div className="md:col-span-2">
                     <label
                       htmlFor="kundali-full-name"
-                      className="block font-mukta text-sm text-Trinary mb-2"
+                      className="mb-2 block font-mukta text-sm text-Trinary"
                     >
                       Enter full name
                     </label>
                     <div
                       className={clsx(
-                        'flex items-center gap-3 rounded-full border px-4 py-3 focus-within:border-primary transition-colors',
-                        fieldErrors.fullName ? 'border-red-500' : 'border-Trinary',
+                        'flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20',
+                        fieldErrors.fullName
+                          ? 'border-red-500 focus-within:border-red-500'
+                          : 'border-Trinary focus-within:border-Trinary',
                       )}
                     >
                       <input
@@ -388,7 +390,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                             '',
                           );
                         }}
-                        className="flex-1 min-w-0 bg-transparent font-mukta text-sm md:text-base text-[#4f2620] placeholder:text-Paragraph outline-none"
+                        className="flex-1 min-w-0 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] placeholder:text-[#464646] outline-none"
                       />
                       <UserLineIcon className={fieldIconClass} />
                     </div>
@@ -399,7 +401,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                   <div className="relative">
                     <label
                       htmlFor="kundali-dob"
-                      className="block font-mukta text-sm text-Trinary mb-2"
+                      className="mb-2 block font-mukta text-sm text-Trinary"
                     >
                       Enter date of birth
                     </label>
@@ -407,11 +409,18 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                       onClick={() => setIsDatePickerOpen(true)}
                       type="button"
                       className={clsx(
-                        'w-full flex items-center rounded-full border px-4 py-3 focus-within:border-primary transition-colors bg-transparent font-mukta text-sm md:text-base text-[#4f2620] cursor-pointer',
-                        fieldErrors.dateOfBirth ? 'border-red-500' : 'border-Trinary',
+                        'w-full flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20 cursor-pointer text-left font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px]',
+                        fieldErrors.dateOfBirth
+                          ? 'border-red-500 focus-within:border-red-500'
+                          : 'border-Trinary focus-within:border-Trinary',
                       )}
                     >
-                      <span className="flex-1 min-w-0 text-left">
+                      <span
+                        className={clsx(
+                          'flex-1 min-w-0',
+                          dateOfBirthValue ? 'text-[#2f2f2f]' : 'text-[#464646]',
+                        )}
+                      >
                         {dateOfBirthValue || 'Select date of birth'}
                       </span>
                       <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary" />
@@ -453,6 +462,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                       value={birthTimeParts}
                       onChange={setBirthTimeParts}
                       disabled={unknownBirthTime}
+                      variant="calculator"
                       error={unknownBirthTime ? undefined : fieldErrors.birthTime}
                     />
                   </div>
@@ -461,32 +471,34 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                   <div>
                     <label
                       htmlFor="kundali-gender"
-                      className="block font-mukta text-sm text-Trinary mb-2"
+                      className="mb-2 block font-mukta text-sm text-Trinary"
                     >
                       Select gender
                     </label>
                     <div
                       className={clsx(
-                        'relative flex items-center gap-3 rounded-full border px-4 py-3 focus-within:border-primary transition-colors',
-                        fieldErrors.gender ? 'border-red-500' : 'border-Trinary',
+                        'relative flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border bg-transparent px-[16px] transition-colors duration-200 focus-within:ring-1 focus-within:ring-Trinary/20',
+                        fieldErrors.gender
+                          ? 'border-red-500 focus-within:border-red-500'
+                          : 'border-Trinary focus-within:border-Trinary',
                       )}
                     >
                       <select
                         id="kundali-gender"
                         name="gender"
                         defaultValue=""
-                        className="flex-1 min-w-0 appearance-none bg-transparent font-mukta text-sm md:text-base text-Paragraph outline-none cursor-pointer pr-10"
+                        className="flex-1 min-w-0 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] outline-none cursor-pointer pr-10 appearance-none"
                       >
-                        <option value="" disabled className="text-Paragraph">
+                        <option value="" disabled className="text-[#464646]">
                           Select
                         </option>
-                        <option value="male" className="text-Paragraph">
+                        <option value="male" className="text-[#2f2f2f]">
                           Male
                         </option>
-                        <option value="female" className="text-Paragraph">
+                        <option value="female" className="text-[#2f2f2f]">
                           Female
                         </option>
-                        <option value="other" className="text-Paragraph">
+                        <option value="other" className="text-[#2f2f2f]">
                           Other
                         </option>
                       </select>
@@ -508,10 +520,15 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                   }}
                 />
 
+                <p className="font-mukta text-[10px] sm:text-[11px] md:text-[12px] lg:text-[13px] text-[#5D1409]">
+                  <span className="font-bold">Note:</span> Without time of birth, we can still
+                  achieve up to <span className="font-bold">80% accurate</span> prediction
+                </p>
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="mt-3 md:mt-6 lg:-translate-y-3 w-full h-[60px] gap-8 rounded-full bg-[#6d1510] text-[18px] font-mukta font-semibold leading-[30px] text-secondary transition-colors hover:bg-[#8e2f27] flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="mt-3 md:mt-6 lg:-translate-y-3 w-full h-[60px] gap-8 rounded-full bg-[#6d1510] text-[18px] font-mukta font-semibold leading-[30px] text-secondary transition-colors hover:bg-[#8e2f27] flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
                 >
                   {isSubmitting
                     ? submitStage === 'generating'
@@ -532,21 +549,23 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                 className={clsx(
                   cardShell,
                   'border border-primary bg-primary text-[#f7e9dd]',
-                  'flex flex-col items-center justify-center text-center gap-6 shadow-[0_12px_34px_rgba(74,20,15,0.14)]',
+                  'flex flex-col items-center justify-between text-center gap-6 shadow-[0_12px_34px_rgba(74,20,15,0.14)]',
                   'w-full hidden lg:flex',
                 )}
               >
-                <div className="relative w-full max-w-[277.916px] aspect-square rounded-[28px] p-5">
-                  <Image
-                    src={ServiceReport}
-                    alt="Astrologer illustration"
-                    fill
-                    className="object-contain filter brightness-0 invert"
-                  />
+                <div className="flex-1 flex flex-col items-center justify-center gap-6">
+                  <div className="relative w-full max-w-[277.916px] aspect-square rounded-[28px] p-5">
+                    <Image
+                      src={ServiceReport}
+                      alt="Astrologer illustration"
+                      fill
+                      className="object-contain filter brightness-0 invert"
+                    />
+                  </div>
+                  <p className="font-sahitya text-[28px] md:text-[26px] leading-snug font-bold">
+                    Get Lifetime Access to Your Kundali
+                  </p>
                 </div>
-                <p className="font-sahitya text-[28px] md:text-[26px] leading-snug font-bold">
-                  Get Lifetime Access to Your Kundali
-                </p>
                 <FreeKundaliGoogleSignIn buttonClassName="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-[#f8f1e7] px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white lg:rotate-0 lg:opacity-100 disabled:cursor-not-allowed disabled:opacity-60" />
               </div>
             </div>

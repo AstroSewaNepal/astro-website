@@ -5,9 +5,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
-import Clarity from '@/components/pages/landing/clarity';
-import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
+import QNASComponent from '@/components/common/qnas-component';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import FindNowIcon from '@/components/icons/findnow_love_icon.png';
 import {
@@ -72,15 +71,15 @@ export default function CompatibilityPage() {
       <div className="container mx-auto px-6 lg:px-0">
         <section>
           <div className="w-full">
-            <h1 className="font-sahitya text-[22px] font-bold leading-[32px] tracking-[0%] text-[#6b2417] sm:text-[36px] sm:leading-[48px]">
+            <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
               {copy.title}
             </h1>
-            <p className="mt-2 font-mukta font-normal text-[14px] leading-[24px] tracking-[0%] text-[#111111] text-left max-sm:!text-[14px] max-sm:!leading-[24px] sm:text-[22px] sm:leading-[30px]">
+            <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] text-left max-sm:!text-[14px] max-sm:!leading-[24px] sm:text-[22px] sm:leading-[30px]">
               {copy.subtitle}
             </p>
 
             <div className="mt-4">
-              <p className="font-mukta text-[16px] leading-[28px] tracking-[0%] text-[#4f463f] text-justify sm:text-[24px] sm:leading-[34px]">
+              <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] text-justify sm:text-[24px] sm:leading-[34px]">
                 You may not always click effortlessly with everyone, but when you&apos;re with that
                 special someone, life feels brighter, calmer, and more meaningful. Throughout your
                 journey, you&apos;ll meet many wonderful people — friends, mentors, and companions —
@@ -349,22 +348,45 @@ export default function CompatibilityPage() {
             </div>
           </div>
 
-          <p className="mt-8 font-mukta font-normal text-[24px] leading-[34px] tracking-[0%] text-[#464646] text-justify">
+          <p className="mt-8 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] text-justify">
             {copy.outro}
           </p>
         </section>
 
-        <TalkToOurAstrologer className="mx-auto mt-14 max-w-[1180px]" />
+        <section className="container mx-auto px-6 lg:px-0 border-b border-b-[#79787A] pb-6 md:pb-[50px] mt-10 md:mt-14">
+          <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6">
+            <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary text-center">
+              Frequently Asked Questions
+            </h2>
+            <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px] text-center mt-2 md:mt-4 lg:mt-6 px-4">
+              Find quick answers to common questions about zodiac compatibility and Kundali
+              matching.
+            </p>
+          </div>
+          <div className="mt-6 md:mt-8 lg:mt-10 space-y-4 md:space-y-6 lg:space-y-[34px]">
+            <QNASComponent
+              question="What Is Zodiac Sign Compatibility Based On?"
+              answer="Zodiac compatibility in Vedic astrology is based on the relationship between the signs of the two people. The system looks at the natural friendship or enmity between the ruling planets of each sign, the elements (fire, earth, air, water) of both signs, and the Guna (quality) of each sign whether cardinal, fixed, or mutable. These factors together determine how naturally the energy of two signs works together."
+              isDefaultOpen={true}
+            />
+            <QNASComponent
+              question="How Is Zodiac Compatibility Different from Kundali Matching?"
+              answer="Zodiac compatibility uses your sun signs or moon signs to give a general sense of how two people's energies interact. It is quick and useful as a starting point. Kundali matching is a much deeper and more thorough process. It compares the full birth charts of both partners across eight compatibility categories, checks for Doshas, looks at Lagna compatibility, and analyses the planetary positions and timings of both people together. For a serious relationship or marriage, Kundali matching is the more complete tool."
+            />
+            <QNASComponent
+              question="Which Zodiac Signs Are Most Compatible?"
+              answer="In Vedic astrology, signs are compatible based on the friendship between their ruling planets. For example, Aries and Leo share a natural affinity because both are fire signs ruled by friendly planets. Cancer and Scorpio tend to connect well as both are water signs with emotional depth. However, compatibility depends heavily on the full birth chart and not just the sun sign. Two people with less compatible sun signs can still have strong chart compatibility once the full Kundali is compared."
+            />
+          </div>
+        </section>
 
-        <div className="mt-14">
-          <Clarity />
-        </div>
-
-        <div className="mt-14">
-          <Services />
-        </div>
-
-        <DownloadApp className="mx-auto mt-14 max-w-[1180px]" />
+        <TalkToOurAstrologer
+          title="Want a Deeper Compatibility Reading?"
+          description="Zodiac sign comparison gives you the overview. A Kundali matching report gives you the full picture, including Guna Milan score, Dosha analysis, and long-term planetary cycles for both partners. Book a session with one of our verified astrologers."
+          descriptionClassName="max-w-full"
+          className="mx-auto mt-10 max-w-[1180px] sm:mt-14"
+        />
+        <DownloadApp />
       </div>
     </main>
   );

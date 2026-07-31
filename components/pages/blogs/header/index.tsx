@@ -27,7 +27,7 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({ tags, posts: initialPosts }) =>
     handleShowMore,
   } = useBlogPosts(initialPosts);
 
-  const categories: BlogTag[] = [{ name: 'All Categories', slug: '' }, ...tags];
+  const categories: BlogTag[] = [{ name: 'All Articles', slug: '' }, ...tags];
   const categoryScrollRef = useRef<HTMLDivElement>(null);
 
   const scrollCategories = (direction: 'left' | 'right') => {
@@ -43,8 +43,8 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({ tags, posts: initialPosts }) =>
           Astrologer Blogs
         </h1>
         <p className="font-mukta text-lg md:text-xl lg:text-2xl font-normal text-black/80 text-center leading-relaxed tracking-wide max-w-[890px]">
-          Explore articles from our expert astrologers, filled with timeless wisdom, spiritual
-          insights, and practical astrology tips for everyday life.
+          Guides, sign breakdowns, prediction methods, and Dasha deep dives written by our verified
+          Vedic astrologers in plain language.
         </p>
       </div>
 

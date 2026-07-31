@@ -5,88 +5,94 @@ import { DarshanImage, SankalpaImage, MoolyaImage } from '@/components/images/ab
 
 const AboutUsVision: React.FC = () => {
   return (
-    <section className="container mx-auto px-6 lg:px-0 py-[100px]">
-      <div className="flex flex-col items-center gap-[50px]">
+    <section className="container mx-auto px-6 lg:px-0 py-8 md:py-10 lg:py-12">
+      <div className="flex flex-col items-center gap-[36px] lg:gap-[40px]">
         {/* Header section */}
         <div className="flex flex-col items-center gap-[24px] w-full max-w-[1405px]">
           <h2 className="w-full text-center text-[40px] md:text-[48px] lg:text-[56px] leading-[119%] text-[#691709] font-tiro-devanagari font-normal">
             Our Vision, Mission & Values
           </h2>
           <p className="w-full max-w-[883px] text-center text-[18px] md:text-[20px] lg:text-[24px] leading-[150%] tracking-[2%] text-[rgba(0,0,0,0.81)] font-mukta font-normal">
-            The guiding principles that shape everything we do bringing clarity, compassion, and
-            authenticity to every astrology experience.
+            The principles behind everything we do at AstroSewa.
           </p>
         </div>
 
         {/* Three cards section */}
-        <div className="flex flex-col lg:flex-row items-center gap-[36px] w-full">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-[36px] w-full">
           {/* Vision Card */}
-          <div className="w-full max-w-[460px] min-h-[420px] lg:min-h-[520px] border border-[#323232] rounded-[50px] flex flex-col items-center justify-center p-6 md:p-8 lg:p-[37px] relative">
+          <div className="w-full max-w-[460.16px] lg:w-[460.16px] lg:h-[671.97px] border-[1px] border-[#323232] rounded-[50px] flex flex-col items-center justify-center p-6 md:p-8 lg:p-[37px] relative">
             {/* Image placeholder */}
-            <div className="w-[162px] h-[160px] mb-[24px] flex items-center justify-center">
-              <Image src={DarshanImage} alt="Vision Darshan" width={162} height={160} />
+            <div className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] md:w-[162px] md:h-[160px] mb-[24px] mt-[10px] sm:mt-[14px] md:mt-[16px] flex items-center justify-center p-3 sm:p-4 md:p-5">
+              <Image
+                src={DarshanImage}
+                alt="Vision Darshan"
+                width={162}
+                height={160}
+                className="max-w-full h-auto object-contain"
+              />
             </div>
 
             {/* Text content */}
-            <div className="flex flex-col gap-[8px] w-full">
-              <h3 className="w-full text-center text-[32px] md:text-[42px] lg:text-[54px] leading-[120%] text-[#323232] font-tiro-devanagari font-normal">
+            <div className="flex flex-col gap-[8px] w-full max-w-[420px] mx-auto">
+              <h3 className="w-full text-center text-[28px] sm:text-[32px] md:text-[42px] lg:text-[54px] leading-[120%] text-[#323232] font-tiro-devanagari font-normal">
                 Vision (Darshan)
               </h3>
-              <p className="w-full text-center text-[16px] md:text-[18px] lg:text-[20px] leading-[150%] tracking-[2%] text-[#323232] font-mukta font-normal">
-                AstroSewa envisions a world where every individual can align their life with cosmic
-                rhythm (Rituchakra), guided by the light of Vedic astrology.
-                <br />
-                <br />
-                We dream of a society where decisions about career, marriage, health, and family are
-                taken with clarity, devotion, and astrological wisdom bridging ancient scriptures
-                and modern technology.
+              <p className="w-full text-center text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] leading-[150%] tracking-[2%] text-[#323232] font-mukta font-normal">
+                A world where people use the wisdom of the stars to make better decisions,
+                understand themselves more honestly, and live with greater intention. We want
+                astrology to be a tool for real life.
               </p>
             </div>
           </div>
 
           {/* Mission Card */}
-          <div className="w-full max-w-[460px] min-h-[420px] lg:min-h-[520px] border border-[#323232] rounded-[50px] flex flex-col items-center justify-center p-6 md:p-8 lg:p-[37px] relative">
+          <div className="w-full max-w-[460.16px] lg:w-[460.16px] lg:h-[671.97px] border-[1px] border-[#323232] rounded-[50px] flex flex-col items-center justify-center p-6 md:p-8 lg:p-[37px] relative">
             {/* Image placeholder */}
-            <div className="w-[159px] h-[157px] mb-[25px] flex items-center justify-center">
-              <Image src={SankalpaImage} alt="Mission Sankalpa" width={159} height={157} />
+            <div className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] md:w-[159px] md:h-[157px] mb-[25px] mt-[10px] sm:mt-[14px] md:mt-[16px] flex items-center justify-center p-3 sm:p-4 md:p-5">
+              <Image
+                src={SankalpaImage}
+                alt="Mission Sankalpa"
+                width={159}
+                height={157}
+                className="max-w-full h-auto object-contain"
+              />
             </div>
 
             {/* Text content */}
-            <div className="flex flex-col gap-[8px] w-full">
-              <h3 className="w-full text-center text-[32px] md:text-[42px] lg:text-[54px] leading-[119%] text-[#323232] font-tiro-devanagari font-normal">
+            <div className="flex flex-col gap-[8px] w-full max-w-[420px] mx-auto">
+              <h3 className="w-full text-center text-[28px] sm:text-[32px] md:text-[42px] lg:text-[54px] leading-[119%] text-[#323232] font-tiro-devanagari font-normal">
                 Mission (Sankalpa)
               </h3>
-              <p className="w-full text-center text-[16px] md:text-[18px] lg:text-[20px] leading-[150%] tracking-[2%] text-[#323232] font-mukta font-normal">
-                Our mission is to bring the spiritual strength of Jyotish Shastra into the hands of
-                every seeker through a simple and accessible mobile platform.
-                <br />
-                <br />
-                We offer personalized Kundali charts, Dasha analysis, 36 Guna Milan, remedies, and
-                live consultations all delivered with cultural respect, compassion, and trust rooted
-                in Sanatana Dharma.
+              <p className="w-full text-center text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] leading-[150%] tracking-[2%] text-[#323232] font-mukta font-normal">
+                To make Vedic astrology genuinely accessible and genuinely useful. That means
+                verified astrologers, accurate tools, and content written with care. We want every
+                person who comes to AstroSewa to leave with something real.
               </p>
             </div>
           </div>
 
           {/* Values Card */}
-          <div className="w-full max-w-[460px] min-h-[420px] lg:min-h-[520px] border border-[#323232] rounded-[50px] flex flex-col items-center justify-center p-6 md:p-8 lg:p-[37px] relative">
+          <div className="w-full max-w-[460.16px] lg:w-[460.16px] lg:h-[671.97px] border-[1px] border-[#323232] rounded-[50px] flex flex-col items-center justify-center p-6 md:p-8 lg:p-[37px] relative">
             {/* Image placeholder */}
-            <div className="w-[151px] h-[151px] mb-[24px] flex items-center justify-center">
-              <Image src={MoolyaImage} alt="Values Moolya" width={151} height={151} />
+            <div className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] md:w-[151px] md:h-[151px] mb-[24px] mt-[10px] sm:mt-[14px] md:mt-[16px] flex items-center justify-center p-3 sm:p-4 md:p-5">
+              <Image
+                src={MoolyaImage}
+                alt="Values Moolya"
+                width={151}
+                height={151}
+                className="max-w-full h-auto object-contain"
+              />
             </div>
 
             {/* Text content */}
-            <div className="flex flex-col gap-[8px] w-full">
-              <h3 className="w-full text-center text-[32px] md:text-[42px] lg:text-[54px] leading-[119%] text-[#323232] font-tiro-devanagari font-normal">
+            <div className="flex flex-col gap-[8px] w-full max-w-[420px] mx-auto">
+              <h3 className="w-full text-center text-[28px] sm:text-[32px] md:text-[42px] lg:text-[54px] leading-[119%] text-[#323232] font-tiro-devanagari font-normal">
                 Values (Moolya)
               </h3>
-              <p className="w-full text-center text-[16px] md:text-[18px] lg:text-[20px] leading-[150%] tracking-[2%] text-[#323232] font-mukta font-normal">
-                We are guided by Satya (Truth), Karuna (Compassion), and Bodh (Clarity) offering
-                astrology rooted in Vedic wisdom, delivered with honesty, empathy, and simplicity.
-                <br />
-                <br />
-                Through Samāvesh (Inclusivity) and Vridhi (Growth), we welcome every seeker with
-                openness and support their spiritual journey with karmic insights, remedies.
+              <p className="w-full text-center text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] leading-[150%] tracking-[2%] text-[#323232] font-mukta font-normal">
+                Truth, compassion, and clarity. We do not over-promise. We do not treat astrology as
+                entertainment. Every interaction, from a free Kundali to a live consultation, is
+                built on genuine care for the person on the other side.
               </p>
             </div>
           </div>

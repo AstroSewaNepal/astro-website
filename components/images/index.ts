@@ -16,6 +16,12 @@ import KundaliSavedSigninIllustration from './kundali-saved-signin-illustration.
 import astrology from './astrology.png';
 import AstrologyPrimaryColor from './icons/astrology-primarycolor.png';
 import SquareNumberChart from './icons/SquareNumberChart.png';
+import FBLogo from './fb-logo.png';
+import InstagramLogo from './instagram-logo.png';
+import TiktokLogo from './tiktok-logo.png';
+import YoutubeLogo from './youtube-logo.png';
+import XLogo from './x-logo.png';
+import LinkedinLogo from './linkedin-logo.png';
 
 export {
   TeejImage,
@@ -36,4 +42,10 @@ export {
   astrology,
   AstrologyPrimaryColor,
   SquareNumberChart,
+  FBLogo,
+  InstagramLogo,
+  TiktokLogo,
+  YoutubeLogo,
+  XLogo,
+  LinkedinLogo,
 };

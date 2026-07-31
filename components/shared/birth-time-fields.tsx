@@ -9,6 +9,7 @@ export type BirthTimeParts = {
 };
 
 export const EMPTY_BIRTH_TIME: BirthTimeParts = { hh: '', mm: '', ampm: 'am' };
+/** Noon placeholder shown in disabled time fields when "don't know exact birth time" is checked. */
 export const DEFAULT_UNKNOWN_BIRTH_TIME: BirthTimeParts = { hh: '12', mm: '00', ampm: 'pm' };
 
 /** Build `hh:mm am/pm` string for existing parseBirthTime helpers. */
@@ -207,12 +208,7 @@ export function UnknownBirthTimeCheckbox({
   className,
 }: UnknownBirthTimeCheckboxProps) {
   const borderColor = variant === 'calculator' ? 'border-[#5D1409]' : 'border-primary';
-  const textColor =
-    variant === 'calculator'
-      ? 'text-[#2f2f2f]'
-      : variant === 'kundali'
-        ? 'text-primary'
-        : 'text-Trinary';
+  const textColor = variant === 'calculator' ? 'text-[#2f2f2f]' : 'text-primary';
 
   return (
     <label

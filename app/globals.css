@@ -96,6 +96,22 @@ body {
   overflow-x: hidden;
 }
 
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill,
+input:-webkit-autofill:hover,
+textarea:-webkit-autofill:hover,
+select:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill:focus {
+  background-color: transparent !important;
+  color: #4f2620 !important;
+  -webkit-text-fill-color: #4f2620 !important;
+  box-shadow: inset 0 0 0px 1000px transparent !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
 button,
 input[type='button'],
 input[type='submit'],

@@ -31,8 +31,16 @@ function capitalizeSign(slug: string): string {
   return slug.charAt(0).toUpperCase() + slug.slice(1);
 }
 
-function formatZodiacDateRange(raw: string): string {
-  if (!raw) return raw;
+function formatZodiacDateRange(raw: string | { from?: string; to?: string }): string {
+  if (!raw) return '';
+
+  if (typeof raw === 'object') {
+    const from = raw.from || '';
+    const to = raw.to || '';
+    if (from && to) return `${from} - ${to}`;
+    return from || to;
+  }
+
   const formatPart = (part: string) => {
     const trimmed = part.trim();
     const slashMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/);

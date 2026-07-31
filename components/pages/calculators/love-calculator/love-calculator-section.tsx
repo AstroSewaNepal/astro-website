@@ -13,7 +13,31 @@ import { CityAutocompleteInput } from '@/components/shared/city-autocomplete-inp
 
 import CalculatorChooserSection from '../shared/calculator-chooser-section';
 import CalculatorDatePicker from '../shared/calculator-date-picker';
+import QNASComponent from '@/components/common/qnas-component';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
+
+const LOVE_CALCULATOR_FAQ = [
+  {
+    question: 'What Is the Kuta Matching System?',
+    answer:
+      "Kuta matching is a Vedic method for comparing two people's birth charts across eight compatibility categories. These categories are Varna (spiritual nature), Vashya (natural influence), Tara (birth star compatibility), Yoni (instinctive nature), Graha Maitri (mental compatibility), Gana (temperament), Bhakut (emotional and financial compatibility), and Nadi (physical health and progeny). Each category carries a different point value and together they total 36 points.",
+  },
+  {
+    question: 'What Does a High Score Mean?',
+    answer:
+      'A score of 18 or above is generally considered acceptable for a compatible match. Scores between 24 and 32 indicate strong compatibility across most categories. A score above 32 is considered excellent. However, the total score is just one part of the picture. The individual categories also matter. For example, a low Nadi score is considered more serious than a low Varna score even if the total is the same.',
+  },
+  {
+    question: 'Is a Low Score a Problem?',
+    answer:
+      "A low score does not mean a relationship cannot work. It simply highlights areas where two people may need more understanding and effort. Many couples with lower compatibility scores build very happy relationships by understanding each other's differences. If you want a complete picture, a full Kundali matching consultation with one of our astrologers will look at all the factors together and give you honest guidance.",
+  },
+  {
+    question: 'How Is This Different from Kundali Matching?',
+    answer:
+      'This love calculator gives you a quick compatibility score based on your zodiac signs and basic birth details. Kundali matching goes much deeper. It compares the full birth charts of both partners, checks for Doshas like Mangal Dosha and Nadi Dosha, analyses the Lagna compatibility, and looks at long-term planetary cycles for both people. If you are seriously considering marriage, a full Kundali matching report is the more thorough option.',
+  },
+];
 
 const placeRegex = /^[A-Za-z\s,.'-]+$/;
 
@@ -171,71 +195,83 @@ export default function LoveCalculatorSection() {
   );
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
-      <div className="max-w-[1454px] mx-auto">
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,482px)] lg:gap-10 xl:gap-14">
+    <section className="pt-6 md:pt-12 pb-12">
+      <div>
+        <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(360px,482px)] xl:items-start xl:gap-14">
           <div>
-            <h1 className="font-sahitya font-bold text-[22px] leading-[32px] md:text-[36px] md:leading-[48px] tracking-[0] text-primary">
-              Love Calculator
+            <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
+              Love Compatibility Calculator
             </h1>
-            <p className="mt-2 font-mukta font-normal text-[12px] leading-[20px] tracking-[0] capitalize md:text-lg lg:font-medium lg:text-[24px] lg:leading-[30px] lg:tracking-[0] text-[#141414] max-w-[950px]">
-              Ever wondered if you and your crush are truly compatible?
+            <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[950px]">
+              Enter names and birth details for both partners to get a compatibility score based on
+              the Vedic Kuta matching system.
             </p>
-            <div className="relative mx-auto my-6 block w-[235px] h-[340px] lg:hidden mix-blend-darken">
+            <div className="relative mx-auto my-6 block w-[235px] h-[340px] sm:w-[300px] sm:h-[430px] md:w-[360px] md:h-[520px] xl:hidden mix-blend-darken">
               <div className="relative w-full h-full overflow-hidden rounded-[20px]">
                 <Image
                   src={LoveHeroImage}
                   alt="Illustration of a couple embracing"
                   fill
                   className="object-cover object-center"
-                  sizes="235px"
+                  sizes="(min-width: 768px) 360px, (min-width: 640px) 300px, 235px"
                   priority
                 />
               </div>
             </div>
 
-            <p className="mt-6 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
-              A love calculator is a fun, easy way to discover your &quot;love score&quot; and see
-              how well you connect. Simply enter your names and let the results surprise you!
+            <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1400px]">
+              This calculator uses the Ashtakoot or eight Kuta system from Vedic astrology to assess
+              compatibility between two people. Each of the eight categories examines a different
+              dimension, from temperament and instincts to emotional alignment and long-term
+              harmony. Together they produce a score out of 36.
             </p>
 
-            <p className="mt-4 font-mukta font-normal text-base leading-relaxed tracking-[0] text-Paragraph max-w-[1400px] md:text-[24px] md:leading-[34px] md:tracking-[0]">
-              Finding love can be challenging, but tools like the love calculator add excitement to
-              the journey. They give you a playful peek into your feelings and compatibility before
-              taking the next step. Many people use it just for fun, while others explore it to
-              understand their bond better. Try it now and see what the stars reveal about your
-              connection!
+            <p className="mt-4 md:mt-6 font-mukta font-normal text-[14px] leading-[1.5] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d] max-w-[1400px]">
+              A score of 18 or above is generally considered a positive match. Higher scores suggest
+              stronger alignment across more areas. The score gives you a useful starting point for
+              understanding the relationship. For deeper analysis, our astrologers can run a full
+              Kundali matching report.
             </p>
 
+            {/*
+              FORM WRAPPER — fix applied here.
+              The outer form no longer carries its own rounded border; the two
+              inner "Your Details" / "Partner Details" cards are the visual
+              boundary. This removes the nested-double-border effect that was
+              causing the mismatched/overlapping outline at in-between zoom
+              levels. `overflow-hidden` on this wrapper and on each inner card
+              also guarantees icons/badges from child components (date picker,
+              city autocomplete) can never visually escape their container.
+            */}
             <form
               onSubmit={onSubmit}
-              className="mt-6 flex w-full max-w-[632px] sm:max-w-[680px] md:max-w-[720px] lg:max-w-[800px] flex-col gap-4 rounded-[32px] border border-[#BE7B71] p-4 sm:p-5 md:p-6 lg:p-8 shadow-[0_10px_30px_rgba(105,23,9,0.08)]"
+              className="mx-auto xl:mx-0 mt-6 md:mt-[50px] flex w-full max-w-[800px] flex-col gap-4 sm:gap-5 md:gap-6 rounded-[32px] border-2 border-[#BE7B71] p-4 sm:p-5 md:p-6 lg:p-8"
             >
-              <h2 className="md:hidden text-center w-full self-start font-sahitya text-[#5D1409] text-[22px] sm:text-[28px] leading-[32px] font-bold mt-0 mb-0">
-                Find Your Love % Between You And Your Partner.
+              <h2 className="md:hidden text-center w-full self-start font-tiro-devanagari text-[#5D1409] text-[22px] sm:text-[28px] leading-[1.2] font-bold mt-0 mb-0">
+                Check Your Compatibility
               </h2>
-              <h2 className="hidden md:block text-center font-mukta text-[28px] font-bold leading-[38px] tracking-[0%] text-[#5D1409]">
-                Find Your Love % Between You And Your Partner.
+              <h2 className="hidden md:block text-center font-mukta text-[24px] lg:text-[28px] font-bold leading-[1.3] tracking-[0%] text-[#5D1409]">
+                Check Your Compatibility
               </h2>
 
-              <div className="grid gap-4 lg:grid-cols-2">
-                <div className="rounded-[32px] border border-[#BE7B71] p-4 sm:p-5 shadow-[0_8px_24px_rgba(105,23,9,0.08)]">
-                  <p className="font-mukta text-[15px] font-semibold text-[#5D1409] mb-4">
+              <div className="grid gap-4 sm:gap-5 md:grid-cols-2">
+                <div className="min-w-0 overflow-hidden rounded-[28px] border border-[#BE7B71] p-4 sm:p-5 shadow-[0_8px_24px_rgba(105,23,9,0.06)]">
+                  <p className="font-mukta text-[14px] sm:text-[15px] font-semibold text-[#5D1409] mb-4">
                     Your Details
                   </p>
                   <div className="grid gap-4">
-                    <div>
+                    <div className="min-w-0">
                       <label
                         htmlFor="love-your-name"
-                        className="mb-2 block font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-medium text-[#141414]"
+                        className="mb-2 block font-mukta text-sm text-Trinary"
                       >
                         Your Name
                       </label>
-                      <div className="flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] transition-colors duration-200 focus-within:border-[#BE7B71] focus-within:ring-1 focus-within:ring-[#BE7B71]/20">
+                      <div className="flex h-[48px] sm:h-[50px] md:h-[52px] w-full min-w-0 box-border items-center justify-between overflow-hidden rounded-[32px] border border-[#BE7B71] bg-transparent px-4 transition-colors duration-200 focus-within:border-[#BE7B71] focus-within:ring-1 focus-within:ring-[#BE7B71]/20">
                         <input
                           id="love-your-name"
-                          className="min-w-0 flex-1 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] outline-none placeholder:text-[#464646]"
-                          placeholder="Rupak"
+                          className="min-w-0 flex-1 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] text-[#2f2f2f] outline-none placeholder:text-[#464646] placeholder:truncate"
+                          placeholder="Enter your Full Name"
                           value={yourName}
                           onChange={e => {
                             setYourName(e.target.value);
@@ -243,7 +279,7 @@ export default function LoveCalculatorSection() {
                           }}
                           autoComplete="name"
                         />
-                        <span className="shrink-0 self-center pr-2 sm:pr-3 lg:pr-4 font-mukta text-[12px] sm:text-[13px] md:text-[14px] font-medium text-[#D47F2C]">
+                        <span className="shrink-0 self-center pl-2 font-mukta text-[11px] sm:text-[12px] md:text-[13px] font-medium text-[#D47F2C]">
                           Man
                         </span>
                       </div>
@@ -252,7 +288,7 @@ export default function LoveCalculatorSection() {
                       )}
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <CalculatorDatePicker
                         id="love-your-dob"
                         label="Your birth date"
@@ -263,10 +299,11 @@ export default function LoveCalculatorSection() {
                         }}
                         error={fieldErrors.yourBirthDate}
                         fullWidth={true}
+                        compact={true}
                       />
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <CityAutocompleteInput
                         label="Your birth place"
                         placeholder="Where were you born?"
@@ -286,23 +323,23 @@ export default function LoveCalculatorSection() {
                   </div>
                 </div>
 
-                <div className="rounded-[32px] border border-[#BE7B71] p-4 sm:p-5 shadow-[0_8px_24px_rgba(105,23,9,0.08)]">
-                  <p className="font-mukta text-[15px] font-semibold text-[#5D1409] mb-4">
+                <div className="min-w-0 overflow-hidden rounded-[28px] border border-[#BE7B71] p-4 sm:p-5 shadow-[0_8px_24px_rgba(105,23,9,0.06)]">
+                  <p className="font-mukta text-[14px] sm:text-[15px] font-semibold text-[#5D1409] mb-4">
                     Partner Details
                   </p>
                   <div className="grid gap-4">
-                    <div>
+                    <div className="min-w-0">
                       <label
                         htmlFor="love-partner-name"
-                        className="mb-2 block font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-medium text-[#141414]"
+                        className="mb-2 block font-mukta text-sm text-Trinary"
                       >
                         Partner&apos;s Name
                       </label>
-                      <div className="flex h-[52px] box-border items-center justify-between overflow-hidden rounded-[32px] border border-[#BE7B71] bg-transparent px-[16px] transition-colors duration-200 focus-within:border-[#BE7B71] focus-within:ring-1 focus-within:ring-[#BE7B71]/20">
+                      <div className="flex h-[48px] sm:h-[50px] md:h-[52px] w-full min-w-0 box-border items-center justify-between overflow-hidden rounded-[32px] border border-[#BE7B71] bg-transparent px-4 transition-colors duration-200 focus-within:border-[#BE7B71] focus-within:ring-1 focus-within:ring-[#BE7B71]/20">
                         <input
                           id="love-partner-name"
-                          className="min-w-0 flex-1 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] outline-none placeholder:text-[#464646]"
-                          placeholder="Sarah"
+                          className="min-w-0 flex-1 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] text-[#2f2f2f] outline-none placeholder:text-[#464646] placeholder:truncate"
+                          placeholder="Enter your Partner's Full Name"
                           value={partnerName}
                           onChange={e => {
                             setPartnerName(e.target.value);
@@ -310,7 +347,7 @@ export default function LoveCalculatorSection() {
                           }}
                           autoComplete="off"
                         />
-                        <span className="shrink-0 self-center pr-2 sm:pr-3 lg:pr-4 font-mukta text-[12px] sm:text-[13px] md:text-[14px] font-medium text-[#D47F2C]">
+                        <span className="shrink-0 self-center pl-2 font-mukta text-[11px] sm:text-[12px] md:text-[13px] font-medium text-[#D47F2C]">
                           Woman
                         </span>
                       </div>
@@ -319,7 +356,7 @@ export default function LoveCalculatorSection() {
                       )}
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <CalculatorDatePicker
                         id="love-partner-dob"
                         label="Partner birth date"
@@ -330,10 +367,11 @@ export default function LoveCalculatorSection() {
                         }}
                         error={fieldErrors.partnerBirthDate}
                         fullWidth={true}
+                        compact={true}
                       />
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <CityAutocompleteInput
                         label="Partner birth place"
                         placeholder="Where were you born?"
@@ -369,25 +407,47 @@ export default function LoveCalculatorSection() {
                   className="text-lg sm:text-lg md:text-xl lg:text-xl text-white"
                   aria-hidden
                 />
-                {submitting ? 'Calculating…' : 'Calculate Love %'}
+                {submitting ? 'Calculating…' : 'Get My Score'}
               </button>
             </form>
           </div>
 
-          <div className="relative hidden w-[482px] h-[740px] lg:block lg:-translate-y-20 mix-blend-darken opacity-100">
+          <div className="relative hidden w-full max-w-[482px] aspect-[482/620] xl:block xl:justify-self-end mix-blend-darken opacity-100">
             <div className="relative w-full h-full overflow-hidden rounded-[20px]">
               <Image
                 src={LoveHeroImage}
                 alt="Illustration of a couple embracing"
                 fill
                 className="object-contain object-center"
-                sizes="511px"
+                sizes="482px"
                 priority
               />
             </div>
           </div>
         </div>
         <CalculatorChooserSection exclude="love" />
+
+        <section className="mt-16 border-t border-[#E5E5E5] pt-12">
+          <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6 text-center">
+            <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary">
+              Frequently Asked Questions
+            </h2>
+            <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px]">
+              Find quick answers to common questions about love compatibility, Kuta matching scores,
+              and how to interpret your results.
+            </p>
+          </div>
+          <div className="mt-6 md:mt-8 lg:mt-10 space-y-4 md:space-y-6 lg:space-y-[34px]">
+            {LOVE_CALCULATOR_FAQ.map((item, index) => (
+              <QNASComponent
+                key={`love-faq-${index}`}
+                question={item.question}
+                answer={item.answer}
+                isDefaultOpen={index === 0}
+              />
+            ))}
+          </div>
+        </section>
       </div>
     </section>
   );

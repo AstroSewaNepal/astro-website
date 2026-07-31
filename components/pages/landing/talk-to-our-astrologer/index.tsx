@@ -10,12 +10,14 @@ interface TalkToOurAstrologerProps extends AstrologerCardActions {
   title?: string;
   description?: string;
   className?: string;
+  descriptionClassName?: string;
 }
 
 const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
-  title = 'Talk To Our Top Astrologer',
-  description = 'Connect with our most trusted and experienced astrologers for personalized guidance, accurate predictions, and compassionate support on your life’s journey.',
+  title = 'Talk to a Verified Astrologer',
+  description = 'Choose an astrologer, pick chat or call, and get a reading tailored to your birth chart. Available in English, Hindi, and Nepali.',
   className,
+  descriptionClassName,
   onChat,
   onCall,
   onSchedule,
@@ -53,22 +55,25 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
           >
             {title}
           </h2>
-        <p
-          className="astrologer-subtitle-description max-w-[810px] px-1 text-center font-mukta text-black/75"
-          style={{
-            fontFamily: 'Mukta',
-            fontWeight: 400,
-            fontStyle: 'normal',
-            fontSize: '14px',
-            lineHeight: '150%',
-            letterSpacing: '2%',
-            textAlign: 'center',
-            textTransform: 'capitalize',
-          }}
-        >
-          {description}
-        </p>
-      </div>
+          <p
+            className={clsx(
+              'astrologer-subtitle-description max-w-[810px] px-1 text-center font-mukta text-black/75',
+              descriptionClassName,
+            )}
+            style={{
+              fontFamily: 'Mukta',
+              fontWeight: 400,
+              fontStyle: 'normal',
+              fontSize: '14px',
+              lineHeight: '150%',
+              letterSpacing: '2%',
+              textAlign: 'center',
+              textTransform: 'capitalize',
+            }}
+          >
+            {description}
+          </p>
+        </div>
 
       <TopAstrologers onChat={onChat} onCall={onCall} onSchedule={onSchedule} />
     </section>

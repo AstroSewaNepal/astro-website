@@ -6,27 +6,29 @@ import { fetchBlogViewCounts } from '@/lib/blog-view-api';
 import { mapGhostBlogPost } from '@/lib/map-ghost-blog-post';
 
 export const metadata: Metadata = {
-  title: 'Astrology Blog',
+  title: 'Vedic Guides, Sign Meanings and Predictions | AstroSewa',
   description:
-    'Explore expert astrology articles, Vedic insights, horoscope guides, and spiritual tips on the Astro Sewa blog — written by experienced astrologers in Nepal.',
+    'Guides, birth chart breakdowns, Dasha predictions, and zodiac deep dives written by our verified Vedic astrologers. Find your topic and start reading.',
   keywords: [
-    'astrology blog',
-    'vedic astrology articles',
-    'horoscope guide',
-    'Nepal astrology blog',
-    'astrology tips',
-    'spiritual guidance',
+    'astrology blogs',
+    'Vedic astrology guide',
+    'birth chart explained',
+    'zodiac sign meaning',
+    'Dasha periods',
+    'astrology prediction',
   ],
   alternates: {
     canonical: '/blogs',
   },
   openGraph: {
-    title: 'Astrology Blog — Vedic Insights & Horoscope Guides | Astro Sewa',
+    title: 'Vedic Guides, Sign Meanings and Predictions | AstroSewa',
     description:
-      'Read expert astrology articles, Vedic insights, and horoscope guides from verified astrologers on the Astro Sewa blog.',
+      'Guides, birth chart breakdowns, Dasha predictions, and zodiac deep dives written by our verified Vedic astrologers. Find your topic and start reading.',
   },
 };
 import BlogHeader from '@/components/pages/blogs/header';
+import Clarity from '@/components/pages/landing/clarity';
+import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 
@@ -65,11 +67,12 @@ async function getBlogPosts() {
 const BlogPage = async () => {
   const [tags, posts] = await Promise.all([getBlogTags(), getBlogPosts()]);
   return (
-    <main className="min-h-screen space-y-[100px]">
+    <main className="container mx-auto min-h-screen overflow-hidden space-y-[100px] pb-16">
       <div>
         <BlogHeader tags={tags} posts={posts} />
       </div>
-      {/* <TalkToOurAstrologer /> */}
+      <Clarity />
+      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
       <Services />
       <DownloadApp />
     </main>

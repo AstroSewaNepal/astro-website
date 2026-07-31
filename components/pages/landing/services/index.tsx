@@ -71,6 +71,8 @@ const Services = () => {
     setSlidesPerView(currentSlidesPerView);
   };
 
+  const headingText = pathname === '/' ? 'What You Can Do on AstroSewa' : 'Our Astrology Services';
+
   const handleServiceAction = (action: (typeof SERVICES_LIST)[number]['action']) => {
     if (action.type === 'app-store') {
       openAppStore();
@@ -90,7 +92,7 @@ const Services = () => {
         {/* Header */}
         <div className="flex flex-col items-center gap-4 md:gap-5 lg:gap-6 max-w-[1405px] w-full">
           <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[34px] md:leading-[40px] lg:leading-[47.83px] text-primary font-tiro-devanagari text-center">
-            Our Services
+            {headingText}
           </h2>
           <p className="font-mukta text-base md:text-lg lg:text-2xl text-[#000000CF] max-w-[753px] text-center px-4">
             Explore our range of trusted astrology services, designed to bring clarity, guidance,

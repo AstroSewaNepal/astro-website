@@ -289,7 +289,7 @@ function HoroscopeDetailsContent() {
                       href={zodiacDetailHref(validSign, uiLanguage, uiLanguage)}
                       className="inline-flex w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px] lg:-translate-x-10"
                     >
-                     Know More About  {capitalizeSign(validSign)} Zodiac
+                      Know More About {capitalizeSign(validSign)} Zodiac
                       <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
                     </Link>
                   </div>

@@ -4,9 +4,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { IoShareOutline } from 'react-icons/io5';
 
-import type { CalculatorFormValues } from '@/lib/calculators/calculator-form-types';
-import { formatDobDisplay, formatGenderDisplay } from '@/lib/calculators/calculator-form-types';
+import {
+  formatBirthTimeDisplay,
+  formatDobDisplay,
+  formatGenderDisplay,
+  type CalculatorFormValues,
+} from '@/lib/calculators/calculator-form-types';
 import {
   getReportDisplayName,
   getSunSignMeta,
@@ -19,7 +24,7 @@ export type SunSignCalculatorResult = CalculatorFormValues & {
 
 const STORAGE_KEY = 'sunSignCalculatorResult';
 
-const ACCENT_VALUE_CLASS = 'font-sahitya text-[16px] font-normal text-[#c49a8f] md:text-[18px]';
+const ACCENT_VALUE_CLASS = 'font-mukta text-[16px] font-normal text-[#c49a8f] md:text-[18px]';
 
 type SunSignReportCardProps = {
   meta: SunSignMeta;
@@ -38,10 +43,10 @@ function SunSignReportCard({ meta, mirrored = false }: SunSignReportCardProps) {
           sizes="140px"
         />
       </div>
-      <p className="mt-3 font-sahitya text-[28px] font-bold uppercase leading-none text-[#5D1409] md:text-[32px]">
+      <p className="mt-3 font-tiro-devanagari text-[28px] font-bold uppercase leading-[1.2] text-[#5D1409] md:text-[32px]">
         {meta.englishName}
       </p>
-      <p className="mt-2 text-center font-sahitya text-[14px] font-normal text-[#5D1409] md:text-[16px]">
+      <p className="mt-2 text-center font-mukta text-[14px] font-normal leading-[1.2] tracking-[0.02em] text-[#5D1409] md:text-[16px]">
         {meta.dateRangeLong}
       </p>
     </div>
@@ -49,7 +54,7 @@ function SunSignReportCard({ meta, mirrored = false }: SunSignReportCardProps) {
 
   const signDetails = (
     <div className="flex w-full flex-col justify-center px-4 py-4 sm:w-[58%] sm:px-6">
-      <h3 className="font-sahitya text-[22px] font-bold text-[#5D1409] md:text-[26px]">
+      <h3 className="font-tiro-devanagari text-[22px] font-bold leading-[1.2] text-[#5D1409] md:text-[26px]">
         Vedic Sun Sign
       </h3>
       <p className="mt-1 font-mukta text-[12px] font-normal text-[#141414] md:text-[14px]">
@@ -115,19 +120,83 @@ export default function SunSignCalculatorResultSection() {
     router.push('/calculators/sun-sign-calculator');
   };
 
+  const copyTextToClipboard = async (text: string) => {
+    if (typeof window === 'undefined') return false;
+
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        // Fall back to legacy copy behavior below.
+      }
+    }
+
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.setAttribute('readonly', '');
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    textArea.style.top = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      return document.execCommand('copy');
+    } catch {
+      return false;
+    } finally {
+      document.body.removeChild(textArea);
+    }
+  };
+
+  const handleShareReport = async () => {
+    if (typeof window === 'undefined') return;
+
+    const shareData = {
+      title: document.title || 'AstroSewa Sun Sign Result',
+      text: 'Check out my Sun Sign result on AstroSewa.',
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      const copied = await copyTextToClipboard(shareData.url);
+      if (copied) {
+        return;
+      }
+
+      window.prompt('Copy this result link:', shareData.url);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+
+      const copied = await copyTextToClipboard(shareData.url);
+      if (!copied) {
+        window.prompt('Copy this result link:', shareData.url);
+      }
+    }
+  };
+
   if (!loaded) {
     return (
-      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
-        <div className="max-w-[1454px] mx-auto font-mukta text-[16px] text-[#4a423d]">Loading…</div>
+      <section className="pt-6 md:pt-12 pb-12">
+        <div className="font-mukta text-[16px] text-[#4a423d]">Loading…</div>
       </section>
     );
   }
 
   if (!data) {
     return (
-      <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
-        <div className="max-w-[1454px] mx-auto rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center shadow-[0_10px_30px_rgba(0,0,0,0.06)]">
-          <h1 className="font-sahitya text-[32px] font-bold text-[#5D1409] md:text-[40px]">
+      <section className="pt-6 md:pt-12 pb-12">
+        <div className="rounded-[24px] border border-[#d3c2b4] bg-white/90 p-8 text-center shadow-[0_10px_30px_rgba(0,0,0,0.06)]">
+          <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
             Sun Sign Result
           </h1>
           <p className="mt-4 font-mukta text-[16px] text-[#2f2f2f]">
@@ -149,15 +218,13 @@ export default function SunSignCalculatorResultSection() {
   const meta = getSunSignMeta(data.sunSign);
   const displayName = getReportDisplayName(data.fullName);
   const dobDisplay = formatDobDisplay(data.birthDate);
-  const birthTimeDisplay = data.dontKnowTime
-    ? 'Unknown'
-    : `${data.birthTimeHH}:${data.birthTimeMM} ${data.birthTimeAMPM.toUpperCase()}`;
+  const birthTimeDisplay = formatBirthTimeDisplay(data);
   const genderDisplay = formatGenderDisplay(data.gender);
 
   if (!meta) {
     return (
       <section className="w-full pb-12">
-        <div className="container mx-auto max-w-[1440px] px-6 lg:px-0 text-center">
+        <div className="text-center">
           <p className="font-mukta text-[16px] text-[#2f2f2f]">Unable to load sun sign details.</p>
           <button
             type="button"
@@ -172,19 +239,21 @@ export default function SunSignCalculatorResultSection() {
   }
 
   return (
-    <section className="container mx-auto px-6 lg:px-0 pt-6 md:pt-12 pb-12">
-      <div className="max-w-[1454px] mx-auto">
-        <h1 className="font-sahitya text-[28px] font-bold text-[#5D1409] md:text-[34px]">
+    <section className="pt-6 md:pt-12 pb-12">
+      <div>
+        <h1 className="font-tiro-devanagari font-bold text-[26px] leading-[1.2] md:text-[36px] lg:text-[44px] text-primary">
           {displayName}&apos;s Vedic Sun Sign Report
         </h1>
-        <p className="mt-2 font-mukta text-[15px] text-[#141414] md:text-[16px]">
+        <p className="mt-[10px] md:mt-6 font-mukta font-normal text-[14px] leading-[1.2] tracking-[0.02em] md:text-[16px] lg:text-[18px] text-[#4a423d]">
           Your sun sign is <span className="font-semibold">{meta.englishName}</span>, a{' '}
           {meta.element.toLowerCase()} sign ruled by {meta.rulingPlanet}.
         </p>
 
         <div className="mt-6 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="rounded-[24px] border border-[#e4d5c9] bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
-            <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409]">Birth details</h2>
+          <div className="rounded-[24px] border border-[#e4d5c9] bg-[#fffdf9] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+            <h2 className="font-tiro-devanagari text-[20px] font-bold leading-[1.2] text-[#5D1409]">
+              Birth details
+            </h2>
             <div className="mt-5 space-y-3 text-[14px] text-[#3d352f] md:text-[15px]">
               <p>
                 <span className="font-semibold">Name:</span> {displayName}
@@ -204,8 +273,10 @@ export default function SunSignCalculatorResultSection() {
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-[#e4d5c9] bg-[#FFF5E3] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
-            <h2 className="font-sahitya text-[20px] font-bold text-[#5D1409]">Sun sign summary</h2>
+          <div className="rounded-[24px] border border-[#e4d5c9] bg-[#fffdf9] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+            <h2 className="font-tiro-devanagari text-[20px] font-bold leading-[1.2] text-[#5D1409]">
+              Sun sign summary
+            </h2>
             <p className="mt-4 text-[15px] text-[#3d352f] md:text-[16px]">
               {meta.englishName} is your Vedic sun sign. It is a {meta.element.toLowerCase()} sign
               ruled by {meta.rulingPlanet}.
@@ -220,11 +291,19 @@ export default function SunSignCalculatorResultSection() {
           <SunSignReportCard meta={meta} />
         </div>
 
-        <div className="mt-10 flex justify-center lg:mt-12">
+        <div className="mt-10 flex flex-row items-center gap-3 justify-center lg:mt-12">
+          <button
+            type="button"
+            onClick={handleShareReport}
+            className="inline-flex min-h-[52px] w-[calc(50%-0.375rem)] items-center justify-center rounded-full bg-[#5D1409] px-4 font-mukta text-[15px] font-bold text-white transition-opacity hover:opacity-95 sm:w-auto sm:px-8 sm:text-[16px]"
+          >
+            <IoShareOutline className="mr-2 text-lg" />
+            Share Your Report
+          </button>
           <button
             type="button"
             onClick={handleCalculateAgain}
-            className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[#5D1409] bg-[#FFF5E3] px-8 font-mukta text-[16px] font-bold text-[#5D1409] transition-colors hover:bg-[#f7e7d2]"
+            className="inline-flex min-h-[52px] w-[calc(50%-0.375rem)] items-center justify-center rounded-full border border-[#5D1409] bg-[#FFF5E3] px-4 font-mukta text-[15px] font-bold text-[#5D1409] transition-colors hover:bg-[#f7e7d2] sm:w-auto sm:px-8 sm:text-[16px]"
           >
             Calculate Again
           </button>

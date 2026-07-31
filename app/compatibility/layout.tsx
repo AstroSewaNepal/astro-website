@@ -1,25 +1,24 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Zodiac Compatibility — Find Your Perfect Match',
+  title: 'Check Your Astrology Love Match | Astrology',
   description:
-    'Check zodiac sign compatibility for love, friendship, and more. Discover how well your signs match based on Vedic astrology. Free compatibility tool by Astro Sewa Nepal.',
+    "Find out how your zodiac sign connects with your partner's. Check love and emotional compatibility and discover when to go deeper with Kundali matching.",
   keywords: [
     'zodiac compatibility',
-    'love compatibility',
-    'astrology compatibility',
+    'love compatibility astrology',
+    'zodiac love match',
+    'horoscope compatibility checker',
+    'astrology relationship match',
     'sign compatibility',
-    'vedic compatibility',
-    'kundali match',
-    'rashi milan Nepal',
   ],
   alternates: {
     canonical: '/compatibility',
   },
   openGraph: {
-    title: 'Zodiac Compatibility — Find Your Perfect Match | Astro Sewa',
+    title: 'Check Your Astrology Love Match | Astrology | Astro Sewa',
     description:
-      'Discover your zodiac compatibility for love, friendship, and relationships using Vedic astrology.',
+      "Find out how your zodiac sign connects with your partner's. Check love and emotional compatibility and discover when to go deeper with Kundali matching.",
   },
 };
 

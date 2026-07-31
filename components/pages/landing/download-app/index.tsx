@@ -5,28 +5,41 @@ import React from 'react';
 
 type DownloadAppProps = {
   className?: string;
+  paddingClassName?: string;
+  noBorder?: boolean;
 };
 
 const GOOGLE_PLAY_URL = 'https://play.google.com/store/search?q=Astro%20Sewa&c=apps';
 const APPLE_STORE_URL = 'https://apps.apple.com/us/search?term=Astro%20Sewa';
 
-const DownloadApp: React.FC<DownloadAppProps> = ({ className }) => {
+const DownloadApp: React.FC<DownloadAppProps> = ({ className, paddingClassName, noBorder }) => {
   return (
-    <section className={clsx(className)}>
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 px-4 py-8 md:gap-12 md:px-6 md:py-12 lg:flex-row lg:items-center lg:gap-24 lg:px-4 lg:py-16 xl:gap-36">
+    <section
+      className={clsx(
+        className,
+        'w-full px-0',
+        { 'pb-6 md:pb-[50px]': !noBorder },
+        { 'border-b border-b-[#79787A]': !noBorder },
+      )}
+    >
+      <div
+        className={clsx(
+          'w-full max-w-full mx-auto flex flex-col items-center justify-between gap-8 px-4 md:gap-12 md:px-6 lg:flex-row lg:items-center lg:gap-24 lg:px-4 xl:gap-36',
+          paddingClassName || (noBorder ? 'py-4 md:py-6 lg:py-8' : 'py-6 md:py-8 lg:py-10'),
+        )}
+      >
         {/* Left Content */}
         <div className="flex flex-col gap-4 md:gap-5 lg:gap-6 max-w-full lg:max-w-[684px] w-full lg:w-auto text-center lg:text-left">
           {/* Title */}
-          <h2 className="text-[34px] md:text-[40px] lg:text-[48px] xl:text-5xl 2xl:text-6xl font-normal text-[#691709] leading-tight">
-            Download App
+          <h2 className="text-[34px] md:text-[40px] lg:text-[48px] xl:text-5xl 2xl:text-6xl font-normal text-[#691709] leading-tight break-words">
+            Take AstroSewa With You
           </h2>
 
           {/* Description */}
           <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl text-[#4A494B] leading-relaxed">
-            Experience personalized astrology guidance anytime, anywhere with the AstroSewa app. Get
-            daily horoscope updates, instant kundali insights, compatibility checks, and easy access
-            to trusted astrologers - all in one place, designed to make your spiritual journey
-            simple and meaningful.
+            Get the AstroSewa app and carry your astrology tools wherever you go. Daily horoscopes,
+            instant Kundali access, compatibility checks, and direct astrologer chat are all
+            available from your phone.
           </p>
 
           {/* Download Buttons */}
