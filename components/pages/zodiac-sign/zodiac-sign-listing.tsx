@@ -5,7 +5,7 @@ import clsx from 'clsx';
 
 import LandingFAQ from '@/components/pages/landing/faq';
 import QNASComponent from '@/components/common/qnas-component';
-import { CompatibilityHoroscopeSection } from '@/app/compatibility/compatibilityMatch/compatibility-horoscope-section';
+import { CompatibilityHoroscopeSection } from '@/app/compatibility/[slug]/compatibility-horoscope-section';
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
 import { zodiacEnglishDetailHref, zodiacNepaliDetailHref } from '@/lib/constants/zodiac-sign-nav';
@@ -69,7 +69,6 @@ export function ZodiacSignListing({ mode }: Props) {
               emptyLabel="No zodiac signs available."
               errorFallbackSuffix=""
               horoscopeCardLang={horoscopeCardLang}
-              onLanguageChange={setHoroscopeCardLang}
             />
 
             <section className="mx-auto mt-8 px-2 sm:mt-10 sm:px-3 lg:mt-12 lg:px-4">

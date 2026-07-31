@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { ELanguage } from '@/components/enums/language.enum';
 
@@ -43,7 +43,7 @@ import { CompatibilityHoroscopeSection } from './compatibility-horoscope-section
 import { fetchVedastroHoroscopeList } from '@/lib/api/vedastro/horoscope';
 import { buildTodayHoroscopeDisplayCards } from '@/lib/horoscope/build-today-horoscope-display-cards';
 import { CompatibilitySignsGrid } from '@/components/ui/compatibility-signs-grid';
-import { compatibilityMatchHref } from '@/lib/constants/compatibility-nav';
+import { compatibilityMatchHref, parseCompatibilitySlug } from '@/lib/constants/compatibility-nav';
 import {
   persistCardDisplayLanguage,
   readCardDisplayLanguage,
@@ -110,14 +110,29 @@ export default function CompatibilityMatchPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const params = useParams();
+
+  const parsedSlug = useMemo(() => {
+    if (typeof params?.slug === 'string') {
+      return parseCompatibilitySlug(params.slug);
+    }
+    return null;
+  }, [params?.slug]);
+
   const { dict, uiLanguage } = useHoroscopeLocale();
   const signOptions = useMemo(() => HOROSCOPE_SIGNS, []);
-  const [yourSign, setYourSign] = useState<HoroscopeSign>('cancer');
-  const [partnerSign, setPartnerSign] = useState<HoroscopeSign>('taurus');
-  const [pillYourSign, setPillYourSign] = useState<HoroscopeSign>('cancer');
-  const [pillPartnerSign, setPillPartnerSign] = useState<HoroscopeSign>('taurus');
-  const [yourGender, setYourGender] = useState<'male' | 'female'>('male');
-  const [partnerGender, setPartnerGender] = useState<'male' | 'female'>('female');
+
+  const initialYourSign = parsedSlug?.yourSign ?? 'cancer';
+  const initialPartnerSign = parsedSlug?.partnerSign ?? 'taurus';
+  const initialYourGender = parsedSlug?.yourGender ?? 'male';
+  const initialPartnerGender = parsedSlug?.partnerGender ?? 'female';
+
+  const [yourSign, setYourSign] = useState<HoroscopeSign>(initialYourSign);
+  const [partnerSign, setPartnerSign] = useState<HoroscopeSign>(initialPartnerSign);
+  const [pillYourSign, setPillYourSign] = useState<HoroscopeSign>(initialYourSign);
+  const [pillPartnerSign, setPillPartnerSign] = useState<HoroscopeSign>(initialPartnerSign);
+  const [yourGender, setYourGender] = useState<'male' | 'female'>(initialYourGender);
+  const [partnerGender, setPartnerGender] = useState<'male' | 'female'>(initialPartnerGender);
   const [activeTab, setActiveTab] = useState<(typeof compatibilityTabs)[number]['key']>('love');
   const [compatibilityData, setCompatibilityData] = useState<ZodiacCompatibilityData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -268,40 +283,20 @@ export default function CompatibilityMatchPage() {
     [yourSign, partnerSign, yourGender, partnerGender],
   );
 
-  const currentQuery = searchParams.toString();
-
-  const buildQueryString = useCallback(
-    (values?: {
-      yourSign: HoroscopeSign;
-      partnerSign: HoroscopeSign;
-      yourGender: 'male' | 'female';
-      partnerGender: 'male' | 'female';
-    }) => {
-      const params = new URLSearchParams({
-        your_sign: values?.yourSign ?? yourSign,
-        partner_sign: values?.partnerSign ?? partnerSign,
-        your_gender: values?.yourGender ?? yourGender,
-        partner_gender: values?.partnerGender ?? partnerGender,
-      });
-      return params.toString();
-    },
-    [yourSign, partnerSign, yourGender, partnerGender],
-  );
-
   const handleFindNow = useCallback(() => {
-    const nextQuery = buildQueryString();
-    if (nextQuery !== currentQuery) {
-      router.push(`${pathname}?${nextQuery}`);
+    const nextRoute = compatibilityMatchHref(yourSign, partnerSign, yourGender, partnerGender);
+    if (nextRoute !== pathname) {
+      router.push(nextRoute);
       return;
     }
     void fetchCompatibility();
-  }, [buildQueryString, currentQuery, fetchCompatibility, pathname, router]);
+  }, [yourSign, partnerSign, yourGender, partnerGender, pathname, router, fetchCompatibility]);
 
   useEffect(() => {
-    const incomingYourSign = searchParams.get('your_sign');
-    const incomingPartnerSign = searchParams.get('partner_sign');
-    const incomingYourGender = searchParams.get('your_gender');
-    const incomingPartnerGender = searchParams.get('partner_gender');
+    const incomingYourSign = parsedSlug?.yourSign || searchParams.get('your_sign');
+    const incomingPartnerSign = parsedSlug?.partnerSign || searchParams.get('partner_sign');
+    const incomingYourGender = parsedSlug?.yourGender || searchParams.get('your_gender');
+    const incomingPartnerGender = parsedSlug?.partnerGender || searchParams.get('partner_gender');
 
     if (
       !isValidSign(incomingYourSign) ||
@@ -312,12 +307,7 @@ export default function CompatibilityMatchPage() {
       return;
     }
 
-    const queryKey = buildQueryString({
-      yourSign: incomingYourSign,
-      partnerSign: incomingPartnerSign,
-      yourGender: incomingYourGender,
-      partnerGender: incomingPartnerGender,
-    });
+    const queryKey = `${incomingYourSign}-${incomingYourGender}-and-${incomingPartnerSign}-${incomingPartnerGender}`;
 
     if (lastHandledQueryRef.current === queryKey) return;
     lastHandledQueryRef.current = queryKey;
@@ -333,7 +323,7 @@ export default function CompatibilityMatchPage() {
       yourGender: incomingYourGender,
       partnerGender: incomingPartnerGender,
     });
-  }, [searchParams, isValidSign, isValidGender, fetchCompatibility, buildQueryString]);
+  }, [searchParams, parsedSlug, isValidSign, isValidGender, fetchCompatibility]);
 
   const getTabContent = useCallback(() => {
     if (!compatibilityData) return null;
@@ -690,7 +680,6 @@ export default function CompatibilityMatchPage() {
               emptyLabel={dict.list.empty}
               errorFallbackSuffix={dict.list.errorFallbackSuffix}
               horoscopeCardLang={horoscopeCardLang}
-              onLanguageChange={setHoroscopeCardLang}
             />
           </div>
 

@@ -4,7 +4,7 @@ import { useMemo, type ReactNode } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { ZodiacSignStripNav } from '@/components/pages/zodiac-sign/zodiac-sign-strip-nav';
 import { ZodiacSignExploreSection } from '@/components/pages/zodiac-sign/zodiac-sign-explore-section';
@@ -82,8 +82,10 @@ function highlightFirstMatch(text: string, needle: string): ReactNode {
 }
 
 export function ZodiacSignDetailsClient() {
+  const params = useParams();
   const searchParams = useSearchParams();
-  const slug = useMemo(() => parseZodiacSignParam(searchParams.get('sign')), [searchParams]);
+  const rawSign = typeof params?.sign === 'string' ? params.sign : searchParams.get('sign');
+  const slug = useMemo(() => parseZodiacSignParam(rawSign), [rawSign]);
   const contentLanguage = useMemo(
     () => parseUiLangParam(searchParams.get('content_lang')) ?? ELanguage.ENGLISH,
     [searchParams],
@@ -216,7 +218,10 @@ export function ZodiacSignDetailsClient() {
                 </div>
               </div>
 
-              <div className="hidden lg:block order-1 shrink-0 lg:order-none lg:justify-self-end mb-6" style={{ width: '308.29px' }}>
+              <div
+                className="hidden lg:block order-1 shrink-0 lg:order-none lg:justify-self-end mb-6"
+                style={{ width: '308.29px' }}
+              >
                 <Image
                   src={signColorMap[slug]}
                   alt={displayName}
