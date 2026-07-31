@@ -345,9 +345,9 @@ function HoroscopeDetailsContent() {
                 />
 
                 <div className="mt-9 min-w-0">
-                  <h3 className="hidden md:block font-mukta text-center text-[18px] font-semibold text-[#6f2618] md:text-left">
+                  <h2 className="hidden md:grid justify-center px-1 text-center font-sahitya text-[20px] font-bold leading-[28px] text-[#6b2417] text-balance sm:text-left sm:text-[24px] sm:leading-[34px] lg:text-[28px]">
                     {dict.details.readOtherSigns}
-                  </h3>
+                  </h2>
                   <div className="hidden md:block">
                     <HoroscopeHeroSignsSection
                       hideTitle
@@ -369,6 +369,7 @@ function HoroscopeDetailsContent() {
                       signSlug={(validSign ?? HOROSCOPE_SIGNS[0]) as HoroscopeSign}
                       isNepali={uiLanguage === ELanguage.NEPALI}
                       onContentLanguageChange={() => {}}
+                      linkTo="horoscope"
                     />
                   </div>
                 </div>

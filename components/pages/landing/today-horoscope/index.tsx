@@ -3,6 +3,7 @@ import React, { useState, useRef, useMemo, useEffect } from 'react';
 
 import clsx from 'clsx';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 
@@ -235,7 +236,10 @@ const TodayHoroscope: React.FC = () => {
         >
           {horoscopeData.map(item => (
             <SwiperSlide key={item.sign}>
-              <div className="border border-solid border-moonlight-600 px-3.5 py-3 rounded-[33px] flex gap-5 flex-col items-center h-full">
+              <Link
+                href={`/horoscope/${item.sign.toLowerCase()}`}
+                className="border border-solid border-moonlight-600 px-3.5 py-3 rounded-[33px] flex gap-5 flex-col items-center h-full block"
+              >
                 <div className="w-[100px] h-[100px] flex items-center justify-center flex-shrink-0">
                   <Image src={item.image} alt={item.name} />
                 </div>
@@ -256,14 +260,14 @@ const TodayHoroscope: React.FC = () => {
                   <p className="font-mukta text-sm leading-[120%] font-light text-[#5b5b5b]">
                     {item.detail}
                   </p>
-                  <button className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF]">
+                  <div className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF]">
                     <p className="font-mukta text-sm leading-7 font-semibold text-primary">
                       Read More
                     </p>
                     <ArrowRight />
-                  </button>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </SwiperSlide>
           ))}
         </Swiper>
@@ -285,8 +289,9 @@ const TodayHoroscope: React.FC = () => {
       {/* Desktop Grid - shows all items */}
       <div className="mt-[50px] hidden md:grid grid-cols-2 lg:grid-cols-4 gap-8">
         {horoscopeData.map(item => (
-          <div
-            className="border border-solid border-moonlight-600 px-3.5 py-3 rounded-[33px] flex gap-5 items-center"
+          <Link
+            href={`/horoscope/${item.sign.toLowerCase()}`}
+            className="border border-solid border-moonlight-600 px-3.5 py-3 rounded-[33px] flex gap-5 items-center hover:shadow-lg transition-shadow duration-300"
             key={item.sign}
           >
             <div className="w-[100px] h-[100px] flex items-center justify-center">
@@ -309,12 +314,12 @@ const TodayHoroscope: React.FC = () => {
               <p className="font-mukta text-sm leading-[120%] font-light text-[#5b5b5b]">
                 {item.detail}
               </p>
-              <button className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF]">
+              <div className="flex items-center border-b max-w-max border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF]">
                 <p className="font-mukta text-sm leading-7 font-semibold text-primary">Read More</p>
                 <ArrowRight />
-              </button>
+              </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>
