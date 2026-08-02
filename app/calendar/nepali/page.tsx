@@ -20,15 +20,36 @@ export const metadata: Metadata = {
   ],
 };
 
+
+
 export default function NepaliCalendarPage() {
   return (
     <main className="container mx-auto min-h-screen pt-6 sm:pt-8 lg:pt-10">
-      <div className="px-6 lg:px-0 space-y-10 md:space-y-[100px]">
-        <NepaliCalendarPageContent />
-        <Clarity />
-        <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
-        <Services />
-        <DownloadApp />
+      <div className="px-6 lg:px-0">
+
+        <section className="w-full">
+          <NepaliCalendarPageContent />
+        </section>
+
+
+        <section className="w-full pt-6 md:pt-10">
+
+          <Clarity />
+          <br />
+
+        </section>
+
+        <section className="w-full pt-6 md:pt-10">
+          <TalkToOurAstrologer className="mx-auto max-w-[1180px]" />
+        </section>
+
+        <section className="w-full pt-6 md:pt-10">
+          <Services />
+        </section>
+        <section className="w-full pt-6 md:pt-10 ">
+          <hr className="border-t border-[#79787A] opacity-70 my-8" />
+          <DownloadApp />
+        </section>
       </div>
     </main>
   );
