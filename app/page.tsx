@@ -78,11 +78,13 @@ export default function Home() {
       </div>
       {/* <TodayHoroscope /> */}
       {/* <EventsPage /> */}
-      <Services />
-      <section className="container mx-auto px-6 lg:px-0">
-        <hr className="border-t border-[#79787A] opacity-70 my-8" />
+      <Services noPaddingBottom />
+      <section className="container mx-auto px-6 lg:px-0" style={{ marginTop: 0, marginBottom: 0 }}>
+        <div className="pt-5 pb-10 md:pt-[25px] md:pb-[75px]">
+          <hr className="border-t border-[#79787A] opacity-70" />
+        </div>
       </section>
-      <Clarity />
+      <Clarity style={{ marginTop: 0 }} />
       <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
       <AstrologerBlogListing />
       <WhoWeAre />
