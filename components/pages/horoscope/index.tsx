@@ -4,11 +4,15 @@ import { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useSearchParams } from 'next/navigation';
 
-import { CompatibilityHoroscopeSection } from '@/app/compatibility/compatibilityMatch/compatibility-horoscope-section';
+import { CompatibilityHoroscopeSection } from '@/app/compatibility/[slug]/compatibility-horoscope-section';
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
 import { fetchVedastroHoroscopeList } from '@/lib/api/vedastro/horoscope';
-import { parseHoroscopeRangeFromUrl } from '@/lib/constants/horoscope-range-nav';
+import {
+  parseHoroscopeRangeFromUrl,
+  horoscopeDetailPageHref,
+} from '@/lib/constants/horoscope-range-nav';
+import { zodiacDetailHref } from '@/lib/constants/zodiac-sign-nav';
 import {
   persistCardDisplayLanguage,
   readCardDisplayLanguage,
@@ -50,6 +54,7 @@ type DisplayCard = {
   imageColor: (typeof HOROSCOPE_DATA)[ELanguage.ENGLISH][number]['image'];
   summary: string;
   stars: number;
+  href?: string;
 };
 
 export type HoroscopeHeroSignsSectionProps = {
@@ -63,6 +68,8 @@ export type HoroscopeHeroSignsSectionProps = {
   swiperKeySuffix?: string;
   /** Optional `data-qa-id` for the cards grid wrapper. */
   dataQaId?: string;
+  /** Where the cards should link to. Defaults to 'horoscope'. */
+  linkTo?: 'horoscope' | 'zodiac-sign';
 };
 
 /**
@@ -75,6 +82,7 @@ export function HoroscopeHeroSignsSection({
   sectionClassName,
   swiperKeySuffix = '',
   dataQaId = 'horoscope-sign-cards-grid',
+  linkTo = 'horoscope',
 }: HoroscopeHeroSignsSectionProps) {
   void highlightSign;
   void swiperKeySuffix;
@@ -102,10 +110,7 @@ export function HoroscopeHeroSignsSection({
       setListLoading(true);
       setListError(null);
       setRows(null);
-      fetchVedastroHoroscopeList(
-        { type: selectedRange },
-        { headers: { 'Accept-Language': uiLanguage === ELanguage.NEPALI ? 'ne' : 'en' } },
-      )
+      fetchVedastroHoroscopeList({ type: selectedRange })
         .then(envelope => {
           if (cancelled) {
             return;
@@ -127,7 +132,7 @@ export function HoroscopeHeroSignsSection({
     return () => {
       cancelled = true;
     };
-  }, [selectedRange, uiLanguage]);
+  }, [selectedRange]);
 
   const cards = useMemo((): DisplayCard[] | 'loading' => {
     const staticFallback = HOROSCOPE_DATA[signLanguage];
@@ -142,6 +147,10 @@ export function HoroscopeHeroSignsSection({
         imageColor: c.imageColor ?? c.image,
         summary: c.detail,
         stars: c.numberOfStars,
+        href:
+          linkTo === 'zodiac-sign'
+            ? zodiacDetailHref(c.name.toLowerCase(), signLanguage, uiLanguage)
+            : horoscopeDetailPageHref(c.name.toLowerCase(), selectedRange, uiLanguage),
       }));
     }
     if (!rows?.length) {
@@ -172,9 +181,13 @@ export function HoroscopeHeroSignsSection({
         imageColor: imageColor,
         summary: row.summary,
         stars: starCountFromRating(row.rating),
+        href:
+          linkTo === 'zodiac-sign'
+            ? zodiacDetailHref(slug, signLanguage, uiLanguage)
+            : horoscopeDetailPageHref(slug, selectedRange, uiLanguage),
       };
     });
-  }, [signLanguage, listError, listLoading, rows]);
+  }, [signLanguage, listError, listLoading, rows, selectedRange, uiLanguage, linkTo]);
 
   return (
     <section
@@ -199,7 +212,7 @@ export function HoroscopeHeroSignsSection({
         subtitleHeading={selectedRange === 'today' ? 'Select Your Zodiac Sign' : undefined}
         subtitle={
           selectedRange === 'today'
-            ? "Find your sign below for today's horoscope. Each reading covers love, career, health, and energy based on current planetary movements."
+            ? 'Find your sign below to explore your Zodiac details. Discover your personality traits, compatibility, and personalized horoscope reading.'
             : undefined
         }
         cards={
@@ -212,6 +225,7 @@ export function HoroscopeHeroSignsSection({
                 imageLight: card.imageLight,
                 summary: card.summary,
                 stars: card.stars,
+                href: card.href,
               }))
         }
         listError={listError}
@@ -220,7 +234,6 @@ export function HoroscopeHeroSignsSection({
         emptyLabel={dict.list.empty}
         errorFallbackSuffix={dict.list.errorFallbackSuffix}
         horoscopeCardLang={signLanguage}
-        onLanguageChange={setSignLanguage}
       />
     </section>
   );

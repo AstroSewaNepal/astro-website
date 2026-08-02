@@ -15,7 +15,7 @@ import {
   HOROSCOPE_RANGE_NAV_OPTIONS,
   horoscopeListPageHref,
 } from '@/lib/constants/horoscope-range-nav';
-import { zodiacEnglishDetailHref, zodiacNepaliDetailHref } from '@/lib/constants/zodiac-sign-nav';
+import { zodiacEnglishDetailHref } from '@/lib/constants/zodiac-sign-nav';
 import { horoscopeEn, type HoroscopeMessages, useHoroscopeLocaleOptional } from '@/lib/i18n';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 
@@ -38,16 +38,10 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
   }));
 
   const englishZodiacGroup = uiLanguage === ELanguage.NEPALI ? 'अङ्ग्रेजी राशि' : 'English Zodiac';
-  const nepaliZodiacGroup = uiLanguage === ELanguage.NEPALI ? 'नेपाली राशि' : 'Nepali Zodiac';
 
   const englishZodiacChildren = HOROSCOPE_SIGNS.map((slug, i) => ({
     title: HOROSCOPE_DATA[ELanguage.ENGLISH][i]!.name,
     link: zodiacEnglishDetailHref(slug),
-  }));
-
-  const nepaliZodiacChildren = HOROSCOPE_SIGNS.map((slug, i) => ({
-    title: HOROSCOPE_DATA[ELanguage.NEPALI][i]!.name,
-    link: zodiacNepaliDetailHref(slug),
   }));
 
   return [
@@ -59,10 +53,7 @@ function buildLandingNav(uiLanguage: ELanguage, d: HoroscopeMessages): NavItem[]
     {
       title: d.header.nav.zodiacSigns,
       link: '/zodiac-sign',
-      children: [
-        { title: englishZodiacGroup, children: englishZodiacChildren },
-        { title: nepaliZodiacGroup, children: nepaliZodiacChildren },
-      ],
+      children: [{ title: englishZodiacGroup, children: englishZodiacChildren }],
     },
     {
       title: d.header.nav.kundali,
@@ -270,7 +261,7 @@ function LandingHeaderClient() {
               {d.list.langEnglish} ({d.header.langEn})
             </button>
           </li>
-          <li>
+          {/* <li>
             <button
               type="button"
               role="option"
@@ -286,7 +277,7 @@ function LandingHeaderClient() {
             >
               {d.list.langNepali} ({d.header.langNe})
             </button>
-          </li>
+          </li> */}
         </ul>
       ) : null}
     </div>

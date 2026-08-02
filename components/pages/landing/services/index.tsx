@@ -95,7 +95,7 @@ const Services = ({ noPaddingBottom }: ServicesProps) => {
       <div className="max-w-[1450px] mx-auto px-5 flex flex-col items-center gap-12">
         {/* Header */}
         <div className="flex flex-col items-center gap-4 md:gap-5 lg:gap-6 max-w-[1405px] w-full">
-          <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[34px] md:leading-[40px] lg:leading-[47.83px] text-primary font-tiro-devanagari text-center mt-6 md:mt-8 lg:mt-10">
+          <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[34px] md:leading-[40px] lg:leading-[47.83px] text-primary font-tiro-devanagari text-center">
             {headingText}
           </h2>
           <p className="font-mukta text-base md:text-lg lg:text-2xl text-[#000000CF] max-w-[753px] text-center px-4">

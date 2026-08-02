@@ -78,7 +78,7 @@ const horoscope = {
         year: 'वार्षिक',
       },
       sections: {
-        general: 'सारांश',
+        general: 'सामान्य',
         love: 'प्रेम र सम्बन्ध',
         career: 'करियर र वित्त',
         health: 'स्वास्थ्य',

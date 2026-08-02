@@ -44,3 +44,6 @@ dev-documents/
 .cursor/
 .vscode/
 mcp/
+
+# claude code
+CLAUDE.md

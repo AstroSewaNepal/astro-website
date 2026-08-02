@@ -35,7 +35,7 @@ interface AstrologerVerificationTableProps {
   onLimitChange: (limit: number) => void;
   onDecision: (
     astrologerId: string,
-    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string },
+    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierId?: string },
   ) => void;
   pendingId: string | null;
 }

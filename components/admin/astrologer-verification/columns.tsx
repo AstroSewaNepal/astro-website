@@ -11,9 +11,17 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Eye, Loader2 } from 'lucide-react';
 import { OnboardingStatusDetail } from '@/lib/astrologer-verification-api';
 import { useOnboardingStatusDetail } from '@/hooks/use-astrologer-verification';
+import { useTiers } from '@/hooks/use-tiers';
 
 const STAGE_STATE_STYLES: Record<string, string> = {
   DONE: 'bg-green-50 text-green-700',
@@ -208,10 +216,81 @@ function RejectReasonDialog({
   );
 }
 
+function ApproveTierDialog({
+  open,
+  onOpenChange,
+  onConfirm,
+  isPending,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: (tierId: string) => void;
+  isPending: boolean;
+}) {
+  const [tierId, setTierId] = useState('');
+  const { data: tiers, isPending: tiersPending } = useTiers();
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={next => {
+        if (!next) setTierId('');
+        onOpenChange(next);
+      }}
+    >
+      <DialogContent className="max-w-md font-mukta">
+        <DialogHeader>
+          <DialogTitle className="font-mukta text-base">Approve Application</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-2">
+          <label className="font-mukta text-sm text-neutral-700">
+            Tier <span className="text-red-500">*</span>
+          </label>
+          <Select value={tierId} onValueChange={setTierId}>
+            <SelectTrigger className="font-mukta">
+              <SelectValue placeholder={tiersPending ? 'Loading tiers…' : 'Select a tier'} />
+            </SelectTrigger>
+            <SelectContent className="font-mukta">
+              {tiers?.map(tier => (
+                <SelectItem key={tier._id} value={tier._id}>
+                  {tier.name} — {tier.commissionPercentage}% commission
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="font-mukta text-xs text-neutral-400">
+            The tier determines the consultation commission taken from this astrologer&apos;s
+            earnings.
+          </p>
+        </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="font-mukta"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            disabled={!tierId || isPending}
+            onClick={() => onConfirm(tierId)}
+            className="font-mukta text-white"
+            style={{ backgroundColor: '#611508' }}
+          >
+            {isPending ? 'Approving…' : 'Approve'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 interface ColumnActions {
   onDecision: (
     astrologerId: string,
-    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string },
+    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierId?: string },
   ) => void;
   pendingId: string | null;
 }
@@ -285,6 +364,7 @@ function RowActions({
   onDecision: ColumnActions['onDecision'];
 }) {
   const [rejectOpen, setRejectOpen] = useState(false);
+  const [approveOpen, setApproveOpen] = useState(false);
 
   return (
     <div className="flex items-center gap-1">
@@ -293,12 +373,21 @@ function RowActions({
         type="button"
         size="sm"
         disabled={isPending}
-        onClick={() => onDecision(astrologerId, { decision: 'APPROVED' })}
+        onClick={() => setApproveOpen(true)}
         className="h-7 font-mukta text-xs text-white"
         style={{ backgroundColor: '#611508' }}
       >
         {isPending ? <Loader2 size={13} className="animate-spin" /> : 'Approve'}
       </Button>
+      <ApproveTierDialog
+        open={approveOpen}
+        onOpenChange={setApproveOpen}
+        isPending={isPending}
+        onConfirm={tierId => {
+          onDecision(astrologerId, { decision: 'APPROVED', tierId });
+          setApproveOpen(false);
+        }}
+      />
       <Button
         type="button"
         size="sm"

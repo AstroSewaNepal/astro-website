@@ -10,9 +10,9 @@ import { openAppStore } from '@/lib/constants/app-store';
 
 const LandingHero: React.FC = () => {
   return (
-    <section className="container mx-auto px-6 lg:px-0 grid grid-cols-1 lg:grid-cols-2 pt-10 gap-10 border-b border-b-[#79787A] pb-[100px]">
+    <section className="container mx-auto px-6 lg:px-0 grid grid-cols-1 lg:grid-cols-2 pt-10 gap-10">
       <div className="flex flex-col justify-center">
-        <div className="space-x-2.5">
+        <div className="space-y-4">
           <h1 className="text-[34px] md:text-[40px] lg:text-[80px] leading-[120%] text-primary font-normal">
             Astrology, <br />
             Made Personal.

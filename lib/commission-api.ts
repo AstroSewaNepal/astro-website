@@ -6,6 +6,13 @@ export interface CommissionSettings {
   updatedAt: string | null;
 }
 
+export type CommissionSource = 'remedy' | 'gift';
+
+export interface AllCommissionSettings {
+  remedy: CommissionSettings;
+  gift: CommissionSettings;
+}
+
 export interface UpdateCommissionInput {
   commissionPercentage: number;
 }
@@ -44,16 +51,17 @@ async function backendRequest<T>(
   throw new Error(message);
 }
 
-export async function fetchCommission(token: string): Promise<CommissionSettings> {
-  return backendRequest<CommissionSettings>('subscriptions/admin/commission', token);
+export async function fetchAllCommissions(token: string): Promise<AllCommissionSettings> {
+  return backendRequest<AllCommissionSettings>('subscriptions/admin/commissions', token);
 }
 
-export async function updateCommission(
+export async function updateCommissionBySource(
   token: string,
+  source: CommissionSource,
   input: UpdateCommissionInput,
 ): Promise<CommissionSettings> {
   return backendRequest<CommissionSettings>(
-    'subscriptions/admin/commission',
+    `subscriptions/admin/commission/${source}`,
     token,
     'PUT',
     input,
