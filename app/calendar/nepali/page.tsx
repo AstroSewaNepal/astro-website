@@ -26,11 +26,11 @@ export default function NepaliCalendarPage() {
   return (
     <main className="container mx-auto min-h-screen pt-6 sm:pt-8 lg:pt-10">
       <div className="px-6 lg:px-0">
-        
+
         <section className="w-full">
           <NepaliCalendarPageContent />
         </section>
-        
+
 
         <section className="w-full pt-6 md:pt-10">
 
@@ -46,9 +46,8 @@ export default function NepaliCalendarPage() {
         <section className="w-full pt-6 md:pt-10">
           <Services />
         </section>
-        <br />
-        <br />
-        <section className="w-full pt-6 md:pt-10 border-t border-t-gray-200 dark:border-t-gray-700">
+        <section className="w-full pt-6 md:pt-10 ">
+          <hr className="border-t border-[#79787A] opacity-70 my-8" />
           <DownloadApp />
         </section>
       </div>
