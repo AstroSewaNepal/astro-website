@@ -31,7 +31,7 @@ export default function NepaliCalendarPage() {
           <NepaliCalendarPageContent />
         </section>
 
-
+        
         <section className="w-full pt-6 md:pt-10">
 
           <Clarity />
@@ -41,13 +41,14 @@ export default function NepaliCalendarPage() {
 
         <section className="w-full pt-6 md:pt-10">
           <TalkToOurAstrologer className="mx-auto max-w-[1180px]" />
+          <br />
         </section>
 
         <section className="w-full pt-6 md:pt-10">
           <Services />
         </section>
         <section className="w-full pt-6 md:pt-10 ">
-          <hr className="border-t border-[#79787A] opacity-70 my-8" />
+          <hr className="border-t border-[#79787A] opacity-70" />
           <DownloadApp />
         </section>
       </div>
