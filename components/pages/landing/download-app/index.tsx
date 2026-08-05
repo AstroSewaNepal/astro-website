@@ -17,7 +17,8 @@ const DownloadApp: React.FC<DownloadAppProps> = ({ className, paddingClassName, 
     <section
       className={clsx(
         className,
-        'w-full px-0 -mt-5 md:-mt-20',
+        'w-full px-0',
+        { '-mt-5 md:-mt-20': !noBorder },
         { 'pb-6 md:pb-[50px]': !noBorder },
         { 'border-t border-t-[#79787A]': !noBorder },
       )}
