@@ -79,7 +79,7 @@ export default function Home() {
         <LandingHero />
       </div>
 
-      <SectionDivider className="mt-[20px] mb-[50px]" />
+      <SectionDivider className="mt-[60px] mb-[60px]" />
 
       {/* <TodayHoroscope /> */}
       {/* <EventsPage /> */}
