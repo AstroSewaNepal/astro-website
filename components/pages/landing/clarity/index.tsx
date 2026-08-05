@@ -19,7 +19,7 @@ const Clarity: React.FC<ClarityProps> = ({ className, style }) => {
   return (
     <section
       className={clsx(
-        'container mx-auto px-6 lg:px-0 pb-8 md:pb-10 lg:pb-12 border-b border-b-[#79787A]',
+        'container mx-auto px-6 lg:px-0 pb-8 md:pb-10 lg:pb-12',
         className,
       )}
       style={style}

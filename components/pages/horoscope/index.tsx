@@ -91,7 +91,7 @@ export function HoroscopeHeroSignsSection({
   const selectedRange = parseHoroscopeRangeFromUrl(searchParams.get('type'));
   const { dict, uiLanguage } = useHoroscopeLocale();
 
-  const [signLanguage, setSignLanguage] = useState<ELanguage>(() => readCardDisplayLanguage());
+  const [signLanguage] = useState<ELanguage>(() => readCardDisplayLanguage());
 
   const [rows, setRows] = useState<HoroscopeSummaryRow[] | null>(null);
   const [listError, setListError] = useState<string | null>(null);
