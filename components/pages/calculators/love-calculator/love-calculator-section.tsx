@@ -15,6 +15,7 @@ import CalculatorChooserSection from '../shared/calculator-chooser-section';
 import CalculatorDatePicker from '../shared/calculator-date-picker';
 import QNASComponent from '@/components/common/qnas-component';
 import LoveHeroImage from '@/components/images/lovecalculator.png';
+import SectionDivider from '@/components/ui/section-divider';
 
 const LOVE_CALCULATOR_FAQ = [
   {
@@ -427,7 +428,8 @@ export default function LoveCalculatorSection() {
         </div>
         <CalculatorChooserSection exclude="love" />
 
-        <section className="mt-16 border-t border-[#E5E5E5] pt-12">
+        <section className="mt-8 pt-5">
+          <SectionDivider className="mb-10" />
           <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6 text-center">
             <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary">
               Frequently Asked Questions
