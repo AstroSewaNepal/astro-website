@@ -20,7 +20,7 @@ type Props = {
 
 export function ZodiacSignListing({ mode }: Props) {
   const defaultLang = mode === 'hub-ne' ? ELanguage.NEPALI : ELanguage.ENGLISH;
-  const [horoscopeCardLang, setHoroscopeCardLang] = useState<ELanguage>(defaultLang);
+  const [horoscopeCardLang] = useState<ELanguage>(defaultLang);
   const t = zodiacListingCopy[horoscopeCardLang];
   const cards = HOROSCOPE_DATA[horoscopeCardLang];
   const zodiacCards = englishZodiacColorOrdered().map(({ slug, image }, i) => ({

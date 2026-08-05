@@ -5,6 +5,7 @@ import Clarity from '@/components/pages/landing/clarity';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
+import SectionDivider from '@/components/ui/section-divider';
 
 export const metadata: Metadata = {
   title: 'Zodiac Signs — All 12 Signs & Their Meanings',
@@ -31,17 +32,21 @@ export const metadata: Metadata = {
 
 export default function ZodiacSignsPage() {
   return (
-    <main className="container mx-auto space-y-[100px] px-4 sm:px-6 lg:px-0">
+    <main className="container mx-auto px-4 sm:px-6 lg:px-0">
       <ZodiacSignListing mode="hub-en" />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <Clarity />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <TalkToOurAstrologer
         className="mx-auto mt-10 max-w-[1180px] sm:mt-14"
         title="Your Sign Is Just the Beginning"
         description="A sun sign gives you a broad profile. A full Vedic birth chart reading goes deeper and shows your moon sign, rising sign, Dasha period, and the specific planetary influences at work in your life right now. Talk to one of our verified astrologers to get a reading built around your chart."
         descriptionClassName="max-w-full"
       />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <Services />
-      <DownloadApp />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
+      <DownloadApp noBorder />
     </main>
   );
 }

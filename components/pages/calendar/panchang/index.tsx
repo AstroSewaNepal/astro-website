@@ -87,7 +87,7 @@ const PanchangCalendarPageContent: React.FC = () => {
           </div>
         </section>
 
-        <section className="mt-12 pt-8 border-b border-b-[#79787A] pb-[100px]">
+        <section className="mt-12 pt-8 pb-[100px]">
           <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6 text-center">
             <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary text-center">
               Frequently Asked Questions

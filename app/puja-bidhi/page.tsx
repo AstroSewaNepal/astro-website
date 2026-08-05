@@ -28,6 +28,7 @@ import Clarity from '@/components/pages/landing/clarity';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 import PujaBidhiHeader from '@/components/pages/puja-bidhi/header';
+import SectionDivider from '@/components/ui/section-divider';
 import { ghostClient } from '@/lib/ghostClient';
 import { fetchBlogViewCounts } from '@/lib/blog-view-api';
 import { mapGhostBlogPost } from '@/lib/map-ghost-blog-post';
@@ -69,14 +70,18 @@ const PujaBidhiPage = async () => {
   const posts = await getPujaBidhiPosts();
 
   return (
-    <main className="container mx-auto min-h-screen overflow-hidden space-y-[100px] pb-16">
+    <main className="container mx-auto min-h-screen overflow-hidden pb-16">
       <div>
         <PujaBidhiHeader posts={posts} />
       </div>
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <Clarity />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <Services />
-      <DownloadApp />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
+      <DownloadApp noBorder />
     </main>
   );
 };

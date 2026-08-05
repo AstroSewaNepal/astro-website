@@ -31,6 +31,7 @@ import Clarity from '@/components/pages/landing/clarity';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
+import SectionDivider from '@/components/ui/section-divider';
 
 async function getBlogTags() {
   const tags = await ghostClient.tags.browse({
@@ -67,14 +68,18 @@ async function getBlogPosts() {
 const BlogPage = async () => {
   const [tags, posts] = await Promise.all([getBlogTags(), getBlogPosts()]);
   return (
-    <main className="container mx-auto min-h-screen overflow-hidden space-y-[100px] pb-16">
+    <main className="container mx-auto min-h-screen overflow-hidden pb-16">
       <div>
         <BlogHeader tags={tags} posts={posts} />
       </div>
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <Clarity />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <Services />
-      <DownloadApp />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
+      <DownloadApp noBorder />
     </main>
   );
 };
