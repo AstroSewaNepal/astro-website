@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
-import clsx from 'clsx';
+
 
 import { HoroscopeHeroSignsSection } from '@/components/pages/horoscope';
 import Services from '@/components/pages/landing/services';
@@ -9,6 +9,7 @@ import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrolog
 import Clarity from '@/components/pages/landing/clarity';
 import DownloadApp from '@/components/pages/landing/download-app';
 import QNASComponent from '@/components/common/qnas-component';
+import SectionDivider from '@/components/ui/section-divider';
 import { useHoroscopeLocale } from '@/lib/i18n';
 
 function HoroscopePageContent() {
@@ -29,11 +30,9 @@ function HoroscopePageContent() {
 
           <HoroscopeHeroSignsSection hideTitle={true} />
 
-          <section
-            className={clsx(
-              'container mx-auto px-6 lg:px-0 border-b border-b-[#79787A] pb-6 md:pb-[50px] mt-10 sm:mt-12 lg:mt-14',
-            )}
-          >
+          <SectionDivider className="mt-[20px] mb-[50px]" />
+
+          <section className="container mx-auto px-6 lg:px-0 pb-6 md:pb-[50px]">
             <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6">
               <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary text-center">
                 Frequently Asked Questions
@@ -56,18 +55,23 @@ function HoroscopePageContent() {
             </div>
           </section>
 
+          <SectionDivider className="mt-[20px] mb-[50px]" />
+
           <TalkToOurAstrologer
             title="Want a Reading Specific to You?"
             description="A daily horoscope gives you the general planetary weather for your sign. A personal consultation looks at how that energy interacts with your specific birth chart, including your Rashi, Dasha period, and Lagna. If you are going through an important or uncertain time, our verified astrologers can give you a reading built around your life and not just your sign."
             descriptionClassName="max-w-full"
             className="mx-auto mt-10 max-w-[1180px] sm:mt-14"
           />
+          <SectionDivider className="mt-[20px] mb-[50px]" />
           <Clarity />
         </div>
       </div>
 
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <Services />
-      <DownloadApp />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
+      <DownloadApp noBorder />
     </main>
   );
 }
