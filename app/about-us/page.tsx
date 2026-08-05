@@ -55,7 +55,9 @@ const AboutUsPage = () => {
       <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
       <SectionDivider />
       <Services />
-      <SectionDivider />
+      <div className="mt-[40px] mb-[10px] flex items-center justify-center">
+        <div className="w-full border-t border-[#79787A]" />
+      </div>
       <DownloadApp noBorder />
     </main>
   );

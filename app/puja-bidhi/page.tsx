@@ -80,7 +80,7 @@ const PujaBidhiPage = async () => {
       <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
       <SectionDivider className="mt-[20px] mb-[50px]" />
       <Services />
-      <SectionDivider className="mt-[20px] mb-[50px]" />
+      <SectionDivider className="mt-[40px] mb-[10px]" />
       <DownloadApp noBorder />
     </main>
   );

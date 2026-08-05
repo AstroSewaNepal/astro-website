@@ -8,6 +8,7 @@ import { fetchVedastroCalculator } from '@/lib/vedastro/fetch-calculator';
 import CalculatorChooserSection from '@/components/pages/calculators/shared/calculator-chooser-section';
 import CalculatorDatePicker from '@/components/pages/calculators/shared/calculator-date-picker';
 import QNASComponent from '@/components/common/qnas-component';
+import SectionDivider from '@/components/ui/section-divider';
 
 const CALCULATOR_TYPES = [
   { value: 'life-path', label: 'Life Path Number' },
@@ -249,13 +250,13 @@ export default function NumerologyCalculatorSection() {
 
         <CalculatorChooserSection exclude="numerology" />
 
-        {/* FAQ */}
-        <section className="mt-16 border-b border-b-[#79787A] pt-12 pb-[100px]">
+        <section className="mt-8 pt-5">
+          <SectionDivider className="mb-10" />
           <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6 text-center">
-            <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary text-center">
+            <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary">
               Frequently Asked Questions
             </h2>
-            <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px] text-center mt-2 md:mt-4 lg:mt-6 px-4">
+            <p className="font-mukta text-base md:text-lg lg:text-xl xl:text-2xl leading-6 md:leading-7 text-[#000000CF] opacity-80 max-w-[800px]">
               Find quick answers to common questions about our numerology calculator and how to use
               your core numbers.
             </p>

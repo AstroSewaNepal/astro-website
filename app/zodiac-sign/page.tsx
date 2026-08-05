@@ -45,7 +45,7 @@ export default function ZodiacSignsPage() {
       />
       <SectionDivider className="mt-[20px] mb-[50px]" />
       <Services />
-      <SectionDivider className="mt-[20px] mb-[50px]" />
+      <SectionDivider className="mt-[40px] mb-[10px]" />
       <DownloadApp noBorder />
     </main>
   );

@@ -34,7 +34,7 @@ export default function NepaliCalendarPage() {
         <TalkToOurAstrologer className="mx-auto max-w-[1180px]" />
         <SectionDivider className="mt-[20px] mb-[50px]" />
         <Services />
-        <SectionDivider className="mt-[20px] mb-[50px]" />
+        <SectionDivider className="mt-[40px] mb-[10px]" />
         <DownloadApp noBorder />
       </div>
     </main>
