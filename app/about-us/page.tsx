@@ -31,21 +31,33 @@ export const metadata: Metadata = {
   },
 };
 
+const SectionDivider = () => (
+  <div className="mt-[20px] mb-[50px] flex items-center justify-center">
+    <div className="w-full border-t border-[#79787A]" />
+  </div>
+);
+
 const AboutUsPage = () => {
   return (
     <main className="container mx-auto min-h-screen overflow-hidden pb-16">
       <div>
         <AboutUsHero />
       </div>
+      <SectionDivider />
       <AboutUsVision />
+      <SectionDivider />
       <AboutUsWhatWeDo compact />
-      <div className="w-full flex items-center justify-center py-4 md:py-6">
+      <SectionDivider />
+      <AboutUsWhyUs compact />
+      <SectionDivider />
+      <Clarity />
+      <SectionDivider />
+      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+      <SectionDivider />
+      <Services />
+      <div className="mt-[40px] mb-[10px] flex items-center justify-center">
         <div className="w-full border-t border-[#79787A]" />
       </div>
-      <AboutUsWhyUs compact />
-      <Clarity />
-      <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14 border-b-0" />
-      <Services />
       <DownloadApp noBorder />
     </main>
   );

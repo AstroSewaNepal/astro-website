@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
@@ -47,7 +47,7 @@ const RANGE_TAB_TYPES = [
 
 type HoroscopeBodyKey = 'general' | 'love' | 'career' | 'health';
 
-const SECTION_PILL_IDS: HoroscopeBodyKey[] = ['love', 'career', 'health', 'general'];
+const SECTION_PILL_IDS: HoroscopeBodyKey[] = ['general', 'love', 'career', 'health'];
 
 function HoroscopeDetailsFallback() {
   return (
@@ -70,14 +70,26 @@ function HoroscopeDetailsContent() {
     label: dict.details.sections[id],
   }));
 
+  const params = useParams();
   const searchParams = useSearchParams();
-  const rawSign = searchParams.get('sign');
+
+  const rawSign = typeof params?.sign === 'string' ? params.sign : searchParams.get('sign');
+
+  let rawType: string | undefined;
+  if (Array.isArray(params?.type)) {
+    rawType = params.type[0];
+  } else if (typeof params?.type === 'string') {
+    rawType = params.type;
+  } else {
+    rawType = searchParams.get('type') ?? undefined;
+  }
+
   const trimmedSign = rawSign?.trim() ?? '';
   const signSlug = trimmedSign.toLowerCase();
   const validSign: HoroscopeSign | null =
     trimmedSign && isHoroscopeSign(signSlug) ? signSlug : null;
   const signInvalid = Boolean(trimmedSign) && validSign === null;
-  const rangeType = parseHoroscopeRangeFromUrl(searchParams.get('type'));
+  const rangeType = parseHoroscopeRangeFromUrl(rawType);
 
   const [detail, setDetail] = useState<HoroscopeDetailData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -85,10 +97,10 @@ function HoroscopeDetailsContent() {
   const [activeSectionByView, setActiveSectionByView] = useState<{
     key: string;
     section: HoroscopeBodyKey;
-  }>({ key: '', section: 'love' });
+  }>({ key: '', section: 'general' });
   const activeViewKey = `${validSign ?? 'none'}:${rangeType}`;
   const activeSection =
-    activeSectionByView.key === activeViewKey ? activeSectionByView.section : 'love';
+    activeSectionByView.key === activeViewKey ? activeSectionByView.section : 'general';
 
   useEffect(() => {
     if (!validSign) {
@@ -102,11 +114,7 @@ function HoroscopeDetailsContent() {
       setLoading(true);
       setError(null);
       setDetail(null);
-      fetchVedastroHoroscopeDetail(
-        validSign,
-        { type: rangeType },
-        { headers: { 'Accept-Language': uiLanguage === ELanguage.NEPALI ? 'ne' : 'en' } },
-      )
+      fetchVedastroHoroscopeDetail(validSign, { type: rangeType })
         .then(envelope => {
           if (cancelled) {
             return;
@@ -128,7 +136,7 @@ function HoroscopeDetailsContent() {
     return () => {
       cancelled = true;
     };
-  }, [validSign, rangeType, uiLanguage]);
+  }, [validSign, rangeType]);
 
   const sectionBody = useMemo(() => {
     if (!detail) {
@@ -292,10 +300,10 @@ function HoroscopeDetailsContent() {
                       priority={false}
                     />
                     <Link
-                      href={zodiacDetailHref(validSign, uiLanguage)}
-                      className="flex w-fit mx-auto h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[24px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px]"
+                      href={zodiacDetailHref(validSign, uiLanguage, uiLanguage)}
+                      className="inline-flex w-[366px] h-[44px] items-center justify-center gap-[10px] whitespace-nowrap rounded-[32px] bg-[#611508] px-[16px] py-[6px] opacity-100 font-mukta text-[16px] font-normal leading-[32px] tracking-[0%] text-[#f8f3df] transition-colors hover:bg-[#4f1208] sm:text-[18px] lg:-translate-x-10"
                     >
-                      Explore {capitalizeSign(validSign)}
+                      Know More About {capitalizeSign(validSign)} Zodiac
                       <ArrowRight className="h-6 w-6 shrink-0 text-[#f8f3df]" />
                     </Link>
                   </div>
@@ -337,9 +345,9 @@ function HoroscopeDetailsContent() {
                 />
 
                 <div className="mt-9 min-w-0">
-                  <h3 className="hidden md:block font-mukta text-center text-[18px] font-semibold text-[#6f2618] md:text-left">
+                  <h2 className="hidden md:grid justify-center px-1 text-center font-sahitya text-[20px] font-bold leading-[28px] text-[#6b2417] text-balance sm:text-left sm:text-[24px] sm:leading-[34px] lg:text-[28px]">
                     {dict.details.readOtherSigns}
-                  </h3>
+                  </h2>
                   <div className="hidden md:block">
                     <HoroscopeHeroSignsSection
                       hideTitle
@@ -357,9 +365,11 @@ function HoroscopeDetailsContent() {
                       title={''}
                       className="mt-4"
                       contentLanguage={uiLanguage as ELanguage}
+                      headerLanguage={uiLanguage as ELanguage}
                       signSlug={(validSign ?? HOROSCOPE_SIGNS[0]) as HoroscopeSign}
                       isNepali={uiLanguage === ELanguage.NEPALI}
                       onContentLanguageChange={() => {}}
+                      linkTo="horoscope"
                     />
                   </div>
                 </div>

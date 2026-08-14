@@ -49,7 +49,10 @@ export function TierFormDialog({ open, onOpenChange, tier }: TierFormDialogProps
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema) as Resolver<FormValues>,
-    defaultValues: { name: tier?.name ?? '', commissionPercentage: tier?.commissionPercentage ?? 0 },
+    defaultValues: {
+      name: tier?.name ?? '',
+      commissionPercentage: tier?.commissionPercentage ?? 0,
+    },
   });
 
   useEffect(() => {

@@ -3,12 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 
-import { CompatibilityHoroscopeCardLink } from '@/app/compatibility/compatibilityMatch/compatibility-horoscope-section';
+import { CompatibilityHoroscopeCardLink } from '@/app/compatibility/[slug]/compatibility-horoscope-section';
 import { ZodiacSignMiniCard } from '@/components/pages/zodiac-sign/zodiac-sign-mini-card';
 import { ZodiacSignCardsGrid } from '@/components/ui/zodiac-sign-cards-grid';
 import { ELanguage } from '@/components/enums/language.enum';
 import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
-import { zodiacEnglishDetailHref, zodiacNepaliDetailHref } from '@/lib/constants/zodiac-sign-nav';
+import { zodiacDetailHref } from '@/lib/constants/zodiac-sign-nav';
+import { horoscopeDetailPageHref } from '@/lib/constants/horoscope-range-nav';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 import type { HoroscopeSign } from '@/lib/types/horoscope';
 
@@ -17,19 +18,23 @@ const cardBaseText = 'Your spark can move mountains, start bold today';
 type Props = {
   title?: string;
   contentLanguage: ELanguage;
+  headerLanguage: ELanguage;
   signSlug: HoroscopeSign;
   isNepali: boolean;
   onContentLanguageChange: (lang: ELanguage) => void;
   className?: string;
+  linkTo?: 'horoscope' | 'zodiac-sign';
 };
 
 export function ZodiacSignExploreSection({
   title = 'Explore Other Zodiac Signs',
   contentLanguage,
+  headerLanguage,
   signSlug,
   isNepali,
   onContentLanguageChange,
   className,
+  linkTo = 'zodiac-sign',
 }: Props) {
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
@@ -39,10 +44,6 @@ export function ZodiacSignExploreSection({
     () =>
       HOROSCOPE_SIGNS.map((sign, index) => {
         const card = HOROSCOPE_DATA[contentLanguage][index]!;
-        const href =
-          contentLanguage === ELanguage.NEPALI
-            ? zodiacNepaliDetailHref(sign)
-            : zodiacEnglishDetailHref(sign);
         return {
           key: sign,
           name: card.name,
@@ -50,10 +51,13 @@ export function ZodiacSignExploreSection({
           imageLight: card.image,
           summary: card.detail || cardBaseText,
           stars: card.numberOfStars ?? 3,
-          href,
+          href:
+            linkTo === 'zodiac-sign'
+              ? zodiacDetailHref(sign, contentLanguage, headerLanguage)
+              : horoscopeDetailPageHref(sign, 'today', headerLanguage),
         };
       }),
-    [contentLanguage],
+    [contentLanguage, headerLanguage, linkTo],
   );
 
   const updateActiveCarouselIndex = () => {
@@ -143,9 +147,9 @@ export function ZodiacSignExploreSection({
             <div key={sign} className="min-w-[260px] shrink-0 snap-start">
               <ZodiacSignMiniCard
                 href={
-                  contentLanguage === ELanguage.NEPALI
-                    ? zodiacNepaliDetailHref(sign)
-                    : zodiacEnglishDetailHref(sign)
+                  linkTo === 'zodiac-sign'
+                    ? zodiacDetailHref(sign, contentLanguage, headerLanguage)
+                    : horoscopeDetailPageHref(sign, 'today', headerLanguage)
                 }
                 image={card.image}
                 name={card.name}

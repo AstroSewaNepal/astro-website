@@ -10,12 +10,19 @@ import { AstrologyImage } from '@/components/images';
 import ChevronRight from '@/components/icons/chevron-right';
 import { openAppStore } from '@/lib/constants/app-store';
 
-const Clarity: React.FC = () => {
+interface ClarityProps {
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+const Clarity: React.FC<ClarityProps> = ({ className, style }) => {
   return (
     <section
       className={clsx(
-        'container mx-auto px-6 lg:px-0 pb-8 md:pb-10 lg:pb-12 border-b border-b-[#79787A]',
+        'container mx-auto px-6 lg:px-0 pb-8 md:pb-10 lg:pb-12',
+        className,
       )}
+      style={style}
     >
       <div
         className={clsx(

@@ -18,14 +18,15 @@ const DownloadApp: React.FC<DownloadAppProps> = ({ className, paddingClassName, 
       className={clsx(
         className,
         'w-full px-0',
+        { '-mt-5 md:-mt-20': !noBorder },
         { 'pb-6 md:pb-[50px]': !noBorder },
-        { 'border-b border-b-[#79787A]': !noBorder }
+        { 'border-t border-t-[#79787A]': !noBorder },
       )}
     >
       <div
         className={clsx(
           'w-full max-w-full mx-auto flex flex-col items-center justify-between gap-8 px-4 md:gap-12 md:px-6 lg:flex-row lg:items-center lg:gap-24 lg:px-4 xl:gap-36',
-          paddingClassName || (noBorder ? 'py-4 md:py-6 lg:py-8' : 'py-6 md:py-8 lg:py-10')
+          paddingClassName || (noBorder ? 'py-4 md:py-6 lg:py-8' : 'py-6 md:py-8 lg:py-10'),
         )}
       >
         {/* Left Content */}

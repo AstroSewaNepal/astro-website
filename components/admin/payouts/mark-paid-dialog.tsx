@@ -48,9 +48,9 @@ export function MarkPaidDialog({ open, onOpenChange, row }: MarkPaidDialogProps)
           <p className="font-mukta text-sm text-neutral-600">
             This marks all <span className="font-semibold">{row.count}</span> unpaid earnings of{' '}
             <span className="font-semibold">{row.fullName ?? row.email ?? 'this astrologer'}</span>{' '}
-            (net payable <span className="font-semibold">{formatEarningAmount(row.totalNet)}</span>
-            ) as paid out — including earnings still awaiting consultation completion. This cannot
-            be undone.
+            (net payable <span className="font-semibold">{formatEarningAmount(row.totalNet)}</span>)
+            as paid out — including earnings still awaiting consultation completion. This cannot be
+            undone.
           </p>
           <div className="space-y-2">
             <label className="font-mukta text-sm text-neutral-700">

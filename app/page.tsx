@@ -11,6 +11,7 @@ import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrolog
 import WhoWeAre from '@/components/pages/landing/who-we-are';
 import HotTopics from '@/components/pages/landing/hot-topics';
 import DownloadApp from '@/components/pages/landing/download-app';
+import SectionDivider from '@/components/ui/section-divider';
 // import TodayHoroscope from '@/components/pages/landing/today-horoscope';
 // import CustomerFeedback from '@/components/pages/landing/customer-feedback';
 import AstrologerBlogListing from '@/components/pages/landing/blog-listing';
@@ -68,27 +69,52 @@ const faqJsonLd = {
 
 export default function Home() {
   return (
-    <main className="container mx-auto min-h-screen overflow-hidden space-y-12 pb-16">
+    <main className="container mx-auto min-h-screen overflow-hidden pb-12 md:pb-[100px]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+
       <div className="overflow-hidden">
         <LandingHero />
       </div>
+
+      <SectionDivider className="mt-[60px] mb-[60px]" />
+
       {/* <TodayHoroscope /> */}
       {/* <EventsPage /> */}
-      <Services />
-      <section className="container mx-auto px-6 lg:px-0">
-        <hr className="border-t border-[#79787A] opacity-70 my-8" />
-      </section>
-      <Clarity />
+      <Services noPaddingBottom />
+
+      <div className="my-[70px]" aria-hidden="true" />
+
+      <SectionDivider className="mt-[20px] mb-[50px]" />
+
+      <Clarity style={{ marginTop: 0 }} />
+
+      <SectionDivider className="mt-[20px] mb-[50px]" />
+
       <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+
+      <SectionDivider className="mt-[20px] mb-[50px]" />
+
       <AstrologerBlogListing />
+
+      <div className="my-[70px]" aria-hidden="true" />
+
+      <SectionDivider className="mt-[20px] mb-[50px]" />
+
       <WhoWeAre />
+
+      <div className="my-[35px]" aria-hidden="true" />
+
       <LandingFAQ />
+
+      <div className="my-[50px]" aria-hidden="true" />
+
       <HotTopics />
-      <DownloadApp className="border-none" paddingClassName="py-4 md:py-6" />
+
+      <DownloadApp noBorder paddingClassName="py-4 md:py-6" />
+
       {/* <CustomerFeedback /> */}
     </main>
   );

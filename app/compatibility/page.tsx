@@ -4,9 +4,12 @@ import { useCallback, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import { compatibilityMatchHref } from '@/lib/constants/compatibility-nav';
+
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import DownloadApp from '@/components/pages/landing/download-app';
 import QNASComponent from '@/components/common/qnas-component';
+import SectionDivider from '@/components/ui/section-divider';
 import ChevronDownIcon from '@/components/icons/chevron-down';
 import FindNowIcon from '@/components/icons/findnow_love_icon.png';
 import {
@@ -56,14 +59,7 @@ export default function CompatibilityPage() {
 
   const findNow = useCallback(() => {
     setIsFinding(true);
-    const searchParams = new URLSearchParams({
-      your_sign: yourSign,
-      partner_sign: partnerSign,
-      your_gender: yourGender,
-      partner_gender: partnerGender,
-    });
-
-    router.push(`/compatibility/compatibilityMatch?${searchParams.toString()}`);
+    router.push(compatibilityMatchHref(yourSign, partnerSign, yourGender, partnerGender));
   }, [partnerGender, partnerSign, router, yourGender, yourSign]);
 
   return (
@@ -353,7 +349,9 @@ export default function CompatibilityPage() {
           </p>
         </section>
 
-        <section className="container mx-auto px-6 lg:px-0 border-b border-b-[#79787A] pb-6 md:pb-[50px] mt-10 md:mt-14">
+        <SectionDivider className="mt-[20px] mb-[50px]" />
+
+        <section className="container mx-auto px-6 lg:px-0 pb-6 md:pb-[50px]">
           <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6">
             <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary text-center">
               Frequently Asked Questions
@@ -380,13 +378,17 @@ export default function CompatibilityPage() {
           </div>
         </section>
 
+        <SectionDivider className="mt-[20px] mb-[50px]" />
+
         <TalkToOurAstrologer
           title="Want a Deeper Compatibility Reading?"
           description="Zodiac sign comparison gives you the overview. A Kundali matching report gives you the full picture, including Guna Milan score, Dosha analysis, and long-term planetary cycles for both partners. Book a session with one of our verified astrologers."
           descriptionClassName="max-w-full"
           className="mx-auto mt-10 max-w-[1180px] sm:mt-14"
         />
-        <DownloadApp />
+
+        <SectionDivider className="mt-[40px] mb-[10px]" />
+        <DownloadApp noBorder />
       </div>
     </main>
   );

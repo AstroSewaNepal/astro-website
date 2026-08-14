@@ -19,7 +19,9 @@ const AboutUsWhatWeDo: React.FC<Props> = ({ compact = false }) => {
     'Astrology blog written by our verified astrologers',
   ];
 
-  const sectionPadding = compact ? 'w-full py-4 md:py-6 lg:py-8 xl:py-8' : 'w-full py-8 md:py-12 lg:py-16 xl:py-24';
+  const sectionPadding = compact
+    ? 'w-full py-4 md:py-6 lg:py-8 xl:py-8'
+    : 'w-full py-8 md:py-12 lg:py-16 xl:py-24';
 
   return (
     <section className={sectionPadding}>

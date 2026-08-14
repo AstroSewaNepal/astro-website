@@ -3,10 +3,10 @@ import React, { useState, useRef, useMemo, useEffect } from 'react';
 
 import clsx from 'clsx';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 
-import Link from 'next/link';
 import {
   EnglishLeoLight,
   EnglishAriesLight,
@@ -27,8 +27,6 @@ import Pagination from '@/components/common/pagination';
 import { ELanguage } from '@/components/enums/language.enum';
 import type { HoroscopeRecord } from '@/lib/types/horoscope';
 import { fetchActiveHoroscopes } from '@/lib/api/horoscope';
-import { horoscopeDetailPageHref } from '@/lib/constants/horoscope-range-nav';
-import { HOROSCOPE_DATA } from '@/components/pages/landing/today-horoscope/horoscope-data.const';
 
 import 'swiper/css';
 
@@ -86,33 +84,18 @@ const TodayHoroscope: React.FC = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const result = await fetchActiveHoroscopes('today', {
-          headers: { 'Accept-Language': language === ELanguage.NEPALI ? 'ne' : 'en' },
-        });
+        const result = await fetchActiveHoroscopes();
 
         if (result.success && result.data) {
           const transformedData: HoroscopeItem[] = result.data
             .filter((item: HoroscopeRecord) => item.isActive)
-            .map((item: HoroscopeRecord) => {
-              // Find matching static data for translated name
-              const staticData = HOROSCOPE_DATA[language].find(
-                s =>
-                  s.name.toLowerCase() === item.sign.toLowerCase() ||
-                  HOROSCOPE_DATA[ELanguage.ENGLISH].find(
-                    e => e.name.toLowerCase() === item.sign.toLowerCase(),
-                  )?.name === s.name,
-              );
-
-              const translatedName = staticData ? staticData.name : capitalizeSign(item.sign);
-
-              return {
-                name: translatedName,
-                detail: getShortDescription(item.content),
-                image: getZodiacImage(item.sign),
-                sign: item.sign,
-                content: item.content,
-              };
-            });
+            .map((item: HoroscopeRecord) => ({
+              name: capitalizeSign(item.sign),
+              detail: getShortDescription(item.content),
+              image: getZodiacImage(item.sign),
+              sign: item.sign,
+              content: item.content,
+            }));
           setHoroscopeData(transformedData);
         } else {
           throw new Error('Invalid API response');
@@ -127,7 +110,7 @@ const TodayHoroscope: React.FC = () => {
     };
 
     fetchHoroscope();
-  }, [language]);
+  }, []);
 
   // Calculate pagination based on current slidesPerView
   const totalPages = useMemo(() => {
@@ -230,9 +213,9 @@ const TodayHoroscope: React.FC = () => {
               'border border-solid border-primary rounded-3xl px-[35px] py-2.5 text-primary font-mukta text-xl leading-7 font-normal cursor-pointer transition-all duration-300 ease-in-out',
               language === ELanguage.NEPALI && 'bg-primary text-white',
             )}
-            onClick={() => setLanguage(ELanguage.NEPALI)}
+            disabled={true}
           >
-            Nepali
+            Nepali (Coming Soon)
           </button>
         </div>
       </div>
@@ -253,7 +236,10 @@ const TodayHoroscope: React.FC = () => {
         >
           {horoscopeData.map(item => (
             <SwiperSlide key={item.sign}>
-              <div className="border border-solid border-moonlight-600 px-3.5 py-3 rounded-[33px] flex gap-5 flex-col items-center h-full">
+              <Link
+                href={`/horoscope/${item.sign.toLowerCase()}`}
+                className="border border-solid border-moonlight-600 px-3.5 py-3 rounded-[33px] flex gap-5 flex-col items-center h-full block"
+              >
                 <div className="w-[100px] h-[100px] flex items-center justify-center flex-shrink-0">
                   <Image src={item.image} alt={item.name} />
                 </div>
@@ -274,17 +260,14 @@ const TodayHoroscope: React.FC = () => {
                   <p className="font-mukta text-sm leading-[120%] font-light text-[#5b5b5b]">
                     {item.detail}
                   </p>
-                  <Link
-                    href={horoscopeDetailPageHref(item.sign, 'today', language)}
-                    className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF] w-fit"
-                  >
+                  <div className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF]">
                     <p className="font-mukta text-sm leading-7 font-semibold text-primary">
-                      {language === ELanguage.NEPALI ? 'थप पढ्नुहोस्' : 'Read More'}
+                      Read More
                     </p>
                     <ArrowRight />
-                  </Link>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </SwiperSlide>
           ))}
         </Swiper>
@@ -306,8 +289,9 @@ const TodayHoroscope: React.FC = () => {
       {/* Desktop Grid - shows all items */}
       <div className="mt-[50px] hidden md:grid grid-cols-2 lg:grid-cols-4 gap-8">
         {horoscopeData.map(item => (
-          <div
-            className="border border-solid border-moonlight-600 px-3.5 py-3 rounded-[33px] flex gap-5 items-center"
+          <Link
+            href={`/horoscope/${item.sign.toLowerCase()}`}
+            className="border border-solid border-moonlight-600 px-3.5 py-3 rounded-[33px] flex gap-5 items-center hover:shadow-lg transition-shadow duration-300"
             key={item.sign}
           >
             <div className="w-[100px] h-[100px] flex items-center justify-center">
@@ -330,17 +314,12 @@ const TodayHoroscope: React.FC = () => {
               <p className="font-mukta text-sm leading-[120%] font-light text-[#5b5b5b]">
                 {item.detail}
               </p>
-              <Link
-                href={horoscopeDetailPageHref(item.sign, 'today', language)}
-                className="flex items-center border-b border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF] w-fit"
-              >
-                <p className="font-mukta text-sm leading-7 font-semibold text-primary">
-                  {language === ELanguage.NEPALI ? 'थप पढ्नुहोस्' : 'Read More'}
-                </p>
+              <div className="flex items-center border-b max-w-max border-primary gap-[5px] cursor-pointer mt-2 text-[#F8F3DF]">
+                <p className="font-mukta text-sm leading-7 font-semibold text-primary">Read More</p>
                 <ArrowRight />
-              </Link>
+              </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>
