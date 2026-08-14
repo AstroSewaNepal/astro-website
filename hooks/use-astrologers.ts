@@ -1,8 +1,8 @@
 'use client';
 
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import { fetchAdminAstrologers } from '@/lib/astrologers-admin-api';
+import { fetchAdminAstrologers, updateLiveStreamingEnabled } from '@/lib/astrologers-admin-api';
 
 function useBackendToken(): string | null {
   const { data: session, status } = useSession();
@@ -18,5 +18,20 @@ export function useAdminAstrologers(page: number, limit = 20, search?: string) {
     enabled: !!token,
     staleTime: 30 * 1000,
     placeholderData: keepPreviousData,
+  });
+}
+
+export function useUpdateLiveStreamingEnabled() {
+  const token = useBackendToken();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      astrologerUserId,
+      isLiveStreamingEnabled,
+    }: {
+      astrologerUserId: string;
+      isLiveStreamingEnabled: boolean;
+    }) => updateLiveStreamingEnabled(token!, astrologerUserId, isLiveStreamingEnabled),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['astrologers'] }),
   });
 }
