@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import {
   Table,
   TableBody,
@@ -12,6 +13,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -22,11 +24,12 @@ import {
 import { ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from 'lucide-react';
 import { ChangeTierDialog } from './change-tier-dialog';
 import { useTiers } from '@/hooks/use-tiers';
+import { useUpdateLiveStreamingEnabled } from '@/hooks/use-astrologers';
 import type { AdminAstrologer } from '@/lib/astrologers-admin-api';
 
 const ROWS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
 const SKELETON_ROW_IDS = ['sk-1', 'sk-2', 'sk-3', 'sk-4', 'sk-5'];
-const COLUMN_COUNT = 5;
+const COLUMN_COUNT = 6;
 
 interface AstrologersTableProps {
   data: AdminAstrologer[];
@@ -76,6 +79,39 @@ function TierCell({ astrologer }: { astrologer: AdminAstrologer }) {
   );
 }
 
+function LiveStreamingCell({ astrologer }: { astrologer: AdminAstrologer }) {
+  const { data: session } = useSession();
+  const isSuperAdmin = session?.user?.roles?.includes('SUPER_ADMIN') ?? false;
+  const userId = astrologer.user?._id ?? undefined;
+  const mutation = useUpdateLiveStreamingEnabled();
+
+  if (!isSuperAdmin) {
+    return (
+      <Badge
+        className={`font-mukta text-xs ${
+          astrologer.isLiveStreamingEnabled
+            ? 'bg-green-50 text-green-700'
+            : 'bg-neutral-100 text-neutral-500'
+        }`}
+      >
+        {astrologer.isLiveStreamingEnabled ? 'Enabled' : 'Disabled'}
+      </Badge>
+    );
+  }
+
+  return (
+    <Switch
+      checked={astrologer.isLiveStreamingEnabled ?? false}
+      disabled={!userId || mutation.isPending}
+      onCheckedChange={checked => {
+        if (!userId) return;
+        mutation.mutate({ astrologerUserId: userId, isLiveStreamingEnabled: checked });
+      }}
+      aria-label="Toggle live streaming access"
+    />
+  );
+}
+
 export default function AstrologersTable({
   data,
   isLoading,
@@ -95,14 +131,16 @@ export default function AstrologersTable({
       <Table>
         <TableHeader>
           <TableRow className="border-neutral-100">
-            {['Astrologer', 'Tier', 'Other Tags', 'Experience', 'Booking'].map(label => (
-              <TableHead
-                key={label}
-                className="font-mukta text-xs uppercase tracking-wide text-neutral-500"
-              >
-                {label}
-              </TableHead>
-            ))}
+            {['Astrologer', 'Tier', 'Other Tags', 'Experience', 'Booking', 'Live Streaming'].map(
+              label => (
+                <TableHead
+                  key={label}
+                  className="font-mukta text-xs uppercase tracking-wide text-neutral-500"
+                >
+                  {label}
+                </TableHead>
+              ),
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -158,6 +196,9 @@ export default function AstrologersTable({
                     >
                       {astrologer.isBookingEnabled ? 'Enabled' : 'Disabled'}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <LiveStreamingCell astrologer={astrologer} />
                   </TableCell>
                 </TableRow>
               );

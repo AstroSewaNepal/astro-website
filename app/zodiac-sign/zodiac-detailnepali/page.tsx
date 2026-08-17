@@ -12,12 +12,11 @@ export default function ZodiacDetailNepaliPage({ searchParams }: Props) {
   const lang = searchParams?.lang;
   const langValue = Array.isArray(lang) ? lang[0] : lang;
   const params = new URLSearchParams();
-  if (signValue) {
-    params.set('sign', signValue);
-  }
   if (langValue) {
     params.set('lang', langValue);
   }
   params.set('content_lang', ELanguage.NEPALI);
-  redirect(`/zodiac-sign/details?${params.toString()}`);
+  const path = signValue ? `/zodiac-sign/${signValue}` : '/zodiac-sign';
+  const query = params.toString();
+  redirect(query ? `${path}?${query}` : path);
 }

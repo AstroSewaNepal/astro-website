@@ -8,6 +8,7 @@ import Clarity from '@/components/pages/landing/clarity';
 import TalkToOurAstrologer from '@/components/pages/landing/talk-to-our-astrologer';
 import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
+import SectionDivider from '@/components/ui/section-divider';
 
 export const metadata: Metadata = {
   title: 'Generate Your Birth Chart Online Free | AstroSewa',
@@ -38,11 +39,12 @@ export default async function FreeKundaliPage({ searchParams }: FreeKundaliPageP
   const defaultFullName = session?.user?.name?.trim();
 
   return (
-    <main className="container mx-auto min-h-screen pt-6 sm:pt-8 lg:pt-10 space-y-10 md:space-y-[100px]">
+    <main className="container mx-auto min-h-screen pt-6 sm:pt-8 lg:pt-10">
       <div className="px-6 lg:px-0">
         <FreeKundali />
+        <SectionDivider className="mt-[20px] mb-[50px]" />
         <KundaliFormSection defaultFullName={defaultFullName} oauthError={oauthError} />
-        <section className="container mx-auto px-6 lg:px-0 border-t border-[#79787A] pt-14 mt-14 lg:pt-16 lg:mt-16">
+        <section className="container mx-auto px-6 lg:px-0 pt-14 mt-14 lg:pt-16 lg:mt-16">
           <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6">
             <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary text-center">
               Frequently Asked Questions
@@ -76,10 +78,14 @@ export default async function FreeKundaliPage({ searchParams }: FreeKundaliPageP
           </div>
         </section>
       </div>
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <Clarity />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <TalkToOurAstrologer className="mx-auto mt-10 max-w-[1180px] sm:mt-14" />
+      <SectionDivider className="mt-[20px] mb-[50px]" />
       <Services />
-      <DownloadApp />
+      <SectionDivider className="mt-[40px] mb-[10px]" />
+      <DownloadApp noBorder />
     </main>
   );
 }

@@ -7,15 +7,18 @@ export function zodiacDetailHref(
   headerLang?: ELanguage,
 ): string {
   const s = signSlug.trim().toLowerCase();
+  const path = `/zodiac-sign/${s}`;
+  
   const params = new URLSearchParams();
-  params.set('sign', s);
   if (contentLang && contentLang !== ELanguage.ENGLISH) {
     params.set('content_lang', contentLang);
   }
   if (headerLang && headerLang !== ELanguage.ENGLISH) {
     params.set('lang', headerLang);
   }
-  return `/zodiac-sign/details?${params.toString()}`;
+  
+  const query = params.toString();
+  return query ? `${path}?${query}` : path;
 }
 
 export function zodiacEnglishDetailHref(signSlug: string, headerLang?: ELanguage): string {

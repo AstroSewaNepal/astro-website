@@ -19,6 +19,7 @@ export interface AdminAstrologer {
   yearsOfExperience?: number;
   isAstrologerActive?: boolean;
   isBookingEnabled?: boolean;
+  isLiveStreamingEnabled: boolean;
   createdAt?: string;
 }
 
@@ -36,15 +37,22 @@ interface ApiResponse<T> {
   pagination?: { total: number; page: number; limit: number };
 }
 
-async function backendRequest<T>(path: string, token: string): Promise<ApiResponse<T>> {
+async function backendRequest<T>(
+  path: string,
+  token: string,
+  method = 'GET',
+  body?: unknown,
+): Promise<ApiResponse<T>> {
   const base = tryGetPublicBackendBaseUrl();
   if (!base) throw new Error('NEXT_PUBLIC_BACKEND_URL is not set');
 
   const res = await fetch(`${base}/${path}`, {
+    method,
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
+    body: body !== undefined ? JSON.stringify(body) : undefined,
     cache: 'no-store',
   });
 
@@ -89,4 +97,17 @@ export async function fetchAdminAstrologers(
     page: res.pagination?.page ?? page,
     limit: res.pagination?.limit ?? limit,
   };
+}
+
+export async function updateLiveStreamingEnabled(
+  token: string,
+  astrologerUserId: string,
+  isLiveStreamingEnabled: boolean,
+): Promise<void> {
+  await backendRequest<unknown>(
+    `astrologer-details/admin/${astrologerUserId}/live-streaming-status`,
+    token,
+    'PATCH',
+    { isLiveStreamingEnabled },
+  );
 }

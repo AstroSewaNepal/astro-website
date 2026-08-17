@@ -648,7 +648,7 @@ const NepaliCalendarPageContent: React.FC = () => {
           </div>
         </section>
 
-        <section className="container mx-auto px-4 lg:px-0 border-b border-b-[#79787A] pb-[60px] pt-8 mt-6 sm:mt-8 md:mt-10 lg:mt-12">
+        <section className="container mx-auto px-4 lg:px-0 pb- pt-8 mt-6 sm:mt-8 md:mt-10 lg:mt-12">
           <div className="flex flex-col items-center justify-center gap-4 md:gap-5 lg:gap-6">
             <h2 className="text-[34px] md:text-[40px] lg:text-[56px] leading-[42px] md:leading-[47.83px] font-normal text-primary text-center">
               Frequently Asked Questions

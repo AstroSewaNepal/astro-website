@@ -9,6 +9,7 @@ import StartIcon from '@/components/icons/start-icon';
 import { ZodiacSignCardsGrid } from '@/components/ui/zodiac-sign-cards-grid';
 import { ELanguage } from '@/components/enums/language.enum';
 import type { TodayHoroscopeDisplayCard } from '@/lib/horoscope/build-today-horoscope-display-cards';
+import { horoscopeDetailPageHref } from '@/lib/constants/horoscope-range-nav';
 
 interface CompatibilityHoroscopeSectionProps {
   title?: string | null;
@@ -24,8 +25,6 @@ interface CompatibilityHoroscopeSectionProps {
   emptyLabel: string;
   errorFallbackSuffix: string;
   horoscopeCardLang: ELanguage;
-  onLanguageChange: (lang: ELanguage) => void;
-  mobileButtonsWrapperClass?: string;
 }
 
 type HoroscopeCardLayout = 'grid' | 'carousel';
@@ -41,14 +40,7 @@ export function CompatibilityHoroscopeCardLink({
   readMoreLabel: string;
   layout: HoroscopeCardLayout;
 }) {
-  const params = new URLSearchParams();
-  params.set('sign', card.key);
-  params.set('type', 'today');
-  if (uiLanguage && uiLanguage !== ELanguage.ENGLISH) {
-    params.set('lang', uiLanguage);
-  }
-
-  const href = card.href ?? `/horoscope/details?${params.toString()}`;
+  const href = card.href ?? horoscopeDetailPageHref(card.key, 'today', uiLanguage);
   const starCount = layout === 'carousel' ? 3 : card.stars;
   const cleanSummary = card.summary
     ? card.summary.replace(/^(Across\s+)?\d{4}-\d{2}-\d{2}[.\s\u2026]*/i, '').trim()
@@ -190,8 +182,6 @@ export function CompatibilityHoroscopeSection({
   emptyLabel,
   errorFallbackSuffix,
   horoscopeCardLang,
-  onLanguageChange,
-  mobileButtonsWrapperClass = '-mt-6 sm:mt-0',
 }: CompatibilityHoroscopeSectionProps) {
   const swiperKey = `compatibility-horoscope-${horoscopeCardLang}-${
     cards === 'loading' ? 'loading' : cards.map(card => card.key).join(',')
@@ -222,7 +212,7 @@ export function CompatibilityHoroscopeSection({
           </div>
         ) : null}
 
-        <div
+        {/* <div
           className={clsx(
             'mx-auto flex w-full flex-row flex-wrap justify-center gap-[10px] mt-3 sm:mt-4',
             mobileButtonsWrapperClass,
@@ -252,7 +242,7 @@ export function CompatibilityHoroscopeSection({
           >
             Nepali
           </button>
-        </div>
+        </div> */}
 
         {subtitleHeading || subtitle ? (
           <div

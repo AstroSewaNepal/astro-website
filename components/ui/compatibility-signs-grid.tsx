@@ -54,7 +54,6 @@ export function CompatibilitySignsGrid({
     setActiveIndex(active >= 0 ? active : 0);
   };
 
-   
   useEffect(() => {
     let raf = 0;
     raf = requestAnimationFrame(updateActiveIndex);
@@ -79,15 +78,16 @@ export function CompatibilitySignsGrid({
     containerRef.current.scrollTo({ left: slide.offsetLeft, behavior: 'smooth' });
   };
 
-  const renderSignImage = (colorSrc: SignImage, lightSrc: SignImage, alt: string, alwaysColor?: boolean) => {
+  const renderSignImage = (
+    colorSrc: SignImage,
+    lightSrc: SignImage,
+    alt: string,
+    alwaysColor?: boolean,
+  ) => {
     if (alwaysColor) {
       return (
         <div className="relative h-[96px] w-[100px] sm:h-[96px] sm:w-[110px]">
-          <Image
-            src={colorSrc}
-            alt={alt}
-            className="h-full w-full object-contain opacity-100"
-          />
+          <Image src={colorSrc} alt={alt} className="h-full w-full object-contain opacity-100" />
         </div>
       );
     }
@@ -113,7 +113,9 @@ export function CompatibilitySignsGrid({
 
   return (
     <div className={className}>
-      <h3 className="font-mukta text-[18px] font-semibold text-[#6f2618] lg:font-sahitya lg:font-bold lg:text-[28px] lg:leading-[38px] lg:tracking-[0%]">{title}</h3>
+      <h3 className="font-mukta text-[18px] font-semibold text-[#6f2618] lg:font-sahitya lg:font-bold lg:text-[28px] lg:leading-[38px] lg:tracking-[0%]">
+        {title}
+      </h3>
       <div
         ref={containerRef}
         className={clsx(
