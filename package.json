@@ -4,9 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "env-cmd -f env/.env.prod next build",
+    "build:test": "env-cmd -f env/.env.test next build",
+    "build:stage": "env-cmd -f env/.env.stage next build",
     "postbuild": "npx next-sitemap",
-    "start": "next start",
+    "start": "env-cmd -f env/.env.prod next start",
+    "start:test": "env-cmd -f env/.env.test next start",
+    "start:stage": "env-cmd -f env/.env.stage next start",
     "prepare": "husky",
     "lint": "eslint . --fix",
     "format": "prettier --write \"{app,components}/**/*.{ts,tsx,js,jsx,json,css,scss}\""
@@ -53,6 +57,7 @@
     "@types/react-dom": "19.2.3",
     "@types/suncalc": "^1.9.2",
     "@types/tryghost__content-api": "^1.3.17",
+    "env-cmd": "^11.0.0",
     "eslint": "^9.36.0",
     "eslint-config-next": "16.1.6",
     "husky": "^9.1.7",
