@@ -11,7 +11,6 @@ import { HoroscopeLocaleProvider } from '@/lib/i18n';
 
 /** Paths that use their own chrome (admin, auth) — no marketing header/footer/locale shell. */
 const STANDALONE_PREFIXES = ['/admin', '/login', '/sign-in'] as const;
-
 function usesMarketingChrome(pathname: string | null): boolean {
   if (!pathname) return true;
   return !STANDALONE_PREFIXES.some(

@@ -22,6 +22,23 @@ export interface MarkAllPaidResult {
   payoutReference: string;
 }
 
+export interface RecentPayoutRow {
+  astrologerId: string;
+  fullName?: string;
+  email?: string;
+  payoutReference: string;
+  paidOutAt: string;
+  count: number;
+  totalNet: number;
+}
+
+export interface RecentPayoutsSummary {
+  items: RecentPayoutRow[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 interface ApiResponse<T> {
   success: boolean;
   message?: string;
@@ -70,6 +87,26 @@ export async function fetchUnpaidEarningsSummary(
   if (search) params.set('search', search);
   const res = await backendRequest<UnpaidEarningsRow[]>(
     `subscriptions/admin/earnings/unpaid-summary?${params.toString()}`,
+    token,
+  );
+  return {
+    items: res.data,
+    total: res.pagination?.total ?? res.data.length,
+    page: res.pagination?.page ?? page,
+    limit: res.pagination?.limit ?? limit,
+  };
+}
+
+export async function fetchRecentPayouts(
+  token: string,
+  page: number,
+  limit: number,
+  search?: string,
+): Promise<RecentPayoutsSummary> {
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (search) params.set('search', search);
+  const res = await backendRequest<RecentPayoutRow[]>(
+    `subscriptions/admin/earnings/recent-payouts?${params.toString()}`,
     token,
   );
   return {
