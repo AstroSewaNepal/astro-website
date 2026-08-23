@@ -36,12 +36,12 @@ export default function AdminSidebar() {
     <aside className="w-64 shrink-0 flex flex-col h-full" style={{ backgroundColor: '#611508' }}>
       {/* Brand */}
       <div className="px-6 py-5 border-b border-[#4a1006]">
-        <Link href="/admin/dashboard" className="block">
+        <Link href="/" className="block">
           <span className="text-[#F8F3DF] font-mukta text-lg font-semibold tracking-wide">
             Astro Sewa
           </span>
+          <p className="text-[#F8F3DF]/50 text-xs font-mukta mt-0.5">Admin Panel</p>
         </Link>
-        <p className="text-[#F8F3DF]/50 text-xs font-mukta mt-0.5">Admin Panel</p>
       </div>
 
       {/* Navigation */}

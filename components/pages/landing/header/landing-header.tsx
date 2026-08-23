@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
+import { useSession, signOut } from 'next-auth/react';
 import AstroSewaLogo from '@/components/logo';
 import UserLineIcon from '@/components/icons/user/user-line';
 import ChevronDownIcon from '@/components/icons/chevron-down';
@@ -176,15 +177,28 @@ const CloseIcon = ({ onClick }: { onClick: () => void }) => {
 
 function LandingHeaderClient() {
   const pathname = usePathname();
+  const { data: session, status, update: updateSession } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
   const langMenuRef = useRef<HTMLDivElement>(null);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const horoscopeLocale = useHoroscopeLocaleOptional();
   const d = horoscopeLocale?.dict ?? horoscopeEn;
   const uiLanguage = horoscopeLocale?.uiLanguage ?? ELanguage.ENGLISH;
   const landingNav = buildLandingNav(uiLanguage, d);
   const mobileNav = buildMobileNav(uiLanguage, d);
+
+  // updateSession's identity changes with session/loading state, so it's read via a ref to keep this a mount-only effect.
+  const updateSessionRef = useRef(updateSession);
+  useEffect(() => {
+    updateSessionRef.current = updateSession;
+  });
+
+  useEffect(() => {
+    updateSessionRef.current();
+  }, []);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -210,6 +224,20 @@ function LandingHeaderClient() {
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [langMenuOpen]);
+
+  useEffect(() => {
+    if (!userMenuOpen) {
+      return;
+    }
+    const onPointerDown = (e: PointerEvent) => {
+      const el = userMenuRef.current;
+      if (el && !el.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [userMenuOpen]);
 
   const openMobileMenu = () => {
     setIsMobileMenuOpen(true);
@@ -303,16 +331,70 @@ function LandingHeaderClient() {
           </div>
           <div className="flex gap-4">
             <div className="hidden lg:block">{languageControl}</div>
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-1 rounded-3xl border border-solid border-primary bg-primary text-white px-[15px] py-2 min-w-[93.2794189453125px] h-[40px] lg:min-w-[124px] lg:h-[44px] lg:px-[20px] lg:py-[8px]"
-              style={{ borderWidth: '0.36px' }}
-            >
-              <UserLineIcon className="w-[17.279px] h-[17.279px]" />
-              <span className="font-mukta text-sm leading-7 md:text-lg lg:text-xl">
-                {d.header.signIn}
-              </span>
-            </Link>
+            {status === 'authenticated' && session?.user ? (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  type="button"
+                  aria-expanded={userMenuOpen}
+                  aria-haspopup="menu"
+                  onClick={() => setUserMenuOpen(o => !o)}
+                  className="flex h-[40px] max-h-fit cursor-pointer items-center gap-2 rounded-3xl border border-solid border-primary bg-primary px-[10px] py-2 text-white lg:h-[44px] lg:px-[14px]"
+                  style={{ borderWidth: '0.36px' }}
+                >
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white font-mukta text-xs font-semibold text-primary lg:h-7 lg:w-7">
+                    {session.user.name?.charAt(0).toUpperCase() ?? 'A'}
+                  </span>
+                  <span className="hidden font-mukta text-sm leading-7 sm:inline md:text-lg lg:text-xl">
+                    {session.user.name ?? 'Admin'}
+                  </span>
+                  <ChevronDownIcon
+                    className={clsx(
+                      'text-white transition-transform duration-200',
+                      userMenuOpen && 'rotate-180',
+                    )}
+                  />
+                </button>
+                {userMenuOpen ? (
+                  <ul className="absolute right-0 z-[60] mt-2 min-w-[220px] overflow-hidden rounded-[18px] border border-[#e8ddd0] bg-white py-1 shadow-[0_12px_40px_rgba(92,56,23,0.18)]">
+                    <li className="border-b border-[#f1e7d8] px-4 py-3">
+                      <p className="font-mukta text-sm font-semibold text-[#4a1a1a]">
+                        {session.user.name ?? 'Admin'}
+                      </p>
+                      <p className="font-mukta text-xs text-[#8a7a6a]">{session.user.email}</p>
+                    </li>
+                    <li>
+                      <Link
+                        href="/admin/dashboard"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="block px-4 py-3 font-mukta text-[15px] text-[#4a1a1a] hover:bg-[#faf6f0]"
+                      >
+                        Admin Dashboard
+                      </Link>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => signOut({ callbackUrl: '/login' })}
+                        className="w-full px-4 py-3 text-left font-mukta text-[15px] text-red-600 hover:bg-[#faf6f0]"
+                      >
+                        Sign Out
+                      </button>
+                    </li>
+                  </ul>
+                ) : null}
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-1 rounded-3xl border border-solid border-primary bg-primary text-white px-[15px] py-2 min-w-[93.2794189453125px] h-[40px] lg:min-w-[124px] lg:h-[44px] lg:px-[20px] lg:py-[8px]"
+                style={{ borderWidth: '0.36px' }}
+              >
+                <UserLineIcon className="w-[17.279px] h-[17.279px]" />
+                <span className="font-mukta text-sm leading-7 md:text-lg lg:text-xl">
+                  {d.header.signIn}
+                </span>
+              </Link>
+            )}
           </div>
         </div>
 

@@ -2,19 +2,19 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { AuthError } from 'next-auth';
 import { auth, signIn } from '@/auth';
-import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
+// import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url'; // only used by the disabled Google sign-in block below
 
 export const metadata: Metadata = {
   title: 'Login',
   robots: { index: false, follow: false },
 };
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button'; // only used by the disabled Google sign-in block below
 import SignInButton from '@/components/ui/sign-in-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import PasswordInput from './PasswordInput';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+// import { Separator } from '@/components/ui/separator'; // only used by the disabled Google sign-in block below
 
 type LoginPageProps = {
   searchParams: Promise<{ error?: string }>;
@@ -104,19 +104,23 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               <PasswordInput />
             </div>
 
-            <SignInButton type="submit" className="bg-[#611508] w-full md:rounded-xl md:py-5">
+            <SignInButton
+              type="submit"
+              className="bg-[#611508] w-full md:rounded-xl md:py-5 lg:w-full"
+            >
               Sign In
             </SignInButton>
           </form>
 
-          {/* Divider */}
+          {/* Google sign-in temporarily disabled
           <div className="relative flex items-center gap-3">
             <Separator className="flex-1" />
-            <span className="text-xs text-neutral-400 font-mukta uppercase tracking-wide">or</span>
+            <span className="text-xs text-neutral-400 font-mukta uppercase tracking-wide">
+              or
+            </span>
             <Separator className="flex-1" />
           </div>
 
-          {/* Google OAuth — server action */}
           <form
             action={async () => {
               'use server';
@@ -136,7 +140,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               variant="outline"
               className="w-full rounded-xl font-mukta border-neutral-300 hover:bg-neutral-50 py-5"
             >
-              {/* Google Icon */}
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -158,6 +161,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               Sign in with Google
             </Button>
           </form>
+          */}
         </CardContent>
       </Card>
     </div>

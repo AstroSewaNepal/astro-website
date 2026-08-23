@@ -4,12 +4,6 @@ import Google from 'next-auth/providers/google';
 
 import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
 
-/**
- * Auth.js requires a secret to sign cookies and JWTs.
- * Set `AUTH_SECRET` in `.env.local` (e.g. `openssl rand -base64 32`).
- * A dev-only fallback avoids "MissingSecret" when the var is absent locally;
- * never rely on that in production—deploy must define AUTH_SECRET.
- */
 const authSecret =
   process.env.AUTH_SECRET ??
   (process.env.NODE_ENV !== 'production'

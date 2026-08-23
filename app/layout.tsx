@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Tiro_Devanagari_Sanskrit, Sahitya, Mukta, Raleway, Lato } from 'next/font/google';
 import Script from 'next/script';
+import { SessionProvider } from 'next-auth/react';
 
 import './globals.css';
 import clsx from 'clsx';
@@ -227,7 +228,9 @@ export default function RootLayout({
             }),
           }}
         />
-        <SiteChrome>{children}</SiteChrome>
+        <SessionProvider>
+          <SiteChrome>{children}</SiteChrome>
+        </SessionProvider>
       </body>
     </html>
   );
