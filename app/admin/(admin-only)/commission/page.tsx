@@ -21,7 +21,9 @@ export default function CommissionPage() {
         <CommissionRateCard
           source="remedy"
           title="Remedy Commission"
-          description="Applied to astrologer remedy order earnings"
+          description="The percentage of the remedy price paid to the astrologer as commission"
+          fieldLabel="Astrologer's Commission Percentage (%)"
+          notice="Note: this percentage now represents the astrologer's share of the remedy price (previously it represented Astro Sewa's share)."
           settings={data?.remedy}
           isLoading={isPending}
         />
