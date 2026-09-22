@@ -33,11 +33,6 @@ interface AstrologerVerificationTableProps {
   total: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
-  onDecision: (
-    astrologerId: string,
-    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierId?: string },
-  ) => void;
-  pendingId: string | null;
 }
 
 export default function AstrologerVerificationTable({
@@ -49,14 +44,12 @@ export default function AstrologerVerificationTable({
   total,
   onPageChange,
   onLimitChange,
-  onDecision,
-  pendingId,
 }: AstrologerVerificationTableProps) {
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const from = total === 0 ? 0 : (page - 1) * limit + 1;
   const to = Math.min(page * limit, total);
 
-  const columns = createColumns({ onDecision, pendingId });
+  const columns = createColumns();
 
   // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table returns non-memoizable helpers
   const table = useReactTable({

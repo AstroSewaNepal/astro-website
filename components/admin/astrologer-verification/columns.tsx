@@ -18,9 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Eye, Loader2 } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { OnboardingStatusDetail } from '@/lib/astrologer-verification-api';
-import { useOnboardingStatusDetail } from '@/hooks/use-astrologer-verification';
+import {
+  useOnboardingStatusDetail,
+  useUpdateFinalDecision,
+} from '@/hooks/use-astrologer-verification';
 import { useTiers } from '@/hooks/use-tiers';
 
 const STAGE_STATE_STYLES: Record<string, string> = {
@@ -157,21 +160,30 @@ function ReviewApplicationModal({ astrologerId }: { astrologerId: string }) {
 function RejectReasonDialog({
   open,
   onOpenChange,
-  onConfirm,
-  isPending,
+  astrologerId,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (reason: string) => void;
-  isPending: boolean;
+  astrologerId: string;
 }) {
   const [reason, setReason] = useState('');
+  const decisionMutation = useUpdateFinalDecision();
+
+  function handleConfirm() {
+    decisionMutation.mutate(
+      { astrologerId, input: { decision: 'REJECTED', reason: reason.trim() } },
+      { onSuccess: () => onOpenChange(false) },
+    );
+  }
 
   return (
     <Dialog
       open={open}
       onOpenChange={next => {
-        if (!next) setReason('');
+        if (!next) {
+          setReason('');
+          decisionMutation.reset();
+        }
         onOpenChange(next);
       }}
     >
@@ -191,6 +203,9 @@ function RejectReasonDialog({
             placeholder="Explain why this application is being rejected"
             className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 font-mukta"
           />
+          {decisionMutation.error && (
+            <p className="font-mukta text-sm text-red-600">{decisionMutation.error.message}</p>
+          )}
         </div>
         <DialogFooter>
           <Button
@@ -203,12 +218,12 @@ function RejectReasonDialog({
           </Button>
           <Button
             type="button"
-            disabled={!reason.trim() || isPending}
-            onClick={() => onConfirm(reason.trim())}
+            disabled={!reason.trim() || decisionMutation.isPending}
+            onClick={handleConfirm}
             className="font-mukta text-white"
             style={{ backgroundColor: '#611508' }}
           >
-            {isPending ? 'Rejecting…' : 'Reject'}
+            {decisionMutation.isPending ? 'Rejecting…' : 'Reject'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -219,22 +234,31 @@ function RejectReasonDialog({
 function ApproveTierDialog({
   open,
   onOpenChange,
-  onConfirm,
-  isPending,
+  astrologerId,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (tierId: string) => void;
-  isPending: boolean;
+  astrologerId: string;
 }) {
   const [tierId, setTierId] = useState('');
   const { data: tiers, isPending: tiersPending } = useTiers();
+  const decisionMutation = useUpdateFinalDecision();
+
+  function handleConfirm() {
+    decisionMutation.mutate(
+      { astrologerId, input: { decision: 'APPROVED', tierId } },
+      { onSuccess: () => onOpenChange(false) },
+    );
+  }
 
   return (
     <Dialog
       open={open}
       onOpenChange={next => {
-        if (!next) setTierId('');
+        if (!next) {
+          setTierId('');
+          decisionMutation.reset();
+        }
         onOpenChange(next);
       }}
     >
@@ -262,6 +286,9 @@ function ApproveTierDialog({
             The tier determines the consultation commission taken from this astrologer&apos;s
             earnings.
           </p>
+          {decisionMutation.error && (
+            <p className="font-mukta text-sm text-red-600">{decisionMutation.error.message}</p>
+          )}
         </div>
         <DialogFooter>
           <Button
@@ -274,12 +301,12 @@ function ApproveTierDialog({
           </Button>
           <Button
             type="button"
-            disabled={!tierId || isPending}
-            onClick={() => onConfirm(tierId)}
+            disabled={!tierId || decisionMutation.isPending}
+            onClick={handleConfirm}
             className="font-mukta text-white"
             style={{ backgroundColor: '#611508' }}
           >
-            {isPending ? 'Approving…' : 'Approve'}
+            {decisionMutation.isPending ? 'Approving…' : 'Approve'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -287,18 +314,7 @@ function ApproveTierDialog({
   );
 }
 
-interface ColumnActions {
-  onDecision: (
-    astrologerId: string,
-    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierId?: string },
-  ) => void;
-  pendingId: string | null;
-}
-
-export function createColumns({
-  onDecision,
-  pendingId,
-}: ColumnActions): ColumnDef<OnboardingStatusDetail>[] {
+export function createColumns(): ColumnDef<OnboardingStatusDetail>[] {
   return [
     {
       id: 'astrologer',
@@ -343,26 +359,12 @@ export function createColumns({
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => {
-        const astrologerId = row.original.astrologerId;
-        const isPending = pendingId === astrologerId;
-        return (
-          <RowActions astrologerId={astrologerId} isPending={isPending} onDecision={onDecision} />
-        );
-      },
+      cell: ({ row }) => <RowActions astrologerId={row.original.astrologerId} />,
     },
   ];
 }
 
-function RowActions({
-  astrologerId,
-  isPending,
-  onDecision,
-}: {
-  astrologerId: string;
-  isPending: boolean;
-  onDecision: ColumnActions['onDecision'];
-}) {
+function RowActions({ astrologerId }: { astrologerId: string }) {
   const [rejectOpen, setRejectOpen] = useState(false);
   const [approveOpen, setApproveOpen] = useState(false);
 
@@ -372,41 +374,23 @@ function RowActions({
       <Button
         type="button"
         size="sm"
-        disabled={isPending}
         onClick={() => setApproveOpen(true)}
         className="h-7 font-mukta text-xs text-white"
         style={{ backgroundColor: '#611508' }}
       >
-        {isPending ? <Loader2 size={13} className="animate-spin" /> : 'Approve'}
+        Approve
       </Button>
-      <ApproveTierDialog
-        open={approveOpen}
-        onOpenChange={setApproveOpen}
-        isPending={isPending}
-        onConfirm={tierId => {
-          onDecision(astrologerId, { decision: 'APPROVED', tierId });
-          setApproveOpen(false);
-        }}
-      />
+      <ApproveTierDialog open={approveOpen} onOpenChange={setApproveOpen} astrologerId={astrologerId} />
       <Button
         type="button"
         size="sm"
         variant="outline"
-        disabled={isPending}
         onClick={() => setRejectOpen(true)}
         className="h-7 font-mukta text-xs"
       >
         Reject
       </Button>
-      <RejectReasonDialog
-        open={rejectOpen}
-        onOpenChange={setRejectOpen}
-        isPending={isPending}
-        onConfirm={reason => {
-          onDecision(astrologerId, { decision: 'REJECTED', reason });
-          setRejectOpen(false);
-        }}
-      />
+      <RejectReasonDialog open={rejectOpen} onOpenChange={setRejectOpen} astrologerId={astrologerId} />
     </div>
   );
 }

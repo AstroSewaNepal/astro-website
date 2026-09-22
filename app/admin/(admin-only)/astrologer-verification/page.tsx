@@ -4,10 +4,7 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import {
-  usePendingOnboardingAstrologers,
-  useUpdateFinalDecision,
-} from '@/hooks/use-astrologer-verification';
+import { usePendingOnboardingAstrologers } from '@/hooks/use-astrologer-verification';
 import AstrologerVerificationTable from '@/components/admin/astrologer-verification/astrologer-verification-table';
 
 const DEFAULT_LIMIT = 20;
@@ -26,18 +23,6 @@ export default function AstrologerVerificationPage() {
     limit,
     search || undefined,
   );
-  const decisionMutation = useUpdateFinalDecision();
-  const pendingId = decisionMutation.isPending
-    ? (decisionMutation.variables?.astrologerId ?? null)
-    : null;
-
-  function handleDecision(
-    astrologerId: string,
-    input: { decision: 'APPROVED' | 'REJECTED'; reason?: string; tierId?: string },
-  ) {
-    decisionMutation.mutate({ astrologerId, input });
-  }
-
   function handlePageChange(next: number) {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', String(next));
@@ -104,8 +89,6 @@ export default function AstrologerVerificationPage() {
               total={data?.total ?? 0}
               onPageChange={handlePageChange}
               onLimitChange={handleLimitChange}
-              onDecision={handleDecision}
-              pendingId={pendingId}
             />
           )}
         </CardContent>
