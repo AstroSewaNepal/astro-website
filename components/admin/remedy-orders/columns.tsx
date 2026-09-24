@@ -117,11 +117,59 @@ function RemedyDeliveryDetails({
   return null;
 }
 
+function RemedyList({ remedyNames, order }: { remedyNames: string[]; order: AdminRemedyOrder }) {
+  // Lookup from remedy name to order item, to resolve each remedy's delivery type/price.
+  const itemsByName = new Map(order.items.map(item => [item.name, item]));
+
+  return (
+    <div>
+      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">Remedies</p>
+      <ul className="space-y-2.5">
+        {remedyNames.map(name => {
+          const item = itemsByName.get(name);
+          const deliveryType = item?.deliveryType ?? 'online';
+          const price = item ? (item.discountedPrice ?? item.price) : null;
+          const currency = item?.currency ?? 'NPR';
+          const deliveryCharge = item?.deliveryCharge ?? 0;
+          return (
+            <li key={name}>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="truncate text-xs font-medium text-neutral-700">{name}</span>
+                  <span className="shrink-0 rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-500">
+                    {DELIVERY_LABELS[deliveryType] ?? deliveryType}
+                  </span>
+                </div>
+                {price !== null && (
+                  <div className="shrink-0 text-right">
+                    <span className="text-xs font-semibold text-neutral-800">
+                      {currency} {price.toLocaleString()}
+                    </span>
+                    {deliveryCharge > 0 && (
+                      <p className="text-[10px] text-neutral-400">
+                        +{currency} {deliveryCharge.toLocaleString()} delivery
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+              <RemedyDeliveryDetails deliveryType={deliveryType} order={order} />
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 function OrderDetailsModal({ order }: { order: AdminRemedyOrder }) {
   const [open, setOpen] = useState(false);
 
-  // Lookup from remedy name to order item, to resolve each remedy's delivery type/price.
-  const itemsByName = new Map(order.items.map(item => [item.name, item]));
+  // Platform-owned items have no astrologer, so they're absent from order.astrologers.
+  const astrologerRemedyNames = new Set(order.astrologers.flatMap(a => a.remedyNames));
+  const platformRemedyNames = order.items
+    .map(item => item.name)
+    .filter(name => !astrologerRemedyNames.has(name));
 
   return (
     <>
@@ -152,61 +200,20 @@ function OrderDetailsModal({ order }: { order: AdminRemedyOrder }) {
                 </p>
               </div>
             )}
-            {order.astrologers.length === 0 ? (
-              !order.recommendedByAstrologerName && (
-                <p className="text-sm text-neutral-400">No astrologers assigned.</p>
-              )
-            ) : (
-              order.astrologers.map(a => (
-                <div key={a.id} className="space-y-3 rounded-lg border border-neutral-100 p-3">
-                  <div>
-                    <p className="text-sm font-semibold text-neutral-800">{a.name}</p>
-                    {a.email && <p className="text-xs text-neutral-400">{a.email}</p>}
-                  </div>
-
-                  <div>
-                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
-                      Remedies
-                    </p>
-                    <ul className="space-y-2.5">
-                      {a.remedyNames.map(name => {
-                        const item = itemsByName.get(name);
-                        const deliveryType = item?.deliveryType ?? 'online';
-                        const price = item ? (item.discountedPrice ?? item.price) : null;
-                        const currency = item?.currency ?? 'NPR';
-                        const deliveryCharge = item?.deliveryCharge ?? 0;
-                        return (
-                          <li key={name}>
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex min-w-0 items-center gap-2">
-                                <span className="truncate text-xs font-medium text-neutral-700">
-                                  {name}
-                                </span>
-                                <span className="shrink-0 rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-500">
-                                  {DELIVERY_LABELS[deliveryType] ?? deliveryType}
-                                </span>
-                              </div>
-                              {price !== null && (
-                                <div className="shrink-0 text-right">
-                                  <span className="text-xs font-semibold text-neutral-800">
-                                    {currency} {price.toLocaleString()}
-                                  </span>
-                                  {deliveryCharge > 0 && (
-                                    <p className="text-[10px] text-neutral-400">
-                                      +{currency} {deliveryCharge.toLocaleString()} delivery
-                                    </p>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                            <RemedyDeliveryDetails deliveryType={deliveryType} order={order} />
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
+            {order.astrologers.map(a => (
+              <div key={a.id} className="space-y-3 rounded-lg border border-neutral-100 p-3">
+                <div>
+                  <p className="text-sm font-semibold text-neutral-800">{a.name}</p>
+                  {a.email && <p className="text-xs text-neutral-400">{a.email}</p>}
                 </div>
-              ))
+                <RemedyList remedyNames={a.remedyNames} order={order} />
+              </div>
+            ))}
+            {platformRemedyNames.length > 0 && (
+              <div className="space-y-3 rounded-lg border border-neutral-100 p-3">
+                <p className="text-sm font-semibold text-neutral-800">Platform</p>
+                <RemedyList remedyNames={platformRemedyNames} order={order} />
+              </div>
             )}
           </div>
         </DialogContent>
