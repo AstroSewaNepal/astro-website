@@ -16,6 +16,8 @@ import { useAdminRemedyOrders, useUpdateRemedyOrderStatus } from '@/hooks/use-re
 import RemedyOrdersTable from '@/components/admin/remedy-orders/remedy-orders-table';
 
 const DEFAULT_LIMIT = 20;
+const DEFAULT_STATUS = 'placed';
+const ALL_STATUS = 'all';
 
 const STATUS_OPTIONS = [
   { value: 'placed', label: 'Placed' },
@@ -29,7 +31,9 @@ export default function RemedyOrdersPage() {
 
   const page = Math.max(1, Number(searchParams.get('page') ?? '1'));
   const limit = Math.max(1, Number(searchParams.get('limit') ?? String(DEFAULT_LIMIT)));
-  const statusFilter = searchParams.get('status') ?? '';
+  // Missing param falls back to 'placed'; 'all' is the explicit cleared state
+  const statusParam = searchParams.get('status') ?? DEFAULT_STATUS;
+  const statusFilter = statusParam === ALL_STATUS ? '' : statusParam;
 
   const { data, isLoading, isFetching, isError } = useAdminRemedyOrders(
     page,
@@ -64,11 +68,7 @@ export default function RemedyOrdersPage() {
 
   function handleStatusFilter(value: string) {
     const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set('status', value);
-    } else {
-      params.delete('status');
-    }
+    params.set('status', value || ALL_STATUS);
     params.set('page', '1');
     router.push(`?${params.toString()}`);
   }
