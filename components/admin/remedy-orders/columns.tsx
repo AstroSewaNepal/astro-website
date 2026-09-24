@@ -142,8 +142,20 @@ function OrderDetailsModal({ order }: { order: AdminRemedyOrder }) {
           </DialogHeader>
 
           <div className="space-y-4">
+            {order.recommendedByAstrologerName && (
+              <div className="rounded-lg border border-amber-100 bg-amber-50/50 p-3">
+                <p className="text-xs font-medium uppercase tracking-wide text-amber-700">
+                  Recommended By
+                </p>
+                <p className="text-sm font-semibold text-neutral-800">
+                  {order.recommendedByAstrologerName}
+                </p>
+              </div>
+            )}
             {order.astrologers.length === 0 ? (
-              <p className="text-sm text-neutral-400">No astrologers assigned.</p>
+              !order.recommendedByAstrologerName && (
+                <p className="text-sm text-neutral-400">No astrologers assigned.</p>
+              )
             ) : (
               order.astrologers.map(a => (
                 <div key={a.id} className="space-y-3 rounded-lg border border-neutral-100 p-3">

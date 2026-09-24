@@ -40,6 +40,9 @@ export interface AdminRemedyOrder {
   userEmail: string;
   userPhone: string | null;
   astrologers: AdminOrderAstrologer[];
+  consultationId: string | null;
+  recommendedByAstrologerId: string | null;
+  recommendedByAstrologerName: string | null;
   shippingAddress: string | null;
   accessVia: string | null;
   onsiteAddress: string | null;
