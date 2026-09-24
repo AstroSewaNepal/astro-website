@@ -252,8 +252,7 @@ export function createColumns({
       header: 'Astrologer',
       cell: ({ row }) => {
         const astrologers = row.original.astrologers ?? [];
-        const recommendedBy = row.original.recommendedByAstrologerName;
-        if (astrologers.length === 0 && !recommendedBy) {
+        if (astrologers.length === 0) {
           return <span className="font-mukta text-sm text-neutral-400">—</span>;
         }
         return (
@@ -263,14 +262,6 @@ export function createColumns({
                 {a.name}
               </span>
             ))}
-            {recommendedBy && (
-              <span className="text-sm text-neutral-800">
-                {recommendedBy}
-                <span className="ml-1.5 rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] text-amber-700">
-                  Recommended
-                </span>
-              </span>
-            )}
           </div>
         );
       },
