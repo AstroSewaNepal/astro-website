@@ -82,6 +82,12 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
     priority: 0.3,
   },
   {
+    url: `${BASE_URL}/child-safety`,
+    lastModified: new Date(),
+    changeFrequency: 'yearly',
+    priority: 0.3,
+  },
+  {
     url: `${BASE_URL}/terms-and-conditions`,
     lastModified: new Date(),
     changeFrequency: 'yearly',

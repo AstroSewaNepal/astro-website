@@ -315,6 +315,13 @@ const Footer: React.FC = () => {
               >
                 Pricing Policy
               </Link>
+              <div className="w-px h-6 bg-[#F8F3DF]"></div>
+              <Link
+                href="/child-safety"
+                className="font-mukta text-[20px] font-normal text-[#F8F3DF] hover:opacity-75 transition-opacity underline"
+              >
+                Child Safety
+              </Link>
             </div>
           </div>
         </div>
