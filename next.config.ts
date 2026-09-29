@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // iOS rejects apple-app-site-association unless it is served as JSON (the file has no extension).
+  async headers() {
+    return [
+      {
+        source: '/.well-known/apple-app-site-association',
+        headers: [{ key: 'Content-Type', value: 'application/json' }],
+      },
+    ];
+  },
   // Vercel uses its own deployment adapter; `standalone` breaks adapter modifyConfig (path undefined).
   ...(process.env.VERCEL ? {} : { output: "standalone" }),
   images: {

@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["DZ27XSVRPX.com.astrosewa.app"],
+        "components": [{ "/": "/remedy/*" }]
+      }
+    ]
+  }
+}

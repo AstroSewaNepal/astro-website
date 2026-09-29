@@ -1,0 +1,11 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.astrosewa.app",
+      "sha256_cert_fingerprints":
+        ["AF:A9:B8:24:53:2E:B7:F3:2A:7C:FC:33:75:A8:87:28:A4:C9:6C:D7:45:F2:61:CE:AD:94:25:FE:01:7F:1D:7C"]
+    }
+  }
+]
