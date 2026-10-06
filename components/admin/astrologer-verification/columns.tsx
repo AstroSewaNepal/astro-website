@@ -327,6 +327,15 @@ export function createColumns(): ColumnDef<OnboardingStatusDetail>[] {
       ),
     },
     {
+      id: 'phone',
+      header: 'Phone',
+      cell: ({ row }) => (
+        <span className="font-mukta text-sm text-neutral-600">
+          {row.original.user?.phoneNumber || row.original.astrologer?.phoneNumber || '—'}
+        </span>
+      ),
+    },
+    {
       id: 'stage',
       header: 'Current Stage',
       cell: ({ row }) => {
