@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata } from 'next'; 
 
 import AboutUsHero from '@/components/pages/about-us/hero';
 import Clarity from '@/components/pages/landing/clarity';
