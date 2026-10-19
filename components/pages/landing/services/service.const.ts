@@ -4,10 +4,9 @@ import {
   ServiceTalkToAstrologer,
   ServiceTodayHoroscope,
 } from '@/components/images/services';
+import { DOWNLOAD_APP_PAGE } from '@/lib/constants/app-store';
 
-export type ServiceAction =
-  | { type: 'link'; href: string; scrollTopOnSamePath?: boolean }
-  | { type: 'app-store' };
+export type ServiceAction = { type: 'link'; href: string; scrollTopOnSamePath?: boolean };
 
 export const SERVICES_LIST: Array<{
   id: number;
@@ -30,7 +29,7 @@ export const SERVICES_LIST: Array<{
       'Book a live chat or call with a verified Vedic astrologer. Discuss love, career, health, or any question on your mind and get a reading based on your actual birth chart.',
     buttonText: 'Talk to an Astrologer',
     icon: ServiceTalkToAstrologer,
-    action: { type: 'app-store' },
+    action: { type: 'link', href: DOWNLOAD_APP_PAGE },
   },
   {
     id: 3,
@@ -38,7 +37,7 @@ export const SERVICES_LIST: Array<{
       'Not ready for a full consultation? Submit one specific question and get a focused, personal answer from our astrologers without booking a full session.',
     buttonText: 'Ask a Question',
     icon: ServiceAskQuestion,
-    action: { type: 'app-store' },
+    action: { type: 'link', href: DOWNLOAD_APP_PAGE },
   },
   {
     id: 4,

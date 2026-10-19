@@ -75,11 +75,11 @@ const AstrologerCard = memo(function AstrologerCard({
     () => [
       {
         icon: LanguageIcon,
-        title: getDisplayLanguages(astrologer.language),
+        title: getDisplayLanguages(astrologer.tags, astrologer.language),
       },
       {
         icon: SquareIcon,
-        title: getDisplayExpertise(astrologer.expertise, astrologer.specialist),
+        title: getDisplayExpertise(astrologer.tags, astrologer.specialist),
       },
       {
         icon: EducationIcon,
@@ -91,8 +91,8 @@ const AstrologerCard = memo(function AstrologerCard({
       },
     ],
     [
+      astrologer.tags,
       astrologer.language,
-      astrologer.expertise,
       astrologer.specialist,
       astrologer.services,
       astrologer.yearsOfExperience,

@@ -8,7 +8,7 @@ import ClarityCSS from './clarity.module.css';
 import Image from 'next/image';
 import { AstrologyImage } from '@/components/images';
 import ChevronRight from '@/components/icons/chevron-right';
-import { openAppStore } from '@/lib/constants/app-store';
+import AppDownloadLink from '@/components/common/app-download-link';
 
 interface ClarityProps {
   className?: string;
@@ -36,21 +36,13 @@ const Clarity: React.FC<ClarityProps> = ({ className, style }) => {
             to guide you. Chat now or explore your free tools below.
           </p>
           <div className="mt-6 md:mt-8 flex flex-row flex-nowrap items-center justify-center lg:justify-start gap-2 md:gap-6">
-            <button
-              type="button"
-              onClick={openAppStore}
-              className="flex items-center justify-center gap-1 border border-[#F8F3DF] border-[1px] rounded-[24px] h-[34px] py-2 px-4 text-[#F8F3DF] text-xs transition-all duration-300 hover:bg-[#F8F3DF]/10 whitespace-nowrap sm:rounded-3xl sm:h-auto sm:w-auto sm:px-6 sm:py-2.5 sm:text-base md:px-7 lg:px-8"
-            >
+            <AppDownloadLink className="flex items-center justify-center gap-1 border border-[#F8F3DF] border-[1px] rounded-[24px] h-[34px] py-2 px-4 text-[#F8F3DF] text-xs transition-all duration-300 hover:bg-[#F8F3DF]/10 whitespace-nowrap sm:rounded-3xl sm:h-auto sm:w-auto sm:px-6 sm:py-2.5 sm:text-base md:px-7 lg:px-8">
               <span className="font-mukta text-sm sm:text-base whitespace-nowrap">Chat Now</span>
               <ChevronRight className="!h-6 !w-6 shrink-0" />
-            </button>
-            <button
-              type="button"
-              onClick={openAppStore}
-              className="bg-[#F8F3DF] rounded-[24px] h-[34px] px-4 py-2 text-black font-mukta text-xs flex items-center justify-center transition-all duration-300 hover:bg-[#F8F3DF]/90 whitespace-nowrap sm:rounded-3xl sm:h-auto sm:w-auto sm:px-6 sm:py-2.5 sm:text-base"
-            >
+            </AppDownloadLink>
+            <AppDownloadLink className="bg-[#F8F3DF] rounded-[24px] h-[34px] px-4 py-2 text-black font-mukta text-xs flex items-center justify-center transition-all duration-300 hover:bg-[#F8F3DF]/90 whitespace-nowrap sm:rounded-3xl sm:h-auto sm:w-auto sm:px-6 sm:py-2.5 sm:text-base">
               <span className="whitespace-nowrap">Download App</span>
-            </button>
+            </AppDownloadLink>
           </div>
         </div>
         <div className="flex-shrink-0 w-full lg:w-auto flex justify-center lg:justify-end">

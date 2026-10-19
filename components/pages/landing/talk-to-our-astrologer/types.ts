@@ -27,14 +27,20 @@ export interface AstrologerPackage {
   discountPercent?: number | null;
 }
 
+export interface AstrologerTag {
+  _id?: string;
+  name?: string | null;
+  type?: string | null;
+}
+
 export interface Astrologer {
   _id: string;
   averageRating?: number | null;
   services?: string[] | null;
   language?: string[] | null;
   yearsOfExperience?: number | null;
-  expertise?: string[] | null;
   specialist?: string[] | null;
+  tags?: AstrologerTag[] | null;
   chatAvailable?: boolean;
   callAvailable?: boolean;
   isBookingEnabled?: boolean;

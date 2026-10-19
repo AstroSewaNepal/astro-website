@@ -14,6 +14,7 @@ import {
   XLogo,
   LinkedinLogo,
 } from '@/components/images';
+import { PLAY_STORE_URL } from '@/lib/constants/app-store';
 
 const Footer: React.FC = () => {
   return (
@@ -40,9 +41,15 @@ const Footer: React.FC = () => {
                 </div>
 
                 {/* Google Play Download Button */}
-                <div className="w-[133px] h-[44px] bg-black rounded-lg flex items-center justify-center">
+                <a
+                  href={PLAY_STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Download AstroSewa from Google Play"
+                  className="w-[133px] h-[44px] bg-black rounded-lg flex items-center justify-center"
+                >
                   <Image src={GoogleDownloadImage} alt="Google Download" width={133} height={44} />
-                </div>
+                </a>
               </div>
             </div>
 
