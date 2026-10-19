@@ -4,6 +4,7 @@ import React from 'react';
 import { ghostClient } from '@/lib/ghostClient';
 import { fetchBlogViewCounts } from '@/lib/blog-view-api';
 import { mapGhostBlogPost } from '@/lib/map-ghost-blog-post';
+
 export const metadata: Metadata = {
   title: 'Vedic Guides, Sign Meanings and Predictions | AstroSewa',
   description:
