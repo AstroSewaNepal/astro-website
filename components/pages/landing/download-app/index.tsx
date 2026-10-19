@@ -2,15 +2,13 @@ import { AppleDownloadImage, DownloadPhoneImage, GoogleDownloadImage } from '@/c
 import clsx from 'clsx';
 import Image from 'next/image';
 import React from 'react';
+import { PLAY_STORE_URL } from '@/lib/constants/app-store';
 
 type DownloadAppProps = {
   className?: string;
   paddingClassName?: string;
   noBorder?: boolean;
 };
-
-const GOOGLE_PLAY_URL = 'https://play.google.com/store/search?q=Astro%20Sewa&c=apps';
-const APPLE_STORE_URL = 'https://apps.apple.com/us/search?term=Astro%20Sewa';
 
 const DownloadApp: React.FC<DownloadAppProps> = ({ className, paddingClassName, noBorder }) => {
   return (
@@ -47,26 +45,19 @@ const DownloadApp: React.FC<DownloadAppProps> = ({ className, paddingClassName, 
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 lg:gap-5 mt-4 md:mt-5 lg:mt-6 justify-center lg:justify-start">
             {/* Apple Download Button */}
             <div className="flex-shrink-0 w-full sm:w-auto">
-              <a
-                href={APPLE_STORE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Download AstroSewa from the Apple App Store"
-              >
-                <Image
-                  src={AppleDownloadImage}
-                  alt="Apple Download"
-                  width={205}
-                  height={68}
-                  className="w-full sm:w-auto h-auto max-w-[180px] md:max-w-[205px] mx-auto sm:mx-0"
-                />
-              </a>
+              <Image
+                src={AppleDownloadImage}
+                alt="Apple Download"
+                width={205}
+                height={68}
+                className="w-full sm:w-auto h-auto max-w-[180px] md:max-w-[205px] mx-auto sm:mx-0"
+              />
             </div>
 
             {/* Google Play Download Button */}
             <div className="flex-shrink-0 w-full sm:w-auto">
               <a
-                href={GOOGLE_PLAY_URL}
+                href={PLAY_STORE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Download AstroSewa from Google Play"

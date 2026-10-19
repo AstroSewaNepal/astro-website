@@ -1,4 +1,4 @@
-import type { Astrologer, AstrologerPackage } from './types';
+import type { Astrologer, AstrologerPackage, AstrologerTag } from './types';
 
 const MAX_LANGUAGES = 3;
 const MAX_SPECIALIZATIONS = 3;
@@ -21,8 +21,22 @@ export function formatCurrency(currency?: string | null, value?: number | null):
   return `${code} ${value}`;
 }
 
-export function getDisplayLanguages(languages?: string[] | null): string {
-  const list = (languages ?? []).map(item => item.trim()).filter(Boolean);
+function getTagNames(tags: AstrologerTag[] | null | undefined, type: string): string[] {
+  return (tags ?? [])
+    .filter(tag => tag.type?.toLowerCase() === type)
+    .map(tag => tag.name?.trim() ?? '')
+    .filter(Boolean);
+}
+
+// Signup stores languages as "language" tags; the legacy `language` array only covers older accounts.
+export function getDisplayLanguages(
+  tags?: AstrologerTag[] | null,
+  languages?: string[] | null,
+): string {
+  const fromTags = getTagNames(tags, 'language');
+  const list = fromTags.length
+    ? fromTags
+    : (languages ?? []).map(item => item.trim()).filter(Boolean);
   if (!list.length) return 'Languages unavailable';
 
   const shown = list.slice(0, MAX_LANGUAGES);
@@ -44,13 +58,15 @@ export function getDisplayServices(services?: string[] | null): string {
   return list.slice(0, MAX_SERVICES).join(', ');
 }
 
+// Expertise lives in "expertise" tags (the backend has no `expertise` field); `specialist` is a legacy fallback.
 export function getDisplayExpertise(
-  expertise?: string[] | null,
+  tags?: AstrologerTag[] | null,
   specialist?: string[] | null,
 ): string {
-  const list = [...(expertise ?? []), ...(specialist ?? [])]
-    .map(item => item.trim())
-    .filter(Boolean);
+  const fromTags = getTagNames(tags, 'expertise');
+  const list = fromTags.length
+    ? fromTags
+    : (specialist ?? []).map(item => item.trim()).filter(Boolean);
   if (!list.length) return 'Expertise unavailable';
 
   return Array.from(new Set(list)).slice(0, MAX_SPECIALIZATIONS).join(', ');

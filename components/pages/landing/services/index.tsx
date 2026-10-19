@@ -8,7 +8,7 @@ import type { Swiper as SwiperType } from 'swiper';
 
 import ArrowLeft from '@/components/icons/arrow-left';
 import ArrowRight from '@/components/icons/arrow-right';
-import { openAppStore } from '@/lib/constants/app-store';
+import { DOWNLOAD_APP_PAGE, getMobileStoreUrl } from '@/lib/constants/app-store';
 import { SERVICES_LIST } from './service.const';
 import Pagination from '@/components/common/pagination';
 
@@ -78,8 +78,9 @@ const Services = ({ noPaddingBottom }: ServicesProps) => {
   const headingText = pathname === '/' ? 'What You Can Do on AstroSewa' : 'Our Astrology Services';
 
   const handleServiceAction = (action: (typeof SERVICES_LIST)[number]['action']) => {
-    if (action.type === 'app-store') {
-      openAppStore();
+    const storeUrl = action.href === DOWNLOAD_APP_PAGE ? getMobileStoreUrl() : null;
+    if (storeUrl) {
+      window.location.assign(storeUrl);
       return;
     }
     const targetPath = action.href.split('?')[0];
