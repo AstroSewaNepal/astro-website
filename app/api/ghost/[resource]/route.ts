@@ -3,6 +3,10 @@ import { NextResponse } from 'next/server';
 
 import { getGhostResource, isGhostResource, type GhostResource } from '@/lib/ghostResources';
 import { logger } from '@/lib/logger';
+import { publicCacheHeaders } from '@/lib/public-cache';
+
+// New and edited posts show up within 5 minutes.
+const CACHE_SECONDS = 300;
 
 const stringParams = ['filter', 'include', 'formats', 'fields', 'order'] as const;
 
@@ -77,7 +81,7 @@ export async function GET(
       options: browseOptions,
     });
 
-    return NextResponse.json(responseBody);
+    return NextResponse.json(responseBody, { headers: publicCacheHeaders(CACHE_SECONDS) });
   } catch (error) {
     logger.error('Failed to fetch Ghost resource collection', {
       resource,

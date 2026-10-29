@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { isAdminSession } from '@/lib/admin-access';
 import { ghostClient } from '@/lib/ghostClient';
 
 type BrowseResult = { meta?: { pagination?: { total?: number } } };
@@ -8,6 +9,9 @@ export async function GET() {
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  if (!isAdminSession(session)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   try {
