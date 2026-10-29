@@ -32,8 +32,8 @@ const contentSecurityPolicy = [
   .join('; ');
 
 const securityHeaders = [
-  // Report-only until the browser console shows no violations on test; then rename to Content-Security-Policy.
-  { key: 'Content-Security-Policy-Report-Only', value: contentSecurityPolicy },
+  // Zod's eval probe shows as blocked in the console; Zod then falls back to normal parsing.
+  { key: 'Content-Security-Policy', value: contentSecurityPolicy },
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
