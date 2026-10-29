@@ -1,4 +1,3 @@
-import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 import type {
@@ -6,10 +5,12 @@ import type {
   AstrologerListResponse,
   BackendAstrologerResult,
 } from '@/components/pages/landing/talk-to-our-astrologer/types';
+import { publicCacheHeaders } from '@/lib/public-cache';
 import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
 
 const CITY_API_TIMEZONE = 'Asia/Kathmandu';
 const UPSTREAM_PATH = '/astrologer-details';
+const CACHE_SECONDS = 60;
 
 function buildUpstreamQuery(): URLSearchParams {
   return new URLSearchParams({
@@ -31,7 +32,7 @@ function normalizeAstrologerList(payload: unknown): Astrologer[] {
   return (candidates ?? []) as Astrologer[];
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const backendBase = tryGetPublicBackendBaseUrl();
   if (!backendBase) {
     return NextResponse.json(
@@ -42,16 +43,16 @@ export async function GET(request: NextRequest) {
 
   const query = buildUpstreamQuery();
   const upstreamUrl = `${backendBase}${UPSTREAM_PATH}?${query.toString()}`;
-  const timezone = request.headers.get('x-timezone') ?? CITY_API_TIMEZONE;
 
   try {
     const upstream = await fetch(upstreamUrl, {
       method: 'GET',
       headers: {
         accept: 'application/json',
-        'x-timezone': timezone,
+        // Fixed (the site always sends this) so every visitor shares one cache entry.
+        'x-timezone': CITY_API_TIMEZONE,
       },
-      cache: 'no-store',
+      next: { revalidate: CACHE_SECONDS },
     });
 
     if (!upstream.ok) {
@@ -66,10 +67,13 @@ export async function GET(request: NextRequest) {
     >;
     const astrologers = normalizeAstrologerList(body.data ?? body);
 
-    return NextResponse.json({
-      success: body.success ?? true,
-      data: astrologers,
-    });
+    return NextResponse.json(
+      {
+        success: body.success ?? true,
+        data: astrologers,
+      },
+      { headers: publicCacheHeaders(CACHE_SECONDS) },
+    );
   } catch {
     return NextResponse.json(
       { success: false, data: [], message: 'Upstream request failed' },

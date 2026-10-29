@@ -3,6 +3,10 @@ import { NextResponse } from 'next/server';
 
 import { getGhostResource, isGhostResource, type GhostResource } from '@/lib/ghostResources';
 import { logger } from '@/lib/logger';
+import { publicCacheHeaders } from '@/lib/public-cache';
+
+// New and edited posts show up within 5 minutes.
+const CACHE_SECONDS = 300;
 
 const readStringParams = ['include', 'fields', 'formats'] as const;
 
@@ -64,7 +68,10 @@ export async function GET(
       options: readOptions,
     });
 
-    return NextResponse.json({ [singularKey]: item });
+    return NextResponse.json(
+      { [singularKey]: item },
+      { headers: publicCacheHeaders(CACHE_SECONDS) },
+    );
   } catch (error) {
     if (isNotFoundError(error)) {
       logger.warn('Ghost resource not found by slug', { resource, slug });
