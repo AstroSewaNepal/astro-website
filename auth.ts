@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 
+import { hasAdminRole } from '@/lib/admin-access';
 import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
 
 const authSecret =
@@ -63,6 +64,8 @@ providers.push(
               roles?: string[];
             };
           };
+          // This form is the admin login; any other email account stays out.
+          if (!hasAdminRole(user.roles)) return null;
 
           return {
             id: user._id,
@@ -89,34 +92,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === 'google' && account.id_token) {
-        const apiRoot = tryGetPublicBackendBaseUrl();
-        if (apiRoot) {
-          try {
-            const res = await fetch(`${apiRoot}/auth/google`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                idToken: account.id_token,
-                role: 'USER',
-              }),
-            });
-            if (res.ok) {
-              const json = await res.json();
-              if (json.success && json.data) {
-                const u = user as UserWithTokens;
-                u.backendAccessToken = json.data.accessToken;
-                u.backendRefreshToken = json.data.refreshToken;
-                u.roles = json.data.user?.roles ?? [];
-                if (json.data.user?._id) user.id = json.data.user._id;
-              }
-            }
-          } catch {
-            // backend unavailable — allow login without backend tokens
-          }
-        }
+      if (account?.provider !== 'google') return true;
+      // Fail closed: without backend tokens the session would look logged in
+      // while every API call is rejected, so refuse the sign-in instead.
+      const apiRoot = tryGetPublicBackendBaseUrl();
+      if (!account.id_token || !apiRoot) return false;
+      try {
+        const res = await fetch(`${apiRoot}/auth/google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            idToken: account.id_token,
+            role: 'USER',
+          }),
+        });
+        if (!res.ok) return false;
+        const json = await res.json();
+        if (!json.success || !json.data?.accessToken || !json.data.user?._id) return false;
+        const u = user as UserWithTokens;
+        u.backendAccessToken = json.data.accessToken;
+        u.backendRefreshToken = json.data.refreshToken;
+        u.roles = json.data.user.roles ?? [];
+        user.id = json.data.user._id;
+        return true;
+      } catch {
+        return false;
       }
-      return true;
     },
     jwt({ token, user }) {
       if (user) {
@@ -144,7 +145,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     authorized({ auth: session, request: { nextUrl } }) {
       const isLoggedIn = !!session?.user;
       if (nextUrl.pathname.startsWith('/admin')) {
-        if (!isLoggedIn) return false;
+        if (!isLoggedIn || !hasAdminRole(session?.user?.roles)) return false;
         const allowed = process.env.ADMIN_ALLOWED_EMAILS
           ?.split(',')
           .map((e) => e.trim())
