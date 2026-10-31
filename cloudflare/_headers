@@ -1,0 +1,13 @@
+# Copied into .open-next/assets by the cf:build scripts. Static files on Cloudflare are served before the
+# Worker runs, so headers() in next.config.ts never reaches them.
+
+# iOS rejects apple-app-site-association unless it is served as JSON (the file has no extension).
+/.well-known/apple-app-site-association
+  Content-Type: application/json
+
+/*
+  X-Content-Type-Options: nosniff
+
+# File names under /_next/static change with their content, so browsers can keep them for a year (as on Vercel).
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable

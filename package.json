@@ -11,6 +11,11 @@
     "start": "env-cmd -f env/.env.prod next start",
     "start:test": "env-cmd -f env/.env.test next start",
     "start:stage": "env-cmd -f env/.env.stage next start",
+    "cf:build": "npm run build && opennextjs-cloudflare build --skipNextBuild && node -e \"require('fs').copyFileSync('cloudflare/_headers', '.open-next/assets/_headers')\"",
+    "cf:build:test": "npm run build:test && opennextjs-cloudflare build --skipNextBuild --env test && node -e \"require('fs').copyFileSync('cloudflare/_headers', '.open-next/assets/_headers')\"",
+    "cf:preview:test": "opennextjs-cloudflare preview --env test",
+    "cf:deploy": "opennextjs-cloudflare deploy",
+    "cf:deploy:test": "opennextjs-cloudflare deploy --env test",
     "prepare": "husky",
     "lint": "eslint . --fix",
     "format": "prettier --write \"{app,components}/**/*.{ts,tsx,js,jsx,json,css,scss}\""
@@ -51,6 +56,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
+    "@opennextjs/cloudflare": "1.20.14",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^20",
     "@types/react": "19.2.14",
@@ -63,7 +69,8 @@
     "husky": "^9.1.7",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.13",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "4.154.0"
   },
   "overrides": {
     "@types/react": "19.2.14",

@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Production worker (www.astrosewa.com). `--env test` builds and deploys the test site.
+  "name": "astro-website",
+  "main": ".open-next/worker.js",
+  // Must not be newer than the workerd bundled with wrangler.
+  "compatibility_date": "2026-10-20",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    // The memory queue revalidates ISR pages by calling the worker itself.
+    { "binding": "WORKER_SELF_REFERENCE", "service": "astro-website" }
+  ],
+  "kv_namespaces": [
+    // TODO(phase 2): create with `wrangler kv namespace create astro-website-cache` and put the id here.
+    { "binding": "NEXT_INC_CACHE_KV", "id": "astro-website-cache" }
+  ],
+  "observability": { "enabled": true },
+  "env": {
+    "test": {
+      "name": "astro-website-test",
+      "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "astro-website-test" }],
+      "kv_namespaces": [
+        // TODO(phase 2): `wrangler kv namespace create astro-website-test-cache`.
+        { "binding": "NEXT_INC_CACHE_KV", "id": "astro-website-test-cache" }
+      ]
+    }
+  }
+}
