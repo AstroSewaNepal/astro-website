@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { ghostImageUrl } from '@/lib/ghost-image';
 import BlogTitle from './BlogTitle';
 import ChatIcon from '@/components/icons/chat-icon';
 import PhoneIcon from '@/components/icons/phone-icon';
@@ -57,7 +58,7 @@ const BlogContent: React.FC<BlogContentProps> = ({
         {featureImage && (
           <div className="w-full h-auto rounded-lg overflow-hidden mb-12">
             <Image
-              src={featureImage}
+              src={ghostImageUrl(featureImage, 1200)}
               alt={title}
               width={1200}
               height={600}

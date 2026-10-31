@@ -1,6 +1,6 @@
 import type { StaticImageData } from 'next/image';
 
-import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
+import MangalDoshaImage from '@/components/images/calculator/mangaldosha.webp';
 
 import type { MangalDoshaLevel } from './determine-mangal-dosha';
 

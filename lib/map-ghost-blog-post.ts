@@ -3,6 +3,7 @@ import {
   formatReadingDuration,
   formatViewCount,
 } from '@/lib/blog-utils';
+import { ghostImageUrl } from '@/lib/ghost-image';
 
 export type MappedBlogPost = {
   id: string;
@@ -57,7 +58,7 @@ export function mapGhostBlogPost(
     title: post.title ?? '',
     slug,
     description: post.excerpt ?? '',
-    image: post.feature_image ?? '',
+    image: post.feature_image ? ghostImageUrl(post.feature_image, 600) : '',
     date: post.published_at
       ? new Date(post.published_at).toLocaleDateString('en-US', {
           year: 'numeric',

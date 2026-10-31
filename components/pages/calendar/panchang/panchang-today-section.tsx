@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
 import { resolveVedastroProxyFetchUrl } from '@/lib/utils/url';
-import PanchangCircleImage from '@/components/images/panchang_circle.png';
+import PanchangCircleImage from '@/components/images/panchang_circle.webp';
 import ArrowLeft from '@/components/icons/arrow-left';
 import ArrowRight from '@/components/icons/arrow-right';
 import DatePickerDropdown from '@/components/pages/free-kundali/date-picker-dropdown';
