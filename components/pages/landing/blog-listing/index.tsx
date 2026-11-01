@@ -39,7 +39,7 @@ const AstrologerBlogListing: React.FC = () => {
       setError(null);
       try {
         const url =
-          '/api/ghost/posts?include=tags,authors&fields=id,title,slug,excerpt,html,feature_image,published_at,reading_time&limit=3&order=published_at%20desc';
+          '/api/ghost/posts?include=tags,authors&fields=id,title,slug,excerpt,feature_image,published_at,reading_time&limit=3&order=published_at%20desc';
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Failed to fetch posts');

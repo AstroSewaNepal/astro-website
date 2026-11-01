@@ -16,6 +16,7 @@
     "cf:preview:test": "opennextjs-cloudflare preview --env test",
     "cf:deploy": "opennextjs-cloudflare deploy",
     "cf:deploy:test": "opennextjs-cloudflare deploy --env test",
+    "check:images": "node scripts/check-image-sizes.mjs",
     "prepare": "husky",
     "lint": "eslint . --fix",
     "format": "prettier --write \"{app,components}/**/*.{ts,tsx,js,jsx,json,css,scss}\""
