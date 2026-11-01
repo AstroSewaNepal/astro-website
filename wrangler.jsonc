@@ -2,6 +2,8 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   // Production worker (www.astrosewa.com). `--env test` builds and deploys the test site.
   "name": "astro-website",
+  // Sewaastro@gmail.com's Account, so nothing deploys to a personal account by mistake.
+  "account_id": "96792f270722c8547e495b08bcf7d3c3",
   "main": ".open-next/worker.js",
   // Must not be newer than the workerd bundled with wrangler.
   "compatibility_date": "2026-10-20",
@@ -15,17 +17,33 @@
     { "binding": "WORKER_SELF_REFERENCE", "service": "astro-website" }
   ],
   "kv_namespaces": [
-    // TODO(phase 2): create with `wrangler kv namespace create astro-website-cache` and put the id here.
-    { "binding": "NEXT_INC_CACHE_KV", "id": "astro-website-cache" }
+    // KV namespace "astro-website-cache".
+    { "binding": "NEXT_INC_CACHE_KV", "id": "305e1490e0254cf1bc82eec6db4653aa" }
   ],
   "observability": { "enabled": true },
+  // Runtime settings. Secrets (AUTH_SECRET, GHOST_CONTENT_API_KEY, optional GOOGLE_CLIENT_ID/SECRET) are set
+  // with `wrangler secret`, never here. Vars are not inherited, so each env lists all of them.
+  "vars": {
+    "AUTH_URL": "https://www.astrosewa.com",
+    // blog.astrosewa.com is missing its images; blog.dev is the one the live site uses.
+    "GHOST_CONTENT_API_URL": "https://blog.dev.astrosewa.com",
+    "GHOST_CONTENT_API_VERSION": "v5.0",
+    "LOG_LEVEL": "info"
+  },
   "env": {
     "test": {
       "name": "astro-website-test",
+      "vars": {
+        // TODO(phase 4): https://test.astrosewa.com once the domain points here.
+        "AUTH_URL": "https://astro-website-test.astrosewa.workers.dev",
+        "GHOST_CONTENT_API_URL": "https://blog.dev.astrosewa.com",
+        "GHOST_CONTENT_API_VERSION": "v5.0",
+        "LOG_LEVEL": "info"
+      },
       "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "astro-website-test" }],
       "kv_namespaces": [
-        // TODO(phase 2): `wrangler kv namespace create astro-website-test-cache`.
-        { "binding": "NEXT_INC_CACHE_KV", "id": "astro-website-test-cache" }
+        // KV namespace "astro-website-test-cache".
+        { "binding": "NEXT_INC_CACHE_KV", "id": "fb1d13f527cf4ab0bb9e35b72a4202b8" }
       ]
     }
   }
