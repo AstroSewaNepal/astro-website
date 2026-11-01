@@ -1,0 +1,38 @@
+# Test site on Cloudflare Workers. PRs into `test`: build + checks only. Merges into `test`: build + deploy.
+# Prod (`main`) stays on Vercel until www moves.
+name: Cloudflare test site
+
+on:
+  pull_request:
+    branches: [test]
+  push:
+    branches: [test]
+
+# One run per branch; a newer PR push cancels the older check, but a deploy is never cut off.
+concurrency:
+  group: cloudflare-test-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check:images
+      - run: npm run cf:build:test
+      - name: Worker size
+        run: node scripts/check-worker-size.mjs --env test
+      - name: Deploy
+        if: github.event_name == 'push'
+        run: npm run cf:deploy:test
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

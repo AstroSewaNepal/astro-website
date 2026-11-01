@@ -2,13 +2,13 @@ import React from 'react';
 import Image from 'next/image';
 
 import CalculatorCard from './calculator-card';
-import LoveCalculatorIcon from '@/components/images/icons/loveicon.png';
-import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.png';
-import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.png';
-import MangalDoshaImage from '@/components/images/calculator/mangaldosha.png';
-import DashaImage from '@/components/images/calculator/dasha.png';
-import MoonPhaseImage from '@/components/images/calculator/moonphase.png';
-import RashiCalculatorImage from '@/components/images/calculator/rashicalculator.png';
+import LoveCalculatorIcon from '@/components/images/icons/loveicon.webp';
+import NumerologyCalculatorImage from '@/components/images/calculator/numerologycalculator.webp';
+import SunSignCalculatorImage from '@/components/images/calculator/sunsigncalculator.webp';
+import MangalDoshaImage from '@/components/images/calculator/mangaldosha.webp';
+import DashaImage from '@/components/images/calculator/dasha.webp';
+import MoonPhaseImage from '@/components/images/calculator/moonphase.webp';
+import RashiCalculatorImage from '@/components/images/calculator/rashicalculator.webp';
 
 const Calculators: React.FC = () => {
   return (

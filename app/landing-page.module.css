@@ -1,3 +1,5 @@
 .background {
-  background-image: url('../components/images/background.png');
+  background-image: url('../components/images/background.webp');
+  /* The file is stored smaller (1000px) than the original texture tile; keep the original scale. */
+  background-size: 1728px auto;
 }

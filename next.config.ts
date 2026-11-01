@@ -57,6 +57,9 @@ const nextConfig: NextConfig = {
   // Vercel uses its own deployment adapter; `standalone` breaks adapter modifyConfig (path undefined).
   ...(process.env.VERCEL ? {} : { output: "standalone" }),
   images: {
+    // No runtime image optimization (it would cost a Worker request per image on Cloudflare). Our own images
+    // are pre-sized WebP (scripts/optimize-images.mjs), Ghost images use Ghost's sizes, uploads use backend thumbnails.
+    unoptimized: true,
     remotePatterns: [
         {
           protocol: 'http',

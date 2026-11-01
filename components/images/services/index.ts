@@ -1,6 +1,6 @@
-import ServiceReport from './report.png';
-import ServiceAskQuestion from './ask-question.png';
-import ServiceTodayHoroscope from './today-horoscope.png';
-import ServiceTalkToAstrologer from './talk-to-astrologer.png';
+import ServiceReport from './report.webp';
+import ServiceAskQuestion from './ask-question.webp';
+import ServiceTodayHoroscope from './today-horoscope.webp';
+import ServiceTalkToAstrologer from './talk-to-astrologer.webp';
 
 export { ServiceAskQuestion, ServiceReport, ServiceTalkToAstrologer, ServiceTodayHoroscope };

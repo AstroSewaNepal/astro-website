@@ -12,6 +12,12 @@ npm run lint ||
   false;
 )
 
+npm run check:images ||
+(
+  echo 'An image is too big. Resize it first: node scripts/optimize-images.mjs (see the script for how).'
+  false;
+)
+
 # If everything passes... Now we can commit
 echo '
      ✅✅✅✅ You win this time... I am committing this now. ✅✅✅✅

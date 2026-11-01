@@ -16,6 +16,12 @@ import PasswordInput from './PasswordInput';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 // import { Separator } from '@/components/ui/separator'; // only used by the disabled Google sign-in block below
 
+// On Cloudflare the server bundle can hold two copies of next-auth's error classes, so instanceof alone misses
+// them; every Auth.js error also carries a string `type` (Next's redirect errors don't).
+const isAuthError = (e: unknown) =>
+  e instanceof AuthError ||
+  (e instanceof Error && typeof (e as { type?: unknown }).type === 'string');
+
 type LoginPageProps = {
   searchParams: Promise<{ error?: string }>;
 };
@@ -75,7 +81,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                   redirectTo: '/admin/dashboard',
                 });
               } catch (e) {
-                if (e instanceof AuthError) {
+                if (isAuthError(e)) {
                   redirect('/login?error=InvalidCredentials');
                 }
                 throw e;

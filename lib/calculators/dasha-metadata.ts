@@ -1,6 +1,6 @@
 import type { StaticImageData } from 'next/image';
 
-import DashaImage from '@/components/images/calculator/dasha.png';
+import DashaImage from '@/components/images/calculator/dasha.webp';
 
 export type DashaMeta = {
   cycle: number;
