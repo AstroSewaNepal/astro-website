@@ -35,7 +35,7 @@ type UserMenuProps = {
 export default function UserMenu({
   user,
   extraLinks = [],
-  signOutCallbackUrl = '/login',
+  signOutCallbackUrl = '/admin',
   align = 'end',
   triggerClassName = '',
   contentClassName = '',

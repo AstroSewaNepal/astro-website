@@ -19,6 +19,9 @@ import {
 import { zodiacEnglishDetailHref } from '@/lib/constants/zodiac-sign-nav';
 import { horoscopeEn, type HoroscopeMessages, useHoroscopeLocaleOptional } from '@/lib/i18n';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
+import { AccountMenu } from '@/components/account/account-menu';
+import { isAccountPage } from '@/lib/account/nav';
+import { accountKind } from '@/lib/auth/account';
 
 type NavChild = {
   title: string;
@@ -189,6 +192,8 @@ function LandingHeaderClient() {
   const uiLanguage = horoscopeLocale?.uiLanguage ?? ELanguage.ENGLISH;
   const landingNav = buildLandingNav(uiLanguage, d);
   const mobileNav = buildMobileNav(uiLanguage, d);
+  const signedInKind = accountKind(session?.user?.roles);
+  const onAccountPage = isAccountPage(pathname);
 
   // updateSession's identity changes with session/loading state, so it's read via a ref to keep this a mount-only effect.
   const updateSessionRef = useRef(updateSession);
@@ -331,7 +336,11 @@ function LandingHeaderClient() {
           </div>
           <div className="flex gap-4">
             <div className="hidden lg:block">{languageControl}</div>
-            {status === 'authenticated' && session?.user ? (
+            {status === 'authenticated' &&
+            session?.user &&
+            (signedInKind === 'client' || signedInKind === 'astrologer') ? (
+              <AccountMenu kind={signedInKind} user={session.user} />
+            ) : status === 'authenticated' && session?.user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
                   type="button"
@@ -374,7 +383,7 @@ function LandingHeaderClient() {
                     <li>
                       <button
                         type="button"
-                        onClick={() => signOut({ callbackUrl: '/login' })}
+                        onClick={() => signOut({ callbackUrl: '/admin' })}
                         className="w-full px-4 py-3 text-left font-mukta text-[15px] text-red-600 hover:bg-[#faf6f0]"
                       >
                         Sign Out
@@ -399,7 +408,13 @@ function LandingHeaderClient() {
         </div>
 
         {/* ✅ FIX: responsive padding — grows at xl → 2xl → 3xl screen widths */}
-        <nav className="mt-10 bg-primary py-3 px-6 xl:px-8 2xl:px-14 gap-1 2xl:gap-3 rounded-3xl hidden xl:flex xl:flex-wrap xl:justify-between items-center relative z-40 w-full overflow-visible">
+        {/* Logged-in pages use their own sidebar instead of the site menu bar (Figma) */}
+        <nav
+          className={clsx(
+            'mt-10 bg-primary py-3 px-6 xl:px-8 2xl:px-14 gap-1 2xl:gap-3 rounded-3xl hidden xl:flex-wrap xl:justify-between items-center relative z-40 w-full overflow-visible',
+            !onAccountPage && 'xl:flex',
+          )}
+        >
           {landingNav.map(value => {
             const hasChildren = !!value.children?.length;
             const navActive = desktopNavItemActive(pathname, value);

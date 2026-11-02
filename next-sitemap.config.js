@@ -13,7 +13,7 @@ const api = new GhostContentAPI({
 module.exports = {
   siteUrl: 'https://www.astrosewa.com',
   generateRobotsTxt: true, 
-  exclude: ['/_next/*', '/api/*'],
+  exclude: ['/_next/*', '/api/*', '/client', '/client/*', '/astrologer', '/astrologer/*'],
   
   // Fetching Ghost Blogs (Optimized & Secure)
   additionalPaths: async () => {
