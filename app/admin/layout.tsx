@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation';
 import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/auth';
 import { isAdminSession } from '@/lib/admin-access';
+import { accountHome } from '@/lib/auth/account';
+import AdminLogin from '@/components/admin/admin-login';
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -13,8 +15,9 @@ import AdminHeader from '@/components/admin/admin-header';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (!session?.user) redirect('/login');
-  if (!isAdminSession(session)) redirect('/');
+  // The admin login lives here (not linked anywhere public); /login is the client/astrologer sign-in.
+  if (!session?.user) return <AdminLogin />;
+  if (!isAdminSession(session)) redirect(accountHome(session.user.roles));
 
   return (
     // SessionProvider passes the server session to useSession() in client hooks
