@@ -3,13 +3,12 @@ import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 
 import { hasAdminRole } from '@/lib/admin-access';
+import { getJwtExpiry, refreshBackendTokens } from '@/lib/auth/backend-tokens';
 import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
 
 const authSecret =
   process.env.AUTH_SECRET ??
-  (process.env.NODE_ENV !== 'production'
-    ? 'local-dev-only-insecure-auth-secret'
-    : undefined);
+  (process.env.NODE_ENV !== 'production' ? 'local-dev-only-insecure-auth-secret' : undefined);
 
 const providers = [];
 
@@ -20,9 +19,9 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorization: {
         params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
         },
       },
     }),
@@ -31,56 +30,56 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 
 providers.push(
   Credentials({
-      credentials: {
-        username: { label: 'Username', type: 'text' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials) {
-        const apiRoot = tryGetPublicBackendBaseUrl();
-        if (!apiRoot || !credentials?.username || !credentials?.password) return null;
+    credentials: {
+      username: { label: 'Username', type: 'text' },
+      password: { label: 'Password', type: 'password' },
+    },
+    async authorize(credentials) {
+      const apiRoot = tryGetPublicBackendBaseUrl();
+      if (!apiRoot || !credentials?.username || !credentials?.password) return null;
 
-        try {
-          const res = await fetch(`${apiRoot}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: credentials.username,
-              password: credentials.password,
-              loginType: 'email',
-            }),
-          });
-          if (!res.ok) return null;
-          const json = await res.json();
-          if (!json.success || !json.data) return null;
+      try {
+        const res = await fetch(`${apiRoot}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: credentials.username,
+            password: credentials.password,
+            loginType: 'email',
+          }),
+        });
+        if (!res.ok) return null;
+        const json = await res.json();
+        if (!json.success || !json.data) return null;
 
-          const { accessToken, refreshToken, user } = json.data as {
-            accessToken: string;
-            refreshToken: string;
-            user: {
-              _id: string;
-              email: string;
-              fullName?: string;
-              profilePicture?: { url: string };
-              roles?: string[];
-            };
+        const { accessToken, refreshToken, user } = json.data as {
+          accessToken: string;
+          refreshToken: string;
+          user: {
+            _id: string;
+            email: string;
+            fullName?: string;
+            profilePicture?: { url: string };
+            roles?: string[];
           };
-          // This form is the admin login; any other email account stays out.
-          if (!hasAdminRole(user.roles)) return null;
+        };
+        // This form is the admin login; any other email account stays out.
+        if (!hasAdminRole(user.roles)) return null;
 
-          return {
-            id: user._id,
-            name: user.fullName ?? user.email,
-            email: user.email,
-            image: user.profilePicture?.url ?? null,
-            backendAccessToken: accessToken,
-            backendRefreshToken: refreshToken,
-            roles: user.roles ?? [],
-          };
-        } catch {
-          return null;
-        }
-      },
-    }),
+        return {
+          id: user._id,
+          name: user.fullName ?? user.email,
+          email: user.email,
+          image: user.profilePicture?.url ?? null,
+          backendAccessToken: accessToken,
+          backendRefreshToken: refreshToken,
+          roles: user.roles ?? [],
+        };
+      } catch {
+        return null;
+      }
+    },
+  }),
 );
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -119,15 +118,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return false;
       }
     },
-    jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.userId = user.id;
         const u = user as UserWithTokens;
         if (u.backendAccessToken) {
           token.backendAccessToken = u.backendAccessToken;
           token.backendRefreshToken = u.backendRefreshToken;
+          token.backendAccessTokenExpires = getJwtExpiry(u.backendAccessToken);
         }
         token.roles = u.roles ?? [];
+      }
+      // Refresh only when the browser asks (update() is a route handler, so the new cookie is saved; a refresh
+      // during a server render would be lost and burn the rotated refresh token). `failedToken` makes a second tab's
+      // request a no-op once the first tab has already refreshed.
+      const ask = trigger === 'update' ? (session as RefreshRequest | undefined) : undefined;
+      if (ask?.refresh === true && typeof token.backendRefreshToken === 'string') {
+        if (ask.failedToken && ask.failedToken !== token.backendAccessToken) return token;
+        const next = await refreshBackendTokens(token.backendRefreshToken);
+        if (!next) return { ...token, error: 'RefreshFailed' };
+        token.backendAccessToken = next.accessToken;
+        token.backendRefreshToken = next.refreshToken;
+        token.backendAccessTokenExpires = getJwtExpiry(next.accessToken);
+        if (next.roles) token.roles = next.roles;
+        delete token.error;
       }
       return token;
     },
@@ -135,10 +149,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // Stable opaque token used by the admin API client (Next.js routes re-verify via auth())
       session.accessToken = token.userId as string;
       if (token.userId) session.user.id = token.userId as string;
+      // The refresh token stays in the encrypted cookie; the browser only gets the access token it needs.
       if (token.backendAccessToken) {
         session.backendAccessToken = token.backendAccessToken as string;
-        session.backendRefreshToken = token.backendRefreshToken as string;
+        session.backendAccessTokenExpires =
+          (token.backendAccessTokenExpires as number | null) ?? null;
       }
+      if (token.error === 'RefreshFailed') session.error = 'RefreshFailed';
       session.user.roles = (token.roles as string[]) ?? [];
       return session;
     },
@@ -146,10 +163,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const isLoggedIn = !!session?.user;
       if (nextUrl.pathname.startsWith('/admin')) {
         if (!isLoggedIn || !hasAdminRole(session?.user?.roles)) return false;
-        const allowed = process.env.ADMIN_ALLOWED_EMAILS
-          ?.split(',')
-          .map((e) => e.trim())
-          .filter(Boolean) ?? [];
+        const allowed =
+          process.env.ADMIN_ALLOWED_EMAILS?.split(',')
+            .map(e => e.trim())
+            .filter(Boolean) ?? [];
         if (allowed.length > 0 && !allowed.includes(session?.user?.email ?? '')) {
           return false;
         }
@@ -166,11 +183,17 @@ interface UserWithTokens {
   roles?: string[];
 }
 
+/** What the browser sends with update() to ask for new backend tokens. */
+export type RefreshRequest = { refresh: true; failedToken?: string };
+
 declare module 'next-auth' {
   interface Session {
     accessToken: string;
     backendAccessToken?: string;
-    backendRefreshToken?: string;
+    /** ms since epoch; null when the token has no `exp`. */
+    backendAccessTokenExpires?: number | null;
+    /** Set when the refresh token was refused: the user must log in again. */
+    error?: 'RefreshFailed';
   }
   interface User {
     backendAccessToken?: string;

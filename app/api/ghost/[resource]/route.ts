@@ -57,6 +57,20 @@ const makeResponseBody = (resource: GhostResource, items: unknown[]): Record<str
       };
 };
 
+// Ghost only computes reading_time when html is fetched. Lists ask for reading_time without html, so fetch
+// html here and drop it from the reply (all posts: 2.2 MB -> 80 KB). Ghost's own reply is cached by ghostClient.
+const browse = async (resource: GhostResource, options: Record<string, unknown>) => {
+  const fields = typeof options.fields === 'string' ? options.fields.split(',') : [];
+  const dropHtml = fields.includes('reading_time') && !fields.includes('html');
+  const results = await getGhostResource(resource).browse(
+    dropHtml ? { ...options, fields: [...fields, 'html'].join(',') } : options,
+  );
+  if (dropHtml) {
+    for (const item of results as Array<{ html?: unknown }>) delete item.html;
+  }
+  return makeResponseBody(resource, results);
+};
+
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ resource: string }> },
@@ -69,11 +83,10 @@ export async function GET(
   }
 
   const browseOptions = buildBrowseOptions(request.nextUrl.searchParams);
-  const resourceHandler = getGhostResource(resource);
 
   try {
-    const results = await resourceHandler.browse(browseOptions);
-    const responseBody = makeResponseBody(resource, results);
+    const responseBody = await browse(resource, browseOptions);
+    const results = responseBody[resource] as unknown[];
 
     logger.info('Fetched Ghost resource collection', {
       resource,

@@ -46,7 +46,7 @@ export const useBlogPosts = (initialPosts: BlogPost[]): UseBlogPostsReturn => {
       setIsLoading(true);
       try {
         let url =
-          '/api/ghost/posts?include=tags,authors&fields=id,title,slug,excerpt,html,feature_image,published_at,reading_time&limit=all&order=published_at%20desc';
+          '/api/ghost/posts?include=tags,authors&fields=id,title,slug,excerpt,feature_image,published_at,reading_time&limit=all&order=published_at%20desc';
         if (activeCategory) {
           url += `&filter=tag:${activeCategory}`;
         }

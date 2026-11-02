@@ -1,6 +1,6 @@
 import type { StaticImageData } from 'next/image';
 
-import MoonPhaseImage from '@/components/images/calculator/moonphase.png';
+import MoonPhaseImage from '@/components/images/calculator/moonphase.webp';
 
 import type { MoonPhaseName } from './determine-moon-phase';
 

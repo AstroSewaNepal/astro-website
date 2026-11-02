@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation';
 import { IoShareOutline } from 'react-icons/io5';
 import { FiRefreshCcw } from 'react-icons/fi';
 
-import UploadPhotoImg from '@/components/images/uploadyourphoto.png';
-import LoveMatchIcon from '@/components/images/icons/lovematch.png';
+import UploadPhotoImg from '@/components/images/uploadyourphoto.webp';
+import LoveMatchIcon from '@/components/images/icons/lovematch.webp';
 
 type LoveResult = {
   yourName: string;

@@ -14,7 +14,7 @@ import { CityAutocompleteInput } from '@/components/shared/city-autocomplete-inp
 import CalculatorChooserSection from '../shared/calculator-chooser-section';
 import CalculatorDatePicker from '../shared/calculator-date-picker';
 import QNASComponent from '@/components/common/qnas-component';
-import LoveHeroImage from '@/components/images/lovecalculator.png';
+import LoveHeroImage from '@/components/images/lovecalculator.webp';
 import SectionDivider from '@/components/ui/section-divider';
 
 const LOVE_CALCULATOR_FAQ = [

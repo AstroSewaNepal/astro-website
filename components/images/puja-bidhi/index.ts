@@ -1,5 +1,5 @@
-import GaneshPujaBidhiImage from './ganesh-puja.png';
-import ShivaPujaBidhiImage from './shiva-puja.png';
-import VishnuPujaBidhiImage from './vishnu-puja.png';
+import GaneshPujaBidhiImage from './ganesh-puja.webp';
+import ShivaPujaBidhiImage from './shiva-puja.webp';
+import VishnuPujaBidhiImage from './vishnu-puja.webp';
 
 export { GaneshPujaBidhiImage, ShivaPujaBidhiImage, VishnuPujaBidhiImage };

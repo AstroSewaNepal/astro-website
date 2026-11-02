@@ -20,7 +20,16 @@ export async function GET() {
       fields: ['id', 'title', 'slug', 'published_at', 'reading_time', 'status'],
     });
 
-    return NextResponse.json({ posts });
+    // With `fields`, Ghost returns only `authors` / `tags` (no primary_*), and the Content API never sends
+    // `status` because it only serves published posts.
+    return NextResponse.json({
+      posts: posts.map(post => ({
+        ...post,
+        primary_author: post.authors?.[0] ?? null,
+        primary_tag: post.tags?.[0] ?? null,
+        status: 'published',
+      })),
+    });
   } catch {
     return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 502 });
   }
