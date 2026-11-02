@@ -17,6 +17,7 @@
     "cf:deploy": "opennextjs-cloudflare deploy",
     "cf:deploy:test": "opennextjs-cloudflare deploy --env test",
     "check:images": "node scripts/check-image-sizes.mjs",
+    "test": "vitest run",
     "prepare": "husky",
     "lint": "eslint . --fix",
     "format": "prettier --write \"{app,components}/**/*.{ts,tsx,js,jsx,json,css,scss}\""
@@ -71,6 +72,7 @@
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.13",
     "typescript": "^5",
+    "vitest": "4.1.12",
     "wrangler": "4.154.0"
   },
   "overrides": {
