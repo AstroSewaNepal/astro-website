@@ -60,6 +60,7 @@ export const SIGN_IN_ERRORS = [
   'role_mismatch',
   'suspended',
   'admin_account',
+  'pending_deletion',
 ] as const;
 
 export type SignInError = (typeof SIGN_IN_ERRORS)[number];
@@ -69,18 +70,29 @@ export function isSignInError(value: unknown): value is SignInError {
 }
 
 /**
- * The reason the google-code provider gave. next-auth rethrows its error, but a second copy of next-auth in the
- * Cloudflare bundle can wrap it (CallbackRouteError keeps it as `cause.err`), so look one level down too.
+ * The error a sign-in provider threw. next-auth rethrows it, but a second copy of next-auth in the Cloudflare bundle
+ * can wrap it (CallbackRouteError keeps it as `cause.err`), so look one level down too.
  */
-export function signInErrorCode(error: unknown): SignInError {
+function providerError(error: unknown): { code: SignInError; handoff?: unknown } | null {
   let current: unknown = error;
   for (let depth = 0; depth < 3 && current && typeof current === 'object'; depth++) {
     const code = (current as { code?: unknown }).code;
-    if (isSignInError(code)) return code;
+    if (isSignInError(code)) return current as { code: SignInError; handoff?: unknown };
     const cause = (current as { cause?: unknown }).cause;
     current = cause && typeof cause === 'object' && 'err' in cause ? (cause as { err: unknown }).err : cause;
   }
-  return 'google_failed';
+  return null;
+}
+
+/** Why the sign-in failed; anything unexpected is a plain failure. */
+export function signInErrorCode(error: unknown): SignInError {
+  return providerError(error)?.code ?? 'google_failed';
+}
+
+/** For 'pending_deletion': the sealed tokens to keep until the person decides (lib/auth/reactivation.ts). */
+export function signInErrorHandoff(error: unknown): string | null {
+  const found = providerError(error);
+  return found?.code === 'pending_deletion' && typeof found.handoff === 'string' ? found.handoff : null;
 }
 
 /** What the Sign in page shows for each error; the texts follow the app's. */
@@ -100,6 +112,8 @@ export function signInErrorMessage(error: SignInError, role: 'client' | 'astrolo
       return 'Your account has been suspended for violating our Terms of Use. Contact support@astrosewa.com if you think this is a mistake.';
     case 'admin_account':
       return 'Admin accounts cannot sign in as a client or astrologer.';
+    case 'pending_deletion':
+      return 'Your account is scheduled for permanent deletion. Sign in again to reactivate it.';
     case 'google_failed':
       return 'We could not log you in. Please try again.';
   }

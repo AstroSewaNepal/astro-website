@@ -4,17 +4,19 @@ import Credentials from 'next-auth/providers/credentials';
 import { hasAdminRole } from '@/lib/admin-access';
 import { getJwtExpiry, refreshBackendTokens, revokeBackendSession } from '@/lib/auth/backend-tokens';
 import { isSignUpRole, type SignInError } from '@/lib/auth/google-signin';
+import { openHandoff, sealHandoff } from '@/lib/auth/reactivation';
+import { authSecret } from '@/lib/auth/secret';
 import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
-
-const authSecret =
-  process.env.AUTH_SECRET ??
-  (process.env.NODE_ENV !== 'production' ? 'local-dev-only-insecure-auth-secret' : undefined);
 
 /** A failed Google sign-in; `code` is the reason /login/google shows (see signInErrorCode). */
 class GoogleSignInError extends CredentialsSignin {
-  constructor(reason: SignInError) {
+  /** Sealed tokens of an account pending deletion (never put tokens in `cause`: next-auth logs it). */
+  handoff?: string;
+
+  constructor(reason: SignInError, handoff?: string) {
     super(reason);
     this.code = reason;
+    this.handoff = handoff;
   }
 }
 
@@ -24,7 +26,20 @@ type BackendAuthUser = {
   fullName?: string;
   profilePicture?: { url: string };
   roles?: string[];
+  isPendingDeletion?: boolean;
 };
+
+function sessionUser(user: BackendAuthUser, accessToken: string, refreshToken: string) {
+  return {
+    id: user._id,
+    name: user.fullName || user.email,
+    email: user.email,
+    image: user.profilePicture?.url ?? null,
+    backendAccessToken: accessToken,
+    backendRefreshToken: refreshToken,
+    roles: user.roles ?? [],
+  };
+}
 
 const providers = [
   // Google (doc 03): /login/google calls signIn('google-code') with Google's one-time code once the state matched;
@@ -33,10 +48,10 @@ const providers = [
   Credentials({
     id: 'google-code',
     name: 'Google',
-    credentials: { code: {}, role: {} },
+    credentials: { code: {}, role: {}, returnTo: {} },
     async authorize(credentials) {
       const apiRoot = tryGetPublicBackendBaseUrl();
-      const { code, role } = credentials ?? {};
+      const { code, role, returnTo } = credentials ?? {};
       if (!apiRoot || typeof code !== 'string' || !code || !isSignUpRole(role)) {
         throw new GoogleSignInError('google_failed');
       }
@@ -67,15 +82,46 @@ const providers = [
         await revokeBackendSession(data.refreshToken);
         throw new GoogleSignInError('admin_account');
       }
-      return {
-        id: user._id,
-        name: user.fullName || user.email,
-        email: user.email,
-        image: user.profilePicture?.url ?? null,
-        backendAccessToken: data.accessToken as string,
-        backendRefreshToken: data.refreshToken as string,
-        roles: user.roles ?? [],
-      };
+      // Like the app: no session for an account scheduled for deletion until the person reactivates it.
+      if (user.isPendingDeletion) {
+        const handoff = await sealHandoff({
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+          role,
+          callbackUrl: typeof returnTo === 'string' ? returnTo : '',
+        });
+        throw new GoogleSignInError('pending_deletion', handoff);
+      }
+      return sessionUser(user, data.accessToken, data.refreshToken);
+    },
+  }),
+  // "Reactivate Account" on /login/reactivate: takes only a handoff this server sealed, cancels the deletion with its
+  // tokens and signs in with the restored account.
+  Credentials({
+    id: 'reactivated',
+    name: 'Reactivated account',
+    credentials: { handoff: {} },
+    async authorize(credentials) {
+      const apiRoot = tryGetPublicBackendBaseUrl();
+      const handoff = await openHandoff(credentials?.handoff);
+      if (!apiRoot || !handoff) throw new GoogleSignInError('signin_expired');
+
+      let res: Response;
+      try {
+        res = await fetch(`${apiRoot}/users/me/cancel-deletion`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${handoff.accessToken}` },
+          cache: 'no-store',
+        });
+      } catch {
+        throw new GoogleSignInError('google_failed');
+      }
+      const json = res.ok ? await res.json().catch(() => null) : null;
+      const user = (json?.success ? json.data : null) as BackendAuthUser | null;
+      if (!user?._id || user.isPendingDeletion || hasAdminRole(user.roles)) {
+        throw new GoogleSignInError('google_failed');
+      }
+      return sessionUser(user, handoff.accessToken, handoff.refreshToken);
     },
   }),
   Credentials({

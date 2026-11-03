@@ -9,7 +9,9 @@ import {
   sameState,
   type SignInError,
   signInErrorCode,
+  signInErrorHandoff,
 } from '@/lib/auth/google-signin';
+import { REACTIVATION_MAX_AGE, reactivationCookie } from '@/lib/auth/reactivation';
 
 /**
  * Where the backend's Google callback sends the browser, with Google's one-time code. A route, not a page, so no
@@ -30,8 +32,25 @@ export async function GET(request: NextRequest) {
     return redirect(loginError('signin_expired', pending));
   }
   try {
-    await signIn('google-code', { code, role: pending.role, redirect: false });
+    await signIn('google-code', {
+      code,
+      role: pending.role,
+      returnTo: pending.callbackUrl,
+      redirect: false,
+    });
   } catch (error) {
+    // An account scheduled for deletion gets the app's "reactivate?" question before any session exists.
+    const handoff = signInErrorHandoff(error);
+    if (handoff) {
+      jar.set(reactivationCookie(secure), handoff, {
+        path: '/',
+        maxAge: REACTIVATION_MAX_AGE,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure,
+      });
+      return redirect('/login/reactivate');
+    }
     // Fail closed: anything that went wrong is a failed sign-in, never a half-made session.
     return redirect(loginError(signInErrorCode(error), pending));
   }
