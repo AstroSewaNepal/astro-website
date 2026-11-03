@@ -124,7 +124,7 @@ export function AccountMenu({ kind, user }: { kind: PrivateKind; user: AccountUs
           <div className="mt-5 border-t border-dashed border-[#611508]/30 pt-2">
             <button
               type="button"
-              // Backend /auth/logout (FCM token clear) comes with the user login in doc 03.
+              // Also ends the backend session (auth.ts events.signOut).
               onClick={() => signOut({ redirectTo: '/' })}
               className="flex w-full items-center gap-4 py-3 font-mukta text-[17px] text-red-700"
             >

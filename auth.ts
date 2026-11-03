@@ -1,34 +1,83 @@
-import NextAuth from 'next-auth';
+import NextAuth, { CredentialsSignin } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import Google from 'next-auth/providers/google';
 
 import { hasAdminRole } from '@/lib/admin-access';
-import { getJwtExpiry, refreshBackendTokens } from '@/lib/auth/backend-tokens';
+import { getJwtExpiry, refreshBackendTokens, revokeBackendSession } from '@/lib/auth/backend-tokens';
+import { isSignUpRole, type SignInError } from '@/lib/auth/google-signin';
 import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
 
 const authSecret =
   process.env.AUTH_SECRET ??
   (process.env.NODE_ENV !== 'production' ? 'local-dev-only-insecure-auth-secret' : undefined);
 
-const providers = [];
-
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  providers.push(
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      authorization: {
-        params: {
-          prompt: 'consent',
-          access_type: 'offline',
-          response_type: 'code',
-        },
-      },
-    }),
-  );
+/** A failed Google sign-in; `code` is the reason /login/google shows (see signInErrorCode). */
+class GoogleSignInError extends CredentialsSignin {
+  constructor(reason: SignInError) {
+    super(reason);
+    this.code = reason;
+  }
 }
 
-providers.push(
+type BackendAuthUser = {
+  _id: string;
+  email: string;
+  fullName?: string;
+  profilePicture?: { url: string };
+  roles?: string[];
+};
+
+const providers = [
+  // Google (doc 03): /login/google calls signIn('google-code') with Google's one-time code once the state matched;
+  // the backend exchanges it and finds or creates the account with the role picked on the Sign in page. Only a code
+  // is accepted, never tokens, since this callback is a public endpoint.
+  Credentials({
+    id: 'google-code',
+    name: 'Google',
+    credentials: { code: {}, role: {} },
+    async authorize(credentials) {
+      const apiRoot = tryGetPublicBackendBaseUrl();
+      const { code, role } = credentials ?? {};
+      if (!apiRoot || typeof code !== 'string' || !code || !isSignUpRole(role)) {
+        throw new GoogleSignInError('google_failed');
+      }
+
+      let res: Response;
+      try {
+        res = await fetch(`${apiRoot}/auth/google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, role, deviceType: 'WEB' }),
+          cache: 'no-store',
+        });
+      } catch {
+        throw new GoogleSignInError('google_failed');
+      }
+      // Like the app: 403 is only ever a suspended account; 401 is mostly an account made with the other role.
+      if (res.status === 403) throw new GoogleSignInError('suspended');
+      if (res.status === 401) throw new GoogleSignInError('role_mismatch');
+      const json = res.ok ? await res.json().catch(() => null) : null;
+      const data = json?.success ? json.data : null;
+      if (!data?.accessToken || !data.refreshToken || !data.user?._id) {
+        throw new GoogleSignInError('google_failed');
+      }
+
+      const user = data.user as BackendAuthUser;
+      // The backend lets admin accounts through any role; on the website they use the admin login only.
+      if (hasAdminRole(user.roles)) {
+        await revokeBackendSession(data.refreshToken);
+        throw new GoogleSignInError('admin_account');
+      }
+      return {
+        id: user._id,
+        name: user.fullName || user.email,
+        email: user.email,
+        image: user.profilePicture?.url ?? null,
+        backendAccessToken: data.accessToken as string,
+        backendRefreshToken: data.refreshToken as string,
+        roles: user.roles ?? [],
+      };
+    },
+  }),
   Credentials({
     credentials: {
       username: { label: 'Username', type: 'text' },
@@ -55,13 +104,7 @@ providers.push(
         const { accessToken, refreshToken, user } = json.data as {
           accessToken: string;
           refreshToken: string;
-          user: {
-            _id: string;
-            email: string;
-            fullName?: string;
-            profilePicture?: { url: string };
-            roles?: string[];
-          };
+          user: BackendAuthUser;
         };
         // This form is the admin login; any other email account stays out.
         if (!hasAdminRole(user.roles)) return null;
@@ -80,7 +123,7 @@ providers.push(
       }
     },
   }),
-);
+];
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
@@ -89,35 +132,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: '/login',
   },
-  callbacks: {
-    async signIn({ user, account }) {
-      if (account?.provider !== 'google') return true;
-      // Fail closed: without backend tokens the session would look logged in
-      // while every API call is rejected, so refuse the sign-in instead.
-      const apiRoot = tryGetPublicBackendBaseUrl();
-      if (!account.id_token || !apiRoot) return false;
-      try {
-        const res = await fetch(`${apiRoot}/auth/google`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            idToken: account.id_token,
-            role: 'USER',
-          }),
-        });
-        if (!res.ok) return false;
-        const json = await res.json();
-        if (!json.success || !json.data?.accessToken || !json.data.user?._id) return false;
-        const u = user as UserWithTokens;
-        u.backendAccessToken = json.data.accessToken;
-        u.backendRefreshToken = json.data.refreshToken;
-        u.roles = json.data.user.roles ?? [];
-        user.id = json.data.user._id;
-        return true;
-      } catch {
-        return false;
+  events: {
+    // Every sign-out (the menus' signOut()) also ends the backend session, so the refresh token left behind is dead.
+    async signOut(message) {
+      const token = 'token' in message ? message.token : null;
+      if (typeof token?.backendRefreshToken === 'string') {
+        await revokeBackendSession(token.backendRefreshToken);
       }
     },
+  },
+  callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.userId = user.id;
