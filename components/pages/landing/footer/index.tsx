@@ -18,7 +18,8 @@ import { PLAY_STORE_URL } from '@/lib/constants/app-store';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-[#5F1508] text-[#F8F3DF]">
+    // Maroon continues under the iPhone home bar (viewport-fit=cover)
+    <footer className="bg-[#5F1508] pb-[env(safe-area-inset-bottom)] text-[#F8F3DF]">
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-0 py-16">
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-32 items-center lg:items-start text-center lg:text-left">

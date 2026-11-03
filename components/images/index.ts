@@ -3,6 +3,8 @@ import AstrologyImage from './astrology.webp';
 import VerifiedIcon from './verified-icon.png';
 import AstrologerImage from './astrologer.webp';
 import HeroSectionImage from './hero-section.webp';
+// Vector from the Figma login frame (sharp at any size; the app's 247px PNG blurs the zodiac labels)
+import AstroChakraImage from './astro-chakra.svg';
 import BlogPlaceholderImage from './blog-placeholder.webp';
 import CustomerFeedbackImage from './customer-feedback.webp';
 import WhoWeAreImage from './who-we-are.webp';
@@ -29,6 +31,7 @@ export {
   AstrologyImage,
   AstrologerImage,
   HeroSectionImage,
+  AstroChakraImage,
   BlogPlaceholderImage,
   CustomerFeedbackImage,
   WhoWeAreImage,

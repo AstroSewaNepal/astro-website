@@ -96,6 +96,23 @@ body {
   overflow-x: hidden;
 }
 
+/* viewport-fit=cover (app/layout.tsx): keep content out of the iPhone notch in landscape.
+   The bottom (home bar) is padded by SiteChrome and the logged-in bottom tabs. */
+body {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* iOS zooms into any field under 16px when it gets focus; touch screens get 16px fields.
+   Unlayered, so it wins over Tailwind's text-* utilities. */
+@media (pointer: coarse) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']),
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+}
+
 input:-webkit-autofill,
 textarea:-webkit-autofill,
 select:-webkit-autofill,
