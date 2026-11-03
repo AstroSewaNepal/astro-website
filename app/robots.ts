@@ -16,6 +16,7 @@ export default function robots(): MetadataRoute.Robots {
           '/login',
           '/client',
           '/astrologer/',
+          '/start',
           '/sign-in',
           '/kundali-details',
           '/kundali-matching',
