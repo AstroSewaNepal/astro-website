@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Tiro_Devanagari_Sanskrit, Sahitya, Mukta, Raleway, Lato } from 'next/font/google';
 import Script from 'next/script';
 import { SessionProvider } from 'next-auth/react';
@@ -112,21 +112,18 @@ export const metadata: Metadata = {
         media: '(prefers-color-scheme: light)',
       },
     ],
-    apple: [
-      {
-        url: '/light_favicon.svg',
-        type: 'image/svg+xml',
-        sizes: 'any',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/dark_favicon.svg',
-        type: 'image/svg+xml',
-        sizes: 'any',
-        media: '(prefers-color-scheme: light)',
-      },
-    ],
+    // iPhones ignore SVG here and would screenshot the page instead; this is the iOS app's icon.
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
+  // iPhone "Add to Home Screen": opens without Safari's bars. The default status bar keeps the dark clock
+  // readable on our light header (black-translucent would put white text over it).
+  appleWebApp: {
+    capable: true,
+    title: 'AstroSewa',
+    statusBarStyle: 'default',
+  },
+  // Next only emits the newer mobile-web-app-capable; iOS before 16.4 (no manifest support) needs this one.
+  other: { 'apple-mobile-web-app-capable': 'yes' },
   twitter: {
     card: 'summary_large_image',
     title: "Astro Sewa - Nepal's Trusted Online Astrology Platform",
@@ -145,6 +142,15 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  // Lets pages reach the notch / home-bar areas; globals.css and the bottom tabs pad with env(safe-area-inset-*).
+  viewportFit: 'cover',
+  // Browser bar / Android status bar: matches the light page top.
+  themeColor: '#ffffff',
 };
 
 export default function RootLayout({
@@ -191,7 +197,7 @@ export default function RootLayout({
               name: 'Astro Sewa',
               legalName: 'Astro Sewa Pvt. Ltd.',
               url: SITE_URL,
-              logo: `${SITE_URL}/logo.png`,
+              logo: `${SITE_URL}/icons/icon-512.png`,
               description:
                 "Nepal's trusted online astrology platform connecting seekers with 1000+ verified Vedic astrologers.",
               address: {

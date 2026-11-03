@@ -39,8 +39,8 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
           className={clsx(
             LandingPageCSS.background,
             'flex min-h-screen min-w-0 flex-col',
-            // room for the fixed bottom tabs of the logged-in pages on phones
-            isAccountPage(pathname) && 'pb-[calc(64px+env(safe-area-inset-bottom))] lg:pb-0',
+            // room for the fixed bottom tabs of the logged-in pages on phones (the footer pads the home bar)
+            isAccountPage(pathname) && 'pb-16 lg:pb-0',
           )}
         >
           <LandingHeader />
