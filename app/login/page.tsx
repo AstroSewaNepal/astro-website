@@ -6,6 +6,7 @@ import { auth } from '@/auth';
 import { SignInPanel } from '@/components/auth/sign-in-panel';
 import { HeroSectionImage } from '@/components/images';
 import { accountHome, safeReturnPath } from '@/lib/auth/account';
+import { isSignInError } from '@/lib/auth/google-signin';
 
 export const metadata: Metadata = {
   title: 'Sign in',
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 type LoginPageProps = {
-  searchParams: Promise<{ callbackUrl?: string; role?: string }>;
+  searchParams: Promise<{ callbackUrl?: string; role?: string; error?: string }>;
 };
 
 /** Client and astrologer sign-in (Figma login layout, app sign-in content). The admin login is at /admin. */
@@ -24,7 +25,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   } catch {
     // invalid / expired JWT: treat as logged out
   }
-  const { callbackUrl, role } = await searchParams;
+  const { callbackUrl, role, error } = await searchParams;
   if (session?.user) {
     redirect(safeReturnPath(callbackUrl, accountHome(session.user.roles)));
   }
@@ -44,6 +45,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <SignInPanel
           initialRole={role === 'astrologer' ? 'astrologer' : 'client'}
           callbackUrl={safeReturnPath(callbackUrl, '')}
+          error={isSignInError(error) ? error : undefined}
         />
       </div>
     </section>

@@ -47,3 +47,22 @@ export async function refreshBackendTokens(refreshToken: string): Promise<Backen
     return null;
   }
 }
+
+/**
+ * Ends a backend session (the refresh token stops working). `deviceType: 'WEB'` keeps the push token the user's phone
+ * app registered; the website never registers one. Best effort: a dead or refused token is already logged out.
+ */
+export async function revokeBackendSession(refreshToken: string): Promise<void> {
+  const apiRoot = tryGetPublicBackendBaseUrl();
+  if (!apiRoot) return;
+  try {
+    await fetch(`${apiRoot}/auth/logout`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${refreshToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceType: 'WEB' }),
+      cache: 'no-store',
+    });
+  } catch {
+    // network failure: the token still expires on its own
+  }
+}

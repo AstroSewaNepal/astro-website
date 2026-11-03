@@ -6,6 +6,7 @@ import Link from 'next/link';
 import clsx from 'clsx';
 
 import { AstroChakraImage } from '@/components/images';
+import { type SignInError, signInErrorMessage } from '@/lib/auth/google-signin';
 
 export type SignInRole = 'client' | 'astrologer';
 
@@ -25,9 +26,9 @@ const TEXT = {
   becomeAnAstrologer: 'Become an Astrologer?',
   clickHere: 'Click Here',
   continueAsGuest: 'Continue as guest',
-  comingSoon: 'Signing in on the website is coming soon. Meanwhile, use the AstroSewa app.',
-  getTheApp: 'Get the app',
 };
+
+const BACKEND_ROLE = { client: 'USER', astrologer: 'ASTROLOGER' } as const;
 
 function GoogleIcon() {
   return (
@@ -54,15 +55,22 @@ function GoogleIcon() {
 
 /**
  * Client / astrologer sign-in, like the app: pick a role, accept the terms, continue with Google.
- * The backend needs the role to create a new account, so Google comes after this page.
+ * The backend needs the role to create a new account, so Google comes after this page (lib/auth/google-signin.ts).
  */
-export function SignInPanel({ initialRole }: { initialRole: SignInRole; callbackUrl?: string }) {
+export function SignInPanel({
+  initialRole,
+  callbackUrl,
+  error,
+}: {
+  initialRole: SignInRole;
+  callbackUrl?: string;
+  error?: SignInError;
+}) {
   const [role, setRole] = useState<SignInRole>(initialRole);
   const [agreed, setAgreed] = useState(false);
-  const [showComingSoon, setShowComingSoon] = useState(false);
-
-  // Doc 03 replaces this with the Google sign-in (role + callbackUrl) once the Web OAuth client exists.
-  const continueWithGoogle = () => setShowComingSoon(true);
+  const [submitting, setSubmitting] = useState(false);
+  // The message belongs to the attempt it came from; picking another tab is a new attempt.
+  const [shownError, setShownError] = useState(error);
 
   return (
     <div className="w-full max-w-[520px]">
@@ -93,7 +101,7 @@ export function SignInPanel({ initialRole }: { initialRole: SignInRole; callback
             aria-selected={role === r}
             onClick={() => {
               setRole(r);
-              setShowComingSoon(false);
+              setShownError(undefined);
             }}
             className={clsx(
               'rounded-full py-2.5 font-mukta text-lg transition-colors',
@@ -111,27 +119,28 @@ export function SignInPanel({ initialRole }: { initialRole: SignInRole; callback
         <span className="h-px flex-1 bg-[#611508]/25" />
       </div>
 
-      <button
-        type="button"
-        disabled={!agreed}
-        onClick={continueWithGoogle}
-        className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-primary px-4 py-3.5 font-mukta text-base whitespace-nowrap text-white sm:px-6 sm:text-lg transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white">
-          <GoogleIcon />
-        </span>
-        {TEXT.continueWithGoogle(TEXT.tabs[role])}
-      </button>
+      {/* A plain form post: /login/google/start sets the state cookie and sends the browser on to Google. */}
+      <form method="post" action="/login/google/start" onSubmit={() => setSubmitting(true)}>
+        <input type="hidden" name="role" value={BACKEND_ROLE[role]} />
+        {callbackUrl ? <input type="hidden" name="callbackUrl" value={callbackUrl} /> : null}
+        <button
+          type="submit"
+          disabled={!agreed || submitting}
+          className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-primary px-4 py-3.5 font-mukta text-base whitespace-nowrap text-white sm:px-6 sm:text-lg transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white">
+            <GoogleIcon />
+          </span>
+          {TEXT.continueWithGoogle(TEXT.tabs[role])}
+        </button>
+      </form>
 
-      {showComingSoon ? (
+      {shownError ? (
         <div
-          role="status"
+          role="alert"
           className="mt-4 rounded-2xl border border-primary/25 bg-[#fbf7ee] px-5 py-4 text-center font-mukta text-[15px] text-[#4a1a1a]"
         >
-          {TEXT.comingSoon}{' '}
-          <Link href="/download-app" className="text-primary underline">
-            {TEXT.getTheApp}
-          </Link>
+          {signInErrorMessage(shownError, role)}
         </div>
       ) : null}
 
@@ -162,7 +171,10 @@ export function SignInPanel({ initialRole }: { initialRole: SignInRole; callback
             {TEXT.becomeAnAstrologer}{' '}
             <button
               type="button"
-              onClick={() => setRole('astrologer')}
+              onClick={() => {
+                setRole('astrologer');
+                setShownError(undefined);
+              }}
               className="text-primary underline"
             >
               {TEXT.clickHere}
