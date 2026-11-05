@@ -2,12 +2,14 @@
 
 import { Suspense, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import clsx from 'clsx';
 
 import LandingPageCSS from '@/app/landing-page.module.css';
 import Footer from '@/components/pages/landing/footer';
 import { LandingHeader } from '@/components/pages/landing/header/landing-header';
-import { isAccountPage } from '@/lib/account/nav';
+import { isAccountPage, isClientShellPage } from '@/lib/account/nav';
+import { accountKind } from '@/lib/auth/account';
 import { HoroscopeLocaleProvider } from '@/lib/i18n';
 
 /** Paths that use their own chrome (admin, auth) — no marketing header/footer/locale shell. */
@@ -26,6 +28,10 @@ function usesMarketingChrome(pathname: string | null): boolean {
  */
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const hasTabs =
+    isAccountPage(pathname) ||
+    (isClientShellPage(pathname) && accountKind(session?.user?.roles) === 'client');
   const wrap = useMemo(() => usesMarketingChrome(pathname), [pathname]);
 
   if (!wrap) {
@@ -40,7 +46,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
             LandingPageCSS.background,
             'flex min-h-screen min-w-0 flex-col',
             // room for the fixed bottom tabs of the logged-in pages on phones (the footer pads the home bar)
-            isAccountPage(pathname) && 'pb-16 lg:pb-0',
+            hasTabs && 'pb-16 lg:pb-0',
           )}
         >
           <LandingHeader />

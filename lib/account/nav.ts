@@ -55,7 +55,7 @@ export type PrivateKind = Exclude<AccountKind, 'admin'>;
 const home = (href: string): AccountNavItem => ({ label: 'Home', href, icon: House });
 
 const c = {
-  astroConnect: { label: 'Astro Connect', href: '/astrologers', icon: Sparkles, soon: true },
+  astroConnect: { label: 'Astro Connect', href: '/astrologers', icon: Sparkles },
   live: { label: 'Live', href: '/live', icon: Radio, soon: true },
   remedies: { label: 'Remedies', href: '/remedies', icon: Gem, soon: true },
   consultations: { label: 'My Consultations', href: '/client/consultations', icon: History },
@@ -119,6 +119,17 @@ export function isAccountPage(pathname: string | null): boolean {
   return ['/client', '/astrologer'].some(
     root => pathname === root || pathname.startsWith(`${root}/`),
   );
+}
+
+/**
+ * Public pages that a logged-in client sees inside their account shell (sidebar + bottom tabs), like the app's tabs.
+ * Guests see them in the plain site layout.
+ */
+const CLIENT_SHELL_PAGES = ['/astrologers', '/astrologer-profile'];
+
+export function isClientShellPage(pathname: string | null): boolean {
+  if (!pathname) return false;
+  return CLIENT_SHELL_PAGES.some(root => pathname === root || pathname.startsWith(`${root}/`));
 }
 
 /** Page title for a path in the logged-in area (sidebar labels first: tab labels are shortened). */

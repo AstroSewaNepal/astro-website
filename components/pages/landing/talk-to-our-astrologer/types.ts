@@ -25,6 +25,7 @@ export interface AstrologerPackage {
   cost?: PackagePrice | null;
   discountedPrice?: PackagePrice | null;
   discountPercent?: number | null;
+  consultationMinutes?: number | null;
 }
 
 export interface AstrologerTag {

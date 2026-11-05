@@ -2,6 +2,7 @@
 
 import React, { memo, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { AstrologerImage, VerifiedIcon } from '@/components/images';
 import { EducationIcon, GoldMedalIcon, LanguageIcon, SquareIcon } from '@/components/images/icons';
@@ -26,6 +27,11 @@ import {
 export type AstrologerCardProps = AstrologerCardActions & {
   astrologer: Astrologer;
   priorityImage?: boolean;
+  /**
+   * The astrologer's profile. When set, the photo and name open it, and so do Schedule / Connect Now until booking
+   * exists on the web (doc 05). The profile page sends guests to log in first, as the app does.
+   */
+  profileHref?: string;
 };
 
 const AstrologerCard = memo(function AstrologerCard({
@@ -34,6 +40,7 @@ const AstrologerCard = memo(function AstrologerCard({
   onCall,
   onSchedule,
   priorityImage = false,
+  profileHref,
 }: AstrologerCardProps) {
   const profileImage = getProfileImageUrl(astrologer);
   const name = getAstrologerName(astrologer);
@@ -53,6 +60,7 @@ const AstrologerCard = memo(function AstrologerCard({
         originalLabel: 'Price unavailable',
         discountedLabel: 'Price unavailable',
         showStrikeThrough: false,
+        per: '',
       };
     }
 
@@ -62,12 +70,16 @@ const AstrologerCard = memo(function AstrologerCard({
       lowestPackage.discountedPrice?.value,
     );
     const showStrikeThrough = (lowestPackage.discountPercent ?? 0) > 0;
+    // The app's card: "NPR 465 / 15m" (price of the cheapest package and its length), "Free" when it costs nothing.
+    const minutes = lowestPackage.consultationMinutes;
+    const isFree = lowestPackage.discountedPrice?.value === 0;
 
     return {
       hasPackage: true,
       originalLabel,
-      discountedLabel,
-      showStrikeThrough,
+      discountedLabel: isFree ? 'Free' : discountedLabel,
+      showStrikeThrough: showStrikeThrough && !isFree,
+      per: minutes && !isFree ? ` / ${minutes}m` : '',
     };
   }, [astrologer.packages]);
 
@@ -106,7 +118,11 @@ const AstrologerCard = memo(function AstrologerCard({
     <article className="talk-to-our-astrologer-card flex h-full flex-col overflow-hidden rounded-[34px] border border-solid border-[#0000007D] shadow-[0_8px_32px_rgba(97,21,8,0.08)] bg-[#fbf6ee]">
       <div className="flex flex-1 flex-col p-3.5 pt-4 pb-1 sm:p-6 sm:pt-10 lg:p-8 lg:pt-14">
         <div className="flex flex-col items-center">
-          <div className="relative shrink-0">
+          <ProfileLink
+            href={profileHref}
+            label={`View ${name}'s profile`}
+            className="relative shrink-0"
+          >
             <div className="relative h-[80px] w-[80px] overflow-hidden rounded-full ring-2 ring-[#e8dcc8] sm:h-[130px] sm:w-[130px] lg:h-[160px] lg:w-[160px]">
               <Image
                 src={imageSrc}
@@ -125,12 +141,18 @@ const AstrologerCard = memo(function AstrologerCard({
               ].join(' ')}
               aria-label={isOnline ? 'Online' : 'Offline'}
             />
-          </div>
+          </ProfileLink>
 
           <div className="mt-2 flex flex-col items-center text-center sm:mt-4 lg:mt-6">
             <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
               <h3 className="line-clamp-1 font-mukta text-[15px] font-semibold leading-tight text-[#5a6a8a] sm:text-[20px] lg:text-[24px]">
-                {name}
+                {profileHref ? (
+                  <Link href={profileHref} className="hover:underline">
+                    {name}
+                  </Link>
+                ) : (
+                  name
+                )}
               </h3>
               {isVerified ? (
                 <Image
@@ -179,16 +201,24 @@ const AstrologerCard = memo(function AstrologerCard({
             </div>
           </div>
 
-          <div className="mt-1.5 flex flex-wrap items-baseline justify-center gap-x-1 gap-y-0.5 text-center sm:mt-3 lg:mt-5">
-            {pricing.hasPackage && pricing.showStrikeThrough ? (
-              <span className="font-mukta text-[10px] text-[#8a8583] line-through sm:text-sm lg:text-base">
-                {pricing.originalLabel}/min
+          {/* No packages: no price line, like the app's card. */}
+          {pricing.hasPackage ? (
+            <div className="mt-1.5 flex flex-wrap items-baseline justify-center gap-x-1 gap-y-0.5 text-center sm:mt-3 lg:mt-5">
+              {pricing.showStrikeThrough ? (
+                <span className="font-mukta text-[10px] text-[#8a8583] line-through sm:text-sm lg:text-base">
+                  {pricing.originalLabel}
+                </span>
+              ) : null}
+              <span className="font-mukta text-[16px] font-bold leading-none text-primary sm:text-[24px] lg:text-[32px]">
+                {pricing.discountedLabel}
+                {pricing.per ? (
+                  <span className="text-[11px] font-semibold sm:text-sm lg:text-base">
+                    {pricing.per}
+                  </span>
+                ) : null}
               </span>
-            ) : null}
-            <span className="font-mukta text-[16px] font-bold leading-none text-primary sm:text-[24px] lg:text-[32px]">
-              {pricing.hasPackage ? `${pricing.discountedLabel}/min` : pricing.discountedLabel}
-            </span>
-          </div>
+            </div>
+          ) : null}
         </div>
 
         <div className="mt-auto grid grid-cols-2 gap-1 pt-2 sm:gap-2.5 sm:pt-4 lg:gap-3 lg:pt-5">
@@ -213,31 +243,78 @@ const AstrologerCard = memo(function AstrologerCard({
       </div>
 
       <div className="mt-auto flex shrink-0 items-center justify-between gap-1.5 sm:gap-3 px-3 py-2 sm:px-5 sm:py-4 lg:px-6 lg:py-5 border-t border-dashed border-[#79787A]/30">
-        <button
-          type="button"
+        <CardAction
+          href={profileHref}
           className="flex flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-[32px] bg-[#611508] py-2.5 sm:py-3 lg:py-3.5 transition-opacity hover:opacity-90"
-          aria-label={`Schedule session with ${name}`}
+          label={`Schedule session with ${name}`}
           onClick={() => onSchedule?.(astrologer)}
         >
           <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 shrink-0 text-white" />
           <span className="font-mukta text-[11px] sm:text-[14px] lg:text-base font-medium text-white">
             Schedule
           </span>
-        </button>
-        <button
-          type="button"
+        </CardAction>
+        <CardAction
+          href={profileHref}
           className="flex flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-[32px] border border-[#611508] bg-transparent py-2.5 sm:py-3 lg:py-3.5 transition-opacity hover:bg-[#611508]/5"
-          aria-label={`Connect with ${name}`}
+          label={`Connect with ${name}`}
           onClick={() => (onCall ? onCall(astrologer) : onChat?.(astrologer))}
         >
           <PhoneIcon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 shrink-0 text-[#611508]" />
           <span className="font-mukta text-[11px] sm:text-[14px] lg:text-base font-medium text-[#611508]">
             Connect Now
           </span>
-        </button>
+        </CardAction>
       </div>
     </article>
   );
 });
+
+function ProfileLink({
+  href,
+  label,
+  className,
+  children,
+}: {
+  href?: string;
+  label: string;
+  className: string;
+  children: React.ReactNode;
+}) {
+  if (!href) return <div className={className}>{children}</div>;
+  return (
+    <Link href={href} aria-label={label} className={`block ${className}`}>
+      {children}
+    </Link>
+  );
+}
+
+/** A footer button: a link when the card has a profile to open, else a button for the page's own handler. */
+function CardAction({
+  href,
+  label,
+  className,
+  onClick,
+  children,
+}: {
+  href?: string;
+  label: string;
+  className: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  if (href) {
+    return (
+      <Link href={href} aria-label={label} className={className}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <button type="button" aria-label={label} className={className} onClick={onClick}>
+      {children}
+    </button>
+  );
+}
 
 export default AstrologerCard;
