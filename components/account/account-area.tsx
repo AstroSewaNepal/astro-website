@@ -8,6 +8,7 @@ import { ComingSoon } from '@/components/account/coming-soon';
 import { LoginRedirect } from '@/components/account/login-redirect';
 import { accountPageTitle, type PrivateKind } from '@/lib/account/nav';
 import { accountHome, accountKind } from '@/lib/auth/account';
+import { QueryProvider } from '@/providers/query-provider';
 
 /** Shared layout of /client and /astrologer: the page renders only for a logged-in account of that kind. */
 export async function AccountArea({
@@ -27,7 +28,11 @@ export async function AccountArea({
   }
   if (accountKind(session.user.roles) !== kind) redirect(accountHome(session.user.roles));
 
-  return <AccountShell kind={kind}>{children}</AccountShell>;
+  return (
+    <QueryProvider>
+      <AccountShell kind={kind}>{children}</AccountShell>
+    </QueryProvider>
+  );
 }
 
 export const accountAreaMetadata: Metadata = {

@@ -46,16 +46,21 @@ function SidebarItem({ item, active }: { item: AccountNavItem; active: boolean }
 
 function TabItem({ item, active }: { item: AccountNavItem; active: boolean }) {
   const Icon = item.icon;
+  const TabIcon = item.tabIcon;
   const body = (
     <>
-      <Icon className="h-[22px] w-[22px]" strokeWidth={active ? 2.25 : 1.75} aria-hidden />
+      {TabIcon ? (
+        <TabIcon className="h-6 w-6" active={active} />
+      ) : (
+        <Icon className="h-[22px] w-[22px]" strokeWidth={active ? 2.25 : 1.75} aria-hidden />
+      )}
       <span className="max-w-full truncate text-[11px] leading-4">{item.label}</span>
     </>
   );
   const base = 'flex min-w-0 flex-1 flex-col items-center gap-0.5 pt-2 pb-1.5 font-mukta';
   if (item.soon) {
     return (
-      <span aria-disabled className={clsx(base, 'text-[#611508]/35')}>
+      <span aria-disabled className={clsx(base, 'text-[#BE7B71]/50')}>
         {body}
       </span>
     );
@@ -64,7 +69,8 @@ function TabItem({ item, active }: { item: AccountNavItem; active: boolean }) {
     <Link
       href={item.href}
       aria-current={active ? 'page' : undefined}
-      className={clsx(base, active ? 'text-primary' : 'text-[#8a7a6a]')}
+      // The app's tab colours (primary800 / primary400).
+      className={clsx(base, active ? 'text-[#720A0B]' : 'text-[#BE7B71]')}
     >
       {body}
     </Link>

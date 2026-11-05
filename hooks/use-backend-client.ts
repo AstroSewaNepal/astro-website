@@ -5,6 +5,7 @@ import { getSession, signOut, useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 
 import type { RefreshRequest } from '@/auth';
+import { signInAgainPath } from '@/lib/auth/account';
 import { createBackendClient } from '@/lib/backend/client';
 import { createTokenRefresher, type TokenSession } from '@/lib/backend/token-refresher';
 import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
@@ -35,11 +36,10 @@ const backendClient = createBackendClient({
   baseUrl: tryGetPublicBackendBaseUrl() ?? '',
   getToken: async () => refresher.getToken(latest ?? toTokenSession(await getSession())),
   refreshToken: refresher.refresh,
-  // TODO(03): send clients and astrologers to their own login page with a return path.
   onAuthLost: () => {
     if (authLost) return;
     authLost = true;
-    void signOut({ redirectTo: '/' });
+    void signOut({ redirectTo: signInAgainPath(window.location.pathname + window.location.search) });
   },
 });
 

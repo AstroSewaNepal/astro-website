@@ -202,8 +202,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // Refresh only when the browser asks (update() is a route handler, so the new cookie is saved; a refresh
       // during a server render would be lost and burn the rotated refresh token). `failedToken` makes a second tab's
       // request a no-op once the first tab has already refreshed.
-      const ask = trigger === 'update' ? (session as RefreshRequest | undefined) : undefined;
-      if (ask?.refresh === true && typeof token.backendRefreshToken === 'string') {
+      // update() bodies come from the browser: check every field.
+      const ask =
+        trigger === 'update' && session && typeof session === 'object'
+          ? (session as SessionUpdate)
+          : undefined;
+      if (ask && 'refresh' in ask && ask.refresh === true && typeof token.backendRefreshToken === 'string') {
         if (ask.failedToken && ask.failedToken !== token.backendAccessToken) return token;
         const next = await refreshBackendTokens(token.backendRefreshToken);
         if (!next) return { ...token, error: 'RefreshFailed' };
@@ -212,6 +216,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.backendAccessTokenExpires = getJwtExpiry(next.accessToken);
         if (next.roles) token.roles = next.roles;
         delete token.error;
+      }
+      // After Edit profile saves, the header shows the new name and picture: only the person's own display data,
+      // and only an https picture.
+      const profile = ask && 'profile' in ask ? ask.profile : null;
+      if (profile && typeof profile === 'object') {
+        const { name, image } = profile as { name?: unknown; image?: unknown };
+        if (typeof name === 'string' && name.trim()) token.name = name.trim().slice(0, 50);
+        if (image === null) token.picture = null;
+        else if (typeof image === 'string' && image.startsWith('https://')) token.picture = image;
       }
       return token;
     },
@@ -255,6 +268,11 @@ interface UserWithTokens {
 
 /** What the browser sends with update() to ask for new backend tokens. */
 export type RefreshRequest = { refresh: true; failedToken?: string };
+
+/** What Edit profile sends with update() once the backend saved the profile. */
+export type ProfileUpdate = { profile: { name?: string; image?: string | null } };
+
+type SessionUpdate = RefreshRequest | ProfileUpdate;
 
 declare module 'next-auth' {
   interface Session {

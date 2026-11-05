@@ -1,3 +1,4 @@
+import type { ComponentType } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import {
   BarChart3,
@@ -14,6 +15,15 @@ import {
   Wallet,
 } from 'lucide-react';
 
+import {
+  AstrologersTabIcon,
+  ChatTabIcon,
+  EarningsTabIcon,
+  HomeTabIcon,
+  LiveTabIcon,
+  RemediesTabIcon,
+  SettingsTabIcon,
+} from '@/components/account/tab-icons';
 import type { AccountKind } from '@/lib/auth/account';
 
 /**
@@ -24,11 +34,13 @@ export type AccountNavItem = {
   label: string;
   href: string;
   icon: LucideIcon;
+  /** Bottom tabs use the app's own tab bar icon instead. */
+  tabIcon?: ComponentType<{ className?: string; active?: boolean }>;
   soon?: boolean;
 };
 
 export type AccountNav = {
-  /** Phone bottom tabs (the app's tab bar). */
+  /** Phone bottom tabs: the app's tab bar, same order and icons. */
   tabs: AccountNavItem[];
   /** Desktop left sidebar, one array per group (dotted line between groups). */
   sidebar: AccountNavItem[][];
@@ -67,11 +79,11 @@ const a = {
 export const ACCOUNT_NAV: Record<PrivateKind, AccountNav> = {
   client: {
     tabs: [
-      home('/client'),
-      { ...c.astroConnect, label: 'Astrologers' },
-      c.live,
-      c.remedies,
-      { ...c.consultations, label: 'Consultations' },
+      { ...home('/client'), tabIcon: HomeTabIcon },
+      { ...c.astroConnect, label: 'Astrologers', tabIcon: AstrologersTabIcon },
+      { ...c.live, tabIcon: LiveTabIcon },
+      { ...c.consultations, label: 'Consultations', tabIcon: ChatTabIcon },
+      { ...c.remedies, tabIcon: RemediesTabIcon },
     ],
     sidebar: [
       [home('/client'), c.astroConnect, c.live, c.remedies, c.consultations],
@@ -86,11 +98,11 @@ export const ACCOUNT_NAV: Record<PrivateKind, AccountNav> = {
   },
   astrologer: {
     tabs: [
-      home('/astrologer'),
-      { ...a.consultations, label: 'Consultations' },
-      { ...a.earnings, label: 'Earnings' },
-      { ...a.remedies, label: 'Remedies' },
-      a.settings,
+      { ...home('/astrologer'), tabIcon: HomeTabIcon },
+      { ...a.consultations, label: 'Consultations', tabIcon: ChatTabIcon },
+      { ...a.earnings, label: 'Earnings', tabIcon: EarningsTabIcon },
+      { ...a.remedies, label: 'Remedies', tabIcon: RemediesTabIcon },
+      { ...a.settings, tabIcon: SettingsTabIcon },
     ],
     sidebar: [
       [home('/astrologer'), a.analytics, a.consultations, a.earnings, a.remedies],
