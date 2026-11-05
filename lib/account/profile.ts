@@ -1,6 +1,9 @@
 // Edit profile, as the app's client screen (ap src/screens/EditProfile/User): the rules, and the backend's shapes.
 import { z } from 'zod';
 
+/** React Query key of GET /users/me. */
+export const ME_QUERY_KEY = ['users', 'me'] as const;
+
 /** GET /users/me, the parts the profile uses. */
 export type MeResponse = {
   user: {
@@ -25,7 +28,8 @@ export const DEFAULT_DIAL_CODE = '+977';
 
 /** Why an image can't be uploaded, or null when it can. */
 export function imageProblem(file: Pick<File, 'type' | 'size'>): string | null {
-  if (!file.type.startsWith('image/') || file.type === 'image/svg+xml') return 'Choose a photo (JPG, PNG, WebP or HEIC).';
+  if (!file.type.startsWith('image/') || file.type === 'image/svg+xml')
+    return 'Choose a photo (JPG, PNG, WebP or HEIC).';
   if (file.size > MAX_IMAGE_BYTES) return 'Each photo must be 5 MB or smaller.';
   return null;
 }
@@ -70,13 +74,19 @@ export function currentGender(me: MeResponse, options: GenderOption[]): string {
   const saved = me.userDetails?.gender ?? me.user.gender ?? '';
   if (!saved) return '';
   const match = options.find(
-    o => o.value.toLowerCase() === saved.toLowerCase() || o.label.toLowerCase() === saved.toLowerCase(),
+    o =>
+      o.value.toLowerCase() === saved.toLowerCase() ||
+      o.label.toLowerCase() === saved.toLowerCase(),
   );
   return match?.value ?? '';
 }
 
 /** Body of PUT /users/me: the fields, plus any new profile picture and new gallery photos. */
-export function profileFormData(form: ProfileForm, newPicture: File | null, newPhotos: File[]): FormData {
+export function profileFormData(
+  form: ProfileForm,
+  newPicture: File | null,
+  newPhotos: File[],
+): FormData {
   const body = new FormData();
   body.append('fullName', form.name.trim());
   body.append('phoneNumber', joinPhone(form.dialCode, form.phone.trim()));

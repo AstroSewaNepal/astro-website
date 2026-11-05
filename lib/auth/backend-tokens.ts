@@ -66,3 +66,20 @@ export async function revokeBackendSession(refreshToken: string): Promise<void> 
     // network failure: the token still expires on its own
   }
 }
+
+/** The account's email as the backend has it now (after Change email). Null when it can't be read. */
+export async function fetchBackendEmail(accessToken: string): Promise<string | null> {
+  const apiRoot = tryGetPublicBackendBaseUrl();
+  if (!apiRoot) return null;
+  try {
+    const res = await fetch(`${apiRoot}/users/me`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      cache: 'no-store',
+    });
+    if (!res.ok) return null;
+    const email = (await res.json())?.data?.user?.email;
+    return typeof email === 'string' && email.includes('@') ? email : null;
+  } catch {
+    return null;
+  }
+}

@@ -2,7 +2,12 @@ import NextAuth, { CredentialsSignin } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
 import { hasAdminRole } from '@/lib/admin-access';
-import { getJwtExpiry, refreshBackendTokens, revokeBackendSession } from '@/lib/auth/backend-tokens';
+import {
+  fetchBackendEmail,
+  getJwtExpiry,
+  refreshBackendTokens,
+  revokeBackendSession,
+} from '@/lib/auth/backend-tokens';
 import { isSignUpRole, type SignInError } from '@/lib/auth/google-signin';
 import { openHandoff, sealHandoff } from '@/lib/auth/reactivation';
 import { authSecret } from '@/lib/auth/secret';
@@ -207,7 +212,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         trigger === 'update' && session && typeof session === 'object'
           ? (session as SessionUpdate)
           : undefined;
-      if (ask && 'refresh' in ask && ask.refresh === true && typeof token.backendRefreshToken === 'string') {
+      if (
+        ask &&
+        'refresh' in ask &&
+        ask.refresh === true &&
+        typeof token.backendRefreshToken === 'string'
+      ) {
         if (ask.failedToken && ask.failedToken !== token.backendAccessToken) return token;
         const next = await refreshBackendTokens(token.backendRefreshToken);
         if (!next) return { ...token, error: 'RefreshFailed' };
@@ -225,6 +235,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (typeof name === 'string' && name.trim()) token.name = name.trim().slice(0, 50);
         if (image === null) token.picture = null;
         else if (typeof image === 'string' && image.startsWith('https://')) token.picture = image;
+        // After Change email: the new address comes from the backend, never from the browser.
+        const { syncEmail } = profile as { syncEmail?: unknown };
+        if (syncEmail === true && typeof token.backendAccessToken === 'string') {
+          const email = await fetchBackendEmail(token.backendAccessToken);
+          if (email) token.email = email;
+        }
       }
       return token;
     },
@@ -270,7 +286,9 @@ interface UserWithTokens {
 export type RefreshRequest = { refresh: true; failedToken?: string };
 
 /** What Edit profile sends with update() once the backend saved the profile. */
-export type ProfileUpdate = { profile: { name?: string; image?: string | null } };
+export type ProfileUpdate = {
+  profile: { name?: string; image?: string | null; syncEmail?: true };
+};
 
 type SessionUpdate = RefreshRequest | ProfileUpdate;
 
