@@ -110,7 +110,7 @@ export function createBackendClient({
       (await request<T>('PUT', path, body ?? {})).data,
     patch: async <T>(path: string, body?: unknown) =>
       (await request<T>('PATCH', path, body ?? {})).data,
-    delete: async <T>(path: string) => (await request<T>('DELETE', path)).data,
+    delete: async <T>(path: string, body?: unknown) => (await request<T>('DELETE', path, body)).data,
   };
 }
 

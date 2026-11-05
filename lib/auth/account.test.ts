@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { accountHome, accountKind, safeReturnPath } from './account';
+import { accountHome, accountKind, safeReturnPath, signInAgainPath } from './account';
 
 describe('accountKind', () => {
   it('maps backend roles to the site area', () => {
@@ -37,5 +37,20 @@ describe('safeReturnPath', () => {
     expect(safeReturnPath('//evil.example', '/')).toBe('/');
     expect(safeReturnPath('/\\evil.example', '/')).toBe('/');
     expect(safeReturnPath(undefined, '/x')).toBe('/x');
+  });
+});
+
+describe('signInAgainPath', () => {
+  it('sends clients and astrologers to the Sign in page, on their tab, and back', () => {
+    expect(signInAgainPath('/client/profile')).toBe('/login?callbackUrl=%2Fclient%2Fprofile');
+    expect(signInAgainPath('/astrologer/earnings?x=1')).toBe(
+      '/login?callbackUrl=%2Fastrologer%2Fearnings%3Fx%3D1&role=astrologer',
+    );
+  });
+  it('keeps admins on their page (it shows the admin login)', () => {
+    expect(signInAgainPath('/admin/gifts')).toBe('/admin/gifts');
+  });
+  it('never leaves the site', () => {
+    expect(signInAgainPath('//evil.example')).toBe('/login?callbackUrl=%2F');
   });
 });

@@ -28,3 +28,13 @@ export function safeReturnPath(path: unknown, fallback: string): string {
   if (path.includes('\\')) return fallback;
   return path;
 }
+
+/** Where to go when the session ended on its own: the right sign-in page, then back to the page they were on. */
+export function signInAgainPath(here: string): string {
+  const path = safeReturnPath(here, '/');
+  // Logged out, every /admin page shows the admin login and returns to itself.
+  if (path === '/admin' || path.startsWith('/admin/')) return path;
+  const params = new URLSearchParams({ callbackUrl: path });
+  if (path === '/astrologer' || path.startsWith('/astrologer/')) params.set('role', 'astrologer');
+  return `/login?${params.toString()}`;
+}
