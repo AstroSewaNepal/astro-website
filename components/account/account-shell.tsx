@@ -88,7 +88,8 @@ export function AccountShell({ kind, children }: { kind: PrivateKind; children: 
   const onHome = pathname === homeHref;
   // Sub-pages (/client/settings/security) go back to their parent page; first-level pages go Home.
   const parts = pathname.split('/').filter(Boolean);
-  const backHref = parts.length > 2 ? `/${parts.slice(0, -1).join('/')}` : homeHref;
+  const isSubPage = parts.length > 2;
+  const backHref = isSubPage ? `/${parts.slice(0, -1).join('/')}` : homeHref;
 
   return (
     <div className="container mx-auto flex w-full min-w-0 flex-1 gap-10 px-4 pb-12 lg:px-0">
@@ -116,7 +117,11 @@ export function AccountShell({ kind, children }: { kind: PrivateKind; children: 
         {!onHome ? (
           <Link
             href={backHref}
-            className="mb-3 inline-flex items-center gap-1 font-mukta text-[15px] text-[#4a1a1a] lg:hidden"
+            // Desktop has the sidebar for first-level pages, so it only needs back on sub-pages.
+            className={clsx(
+              'mb-3 inline-flex items-center gap-1 font-mukta text-[15px] text-[#4a1a1a] lg:text-[17px]',
+              !isSubPage && 'lg:hidden',
+            )}
           >
             <ChevronLeft className="h-5 w-5" aria-hidden />
             back
