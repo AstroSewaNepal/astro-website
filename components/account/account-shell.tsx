@@ -5,12 +5,14 @@ import { usePathname } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import clsx from 'clsx';
 
-import { ACCOUNT_NAV, type AccountNavItem, type PrivateKind } from '@/lib/account/nav';
+import { ACCOUNT_NAV, type AccountNavItem, parentPage, type PrivateKind } from '@/lib/account/nav';
 
 /** Home is active only on itself; other items also cover their sub-pages. */
 function isActive(pathname: string, item: AccountNavItem, homeHref: string) {
   if (item.href === homeHref) return pathname === homeHref;
-  return pathname === item.href || pathname.startsWith(`${item.href}/`);
+  const under = (path: string) => path === item.href || path.startsWith(`${item.href}/`);
+  // A sub-page also lights up its parent's item (a profile -> Astro Connect).
+  return under(pathname) || under(parentPage(pathname) ?? '');
 }
 
 function SidebarItem({ item, active }: { item: AccountNavItem; active: boolean }) {
@@ -86,10 +88,9 @@ export function AccountShell({ kind, children }: { kind: PrivateKind; children: 
   const nav = ACCOUNT_NAV[kind];
   const homeHref = nav.tabs[0].href;
   const onHome = pathname === homeHref;
-  // Sub-pages (/client/settings/security) go back to their parent page; first-level pages go Home.
-  const parts = pathname.split('/').filter(Boolean);
-  const isSubPage = parts.length > 2;
-  const backHref = isSubPage ? `/${parts.slice(0, -1).join('/')}` : homeHref;
+  const parent = parentPage(pathname);
+  const isSubPage = parent !== null;
+  const backHref = parent ?? homeHref;
 
   return (
     <div className="container mx-auto flex w-full min-w-0 flex-1 gap-10 px-4 pb-12 lg:px-0">
