@@ -5,6 +5,7 @@
   --font-tiro-devanagari: 'Tiro Devanagari Sanskrit', serif;
   --font-sahitya: 'Sahitya', serif;
   --font-mukta: 'Mukta', serif;
+  --font-nunito: 'Nunito', sans-serif;
   --font-raleway: 'Raleway', sans-serif;
   --font-lato: 'Lato', sans-serif;
 
@@ -158,6 +159,11 @@ a *,
 
 @utility font-mukta {
   font-family: var(--font-mukta);
+}
+
+/* The app's font, for the web app pages (account area, Astro Connect, profiles). */
+@utility font-app {
+  font-family: var(--font-nunito);
 }
 
 @utility font-raleway {

@@ -6,6 +6,7 @@ import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-qu
 import { Loader2, Search, X } from 'lucide-react';
 import clsx from 'clsx';
 
+import { AstrologerAppCard } from '@/components/astrologers/astrologer-app-card';
 import { FilterSheet } from '@/components/astrologers/filter-sheet';
 import AstrologerCard from '@/components/pages/landing/talk-to-our-astrologer/AstrologerCard';
 import AstrologerCardSkeleton from '@/components/pages/landing/talk-to-our-astrologer/AstrologerCardSkeleton';
@@ -142,7 +143,7 @@ export function AstroConnectList() {
               setSearchText(e.target.value);
             }}
             placeholder="Search Astrologers"
-            className="h-[48px] w-full rounded-full border border-[#c9837a] bg-transparent pl-5 pr-11 font-mukta text-[16px] text-[#4a1a1a] outline-none focus:border-primary"
+            className="h-[48px] w-full rounded-full border border-[#c9837a] bg-transparent pl-5 pr-11 font-app text-[16px] text-[#4a1a1a] outline-none focus:border-primary"
           />
           {searchText ? (
             <button
@@ -179,7 +180,7 @@ export function AstroConnectList() {
             aria-pressed={filters.tag === chip.id}
             onClick={() => setFilters({ tag: chip.id })}
             className={clsx(
-              'shrink-0 rounded-full border px-4 py-1.5 font-mukta text-[15px]',
+              'shrink-0 rounded-full border px-4 py-1.5 font-app text-[15px]',
               filters.tag === chip.id
                 ? 'border-primary bg-primary text-white'
                 : 'border-[#c9837a] text-primary',
@@ -190,7 +191,26 @@ export function AstroConnectList() {
         ))}
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-3">
+      {/* Phones: the app's one-per-row card. Tablet and desktop: the Figma grid of the website's card. */}
+      <ul className="mt-5 flex flex-col gap-3 md:hidden">
+        {loadingFirstPage
+          ? Array.from({ length: 4 }, (_, i) => (
+              <li
+                key={i}
+                aria-hidden
+                className="h-[188px] animate-pulse rounded-[20px] border border-[#e3c9b5] bg-[#efe6da]"
+              />
+            ))
+          : astrologers.map(astrologer => (
+              <li key={astrologer._id}>
+                <AstrologerAppCard
+                  astrologer={astrologer}
+                  href={astrologer.user?._id ? profilePath(astrologer.user._id) : undefined}
+                />
+              </li>
+            ))}
+      </ul>
+      <div className="mt-5 hidden gap-5 md:grid md:grid-cols-2 xl:grid-cols-3">
         {loadingFirstPage
           ? Array.from({ length: 6 }, (_, i) => <AstrologerCardSkeleton key={i} />)
           : astrologers.map((astrologer, i) => (
@@ -204,7 +224,7 @@ export function AstroConnectList() {
       </div>
 
       {list.isError && !astrologers.length ? (
-        <div className="py-12 text-center font-mukta text-[17px] text-[#4a1a1a]">
+        <div className="py-12 text-center font-app text-[17px] text-[#4a1a1a]">
           <p>We could not load astrologers.</p>
           <button
             type="button"
@@ -216,9 +236,7 @@ export function AstroConnectList() {
         </div>
       ) : null}
       {!loadingFirstPage && !list.isError && !astrologers.length ? (
-        <p className="py-12 text-center font-mukta text-[17px] text-[#4a1a1a]">
-          No astrologer found
-        </p>
+        <p className="py-12 text-center font-app text-[17px] text-[#4a1a1a]">No astrologer found</p>
       ) : null}
 
       <div ref={end} aria-hidden />
@@ -236,7 +254,7 @@ export function AstroConnectList() {
           <button
             type="button"
             onClick={() => void fetchNextPage()}
-            className="rounded-full bg-primary px-6 py-2.5 font-mukta text-[16px] text-white"
+            className="rounded-full bg-primary px-6 py-2.5 font-app text-[16px] text-white"
           >
             Show more
           </button>

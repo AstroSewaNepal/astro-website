@@ -23,10 +23,10 @@ import { BackendError } from '@/lib/backend/client';
 import { cn } from '@/lib/utils';
 
 const fieldClass =
-  'h-[52px] w-full rounded-full border border-[#c9837a] bg-transparent px-5 font-mukta text-[17px] text-[#4a1a1a] outline-none focus:border-primary';
+  'h-[52px] w-full rounded-full border border-[#c9837a] bg-transparent px-5 font-app text-[17px] text-[#4a1a1a] outline-none focus:border-primary';
 const labelClass = 'mb-2 block text-lg font-semibold text-primary';
 const primaryButton =
-  'flex h-[56px] w-full items-center justify-center gap-2 rounded-full bg-primary font-mukta text-lg text-white disabled:opacity-60';
+  'flex h-[56px] w-full items-center justify-center gap-2 rounded-full bg-primary font-app text-lg text-white disabled:opacity-60';
 
 const messageOf = (error: unknown, fallback: string) =>
   error instanceof BackendError && error.status < 500 ? error.message : fallback;
@@ -105,13 +105,13 @@ export function ChangeEmailForm({ kind }: { kind: PrivateKind }) {
           onSubmit={handleSubmit(form => sendCode(form.newEmail.toLowerCase()))}
           className="flex flex-col gap-5"
         >
-          <p className="font-mukta text-[17px] text-[#4a1a1a]">
+          <p className="font-app text-[17px] text-[#4a1a1a]">
             Enter a new email address. We&apos;ll send a verification code to confirm it&apos;s
             yours.
           </p>
           {/* The backend finds Google accounts by email (sso.service findOrCreateUser), so the old Gmail would make a
               new, empty account. */}
-          <p className="rounded-2xl border border-amber-300 bg-amber-50 px-5 py-3 font-mukta text-[15px] text-amber-900">
+          <p className="rounded-2xl border border-amber-300 bg-amber-50 px-5 py-3 font-app text-[15px] text-amber-900">
             You sign in with Google, so use an email that is a Google account you can sign in with.
             After the change, sign in with that account. Signing in with your old email would create
             a new, empty account.
@@ -161,7 +161,7 @@ export function ChangeEmailForm({ kind }: { kind: PrivateKind }) {
           }}
           className="flex flex-col gap-5"
         >
-          <p className="font-mukta text-[17px] text-[#4a1a1a]">
+          <p className="font-app text-[17px] text-[#4a1a1a]">
             Enter the verification code sent to <strong className="break-all">{step.email}</strong>
           </p>
           <div>
@@ -190,7 +190,7 @@ export function ChangeEmailForm({ kind }: { kind: PrivateKind }) {
             type="button"
             disabled={busy !== null}
             onClick={() => void sendCode(step.email)}
-            className="flex h-[56px] w-full items-center justify-center gap-2 rounded-full border border-primary font-mukta text-lg text-primary disabled:opacity-60"
+            className="flex h-[56px] w-full items-center justify-center gap-2 rounded-full border border-primary font-app text-lg text-primary disabled:opacity-60"
           >
             {busy === 'sending' ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : null}
             Resend Code
@@ -202,7 +202,7 @@ export function ChangeEmailForm({ kind }: { kind: PrivateKind }) {
               setStep({ name: 'form' });
               setNotice(null);
             }}
-            className="font-mukta text-[15px] text-primary underline disabled:opacity-50"
+            className="font-app text-[15px] text-primary underline disabled:opacity-50"
           >
             Use a different email
           </button>
@@ -212,7 +212,7 @@ export function ChangeEmailForm({ kind }: { kind: PrivateKind }) {
       {step.name === 'done' ? (
         <div className="flex flex-col items-center gap-4 text-center" role="status">
           <CheckCircle2 className="h-14 w-14 text-green-700" aria-hidden />
-          <p className="font-mukta text-[18px] text-[#4a1a1a]">
+          <p className="font-app text-[18px] text-[#4a1a1a]">
             Email updated successfully. Your account email is now{' '}
             <strong className="break-all">{step.email}</strong>.
           </p>
@@ -231,7 +231,7 @@ function Notice({ notice }: { notice: { kind: 'error' | 'success'; text: string 
     <p
       role={notice.kind === 'error' ? 'alert' : 'status'}
       className={cn(
-        'rounded-2xl border px-5 py-3 text-center font-mukta text-[15px]',
+        'rounded-2xl border px-5 py-3 text-center font-app text-[15px]',
         notice.kind === 'error'
           ? 'border-red-300 bg-red-50 text-red-800'
           : 'border-green-300 bg-green-50 text-green-800',
@@ -243,5 +243,5 @@ function Notice({ notice }: { notice: { kind: 'error' | 'success'; text: string 
 }
 
 function FieldError({ text }: { text?: string }) {
-  return text ? <p className="mt-1.5 px-2 font-mukta text-sm text-red-700">{text}</p> : null;
+  return text ? <p className="mt-1.5 px-2 font-app text-sm text-red-700">{text}</p> : null;
 }

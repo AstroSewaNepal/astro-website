@@ -15,7 +15,7 @@ export async function ClientShellLayout({ children }: { children: React.ReactNod
       {isClient ? (
         <AccountShell kind="client">{children}</AccountShell>
       ) : (
-        <main className="container mx-auto w-full min-w-0 flex-1 px-4 pb-12 pt-3 lg:px-0">
+        <main className="container mx-auto w-full min-w-0 flex-1 px-4 pb-12 pt-3 font-app lg:px-0">
           {children}
         </main>
       )}

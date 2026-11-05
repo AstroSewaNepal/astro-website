@@ -20,24 +20,21 @@ export function RatingsSummary({ reviews }: { reviews: RatingReview[] }) {
   const topics = topicAverages(reviews);
   return (
     <section className={card}>
-      <h2 className="font-mukta text-[20px] font-semibold text-primary">Ratings &amp; Reviews</h2>
+      <h2 className="font-app text-[20px] font-semibold text-primary">Ratings &amp; Reviews</h2>
       {reviews.length ? (
         <div className="mt-4 flex gap-5">
           <div className="shrink-0 text-center">
-            <p className="font-mukta text-[40px] font-semibold leading-none text-primary">
+            <p className="font-app text-[40px] font-semibold leading-none text-primary">
               {average.toFixed(1)}
             </p>
             <Stars rating={average} size={14} className="mt-2" />
-            <p className="mt-1 font-mukta text-sm text-[#6d6d6d]">
+            <p className="mt-1 font-app text-sm text-[#6d6d6d]">
               {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
             </p>
           </div>
           <ul className="min-w-0 flex-1 space-y-2">
             {topics.map(t => (
-              <li
-                key={t.topic}
-                className="flex items-center gap-2 font-mukta text-sm text-[#4a1a1a]"
-              >
+              <li key={t.topic} className="flex items-center gap-2 font-app text-sm text-[#4a1a1a]">
                 <span className="w-[76px] shrink-0 truncate">{t.topic}</span>
                 <span className="h-2 flex-1 overflow-hidden rounded-full bg-[#720A0B]/10">
                   <span
@@ -51,7 +48,7 @@ export function RatingsSummary({ reviews }: { reviews: RatingReview[] }) {
           </ul>
         </div>
       ) : (
-        <p className="mt-3 font-mukta text-[15px] text-[#6d6d6d]">No ratings available yet.</p>
+        <p className="mt-3 font-app text-[15px] text-[#6d6d6d]">No ratings available yet.</p>
       )}
     </section>
   );
@@ -63,7 +60,7 @@ export function ReviewsList({ reviews }: { reviews: RatingReview[] }) {
   const shown = showAll ? reviews : reviews.slice(0, REVIEWS_SHOWN);
   return (
     <section>
-      <h2 className="mb-3 font-mukta text-[18px] font-semibold text-[#4a1a1a]">
+      <h2 className="mb-3 font-app text-[18px] font-semibold text-[#4a1a1a]">
         What others are saying
       </h2>
       {reviews.length ? (
@@ -78,7 +75,7 @@ export function ReviewsList({ reviews }: { reviews: RatingReview[] }) {
               <button
                 type="button"
                 onClick={() => setShowAll(v => !v)}
-                className="rounded-full bg-primary px-6 py-2 font-mukta text-[15px] text-white"
+                className="rounded-full bg-primary px-6 py-2 font-app text-[15px] text-white"
               >
                 {showAll ? 'Show less' : 'Show more'}
               </button>
@@ -86,7 +83,7 @@ export function ReviewsList({ reviews }: { reviews: RatingReview[] }) {
           ) : null}
         </>
       ) : (
-        <p className="font-mukta text-[15px] text-[#6d6d6d]">No reviews yet.</p>
+        <p className="font-app text-[15px] text-[#6d6d6d]">No reviews yet.</p>
       )}
     </section>
   );
@@ -98,7 +95,7 @@ function ReviewItem({ review }: { review: RatingReview }) {
   const message = review.ratingMessage?.trim();
   return (
     <li className="flex gap-3 py-4">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#efe6da] font-mukta font-semibold text-primary">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#efe6da] font-app font-semibold text-primary">
         {hidden ? (
           <Lock className="h-4 w-4" aria-hidden />
         ) : review.user?.profilePicture ? (
@@ -110,20 +107,20 @@ function ReviewItem({ review }: { review: RatingReview }) {
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="font-mukta text-[16px] font-semibold text-[#4a1a1a]">{name}</span>
+          <span className="font-app text-[16px] font-semibold text-[#4a1a1a]">{name}</span>
           {hidden ? (
-            <span className="rounded-full bg-[#720A0B]/10 px-2 py-0.5 font-mukta text-xs text-primary">
+            <span className="rounded-full bg-[#720A0B]/10 px-2 py-0.5 font-app text-xs text-primary">
               Private
             </span>
           ) : null}
           <Stars rating={review.overallRating} size={13} />
         </div>
-        <p className="font-mukta text-xs text-[#8a8583]">{reviewDate(review)}</p>
+        <p className="font-app text-xs text-[#8a8583]">{reviewDate(review)}</p>
         <p
           className={
             message
-              ? 'mt-1.5 whitespace-pre-line break-words font-mukta text-[15px] text-[#2b2b2b]'
-              : 'mt-1.5 font-mukta text-[15px] italic text-[#8a8583]'
+              ? 'mt-1.5 whitespace-pre-line break-words font-app text-[15px] text-[#2b2b2b]'
+              : 'mt-1.5 font-app text-[15px] italic text-[#8a8583]'
           }
         >
           {message || 'No written review'}

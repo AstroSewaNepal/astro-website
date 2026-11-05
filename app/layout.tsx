@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Tiro_Devanagari_Sanskrit, Sahitya, Mukta, Raleway, Lato } from 'next/font/google';
+import { Tiro_Devanagari_Sanskrit, Sahitya, Mukta, Nunito, Raleway, Lato } from 'next/font/google';
 import Script from 'next/script';
 import { SessionProvider } from 'next-auth/react';
 
@@ -25,6 +25,13 @@ const mukta = Mukta({
   variable: '--font-mukta',
   subsets: ['latin', 'devanagari'],
   weight: '400',
+});
+
+// The app's main font: the logged-in web app pages use it so phones look like the app (font-app).
+const nunito = Nunito({
+  variable: '--font-nunito',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
 });
 
 const raleway = Raleway({
@@ -167,6 +174,7 @@ export default function RootLayout({
           tiroDevanagari.variable,
           sahitya.variable,
           mukta.variable,
+          nunito.variable,
           raleway.variable,
           lato.variable,
           `antialiased`,

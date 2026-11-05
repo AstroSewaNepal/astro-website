@@ -10,7 +10,7 @@ import type { PrivateKind } from '@/lib/account/nav';
 import { settingsPaths } from '@/lib/account/settings';
 
 const rowClass =
-  'flex w-full items-center gap-4 py-4 font-mukta text-[19px] text-[#611508] lg:text-[20px]';
+  'flex w-full items-center gap-4 py-4 font-app text-[19px] text-[#611508] lg:text-[20px]';
 
 /** Settings list (Figma Setting/Setting) with the app's items: Security, Change email, Sign out. */
 export function SettingsMenu({ kind }: { kind: PrivateKind }) {

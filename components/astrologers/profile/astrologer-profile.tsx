@@ -18,7 +18,8 @@ import clsx from 'clsx';
 
 import { PhotoGallery } from '@/components/astrologers/profile/photo-gallery';
 import { RatingsSummary, ReviewsList } from '@/components/astrologers/profile/profile-reviews';
-import { AstrologerImage, VerifiedIcon } from '@/components/images';
+import { VerifiedBadge } from '@/components/astrologers/verified-badge';
+import { AstrologerImage } from '@/components/images';
 import type { Astrologer } from '@/components/pages/landing/talk-to-our-astrologer/types';
 import {
   formatCurrency,
@@ -66,10 +67,10 @@ export function AstrologerProfile({ astrologerId }: { astrologerId: string }) {
     return (
       <div className="flex flex-col items-center gap-3 py-20 text-center">
         <UserRoundX className="h-16 w-16 text-primary" aria-hidden />
-        <h1 className="font-mukta text-[22px] font-semibold text-[#4a1a1a]">
+        <h1 className="font-app text-[22px] font-semibold text-[#4a1a1a]">
           This user is no longer available
         </h1>
-        <p className="font-mukta text-[16px] text-[#6d6d6d]">
+        <p className="font-app text-[16px] text-[#6d6d6d]">
           The astrologer profile you&apos;re looking for has been removed.
         </p>
       </div>
@@ -77,7 +78,7 @@ export function AstrologerProfile({ astrologerId }: { astrologerId: string }) {
   }
   if (profile.isError) {
     return (
-      <div className="py-16 text-center font-mukta text-[17px] text-[#4a1a1a]">
+      <div className="py-16 text-center font-app text-[17px] text-[#4a1a1a]">
         <p>We could not load this profile.</p>
         <button
           type="button"
@@ -103,7 +104,7 @@ export function AstrologerProfile({ astrologerId }: { astrologerId: string }) {
 
   // Desktop (Figma): main column + a right column with the price and the ratings. Phones: one column in that order.
   return (
-    <div className="grid w-full gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+    <div className="grid w-full grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
       <div className="lg:col-start-1 lg:row-start-1">
         <HeaderCard astrologer={astrologer} astrologerId={astrologerId} name={name} />
       </div>
@@ -149,11 +150,17 @@ function HeaderCard({
       icon: Languages,
       text: getDisplayLanguages(astrologer.tags, astrologer.language),
     },
-    { key: 'skills', icon: Award, text: tagNames(astrologer.tags, 'skill').join(', ') || '-' },
+    {
+      key: 'skills',
+      icon: Award,
+      text: tagNames(astrologer.tags, 'skill').join(', ') || '-',
+      slide: true,
+    },
     {
       key: 'expertise',
       icon: Trophy,
       text: tagNames(astrologer.tags, 'expertise').join(', ') || '-',
+      slide: true,
     },
     {
       key: 'experience',
@@ -164,14 +171,15 @@ function HeaderCard({
 
   return (
     <section className={clsx(card, 'relative')}>
-      <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+      {/* The app's card: photo on the left, the details beside it (also on phones). */}
+      <div className="flex items-start gap-4">
         <div className="relative shrink-0">
-          <div className="relative h-[120px] w-[120px] overflow-hidden rounded-full ring-2 ring-[#e8dcc8]">
+          <div className="relative h-[88px] w-[88px] overflow-hidden rounded-full ring-2 ring-[#e8dcc8] sm:h-[120px] sm:w-[120px]">
             <Image
               src={photo || AstrologerImage}
               alt={name}
               fill
-              sizes="120px"
+              sizes="(max-width: 640px) 88px, 120px"
               className="object-cover"
               unoptimized={Boolean(photo)}
               priority
@@ -179,14 +187,14 @@ function HeaderCard({
           </div>
           <span
             className={clsx(
-              'absolute right-2 top-2 h-4 w-4 rounded-full border-2 border-[#fbf6ee]',
+              'absolute right-1 top-1 h-4 w-4 rounded-full border-2 border-[#fbf6ee] sm:right-2 sm:top-2',
               online ? 'bg-[#34C759]' : 'bg-[#9CA3AF]',
             )}
             aria-label={online ? 'Online' : 'Offline'}
           />
           {tier ? (
             <span
-              className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-0.5 font-mukta text-xs font-semibold"
+              className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-0.5 font-app text-xs font-semibold"
               style={{ backgroundColor: badge.bg, color: badge.text }}
             >
               {tier}
@@ -194,29 +202,31 @@ function HeaderCard({
           ) : null}
         </div>
 
-        <div className="min-w-0 flex-1 text-center sm:text-left">
-          <div className="flex items-center justify-center gap-2 sm:justify-start">
-            <h1 className="font-mukta text-[24px] font-semibold leading-tight text-[#4a1a1a]">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 sm:pr-[170px]">
+            <h1 className="min-w-0 overflow-x-auto whitespace-nowrap font-app text-[20px] font-semibold leading-tight text-[#4a1a1a] [scrollbar-width:none] sm:text-[24px] lg:overflow-visible lg:whitespace-normal [&::-webkit-scrollbar]:hidden">
               {name}
             </h1>
-            {astrologer.isAstrologerActive ? (
-              <Image
-                src={VerifiedIcon}
-                alt="Verified astrologer"
-                width={20}
-                height={20}
-                className="h-5 w-5"
-              />
-            ) : null}
+            {astrologer.isAstrologerActive ? <VerifiedBadge size={20} /> : null}
           </div>
           <ul className="mt-2 space-y-1.5">
             {rows.map(row => (
               <li
                 key={row.key}
-                className="flex items-start justify-center gap-2 font-mukta text-[15px] text-[#4a1a1a] sm:justify-start"
+                className="flex min-w-0 items-center gap-2 font-app text-[14px] text-[#4a1a1a] sm:text-[15px]"
               >
-                <row.icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
-                <span className="min-w-0">{row.text}</span>
+                <row.icon className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+                <span
+                  className={clsx(
+                    'min-w-0 flex-1 whitespace-nowrap lg:whitespace-normal',
+                    // Like the app: one line that slides sideways on phones and tablets; wraps on desktop.
+                    row.slide
+                      ? 'overflow-x-auto [scrollbar-width:none] lg:overflow-visible [&::-webkit-scrollbar]:hidden'
+                      : 'truncate lg:overflow-visible',
+                  )}
+                >
+                  {row.text}
+                </span>
               </li>
             ))}
           </ul>
@@ -259,7 +269,7 @@ function FollowButton({ astrologerId }: { astrologerId: string }) {
       disabled={status.isPending || toggle.isPending}
       aria-pressed={following}
       className={clsx(
-        'flex h-[42px] flex-1 items-center justify-center gap-2 rounded-full px-6 font-mukta text-[16px] disabled:opacity-60 sm:flex-none',
+        'flex h-[42px] flex-1 items-center justify-center gap-2 rounded-full px-6 font-app text-[16px] disabled:opacity-60 sm:flex-none',
         following ? 'border border-[#BE7B71] text-primary' : 'bg-primary text-white',
       )}
     >
@@ -301,7 +311,7 @@ function ShareButton({ astrologerId, name }: { astrologerId: string; name: strin
       {copied ? (
         <span
           role="status"
-          className="absolute -bottom-8 right-0 whitespace-nowrap rounded-md bg-[#4a1a1a] px-2 py-1 font-mukta text-xs text-white"
+          className="absolute -bottom-8 right-0 whitespace-nowrap rounded-md bg-[#4a1a1a] px-2 py-1 font-app text-xs text-white"
         >
           Link copied
         </span>
@@ -318,7 +328,7 @@ function PriceCard({ astrologer }: { astrologer: Astrologer }) {
   return (
     <section className={clsx(card, 'text-center')}>
       {cheapest ? (
-        <p className="font-mukta text-[#4a1a1a]">
+        <p className="font-app text-[#4a1a1a]">
           {discounted ? (
             <span className="mr-2 text-[16px] text-[#8a8583] line-through">
               {formatCurrency(cheapest.cost?.currency, cheapest.cost?.value)}
@@ -340,13 +350,13 @@ function PriceCard({ astrologer }: { astrologer: Astrologer }) {
           ) : null}
         </p>
       ) : (
-        <p className="font-mukta text-[16px] text-[#6d6d6d]">No packages yet</p>
+        <p className="font-app text-[16px] text-[#6d6d6d]">No packages yet</p>
       )}
       <div className="mt-4 flex gap-3">
         <button
           type="button"
           disabled
-          className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full bg-[#611508] font-mukta text-[16px] text-white disabled:opacity-60"
+          className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full bg-[#611508] font-app text-[16px] text-white disabled:opacity-60"
         >
           <CalendarDays className="h-5 w-5" aria-hidden />
           Schedule
@@ -354,13 +364,13 @@ function PriceCard({ astrologer }: { astrologer: Astrologer }) {
         <button
           type="button"
           disabled
-          className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full border border-[#611508] font-mukta text-[16px] text-[#611508] disabled:opacity-60"
+          className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full border border-[#611508] font-app text-[16px] text-[#611508] disabled:opacity-60"
         >
           <Phone className="h-5 w-5" aria-hidden />
           Connect Now
         </button>
       </div>
-      <p className="mt-2 font-mukta text-sm text-[#6d6d6d]">Booking on the website opens soon.</p>
+      <p className="mt-2 font-app text-sm text-[#6d6d6d]">Booking on the website opens soon.</p>
     </section>
   );
 }
@@ -371,10 +381,10 @@ function About({ bio }: { bio?: string | null }) {
   const long = text.length > 280;
   return (
     <section className={card}>
-      <h2 className="font-mukta text-[18px] font-semibold text-[#4a1a1a]">About me</h2>
+      <h2 className="font-app text-[18px] font-semibold text-[#4a1a1a]">About me</h2>
       <p
         className={clsx(
-          'mt-2 whitespace-pre-line break-words font-mukta text-[16px] leading-relaxed text-[#2b2b2b]',
+          'mt-2 whitespace-pre-line break-words font-app text-[16px] leading-relaxed text-[#2b2b2b]',
           long && !open && 'line-clamp-4',
         )}
       >
@@ -384,7 +394,7 @@ function About({ bio }: { bio?: string | null }) {
         <button
           type="button"
           onClick={() => setOpen(v => !v)}
-          className="mt-1 font-mukta text-[15px] text-primary underline"
+          className="mt-1 font-app text-[15px] text-primary underline"
         >
           {open ? 'Show less' : 'Read more'}
         </button>

@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils';
 type NewImage = { id: string; file: File; preview: string };
 
 const fieldClass =
-  'h-[52px] w-full rounded-full border border-[#c9837a] bg-transparent px-5 font-mukta text-[17px] text-[#4a1a1a] outline-none focus:border-primary';
+  'h-[52px] w-full rounded-full border border-[#c9837a] bg-transparent px-5 font-app text-[17px] text-[#4a1a1a] outline-none focus:border-primary';
 const labelClass = 'mb-2 block text-lg font-semibold text-primary';
 
 const message = (error: unknown) =>
@@ -58,7 +58,7 @@ export function EditProfileForm() {
   }
   if (me.isError) {
     return (
-      <div className="py-16 text-center font-mukta text-[17px] text-[#4a1a1a]">
+      <div className="py-16 text-center font-app text-[17px] text-[#4a1a1a]">
         <p>We could not load your profile.</p>
         <button type="button" onClick={() => me.refetch()} className="mt-3 text-primary underline">
           Try again
@@ -216,7 +216,7 @@ function ProfileEditor({ me, genders }: { me: MeResponse; genders: GenderOption[
             // eslint-disable-next-line @next/next/no-img-element -- backend URLs and blob previews
             <img src={pictureUrl} alt="" className="h-full w-full object-cover" />
           ) : (
-            <span className="font-mukta text-4xl font-semibold">{initial}</span>
+            <span className="font-app text-4xl font-semibold">{initial}</span>
           )}
           <span className="absolute inset-x-0 bottom-0 flex flex-col items-center bg-black/35 pb-1.5 pt-1 text-xs text-white">
             <Camera className="h-4 w-4" aria-hidden />
@@ -238,7 +238,7 @@ function ProfileEditor({ me, genders }: { me: MeResponse; genders: GenderOption[
             type="button"
             onClick={removePicture}
             disabled={busy !== null}
-            className="mt-2 font-mukta text-[15px] text-primary underline disabled:opacity-50"
+            className="mt-2 font-app text-[15px] text-primary underline disabled:opacity-50"
           >
             Remove photo
           </button>
@@ -282,14 +282,14 @@ function ProfileEditor({ me, genders }: { me: MeResponse; genders: GenderOption[
             />
           </div>
           {me.user.isPrivateRelayEmail ? (
-            <p className="mt-1.5 font-mukta text-sm text-red-700">
+            <p className="mt-1.5 font-app text-sm text-red-700">
               This is a private Apple relay address. Add a real email so you don&apos;t miss
               important updates.
             </p>
           ) : null}
           <Link
             href={settingsPaths('client').changeEmail}
-            className="mt-1.5 inline-block px-2 font-mukta text-[15px] text-primary underline"
+            className="mt-1.5 inline-block px-2 font-app text-[15px] text-primary underline"
           >
             Change email
           </Link>
@@ -393,7 +393,7 @@ function ProfileEditor({ me, genders }: { me: MeResponse; genders: GenderOption[
         <p
           role={notice.kind === 'error' ? 'alert' : 'status'}
           className={cn(
-            'mt-6 rounded-2xl border px-5 py-3 text-center font-mukta text-[15px]',
+            'mt-6 rounded-2xl border px-5 py-3 text-center font-app text-[15px]',
             notice.kind === 'error'
               ? 'border-red-300 bg-red-50 text-red-800'
               : 'border-green-300 bg-green-50 text-green-800',
@@ -406,7 +406,7 @@ function ProfileEditor({ me, genders }: { me: MeResponse; genders: GenderOption[
       <button
         type="submit"
         disabled={busy !== null}
-        className="mt-6 flex h-[56px] w-full items-center justify-center gap-2 rounded-full bg-primary font-mukta text-lg text-white disabled:opacity-60"
+        className="mt-6 flex h-[56px] w-full items-center justify-center gap-2 rounded-full bg-primary font-app text-lg text-white disabled:opacity-60"
       >
         {busy === 'saving' ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : null}
         Update Profile
@@ -442,5 +442,5 @@ function Photo({
 }
 
 function FieldError({ text }: { text?: string }) {
-  return text ? <p className="mt-1.5 px-2 font-mukta text-sm text-red-700">{text}</p> : null;
+  return text ? <p className="mt-1.5 px-2 font-app text-sm text-red-700">{text}</p> : null;
 }

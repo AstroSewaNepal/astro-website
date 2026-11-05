@@ -62,7 +62,7 @@ export function FilterSheet({
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={openSheet}>
-      <DialogPrimitive.Trigger className="flex h-[48px] shrink-0 items-center gap-2 rounded-full border border-[#c9837a] px-5 font-mukta text-[16px] text-primary">
+      <DialogPrimitive.Trigger className="flex h-[48px] shrink-0 items-center gap-2 rounded-full border border-[#c9837a] px-5 font-app text-[16px] text-primary">
         <SlidersHorizontal className="h-5 w-5" aria-hidden />
         Filter
         {count ? (
@@ -79,7 +79,7 @@ export function FilterSheet({
           className="fixed inset-x-0 bottom-0 z-[81] flex max-h-[85vh] flex-col rounded-t-[24px] bg-[#f8f0dc] px-4 pt-5 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-xl outline-none sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:w-[480px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[24px] sm:pb-5"
         >
           <div className="flex items-center justify-between">
-            <DialogPrimitive.Title className="font-mukta text-[18px] font-semibold text-[#720A0B]">
+            <DialogPrimitive.Title className="font-app text-[18px] font-semibold text-[#720A0B]">
               Sort &amp; Filter
             </DialogPrimitive.Title>
             <DialogPrimitive.Close
@@ -99,7 +99,7 @@ export function FilterSheet({
                 aria-selected={tab === t.id}
                 onClick={() => setTab(t.id)}
                 className={clsx(
-                  'shrink-0 rounded-full border px-4 py-1.5 font-mukta text-[15px]',
+                  'shrink-0 rounded-full border px-4 py-1.5 font-app text-[15px]',
                   tab === t.id
                     ? 'border-[#720A0B] bg-[#720A0B] text-white'
                     : 'border-[#BE7B71] text-[#720A0B]',
@@ -159,14 +159,14 @@ export function FilterSheet({
                   gender: DEFAULT_FILTERS.gender,
                 })
               }
-              className="h-[48px] flex-1 rounded-full border border-[#720A0B] font-mukta text-[17px] text-[#720A0B]"
+              className="h-[48px] flex-1 rounded-full border border-[#720A0B] font-app text-[17px] text-[#720A0B]"
             >
               Reset
             </button>
             <button
               type="button"
               onClick={() => apply(draft)}
-              className="h-[48px] flex-1 rounded-full bg-[#720A0B] font-mukta text-[17px] text-white"
+              className="h-[48px] flex-1 rounded-full bg-[#720A0B] font-app text-[17px] text-white"
             >
               Apply
             </button>
@@ -194,7 +194,7 @@ function Choice({
       role={type}
       aria-checked={checked}
       onClick={onChange}
-      className="flex w-full items-center gap-4 py-2.5 text-left font-mukta text-[17px] text-[#720A0B]"
+      className="flex w-full items-center gap-4 py-2.5 text-left font-app text-[17px] text-[#720A0B]"
     >
       <span
         aria-hidden

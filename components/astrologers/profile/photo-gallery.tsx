@@ -16,7 +16,7 @@ export function PhotoGallery({ photos, name }: { photos: Photo[]; name: string }
 
   return (
     <section>
-      <h2 className="mb-3 font-mukta text-[18px] font-semibold text-[#4a1a1a]">Photos</h2>
+      <h2 className="mb-3 font-app text-[18px] font-semibold text-[#4a1a1a]">Photos</h2>
       <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
         {photos.map((photo, i) => (
           <button
@@ -35,7 +35,7 @@ export function PhotoGallery({ photos, name }: { photos: Photo[]; name: string }
           </button>
         ))}
       </div>
-      <p className="mt-1.5 font-mukta text-sm text-[#6d6d6d]">
+      <p className="mt-1.5 font-app text-sm text-[#6d6d6d]">
         {photos.length} {photos.length === 1 ? 'photo' : 'photos'}
       </p>
 

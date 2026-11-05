@@ -45,23 +45,23 @@ export function ConfirmDialog({
           >
             <X className="h-4 w-4" />
           </DialogPrimitive.Close>
-          <DialogPrimitive.Title className="font-mukta text-[22px] font-semibold leading-snug text-[#720A0B]">
+          <DialogPrimitive.Title className="font-app text-[22px] font-semibold leading-snug text-[#720A0B]">
             {title}
           </DialogPrimitive.Title>
           {message ? (
-            <DialogPrimitive.Description className="mt-3 font-mukta text-[15px] leading-relaxed text-[#4a1a1a]">
+            <DialogPrimitive.Description className="mt-3 font-app text-[15px] leading-relaxed text-[#4a1a1a]">
               {message}
             </DialogPrimitive.Description>
           ) : null}
           {error ? (
-            <p role="alert" className="mt-3 font-mukta text-[15px] text-red-700">
+            <p role="alert" className="mt-3 font-app text-[15px] text-red-700">
               {error}
             </p>
           ) : null}
           <div className="mt-6 flex justify-center gap-4">
             <DialogPrimitive.Close
               disabled={busy}
-              className="h-[44px] min-w-[120px] rounded-full border border-[#BE7B71] px-6 font-mukta text-[17px] text-[#BE7B71] disabled:opacity-50"
+              className="h-[44px] min-w-[120px] rounded-full border border-[#BE7B71] px-6 font-app text-[17px] text-[#BE7B71] disabled:opacity-50"
             >
               {cancelText}
             </DialogPrimitive.Close>
@@ -69,7 +69,7 @@ export function ConfirmDialog({
               type="button"
               onClick={onConfirm}
               disabled={busy}
-              className="flex h-[44px] min-w-[120px] items-center justify-center gap-2 rounded-full bg-[#720A0B] px-6 font-mukta text-[17px] text-white disabled:opacity-70"
+              className="flex h-[44px] min-w-[120px] items-center justify-center gap-2 rounded-full bg-[#720A0B] px-6 font-app text-[17px] text-white disabled:opacity-70"
             >
               {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
               {confirmText}

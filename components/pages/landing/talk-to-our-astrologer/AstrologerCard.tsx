@@ -4,7 +4,8 @@ import React, { memo, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { AstrologerImage, VerifiedIcon } from '@/components/images';
+import { VerifiedBadge } from '@/components/astrologers/verified-badge';
+import { AstrologerImage } from '@/components/images';
 import { EducationIcon, GoldMedalIcon, LanguageIcon, SquareIcon } from '@/components/images/icons';
 import PhoneIcon from '@/components/icons/phone-icon';
 import StartIcon from '@/components/icons/start-icon';
@@ -155,13 +156,7 @@ const AstrologerCard = memo(function AstrologerCard({
                 )}
               </h3>
               {isVerified ? (
-                <Image
-                  src={VerifiedIcon}
-                  alt="Verified astrologer"
-                  className="h-3 w-3 shrink-0 sm:h-4 sm:w-4 lg:h-5 lg:w-5"
-                  width={20}
-                  height={20}
-                />
+                <VerifiedBadge className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
               ) : null}
             </div>
 

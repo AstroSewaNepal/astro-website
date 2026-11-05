@@ -73,7 +73,7 @@ export function FollowingList() {
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : list.isError ? (
-        <div className="py-16 text-center font-mukta text-[17px] text-[#4a1a1a]">
+        <div className="py-16 text-center font-app text-[17px] text-[#4a1a1a]">
           <p>We could not load the astrologers you follow.</p>
           <button
             type="button"
@@ -86,12 +86,12 @@ export function FollowingList() {
       ) : !all.length ? (
         <div className="flex flex-col items-center gap-4 py-16 text-center">
           <UsersRound className="h-16 w-16 text-primary" strokeWidth={1.25} aria-hidden />
-          <p className="font-mukta text-[20px] text-primary">
+          <p className="font-app text-[20px] text-primary">
             Looks like you haven&apos;t followed anyone yet.
           </p>
           <Link
             href="/astrologers"
-            className="rounded-full bg-primary px-6 py-2.5 font-mukta text-[16px] text-white"
+            className="rounded-full bg-primary px-6 py-2.5 font-app text-[16px] text-white"
           >
             Find astrologers
           </Link>
@@ -109,7 +109,7 @@ export function FollowingList() {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by name"
-              className="h-[48px] w-full rounded-full border border-[#720A0B] bg-transparent pl-12 pr-5 font-mukta text-[16px] text-[#4a1a1a] outline-none"
+              className="h-[48px] w-full rounded-full border border-[#720A0B] bg-transparent pl-12 pr-5 font-app text-[16px] text-[#4a1a1a] outline-none"
             />
           </label>
           {shown.length ? (
@@ -119,7 +119,7 @@ export function FollowingList() {
               ))}
             </ul>
           ) : (
-            <p className="py-10 text-center font-mukta text-[16px] text-[#6d6d6d]">
+            <p className="py-10 text-center font-app text-[16px] text-[#6d6d6d]">
               No one you follow matches &ldquo;{search.trim()}&rdquo;.
             </p>
           )}
@@ -133,7 +133,7 @@ export function FollowingList() {
               <button
                 type="button"
                 onClick={() => void fetchNextPage()}
-                className="rounded-full bg-primary px-6 py-2.5 font-mukta text-[16px] text-white"
+                className="rounded-full bg-primary px-6 py-2.5 font-app text-[16px] text-white"
               >
                 Show more
               </button>
@@ -173,7 +173,7 @@ function FollowedCard({ astrologer: a }: { astrologer: Followed }) {
   return (
     <li className="relative flex gap-4 rounded-[16px] border border-[#c9837a] bg-[#fbf6ee] p-4">
       <Link href={href} className="shrink-0" aria-label={`View ${name}'s profile`}>
-        <span className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full bg-[#f1d9d2] font-mukta text-2xl font-semibold text-primary">
+        <span className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full bg-[#f1d9d2] font-app text-2xl font-semibold text-primary">
           {a.profilePicture ? (
             // eslint-disable-next-line @next/next/no-img-element -- backend media URLs
             <img src={a.profilePicture} alt="" className="h-full w-full object-cover" />
@@ -185,7 +185,7 @@ function FollowedCard({ astrologer: a }: { astrologer: Followed }) {
       <div className="min-w-0 flex-1">
         <Link
           href={href}
-          className="line-clamp-1 pr-20 font-mukta text-[17px] font-semibold text-primary hover:underline"
+          className="line-clamp-1 pr-20 font-app text-[17px] font-semibold text-primary hover:underline"
         >
           {name}
         </Link>
@@ -193,7 +193,7 @@ function FollowedCard({ astrologer: a }: { astrologer: Followed }) {
           {rows.map(r => (
             <li
               key={r.key}
-              className="flex items-center gap-2 font-mukta text-[14px] text-[#4a4a4a]"
+              className="flex items-center gap-2 font-app text-[14px] text-[#4a4a4a]"
             >
               <r.icon className="h-4 w-4 shrink-0 text-primary" aria-hidden />
               <span className="line-clamp-1">{r.text}</span>
@@ -204,13 +204,13 @@ function FollowedCard({ astrologer: a }: { astrologer: Followed }) {
           type="button"
           onClick={() => unfollow.mutate()}
           disabled={unfollow.isPending}
-          className="mt-2.5 flex h-[34px] items-center gap-2 rounded-full border border-[#BE7B71] px-4 font-mukta text-[14px] text-primary disabled:opacity-60"
+          className="mt-2.5 flex h-[34px] items-center gap-2 rounded-full border border-[#BE7B71] px-4 font-app text-[14px] text-primary disabled:opacity-60"
         >
           {unfollow.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : null}
           Unfollow
         </button>
         {unfollow.isError ? (
-          <p role="alert" className="mt-1 font-mukta text-sm text-red-700">
+          <p role="alert" className="mt-1 font-app text-sm text-red-700">
             Could not unfollow. Please try again.
           </p>
         ) : null}

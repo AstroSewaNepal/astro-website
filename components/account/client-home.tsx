@@ -34,8 +34,8 @@ const WHY = [
   { label: 'Secured Payment', icon: '/images/client-home/secure-payment.png' },
 ];
 
-const sectionTitle = 'font-mukta text-[20px] font-semibold text-[#4a1a1a] lg:text-[22px]';
-const viewAll = 'font-mukta text-[15px] text-primary underline-offset-2 hover:underline';
+const sectionTitle = 'font-app text-[20px] font-semibold text-[#4a1a1a] lg:text-[22px]';
+const viewAll = 'font-app text-[15px] text-primary underline-offset-2 hover:underline';
 
 /** Client home, as the app's HomeContent: online astrologers, free services, recommended astrologers, why us. */
 export function ClientHome({ firstName }: { firstName?: string }) {
@@ -89,7 +89,7 @@ export function ClientHome({ firstName }: { firstName?: string }) {
                   className="flex flex-col items-center gap-2 text-center"
                 >
                   <Avatar astrologer={a} size={72} online={a.status === 'ONLINE'} />
-                  <span className="line-clamp-1 w-full font-mukta text-[14px] text-[#4a1a1a]">
+                  <span className="line-clamp-1 w-full font-app text-[14px] text-[#4a1a1a]">
                     {name(a)}
                   </span>
                 </AstrologerLink>
@@ -97,7 +97,7 @@ export function ClientHome({ firstName }: { firstName?: string }) {
             ))}
           </ul>
         ) : (
-          <p className="flex items-center gap-2 rounded-2xl border border-dashed border-[#c9837a] px-4 py-5 font-mukta text-[15px] text-[#8a5a52]">
+          <p className="flex items-center gap-2 rounded-2xl border border-dashed border-[#c9837a] px-4 py-5 font-app text-[15px] text-[#8a5a52]">
             <UsersRound className="h-5 w-5" aria-hidden />
             No one&apos;s online right now
           </p>
@@ -106,21 +106,24 @@ export function ClientHome({ firstName }: { firstName?: string }) {
 
       <section>
         <h2 className={`${sectionTitle} mb-3`}>Free Services</h2>
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {/* The app's row: 110 x 130 tiles that slide sideways. */}
+        <ul className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] lg:mx-0 lg:px-0 [&::-webkit-scrollbar]:hidden">
           {FREE_SERVICES.map(s => (
-            <li key={s.href}>
+            <li key={s.href} className="shrink-0">
               <Link
                 href={s.href}
-                className="flex h-full flex-col items-center gap-3 rounded-[20px] border border-[#e3c9b5] bg-[#fbf6ee] px-3 py-5 text-center transition-colors hover:bg-[#f6ecdc]"
+                className="flex h-[130px] w-[110px] flex-col items-center justify-center gap-2 rounded-[20px] border border-[#e3c9b5] bg-[#fbf6ee] px-2 text-center transition-colors hover:bg-[#f6ecdc] lg:h-[150px] lg:w-[140px]"
               >
                 <Image
                   src={s.icon}
                   alt=""
-                  width={80}
-                  height={64}
-                  className="h-16 w-auto object-contain"
+                  // The PNGs' own size; CSS scales them to 64 px tall.
+                  width={160}
+                  height={160}
+                  className="h-[64px] object-contain lg:h-[76px]"
+                  style={{ width: 'auto' }}
                 />
-                <span className="font-mukta text-[16px] font-semibold text-primary">{s.label}</span>
+                <span className="text-[12px] text-primary lg:text-[14px]">{s.label}</span>
               </Link>
             </li>
           ))}
@@ -148,12 +151,12 @@ export function ClientHome({ firstName }: { firstName?: string }) {
                     className="flex h-full flex-col items-center gap-2 rounded-[20px] border border-[#e3c9b5] bg-[#fbf6ee] px-3 pb-4 pt-5 text-center"
                   >
                     <Avatar astrologer={a} size={84} />
-                    <span className="line-clamp-1 w-full font-mukta text-[15px] font-semibold text-[#4a1a1a]">
+                    <span className="line-clamp-1 w-full font-app text-[15px] font-semibold text-[#4a1a1a]">
                       {name(a)}
                     </span>
                     {tier ? (
                       <span
-                        className="rounded-full px-2.5 py-0.5 font-mukta text-xs font-semibold"
+                        className="rounded-full px-2.5 py-0.5 font-app text-xs font-semibold"
                         style={{ backgroundColor: style.bg, color: style.text }}
                       >
                         {tier}
@@ -165,7 +168,7 @@ export function ClientHome({ firstName }: { firstName?: string }) {
             })}
           </ul>
         ) : (
-          <p className="rounded-2xl border border-dashed border-[#c9837a] px-4 py-5 font-mukta text-[15px] text-[#8a5a52]">
+          <p className="rounded-2xl border border-dashed border-[#c9837a] px-4 py-5 font-app text-[15px] text-[#8a5a52]">
             No astrologers recommended right now
           </p>
         )}
@@ -184,9 +187,10 @@ export function ClientHome({ firstName }: { firstName?: string }) {
                 alt=""
                 width={64}
                 height={52}
-                className="h-12 w-auto object-contain"
+                className="h-12 object-contain"
+                style={{ width: 'auto' }}
               />
-              <span className="font-mukta text-[14px] font-semibold leading-tight text-primary sm:text-[16px]">
+              <span className="font-app text-[14px] font-semibold leading-tight text-primary sm:text-[16px]">
                 {w.label}
               </span>
             </li>
@@ -230,7 +234,7 @@ function Avatar({
     astrologer.user?.profilePicture?.thumbnail?.url || astrologer.user?.profilePicture?.url;
   return (
     <span className="relative inline-block shrink-0" style={{ width: size, height: size }}>
-      <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[#f1d9d2] font-mukta text-2xl font-semibold text-primary ring-2 ring-[#e8dcc8]">
+      <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[#f1d9d2] font-app text-2xl font-semibold text-primary ring-2 ring-[#e8dcc8]">
         {photo ? (
           // eslint-disable-next-line @next/next/no-img-element -- backend media URLs
           <img src={photo} alt="" className="h-full w-full object-cover" />
@@ -272,7 +276,7 @@ function HomeSearch() {
         onChange={e => setText(e.target.value)}
         placeholder="Search astrologers"
         enterKeyHint="search"
-        className="h-[48px] w-full rounded-full border border-[#c9837a] bg-transparent pl-5 pr-12 font-mukta text-[16px] text-[#4a1a1a] outline-none focus:border-primary"
+        className="h-[48px] w-full rounded-full border border-[#c9837a] bg-transparent pl-5 pr-12 font-app text-[16px] text-[#4a1a1a] outline-none focus:border-primary"
       />
       <button
         type="submit"
