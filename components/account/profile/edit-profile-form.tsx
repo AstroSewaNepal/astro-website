@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
 import { Camera, Loader2, Mail, Plus, Trash2, User } from 'lucide-react';
 
 import type { ProfileUpdate } from '@/auth';
@@ -14,17 +15,17 @@ import {
   type GenderOption,
   imageProblem,
   MAX_GALLERY_PHOTOS,
+  ME_QUERY_KEY,
   type MeResponse,
   type ProfileForm,
   profileFormData,
   profileSchema,
   splitPhone,
 } from '@/lib/account/profile';
+import { settingsPaths } from '@/lib/account/settings';
 import { BackendError } from '@/lib/backend/client';
 import { COUNTRIES } from '@/lib/data/countries';
 import { cn } from '@/lib/utils';
-
-const ME_KEY = ['users', 'me'] as const;
 
 type NewImage = { id: string; file: File; preview: string };
 
@@ -38,7 +39,10 @@ const message = (error: unknown) =>
 /** Client Edit profile (Figma Home/Edit-Profile, fields as the app's EditUserProfileScreen). */
 export function EditProfileForm() {
   const backend = useBackendClient();
-  const me = useQuery({ queryKey: ME_KEY, queryFn: () => backend.get<MeResponse>('/users/me') });
+  const me = useQuery({
+    queryKey: ME_QUERY_KEY,
+    queryFn: () => backend.get<MeResponse>('/users/me'),
+  });
   const genders = useQuery({
     queryKey: ['genders'],
     queryFn: () => backend.get<GenderOption[]>('/genders'),
@@ -142,7 +146,7 @@ function ProfileEditor({ me, genders }: { me: MeResponse; genders: GenderOption[
     try {
       await backend.delete(path, body);
       const fresh = await queryClient.fetchQuery({
-        queryKey: ME_KEY,
+        queryKey: ME_QUERY_KEY,
         queryFn: () => backend.get<MeResponse>('/users/me'),
       });
       await update({
@@ -177,7 +181,7 @@ function ProfileEditor({ me, genders }: { me: MeResponse; genders: GenderOption[
         ),
       );
       const fresh = await queryClient.fetchQuery({
-        queryKey: ME_KEY,
+        queryKey: ME_QUERY_KEY,
         queryFn: () => backend.get<MeResponse>('/users/me'),
       });
       await update({
@@ -283,6 +287,12 @@ function ProfileEditor({ me, genders }: { me: MeResponse; genders: GenderOption[
               important updates.
             </p>
           ) : null}
+          <Link
+            href={settingsPaths('client').changeEmail}
+            className="mt-1.5 inline-block px-2 font-mukta text-[15px] text-primary underline"
+          >
+            Change email
+          </Link>
         </div>
 
         <div>

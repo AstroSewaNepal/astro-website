@@ -86,6 +86,9 @@ export function AccountShell({ kind, children }: { kind: PrivateKind; children: 
   const nav = ACCOUNT_NAV[kind];
   const homeHref = nav.tabs[0].href;
   const onHome = pathname === homeHref;
+  // Sub-pages (/client/settings/security) go back to their parent page; first-level pages go Home.
+  const parts = pathname.split('/').filter(Boolean);
+  const backHref = parts.length > 2 ? `/${parts.slice(0, -1).join('/')}` : homeHref;
 
   return (
     <div className="container mx-auto flex w-full min-w-0 flex-1 gap-10 px-4 pb-12 lg:px-0">
@@ -112,7 +115,7 @@ export function AccountShell({ kind, children }: { kind: PrivateKind; children: 
       <main className="min-w-0 flex-1 py-3">
         {!onHome ? (
           <Link
-            href={homeHref}
+            href={backHref}
             className="mb-3 inline-flex items-center gap-1 font-mukta text-[15px] text-[#4a1a1a] lg:hidden"
           >
             <ChevronLeft className="h-5 w-5" aria-hidden />
