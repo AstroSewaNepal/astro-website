@@ -139,39 +139,42 @@ export function MyConsultations({ initialTab }: { initialTab: ConsultationTab })
     <div className="flex w-full flex-col">
       <h1 className="mb-4 text-[28px] font-normal text-primary lg:text-[34px]">My Consultations</h1>
 
-      {tab !== 'subscription' ? (
-        <label className="relative mb-4 block lg:max-w-[520px]">
-          <span className="sr-only">Search</span>
-          <input
-            type="search"
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            placeholder="Search"
-            enterKeyHint="search"
-            className="h-[48px] w-full rounded-full border border-[#c9837a] bg-transparent pl-5 pr-12 font-app text-[16px] text-[#4a1a1a] outline-none focus:border-primary"
-          />
-          {searchText ? (
-            <button
-              type="button"
-              aria-label="Clear search"
-              onClick={() => setSearchText('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-primary"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          ) : (
-            <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
-          )}
-        </label>
-      ) : null}
+      <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:border-b lg:border-[#BE7B71]/50 lg:pb-5">
+        {tab !== 'subscription' ? (
+          <label className="relative block lg:order-2 lg:ml-auto lg:w-[380px]">
+            <span className="sr-only">Search</span>
+            <input
+              type="search"
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+              placeholder="Search"
+              enterKeyHint="search"
+              className="h-[48px] w-full rounded-full border border-[#c9837a] bg-transparent pl-5 pr-12 font-app text-[16px] text-[#4a1a1a] outline-none focus:border-primary lg:h-11 lg:border-primary lg:bg-[#F8F3DF]"
+            />
+            {searchText ? (
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={() => setSearchText('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-primary"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            ) : (
+              <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
+            )}
+          </label>
+        ) : null}
 
-      <PillTabs
-        tabs={CONSULTATION_TABS}
-        active={tab}
-        onChange={switchTab}
-        label="Consultations"
-        className="mb-5 lg:max-w-[520px]"
-      />
+        <PillTabs
+          tabs={CONSULTATION_TABS}
+          active={tab}
+          onChange={switchTab}
+          label="Consultations"
+          splitOnDesktop
+          className="lg:order-1"
+        />
+      </div>
 
       {loading ? (
         <div className="flex justify-center py-20" role="status" aria-label="Loading">
@@ -208,7 +211,7 @@ export function MyConsultations({ initialTab }: { initialTab: ConsultationTab })
           </p>
         </div>
       ) : (
-        <ul className="grid gap-4 lg:grid-cols-2">
+        <ul className="grid gap-4 lg:gap-3">
           {shownPlans.map(p => (
             <li key={p.id}>
               <PlanCard plan={p} number={numbers.get(p.id) ?? 1} />
@@ -247,11 +250,20 @@ export function MyConsultations({ initialTab }: { initialTab: ConsultationTab })
   );
 }
 
-const cardClass = 'relative h-full rounded-lg border border-[#BE7B71] bg-[#F8F3DF] p-3';
+// Phones: the app's card (details over the buttons). Desktop: Figma's row, buttons on the right.
+const cardClass =
+  'relative h-full rounded-lg border border-[#BE7B71] bg-[#F8F3DF] p-3 lg:flex lg:items-center lg:gap-4 lg:rounded-2xl lg:px-3 lg:py-2.5';
+const detailsClass =
+  'flex gap-2 lg:min-w-0 lg:flex-1 lg:items-center lg:gap-3 lg:self-stretch lg:border-r lg:border-dashed lg:border-[#BE7B71] lg:pr-4';
+const linesClass = 'flex flex-col gap-1 lg:flex-row lg:flex-wrap lg:gap-x-4';
+const actionsClass =
+  'mt-2 flex gap-2 border-t border-[#BE7B71]/40 pt-2 lg:mt-0 lg:w-[290px] lg:shrink-0 xl:w-[340px] lg:border-0 lg:pt-0';
+const chipClass =
+  'whitespace-nowrap rounded-full bg-primary px-2.5 py-1 font-app font-semibold text-[#F8F3DF]';
 const outlineButton =
-  'flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-primary font-raleway text-[15px] font-medium text-primary disabled:opacity-50';
+  'flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-primary font-raleway text-[15px] font-medium text-primary disabled:opacity-50 lg:h-9 lg:text-[14px]';
 const solidButton =
-  'flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary font-raleway text-[15px] font-medium text-[#F8F3DF] disabled:opacity-50';
+  'flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary font-raleway text-[15px] font-medium text-[#F8F3DF] disabled:opacity-50 lg:h-9 lg:text-[14px]';
 
 function Avatar({
   name,
@@ -283,7 +295,7 @@ function Avatar({
 
 function Line({ icon: Icon, children }: { icon: typeof Video; children: React.ReactNode }) {
   return (
-    <span className="flex items-center gap-1.5 font-app text-[13px] font-bold text-[#1C1C1C]">
+    <span className="flex items-center gap-1.5 font-app text-[13px] font-bold text-[#1C1C1C] lg:whitespace-nowrap">
       <Icon className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden />
       {children}
     </span>
@@ -299,7 +311,7 @@ function PlanCard({ plan, number }: { plan: UserSubscription; number: number }) 
   const profile = profilePath(plan.astrologerId);
   return (
     <article className={cardClass}>
-      <div className="flex gap-2">
+      <div className={detailsClass}>
         <Avatar name={name} photo={photo} href={profile} />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <Link
@@ -308,25 +320,32 @@ function PlanCard({ plan, number }: { plan: UserSubscription; number: number }) 
           >
             {name}
           </Link>
-          <Line icon={Video}>
-            Subscription #{number} - {plan.plan.consultationMinutes} min consultation
-          </Line>
-          <Line icon={CalendarDays}>
-            {planLabel(plan.plan.durationMonths)} • Ends {shortDate(plan.endAt)}
-          </Line>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <Line icon={Clock3}>
-              {plan.usedConsultations} of {plan.totalConsultations} used
+          <div className={linesClass}>
+            <Line icon={Video}>
+              Subscription #{number} - {plan.plan.consultationMinutes} min consultation
             </Line>
-            {plan.amountPaid ? (
-              <span className="rounded-full bg-primary px-2.5 py-1 font-app text-[12px] font-bold text-[#F8F3DF]">
-                {paidLabel(plan.amountPaid)}
-              </span>
-            ) : null}
+            <Line icon={CalendarDays}>
+              {planLabel(plan.plan.durationMonths)} • Ends {shortDate(plan.endAt)}
+            </Line>
+            <div className="flex flex-wrap items-center justify-between gap-2 lg:justify-start">
+              <Line icon={Clock3}>
+                {plan.usedConsultations} of {plan.totalConsultations} used
+              </Line>
+              {plan.amountPaid ? (
+                <span className={clsx(chipClass, 'text-[12px] lg:hidden')}>
+                  {paidLabel(plan.amountPaid)}
+                </span>
+              ) : null}
+            </div>
           </div>
+          {plan.amountPaid ? (
+            <span className={clsx(chipClass, 'mt-1 hidden self-start text-[13px] lg:inline-flex')}>
+              {paidLabel(plan.amountPaid)}
+            </span>
+          ) : null}
         </div>
       </div>
-      <div className="mt-2 flex gap-2 border-t border-[#BE7B71]/40 pt-2">
+      <div className={actionsClass}>
         <Link href={profile} className={outlineButton}>
           <UserRound className="h-[18px] w-[18px]" aria-hidden />
           View Profile
@@ -371,7 +390,7 @@ function ConsultationCard({
 
   return (
     <article className={cardClass}>
-      <div className="flex gap-2">
+      <div className={detailsClass}>
         <Avatar name={name} photo={photo} href={profile} />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           {profile ? (
@@ -391,16 +410,31 @@ function ConsultationCard({
               Subscription #{planNumber}
             </span>
           ) : null}
-          {consultationLines(c).map(line => (
-            <Line key={line.icon} icon={icons[line.icon]}>
-              {line.text}
-            </Line>
-          ))}
+          <div className={linesClass}>
+            {consultationLines(c).map(line => (
+              <Line key={line.icon} icon={icons[line.icon]}>
+                {line.text}
+              </Line>
+            ))}
+          </div>
+          {/* Desktop: under the lines (Figma). Phones: bottom right (the app). */}
+          {chip ? (
+            <span
+              className={clsx(
+                chipClass,
+                'mt-1 hidden self-start lg:inline-flex',
+                sessionNumber ? 'text-[11px]' : 'text-[13px]',
+              )}
+            >
+              {chip}
+            </span>
+          ) : null}
         </div>
         {chip ? (
           <span
             className={clsx(
-              'self-end whitespace-nowrap rounded-full bg-primary px-2.5 py-1 font-app font-semibold text-[#F8F3DF]',
+              chipClass,
+              'self-end lg:hidden',
               sessionNumber ? 'text-[11px]' : 'text-[13px]',
             )}
           >
@@ -410,7 +444,7 @@ function ConsultationCard({
       </div>
 
       {gone ? null : (
-        <div className="mt-2 flex gap-2 border-t border-[#BE7B71]/40 pt-2">
+        <div className={actionsClass}>
           {completed ? (
             <>
               {c.reviewId ? (
