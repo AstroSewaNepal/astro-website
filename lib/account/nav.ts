@@ -138,7 +138,7 @@ const PARENT_PAGES: { prefix: string; parent: string }[] = [
 ];
 
 /**
- * Where "back" goes, or null on first-level pages (the sidebar covers those on desktop; phones go Home):
+ * Where "back" goes, or null on first-level pages (no back there: the sidebar or the tabs/drawer cover them):
  * the known parent, else one level up (/client/settings/security -> /client/settings).
  */
 export function parentPage(pathname: string): string | null {
