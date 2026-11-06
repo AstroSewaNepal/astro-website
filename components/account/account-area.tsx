@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import { auth } from '@/auth';
 import { AccountShell } from '@/components/account/account-shell';
+import { ClientHome } from '@/components/account/client-home';
 import { ComingSoon } from '@/components/account/coming-soon';
 import { LoginRedirect } from '@/components/account/login-redirect';
 import { accountPageTitle, type PrivateKind } from '@/lib/account/nav';
@@ -61,14 +62,11 @@ export function accountPlaceholder(kind: PrivateKind) {
     if (path === `/${kind}`) {
       const session = await auth();
       const firstName = session?.user?.name?.split(' ')[0];
+      if (kind === 'client') return <ClientHome firstName={firstName} />;
       return (
         <ComingSoon
           title={firstName ? `Namaste, ${firstName}` : 'Namaste'}
-          note={
-            kind === 'client'
-              ? 'Your consultations, payments and favourite astrologers will show here.'
-              : 'Your bookings, earnings and availability will show here.'
-          }
+          note="Your bookings, earnings and availability will show here."
         />
       );
     }

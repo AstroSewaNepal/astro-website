@@ -25,6 +25,7 @@ export interface AstrologerPackage {
   cost?: PackagePrice | null;
   discountedPrice?: PackagePrice | null;
   discountPercent?: number | null;
+  consultationMinutes?: number | null;
 }
 
 export interface AstrologerTag {
@@ -49,6 +50,10 @@ export interface Astrologer {
   totalBookings?: number | null;
   user?: AstrologerUser | null;
   packages?: AstrologerPackage[] | null;
+  /** Profile only (GET /astrologer-details/user/:id). */
+  bio?: string | null;
+  media?: { _id: string; url: string; thumbnail?: { url?: string | null } | null }[] | null;
+  tier?: { _id?: string; name?: string | null } | null;
 }
 
 export interface AstrologerListResponse {

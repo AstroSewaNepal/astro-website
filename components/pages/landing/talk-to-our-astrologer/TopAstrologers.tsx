@@ -6,6 +6,7 @@ import type { Swiper as SwiperType } from 'swiper';
 
 import Pagination from '@/components/common/pagination';
 import { fetchTopAstrologers } from '@/lib/astrologer-api';
+import { profilePath } from '@/lib/astrologers/list';
 
 import AstrologerCard from './AstrologerCard';
 import AstrologerCardSkeleton from './AstrologerCardSkeleton';
@@ -179,6 +180,9 @@ const TopAstrologers: React.FC<TopAstrologersProps> = ({ onChat, onCall, onSched
                   <AstrologerCard
                     astrologer={astrologer}
                     priorityImage={index === 0}
+                    profileHref={
+                      astrologer.user?._id ? profilePath(astrologer.user._id) : undefined
+                    }
                     onChat={onChat}
                     onCall={onCall}
                     onSchedule={onSchedule}

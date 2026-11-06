@@ -24,7 +24,7 @@ function UserAvatar({
   return (
     <Avatar className={className}>
       <AvatarImage src={user.image ?? ''} alt="" />
-      <AvatarFallback className={clsx('font-mukta font-semibold text-primary', fallbackClassName)}>
+      <AvatarFallback className={clsx('font-app font-semibold text-primary', fallbackClassName)}>
         {user.name?.charAt(0).toUpperCase() ?? '?'}
       </AvatarFallback>
     </Avatar>
@@ -33,7 +33,7 @@ function UserAvatar({
 
 function DrawerItem({ item, onNavigate }: { item: AccountNavItem; onNavigate: () => void }) {
   const Icon = item.icon;
-  const base = 'flex items-center gap-4 py-3 font-mukta text-[17px]';
+  const base = 'flex items-center gap-4 py-3 font-app text-[17px]';
   const body = (
     <>
       <Icon className="h-[22px] w-[22px] shrink-0" strokeWidth={1.75} aria-hidden />
@@ -78,7 +78,7 @@ export function AccountMenu({ kind, user }: { kind: PrivateKind; user: AccountUs
           className="fixed inset-y-0 left-0 z-[71] flex w-[86vw] max-w-[340px] flex-col overflow-y-auto rounded-r-[28px] bg-[#f8f0dc] px-6 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-xl outline-none"
         >
           <div className="flex items-center justify-between">
-            <DialogPrimitive.Title className="font-mukta text-2xl text-[#611508]">
+            <DialogPrimitive.Title className="font-app text-2xl text-[#611508]">
               Profile
             </DialogPrimitive.Title>
             <DialogPrimitive.Close
@@ -96,14 +96,14 @@ export function AccountMenu({ kind, user }: { kind: PrivateKind; user: AccountUs
               fallbackClassName="bg-[#611508]/10 text-2xl"
             />
             <div className="min-w-0">
-              <p className="truncate font-mukta text-lg font-semibold text-[#4a1a1a]">
+              <p className="truncate font-app text-lg font-semibold text-[#4a1a1a]">
                 {user.name}
               </p>
-              <p className="truncate font-mukta text-sm text-[#b0726a]">{user.email}</p>
+              <p className="truncate font-app text-sm text-[#b0726a]">{user.email}</p>
               <Link
                 href={nav.profile.href}
                 onClick={close}
-                className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 font-mukta text-sm text-white"
+                className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 font-app text-sm text-white"
               >
                 {nav.profile.label}
                 <Pencil className="h-3.5 w-3.5" aria-hidden />
@@ -126,7 +126,7 @@ export function AccountMenu({ kind, user }: { kind: PrivateKind; user: AccountUs
               type="button"
               // Also ends the backend session (auth.ts events.signOut).
               onClick={() => signOut({ redirectTo: '/' })}
-              className="flex w-full items-center gap-4 py-3 font-mukta text-[17px] text-red-700"
+              className="flex w-full items-center gap-4 py-3 font-app text-[17px] text-red-700"
             >
               <LogOut className="h-[22px] w-[22px]" strokeWidth={1.75} aria-hidden />
               Log out

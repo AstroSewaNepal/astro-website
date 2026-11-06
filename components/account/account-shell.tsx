@@ -5,12 +5,14 @@ import { usePathname } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import clsx from 'clsx';
 
-import { ACCOUNT_NAV, type AccountNavItem, type PrivateKind } from '@/lib/account/nav';
+import { ACCOUNT_NAV, type AccountNavItem, parentPage, type PrivateKind } from '@/lib/account/nav';
 
 /** Home is active only on itself; other items also cover their sub-pages. */
 function isActive(pathname: string, item: AccountNavItem, homeHref: string) {
   if (item.href === homeHref) return pathname === homeHref;
-  return pathname === item.href || pathname.startsWith(`${item.href}/`);
+  const under = (path: string) => path === item.href || path.startsWith(`${item.href}/`);
+  // A sub-page also lights up its parent's item (a profile -> Astro Connect).
+  return under(pathname) || under(parentPage(pathname) ?? '');
 }
 
 function SidebarItem({ item, active }: { item: AccountNavItem; active: boolean }) {
@@ -22,7 +24,7 @@ function SidebarItem({ item, active }: { item: AccountNavItem; active: boolean }
       {item.soon ? <span className="text-xs text-[#8a7a6a]">Soon</span> : null}
     </>
   );
-  const base = 'flex items-center gap-4 rounded-full px-5 py-2.5 font-mukta text-[17px]';
+  const base = 'flex items-center gap-4 rounded-full px-5 py-2.5 font-app text-[17px]';
   if (item.soon) {
     return (
       <span aria-disabled className={clsx(base, 'cursor-default text-[#611508]/45')}>
@@ -57,7 +59,7 @@ function TabItem({ item, active }: { item: AccountNavItem; active: boolean }) {
       <span className="max-w-full truncate text-[11px] leading-4">{item.label}</span>
     </>
   );
-  const base = 'flex min-w-0 flex-1 flex-col items-center gap-0.5 pt-2 pb-1.5 font-mukta';
+  const base = 'flex min-w-0 flex-1 flex-col items-center gap-0.5 pt-2 pb-1.5 font-app';
   if (item.soon) {
     return (
       <span aria-disabled className={clsx(base, 'text-[#BE7B71]/50')}>
@@ -86,10 +88,9 @@ export function AccountShell({ kind, children }: { kind: PrivateKind; children: 
   const nav = ACCOUNT_NAV[kind];
   const homeHref = nav.tabs[0].href;
   const onHome = pathname === homeHref;
-  // Sub-pages (/client/settings/security) go back to their parent page; first-level pages go Home.
-  const parts = pathname.split('/').filter(Boolean);
-  const isSubPage = parts.length > 2;
-  const backHref = isSubPage ? `/${parts.slice(0, -1).join('/')}` : homeHref;
+  const parent = parentPage(pathname);
+  const isSubPage = parent !== null;
+  const backHref = parent ?? homeHref;
 
   return (
     <div className="container mx-auto flex w-full min-w-0 flex-1 gap-10 px-4 pb-12 lg:px-0">
@@ -113,13 +114,13 @@ export function AccountShell({ kind, children }: { kind: PrivateKind; children: 
         </nav>
       </aside>
 
-      <main className="min-w-0 flex-1 py-3">
+      <main className="min-w-0 flex-1 py-3 font-app">
         {!onHome ? (
           <Link
             href={backHref}
             // Desktop has the sidebar for first-level pages, so it only needs back on sub-pages.
             className={clsx(
-              'mb-3 inline-flex items-center gap-1 font-mukta text-[15px] text-[#4a1a1a] lg:text-[17px]',
+              'mb-3 inline-flex items-center gap-1 font-app text-[15px] text-[#4a1a1a] lg:text-[17px]',
               !isSubPage && 'lg:hidden',
             )}
           >

@@ -51,16 +51,16 @@ export function DeleteAccountForm({ kind }: { kind: PrivateKind }) {
       <h1 className="mb-6 text-center text-[28px] font-normal text-primary lg:text-[34px]">
         Delete Account
       </h1>
-      <p className="font-mukta text-[16px] leading-relaxed text-[#2b2b2b]">{DELETE_WARNING}</p>
+      <p className="font-app text-[16px] leading-relaxed text-[#2b2b2b]">{DELETE_WARNING}</p>
 
       <fieldset className="mt-8">
-        <legend className="font-mukta text-[16px] text-[#720A0B]">
+        <legend className="font-app text-[16px] text-[#720A0B]">
           Please explain why you want to delete your account
         </legend>
         <div className="mt-2 divide-y divide-dotted divide-[#720A0B]/60">
           {DELETE_REASONS.map(item => (
             <div key={item.value} className="py-4">
-              <label className="flex cursor-pointer items-center gap-4 font-mukta text-[17px] text-[#2b2b2b]">
+              <label className="flex cursor-pointer items-center gap-4 font-app text-[17px] text-[#2b2b2b]">
                 <input
                   type="radio"
                   name="delete-reason"
@@ -79,7 +79,7 @@ export function DeleteAccountForm({ kind }: { kind: PrivateKind }) {
                   maxLength={500}
                   autoFocus
                   rows={4}
-                  className="mt-3 w-full rounded-2xl border border-[#720A0B] bg-transparent px-4 py-3 font-mukta text-[16px] text-[#2b2b2b] outline-none focus:border-primary"
+                  className="mt-3 w-full rounded-2xl border border-[#720A0B] bg-transparent px-4 py-3 font-app text-[16px] text-[#2b2b2b] outline-none focus:border-primary"
                 />
               ) : null}
             </div>
@@ -90,7 +90,7 @@ export function DeleteAccountForm({ kind }: { kind: PrivateKind }) {
       <div className="mt-6 flex gap-4">
         <Link
           href={settingsPaths(kind).security}
-          className="flex h-[56px] flex-1 items-center justify-center rounded-full bg-[#720A0B] font-mukta text-[18px] text-white"
+          className="flex h-[56px] flex-1 items-center justify-center rounded-full bg-[#720A0B] font-app text-[18px] text-white"
         >
           Cancel
         </Link>
@@ -102,7 +102,7 @@ export function DeleteAccountForm({ kind }: { kind: PrivateKind }) {
             setConfirming(true);
           }}
           className={clsx(
-            'h-[56px] flex-[2] rounded-full border bg-[#f8f0dc] font-mukta text-[18px]',
+            'h-[56px] flex-[2] rounded-full border bg-[#f8f0dc] font-app text-[18px]',
             ready ? 'border-[#720A0B] text-[#720A0B]' : 'border-[#BE7B71] text-[#BE7B71]',
           )}
         >
