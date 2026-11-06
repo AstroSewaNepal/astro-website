@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Check, ChevronDown, Loader2, PackageOpen, X } from 'lucide-react';
 import clsx from 'clsx';
 
+import { PillTabs } from '@/components/booking/pill-tabs';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useBuyerCountry } from '@/hooks/use-buyer-country';
 import {
@@ -82,27 +83,13 @@ export function PackagesScreen({
         Consultation Packages
       </h1>
 
-      <div
-        role="tablist"
-        aria-label="Package type"
-        className="mb-5 flex gap-1.5 rounded-full border border-[#BE7B71] bg-[#F8F3DF] p-2 lg:mx-auto lg:w-[410px]"
-      >
-        {TABS.map(t => (
-          <button
-            key={t.id}
-            type="button"
-            role="tab"
-            aria-selected={tab === t.id}
-            onClick={() => switchTab(t.id)}
-            className={clsx(
-              'h-10 flex-1 rounded-full font-raleway text-[15px] font-semibold transition-colors',
-              tab === t.id ? 'bg-primary text-[#F8F3DF]' : 'text-primary',
-            )}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <PillTabs
+        tabs={TABS}
+        active={tab}
+        onChange={switchTab}
+        label="Package type"
+        className="mb-5 lg:mx-auto lg:w-[410px]"
+      />
 
       {!isResolved || active.isPending ? (
         <div className="flex justify-center py-20" role="status" aria-label="Loading">
