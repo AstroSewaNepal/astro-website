@@ -894,3 +894,26 @@ a *,
     --sidebar-ring: 46 72% 92%;
   }
 }
+
+/* Account drawer (components/account/account-menu.tsx): the same 300 ms ease-out slide + fade as the header's
+   hamburger menu. Keyframes, not transitions: Radix removes the drawer only after its closing animation ends. */
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes drawer-out {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes drawer-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes drawer-fade-out {
+  to {
+    opacity: 0;
+  }
+}

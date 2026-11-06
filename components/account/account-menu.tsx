@@ -72,10 +72,11 @@ export function AccountMenu({ kind, user }: { kind: PrivateKind; user: AccountUs
       </DialogPrimitive.Trigger>
 
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-[70] bg-black/40" />
+        {/* Same look and motion as the header's hamburger menu: light dim, white panel, 300 ms slide (globals.css). */}
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[70] bg-black/20 data-[state=closed]:animate-[drawer-fade-out_300ms_ease-out] data-[state=open]:animate-[drawer-fade-in_300ms_ease-out] motion-reduce:animate-none" />
         <DialogPrimitive.Content
           aria-describedby={undefined}
-          className="fixed inset-y-0 left-0 z-[71] flex w-[86vw] max-w-[340px] flex-col overflow-y-auto rounded-r-[28px] bg-[#f8f0dc] px-6 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-xl outline-none"
+          className="fixed inset-y-0 left-0 z-[71] flex w-[86vw] max-w-[340px] flex-col overflow-y-auto rounded-r-[28px] bg-white px-6 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[0px_1px_4px_0px_rgba(0,0,0,0.25)] outline-none data-[state=closed]:animate-[drawer-out_300ms_ease-out] data-[state=open]:animate-[drawer-in_300ms_ease-out] motion-reduce:animate-none"
         >
           <div className="flex items-center justify-between">
             <DialogPrimitive.Title className="font-app text-2xl text-[#611508]">
