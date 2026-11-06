@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 
+import { GiftsSection } from '@/components/astrologers/profile/gifts-section';
 import { PhotoGallery } from '@/components/astrologers/profile/photo-gallery';
 import { RatingsSummary, ReviewsList } from '@/components/astrologers/profile/profile-reviews';
 import { VerifiedBadge } from '@/components/astrologers/verified-badge';
@@ -114,16 +115,19 @@ export function AstrologerProfile({ astrologerId }: { astrologerId: string }) {
       <div className="lg:col-start-1 lg:row-start-2">
         <About bio={astrologer.bio} />
       </div>
-      {/* Gifts on the profile come next in doc 04 (they need payments, doc 06). */}
+      {/* The app's order: about, gifts, photos. `empty:hidden` drops the gap when there are no gifts. */}
+      <div className="min-w-0 empty:hidden lg:col-start-1 lg:row-start-3">
+        <GiftsSection astrologerId={astrologerId} astrologerName={name} countryCode={countryCode} />
+      </div>
       {astrologer.media?.length ? (
-        <div className="min-w-0 lg:col-start-1 lg:row-start-3">
+        <div className="min-w-0 lg:col-start-1 lg:row-start-4">
           <PhotoGallery photos={astrologer.media} name={name} />
         </div>
       ) : null}
-      <div className="lg:col-start-2 lg:row-span-3 lg:row-start-2">
+      <div className="lg:col-start-2 lg:row-span-4 lg:row-start-2">
         <RatingsSummary reviews={reviewList} />
       </div>
-      <div className="lg:col-start-1 lg:row-start-4">
+      <div className="lg:col-start-1 lg:row-start-5">
         {reviews.isPending ? null : <ReviewsList reviews={reviewList} />}
       </div>
     </div>
