@@ -141,7 +141,9 @@ export function ScheduleScreen({
           timezone: zone,
         });
       } catch (error) {
-        throw new SlotTaken(error instanceof BackendError ? error.message : undefined);
+        // Only the backend saying no means the slot is gone; a network or server failure is just a failure.
+        if (error instanceof BackendError && error.status < 500) throw new SlotTaken(error.message);
+        throw error;
       }
       await backend.post('/connection-schedule', {
         ...times,
@@ -157,9 +159,13 @@ export function ScheduleScreen({
       void queryClient.invalidateQueries({ queryKey: ['consultations'] });
     },
     onError: error => {
-      // The slot is gone or the booking failed: show fresh slots and drop the stale choice, like the app.
-      setSlot(null);
-      void queryClient.invalidateQueries({ queryKey: ['booking', 'slots', astrologerId] });
+      const refused =
+        error instanceof SlotTaken || (error instanceof BackendError && error.status < 500);
+      if (refused) {
+        // The slot is gone or the booking was refused: show fresh slots and drop the stale choice, like the app.
+        setSlot(null);
+        void queryClient.invalidateQueries({ queryKey: ['booking', 'slots', astrologerId] });
+      }
       setProblem(
         error instanceof SlotTaken
           ? {
@@ -168,7 +174,8 @@ export function ScheduleScreen({
             }
           : {
               title: 'Something went wrong',
-              text: error instanceof BackendError ? error.message : 'Please try again.',
+              // A network or server failure keeps the chosen slot, so trying again is one tap.
+              text: refused ? error.message : 'Please try again.',
             },
       );
     },
