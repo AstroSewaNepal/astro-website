@@ -45,6 +45,11 @@ export function schedulePath(astrologerId: string, packageId: string): string {
   return `${profileBase(astrologerId)}/schedule?package=${encodeURIComponent(packageId)}`;
 }
 
+/** Schedule a session from a plan the buyer owns (My Consultations' Start Scheduling). */
+export function planSchedulePath(astrologerId: string, subscriptionId: string): string {
+  return `${profileBase(astrologerId)}/schedule?plan=${encodeURIComponent(subscriptionId)}`;
+}
+
 /** `?tab=subscription` opens the plans, like the app's initialTab (My Consultations' "book again" on a plan). */
 export function packageTab(value: string | string[] | undefined | null): PackageTab {
   return value === 'subscription' ? 'subscription' : 'perSession';

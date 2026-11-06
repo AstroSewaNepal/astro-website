@@ -14,6 +14,7 @@ import { BackendError } from '@/lib/backend/client';
 import {
   formatDuration,
   packagesPath,
+  planLabel,
   priceLabel,
   priceParts,
   sortPackages,
@@ -40,20 +41,26 @@ import {
   type Slot,
   type SlotsResponse,
 } from '@/lib/booking/schedule';
+import { canBookFromPlan, planAction, type UserSubscription } from '@/lib/booking/subscriptions';
 
 const noSubscribe = () => () => {};
 const timeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kathmandu';
 
+/** What's being booked: a per-session package, or a session from a plan the buyer owns. */
+export type BookingOffer =
+  | { kind: 'package'; packageId: string }
+  | { kind: 'plan'; subscriptionId: string };
+
 /**
- * The app's Schedule Appointment for a per-session package: pick a day (first free one preselected), then a slot, in
- * the buyer's time zone. Free packages book right away; paid ones wait for the website's payments (doc 06).
+ * The app's Schedule Appointment: pick a day (first free one preselected), then a slot, in the buyer's time zone.
+ * Plans (prepaid) and free packages book right away; paid packages wait for the website's payments (doc 06).
  */
 export function ScheduleScreen({
   astrologerId,
-  packageId,
+  offer,
 }: {
   astrologerId: string;
-  packageId: string;
+  offer: BookingOffer;
 }) {
   const backend = useBackendClient();
   const queryClient = useQueryClient();
@@ -74,21 +81,43 @@ export function ScheduleScreen({
       backend.get<PackagesResponse>(
         `/astrologers/${id}/packages${countryCode ? `?countryCode=${countryCode}` : ''}`,
       ),
-    enabled: isResolved,
+    enabled: isResolved && offer.kind === 'package',
     select: data => sortPackages(data.packages ?? []),
   });
-  const pkg = packages.data?.find(p => p.id === packageId) ?? null;
-  const minutes = pkg?.consultationMinutes ?? 15;
+  const subscriptionId = offer.kind === 'plan' ? offer.subscriptionId : null;
+  // A plan's session length and what's left come from the buyer's own subscription.
+  const plan = useQuery({
+    queryKey: ['consultations', 'plan', subscriptionId],
+    queryFn: () =>
+      backend.get<UserSubscription>(
+        `/consultation-subscriptions/${encodeURIComponent(subscriptionId ?? '')}`,
+      ),
+    enabled: !!subscriptionId,
+    retry: (count, error) => !(error instanceof BackendError && error.status < 500) && count < 2,
+  });
+
+  const pkg =
+    offer.kind === 'package' ? (packages.data?.find(p => p.id === offer.packageId) ?? null) : null;
+  // Another astrologer's plan in the URL books nothing here.
+  const ownPlan = plan.data && plan.data.astrologerId === astrologerId ? plan.data : null;
+  const found = offer.kind === 'package' ? pkg : ownPlan;
+  const minutes = (pkg?.consultationMinutes ?? ownPlan?.plan.consultationMinutes) || 15;
+  // Sent with every slot, check and booking call: packageId or subscriptionId, never both (the backend's rule).
+  const ref: Record<string, string> =
+    offer.kind === 'package'
+      ? { packageId: offer.packageId }
+      : { subscriptionId: offer.subscriptionId };
+  const refId = offer.kind === 'package' ? offer.packageId : offer.subscriptionId;
 
   const slotsPath = (date: CalendarDate) =>
-    `/astrologers/${id}/available-slots?date=${dateKey(date)}&duration=${minutes}&packageId=${encodeURIComponent(packageId)}`;
+    `/astrologers/${id}/available-slots?date=${dateKey(date)}&duration=${minutes}&${new URLSearchParams(ref)}`;
 
   const slotsKey = (day: CalendarDate | null) =>
-    ['booking', 'slots', astrologerId, packageId, minutes, day && dateKey(day)] as const;
+    ['booking', 'slots', astrologerId, refId, minutes, day && dateKey(day)] as const;
 
   // The app opens on the first day with a free slot (90 days ahead, 15 days per round).
   const earliest = useQuery({
-    queryKey: ['booking', 'earliest', astrologerId, packageId, minutes, today && dateKey(today)],
+    queryKey: ['booking', 'earliest', astrologerId, refId, minutes, today && dateKey(today)],
     queryFn: async () => {
       for (let offset = 0; offset < EARLIEST_SEARCH_DAYS; offset += EARLIEST_BATCH) {
         const days = dayBatch(today!, offset);
@@ -104,7 +133,7 @@ export function ScheduleScreen({
       }
       return null;
     },
-    enabled: !!pkg && !!today,
+    enabled: !!found && !!today,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -118,7 +147,7 @@ export function ScheduleScreen({
   const slots = useQuery({
     queryKey: slotsKey(date),
     queryFn: () => backend.get<SlotsResponse>(slotsPath(date!)),
-    enabled: !!pkg && !!date && !booked,
+    enabled: !!found && !!date && !booked,
   });
 
   const pickDate = (next: CalendarDate) => {
@@ -127,6 +156,8 @@ export function ScheduleScreen({
   };
 
   const free = pkg ? priceParts(pkg).free : false;
+  // Paid packages need the website's payments (doc 06); plans are prepaid.
+  const bookable = offer.kind === 'plan' ? !!ownPlan && canBookFromPlan(ownPlan) : free;
 
   const book = useMutation({
     mutationFn: async (choice: Slot) => {
@@ -137,7 +168,7 @@ export function ScheduleScreen({
         await backend.post('/connection-schedule/validate-slot', {
           ...times,
           astrologerId,
-          packageId,
+          ...ref,
           timezone: zone,
         });
       } catch (error) {
@@ -148,14 +179,16 @@ export function ScheduleScreen({
       await backend.post('/connection-schedule', {
         ...times,
         astrologerId,
-        packageId,
+        ...ref,
         timeZone: zone,
         notes: '',
-        pidx: '',
+        // A free package's booking carries an empty payment reference, as the app sends it.
+        ...(offer.kind === 'package' ? { pidx: '' } : {}),
       });
     },
     onSuccess: () => {
       setBooked(true);
+      // My Consultations and the plan's counts change.
       void queryClient.invalidateQueries({ queryKey: ['consultations'] });
     },
     onError: error => {
@@ -185,23 +218,44 @@ export function ScheduleScreen({
     return <BookedPanel astrologerId={astrologerId} />;
   }
 
-  if (!isResolved || packages.isPending) return <Spinner />;
-  if (packages.isError) {
-    return <Retry text="We could not load this package." onRetry={() => packages.refetch()} />;
+  const source = offer.kind === 'package' ? packages : plan;
+  const notFound = plan.error instanceof BackendError && plan.error.status < 500;
+  if (offer.kind === 'package' ? !isResolved || packages.isPending : plan.isPending) {
+    return <Spinner />;
   }
-  if (!pkg) {
+  if (source.isError && !notFound) {
+    return (
+      <Retry
+        text={`We could not load this ${offer.kind === 'package' ? 'package' : 'plan'}.`}
+        onRetry={() => source.refetch()}
+      />
+    );
+  }
+  if (!found) {
     return (
       <div className="flex flex-col items-center gap-3 py-16 text-center">
         <CalendarX2 className="h-14 w-14 text-primary/60" aria-hidden />
-        <p className="font-app text-[17px] text-[#4a1a1a]">This package is no longer available.</p>
-        <Link href={packagesPath(astrologerId)} className="font-app text-primary underline">
-          See the packages
+        <p className="font-app text-[17px] text-[#4a1a1a]">
+          {offer.kind === 'package'
+            ? 'This package is no longer available.'
+            : 'This plan could not be found.'}
+        </p>
+        <Link
+          href={offer.kind === 'package' ? packagesPath(astrologerId) : '/client/consultations'}
+          className="font-app text-primary underline"
+        >
+          {offer.kind === 'package' ? 'See the packages' : 'My Consultations'}
         </Link>
       </div>
     );
   }
 
-  const { pay } = priceParts(pkg);
+  const pay = pkg ? priceParts(pkg).pay : null;
+  const subtitle = pkg
+    ? `${pkg.packageType} · ${formatDuration(pkg.consultationMinutes)} · ${free ? 'Free' : pay ? priceLabel(pay) : ''}`
+    : ownPlan
+      ? `${planLabel(ownPlan.plan.durationMonths)} plan · ${formatDuration(minutes)} · ${ownPlan.availableToSchedule} of ${ownPlan.totalConsultations} left to book`
+      : '';
   const busy = !date || slots.isPending;
   const groups =
     date && today ? groupSlots(slots.data?.availableSlots ?? [], date, minutes, new Date()) : null;
@@ -210,10 +264,7 @@ export function ScheduleScreen({
   return (
     <div className="flex w-full flex-col">
       <h1 className="text-[28px] font-normal text-primary lg:text-[34px]">Schedule Appointment</h1>
-      <p className="mb-5 mt-1 font-app text-[15px] text-[#6d6d6d]">
-        {pkg.packageType} · {formatDuration(pkg.consultationMinutes)} ·{' '}
-        {free ? 'Free' : pay ? priceLabel(pay) : ''}
-      </p>
+      <p className="mb-5 mt-1 font-app text-[15px] text-[#6d6d6d]">{subtitle}</p>
 
       {today ? (
         <DatePicker
@@ -291,16 +342,18 @@ export function ScheduleScreen({
         ) : null}
         <button
           type="button"
-          disabled={!chosen || !free || book.isPending}
+          disabled={!chosen || !bookable || book.isPending}
           onClick={() => chosen && book.mutate(chosen)}
           className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[32px] bg-primary font-app text-[17px] text-white disabled:opacity-60 lg:mx-auto lg:max-w-[420px]"
         >
           {book.isPending ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : null}
           Confirm Appointment
         </button>
-        {!free ? (
+        {!bookable ? (
           <p className="text-center font-app text-sm text-[#6d6d6d]">
-            Paying for consultations on the website opens soon.
+            {offer.kind === 'plan'
+              ? `This plan can't book more sessions (${ownPlan ? planAction(ownPlan).label.toLowerCase() : 'not found'}).`
+              : 'Paying for consultations on the website opens soon.'}
           </p>
         ) : null}
       </div>
