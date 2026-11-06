@@ -19,6 +19,7 @@ import {
 import clsx from 'clsx';
 
 import { PillTabs } from '@/components/booking/pill-tabs';
+import { SortSheet, type SortFilter } from '@/components/booking/sort-sheet';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { profilePath } from '@/lib/astrologers/list';
 import {
@@ -57,6 +58,11 @@ export function MyConsultations({ initialTab }: { initialTab: ConsultationTab })
   const [tab, setTab] = useState<ConsultationTab>(initialTab);
   const [searchText, setSearchText] = useState('');
   const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState<SortFilter>({
+    sort: defaultSort(initialTab),
+    from: '',
+    to: '',
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => setSearch(searchText.trim()), SEARCH_DELAY_MS);
@@ -65,17 +71,20 @@ export function MyConsultations({ initialTab }: { initialTab: ConsultationTab })
 
   const switchTab = (next: ConsultationTab) => {
     setTab(next);
+    // Each tab starts on its own default order; the date range stays (the app's handleTabChange).
+    setFilters(f => ({ ...f, sort: defaultSort(next) }));
     // Keeps the tab on refresh and on back from a profile; the history API skips a server render.
     window.history.replaceState(null, '', consultationsPath(next));
   };
 
   const listTab = tab === 'subscription' ? null : tab;
-  const sort = defaultSort(tab);
+  const { sort, from, to } = filters;
+  const filtered = sort !== defaultSort(tab) || !!from || !!to;
   const list = useInfiniteQuery({
-    queryKey: ['consultations', 'list', userId, listTab, search, sort],
+    queryKey: ['consultations', 'list', userId, listTab, search, sort, from, to],
     queryFn: ({ pageParam }) =>
       backend.get<Consultation[]>(
-        searchPath(userId!, { tab: listTab!, page: pageParam, search, sort }),
+        searchPath(userId!, { tab: listTab!, page: pageParam, search, sort, from, to }),
       ),
     initialPageParam: 1,
     getNextPageParam: (last, all) =>
@@ -141,29 +150,37 @@ export function MyConsultations({ initialTab }: { initialTab: ConsultationTab })
 
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:border-b lg:border-[#BE7B71]/50 lg:pb-5">
         {tab !== 'subscription' ? (
-          <label className="relative block lg:order-2 lg:ml-auto lg:w-[380px]">
-            <span className="sr-only">Search</span>
-            <input
-              type="search"
-              value={searchText}
-              onChange={e => setSearchText(e.target.value)}
-              placeholder="Search"
-              enterKeyHint="search"
-              className="h-[48px] w-full rounded-full border border-[#c9837a] bg-transparent pl-5 pr-12 font-app text-[16px] text-[#4a1a1a] outline-none focus:border-primary lg:h-11 lg:border-primary lg:bg-[#F8F3DF]"
+          <div className="flex items-center gap-2 lg:order-2 lg:ml-auto">
+            <label className="relative block min-w-0 flex-1 lg:w-[380px] lg:flex-none">
+              <span className="sr-only">Search</span>
+              <input
+                type="search"
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+                placeholder="Search"
+                enterKeyHint="search"
+                className="h-[48px] w-full rounded-full border border-[#c9837a] bg-transparent pl-5 pr-12 font-app text-[16px] text-[#4a1a1a] outline-none focus:border-primary lg:h-11 lg:border-primary lg:bg-[#F8F3DF]"
+              />
+              {searchText ? (
+                <button
+                  type="button"
+                  aria-label="Clear search"
+                  onClick={() => setSearchText('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-primary"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              ) : (
+                <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
+              )}
+            </label>
+            <SortSheet
+              value={filters}
+              defaultSort={defaultSort(tab)}
+              active={filtered}
+              onApply={setFilters}
             />
-            {searchText ? (
-              <button
-                type="button"
-                aria-label="Clear search"
-                onClick={() => setSearchText('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-primary"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            ) : (
-              <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
-            )}
-          </label>
+          </div>
         ) : null}
 
         <PillTabs
@@ -202,7 +219,9 @@ export function MyConsultations({ initialTab }: { initialTab: ConsultationTab })
               ? 'No Active Subscriptions'
               : search
                 ? 'No consultations match your search'
-                : 'No Consultation Found'}
+                : filtered
+                  ? 'No consultations match these filters'
+                  : 'No Consultation Found'}
           </p>
           <p className="font-app text-[15px] text-[#6d6d6d]">
             {tab === 'subscription'

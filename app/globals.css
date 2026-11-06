@@ -932,3 +932,15 @@ a *,
     max-width: min(var(--breakpoint-2xl), calc(100% - 4rem));
   }
 }
+
+/* Bottom sheets on phones (components/booking/sort-sheet.tsx): slide up, like the app's sheets. */
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}
