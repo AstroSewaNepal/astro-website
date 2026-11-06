@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Award,
@@ -38,6 +39,7 @@ import {
   tierStyle,
 } from '@/lib/astrologers/profile';
 import { BackendError } from '@/lib/backend/client';
+import { packagesPath } from '@/lib/booking/packages';
 
 const card = 'rounded-[20px] border border-[#e3c9b5] bg-[#fbf6ee] p-5';
 
@@ -110,7 +112,7 @@ export function AstrologerProfile({ astrologerId }: { astrologerId: string }) {
         <HeaderCard astrologer={astrologer} astrologerId={astrologerId} name={name} />
       </div>
       <div className="lg:col-start-2 lg:row-start-1">
-        <PriceCard astrologer={astrologer} />
+        <PriceCard astrologer={astrologer} astrologerId={astrologerId} />
       </div>
       <div className="lg:col-start-1 lg:row-start-2">
         <About bio={astrologer.bio} />
@@ -324,8 +326,8 @@ function ShareButton({ astrologerId, name }: { astrologerId: string; name: strin
   );
 }
 
-/** Cheapest package, as the app's card; Schedule / Connect Now open booking (doc 05). */
-function PriceCard({ astrologer }: { astrologer: Astrologer }) {
+/** Cheapest package, as the app's card; Schedule / Connect Now open the packages. */
+function PriceCard({ astrologer, astrologerId }: { astrologer: Astrologer; astrologerId: string }) {
   const cheapest = getLowestPackage(astrologer.packages);
   const free = cheapest?.discountedPrice?.value === 0;
   const discounted = (cheapest?.discountPercent ?? 0) > 0 && !free;
@@ -356,25 +358,23 @@ function PriceCard({ astrologer }: { astrologer: Astrologer }) {
       ) : (
         <p className="font-app text-[16px] text-[#6d6d6d]">No packages yet</p>
       )}
+      {/* Both open the packages, like the app's card (Connect Now has no instant call of its own). */}
       <div className="mt-4 flex gap-3">
-        <button
-          type="button"
-          disabled
-          className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full bg-[#611508] font-app text-[16px] text-white disabled:opacity-60"
+        <Link
+          href={packagesPath(astrologerId)}
+          className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full bg-[#611508] font-app text-[16px] text-white"
         >
           <CalendarDays className="h-5 w-5" aria-hidden />
           Schedule
-        </button>
-        <button
-          type="button"
-          disabled
-          className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full border border-[#611508] font-app text-[16px] text-[#611508] disabled:opacity-60"
+        </Link>
+        <Link
+          href={packagesPath(astrologerId)}
+          className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full border border-[#611508] font-app text-[16px] text-[#611508]"
         >
           <Phone className="h-5 w-5" aria-hidden />
           Connect Now
-        </button>
+        </Link>
       </div>
-      <p className="mt-2 font-app text-sm text-[#6d6d6d]">Booking on the website opens soon.</p>
     </section>
   );
 }

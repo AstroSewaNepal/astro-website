@@ -33,6 +33,8 @@ export type AstrologerCardProps = AstrologerCardActions & {
    * exists on the web (doc 05). The profile page sends guests to log in first, as the app does.
    */
   profileHref?: string;
+  /** Schedule / Connect Now; defaults to the profile (the landing page). */
+  bookHref?: string;
 };
 
 const AstrologerCard = memo(function AstrologerCard({
@@ -42,6 +44,7 @@ const AstrologerCard = memo(function AstrologerCard({
   onSchedule,
   priorityImage = false,
   profileHref,
+  bookHref = profileHref,
 }: AstrologerCardProps) {
   const profileImage = getProfileImageUrl(astrologer);
   const name = getAstrologerName(astrologer);
@@ -239,7 +242,7 @@ const AstrologerCard = memo(function AstrologerCard({
 
       <div className="mt-auto flex shrink-0 items-center justify-between gap-1.5 sm:gap-3 px-3 py-2 sm:px-5 sm:py-4 lg:px-6 lg:py-5 border-t border-dashed border-[#79787A]/30">
         <CardAction
-          href={profileHref}
+          href={bookHref}
           className="flex flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-[32px] bg-[#611508] py-2.5 sm:py-3 lg:py-3.5 transition-opacity hover:opacity-90"
           label={`Schedule session with ${name}`}
           onClick={() => onSchedule?.(astrologer)}
@@ -250,7 +253,7 @@ const AstrologerCard = memo(function AstrologerCard({
           </span>
         </CardAction>
         <CardAction
-          href={profileHref}
+          href={bookHref}
           className="flex flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-[32px] border border-[#611508] bg-transparent py-2.5 sm:py-3 lg:py-3.5 transition-opacity hover:bg-[#611508]/5"
           label={`Connect with ${name}`}
           onClick={() => (onCall ? onCall(astrologer) : onChat?.(astrologer))}

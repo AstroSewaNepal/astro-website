@@ -9,6 +9,10 @@ describe('parentPage', () => {
   it('sends a profile back to the Astro Connect list', () => {
     expect(parentPage('/astrologer-profile/abc')).toBe('/astrologers');
   });
+  it('sends packages to the profile and schedule to the packages', () => {
+    expect(parentPage('/astrologer-profile/abc/packages')).toBe('/astrologer-profile/abc');
+    expect(parentPage('/astrologer-profile/abc/schedule')).toBe('/astrologer-profile/abc/packages');
+  });
   it('has no parent for first-level pages', () => {
     expect(parentPage('/client/settings')).toBeNull();
     expect(parentPage('/astrologers')).toBeNull();

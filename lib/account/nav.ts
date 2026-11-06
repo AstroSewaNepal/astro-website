@@ -132,9 +132,13 @@ export function isClientShellPage(pathname: string | null): boolean {
   return CLIENT_SHELL_PAGES.some(root => pathname === root || pathname.startsWith(`${root}/`));
 }
 
-/** Pages that belong under another page of the area: a profile is opened from the Astro Connect list. */
-const PARENT_PAGES: { prefix: string; parent: string }[] = [
-  { prefix: '/astrologer-profile/', parent: '/astrologers' },
+/**
+ * Pages that belong under another page of the area: a profile is opened from the Astro Connect list, its packages
+ * from the profile, and schedule appointment from the packages.
+ */
+const PARENT_PAGES: { pattern: RegExp; parent: (match: RegExpMatchArray) => string }[] = [
+  { pattern: /^\/astrologer-profile\/[^/]+$/, parent: () => '/astrologers' },
+  { pattern: /^(\/astrologer-profile\/[^/]+)\/schedule$/, parent: m => `${m[1]}/packages` },
 ];
 
 /**
@@ -142,8 +146,10 @@ const PARENT_PAGES: { prefix: string; parent: string }[] = [
  * the known parent, else one level up (/client/settings/security -> /client/settings).
  */
 export function parentPage(pathname: string): string | null {
-  const known = PARENT_PAGES.find(p => pathname.startsWith(p.prefix));
-  if (known) return known.parent;
+  for (const { pattern, parent } of PARENT_PAGES) {
+    const match = pathname.match(pattern);
+    if (match) return parent(match);
+  }
   const parts = pathname.split('/').filter(Boolean);
   return parts.length > 2 ? `/${parts.slice(0, -1).join('/')}` : null;
 }
