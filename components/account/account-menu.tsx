@@ -96,9 +96,7 @@ export function AccountMenu({ kind, user }: { kind: PrivateKind; user: AccountUs
               fallbackClassName="bg-[#611508]/10 text-2xl"
             />
             <div className="min-w-0">
-              <p className="truncate font-app text-lg font-semibold text-[#4a1a1a]">
-                {user.name}
-              </p>
+              <p className="truncate font-app text-lg font-semibold text-[#4a1a1a]">{user.name}</p>
               <p className="truncate font-app text-sm text-[#b0726a]">{user.email}</p>
               <Link
                 href={nav.profile.href}
@@ -121,17 +119,21 @@ export function AccountMenu({ kind, user }: { kind: PrivateKind; user: AccountUs
             </ul>
           ))}
 
-          <div className="mt-5 border-t border-dashed border-[#611508]/30 pt-2">
-            <button
-              type="button"
-              // Also ends the backend session (auth.ts events.signOut).
-              onClick={() => signOut({ redirectTo: '/' })}
-              className="flex w-full items-center gap-4 py-3 font-app text-[17px] text-red-700"
-            >
-              <LogOut className="h-[22px] w-[22px]" strokeWidth={1.75} aria-hidden />
-              Log out
-            </button>
-          </div>
+          {/* Clients sign out from Settings, like the app. Astrologers keep this until their Settings page (with
+              Sign out) is built: their side is still a placeholder. */}
+          {kind === 'astrologer' ? (
+            <div className="mt-5 border-t border-dashed border-[#611508]/30 pt-2">
+              <button
+                type="button"
+                // Also ends the backend session (auth.ts events.signOut).
+                onClick={() => signOut({ redirectTo: '/' })}
+                className="flex w-full items-center gap-4 py-3 font-app text-[17px] text-red-700"
+              >
+                <LogOut className="h-[22px] w-[22px]" strokeWidth={1.75} aria-hidden />
+                Log out
+              </button>
+            </div>
+          ) : null}
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
