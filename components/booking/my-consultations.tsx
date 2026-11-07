@@ -28,6 +28,7 @@ import {
   consultationLines,
   consultationsPath,
   defaultSort,
+  isInProgress,
   planFilter,
   priceChip,
   searchPath,
@@ -37,6 +38,7 @@ import {
   type ConsultationTab,
 } from '@/lib/booking/consultations';
 import { packagesPath, planLabel, planSchedulePath } from '@/lib/booking/packages';
+import { reschedulePath } from '@/lib/booking/reschedule';
 import {
   paidLabel,
   planAction,
@@ -404,6 +406,8 @@ function ConsultationCard({
 }) {
   const { name, photo, gone } = astrologerShown(c);
   const profile = gone ? null : profilePath(c.astrologerId);
+  // The app's "Reschedule Unavailable" toast, shown under the buttons.
+  const [rescheduleNotice, setRescheduleNotice] = useState(false);
   const chip = sessionNumber ? `Consultation ${sessionNumber}` : priceChip(c.package);
   const icons = { video: Video, date: CalendarDays, time: Clock3 } as const;
 
@@ -491,11 +495,22 @@ function ConsultationCard({
             </>
           ) : (
             <>
-              {/* Rescheduling comes in a later step of doc 05; chat with doc 07. */}
-              <button type="button" disabled className={outlineButton}>
-                <RefreshCw className="h-4 w-4" aria-hidden />
-                Reschedule
-              </button>
+              {isInProgress(c, new Date()) ? (
+                <button
+                  type="button"
+                  onClick={() => setRescheduleNotice(true)}
+                  className={clsx(outlineButton, 'opacity-50')}
+                >
+                  <RefreshCw className="h-4 w-4" aria-hidden />
+                  Reschedule
+                </button>
+              ) : (
+                <Link href={reschedulePath(c.astrologerId, c._id)} className={outlineButton}>
+                  <RefreshCw className="h-4 w-4" aria-hidden />
+                  Reschedule
+                </Link>
+              )}
+              {/* Chat comes with doc 07. */}
               <button
                 type="button"
                 disabled
@@ -509,6 +524,20 @@ function ConsultationCard({
           )}
         </div>
       )}
+      {rescheduleNotice ? (
+        <p
+          role="alert"
+          className="mt-3 flex items-start gap-2 rounded-xl bg-[#fdecea] px-3 py-2 font-app text-[14px] text-[#4a1a1a]"
+        >
+          <span className="flex-1">
+            <b>Reschedule Unavailable.</b> You cannot reschedule during the scheduled consultation
+            time.
+          </span>
+          <button type="button" aria-label="Dismiss" onClick={() => setRescheduleNotice(false)}>
+            ×
+          </button>
+        </p>
+      ) : null}
     </article>
   );
 }

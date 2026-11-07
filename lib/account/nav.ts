@@ -136,19 +136,27 @@ export function isClientShellPage(pathname: string | null): boolean {
  * Pages that belong under another page of the area: a profile is opened from the Astro Connect list, its packages
  * from the profile, and schedule appointment from the packages.
  */
-const PARENT_PAGES: { pattern: RegExp; parent: (match: RegExpMatchArray) => string }[] = [
+const PARENT_PAGES: {
+  pattern: RegExp;
+  parent: (match: RegExpMatchArray, search: URLSearchParams) => string;
+}[] = [
   { pattern: /^\/astrologer-profile\/[^/]+$/, parent: () => '/astrologers' },
-  { pattern: /^(\/astrologer-profile\/[^/]+)\/schedule$/, parent: m => `${m[1]}/packages` },
+  {
+    pattern: /^(\/astrologer-profile\/[^/]+)\/schedule$/,
+    // Booking from a plan and moving a booking both start on My Consultations.
+    parent: (m, search) =>
+      search.has('booking') || search.has('plan') ? '/client/consultations' : `${m[1]}/packages`,
+  },
 ];
 
 /**
  * Where "back" goes, or null on first-level pages (no back there: the sidebar or the tabs/drawer cover them):
  * the known parent, else one level up (/client/settings/security -> /client/settings).
  */
-export function parentPage(pathname: string): string | null {
+export function parentPage(pathname: string, search?: URLSearchParams | null): string | null {
   for (const { pattern, parent } of PARENT_PAGES) {
     const match = pathname.match(pattern);
-    if (match) return parent(match);
+    if (match) return parent(match, search ?? new URLSearchParams());
   }
   const parts = pathname.split('/').filter(Boolean);
   return parts.length > 2 ? `/${parts.slice(0, -1).join('/')}` : null;

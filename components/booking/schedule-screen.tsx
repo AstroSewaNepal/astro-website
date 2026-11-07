@@ -41,19 +41,33 @@ import {
   type Slot,
   type SlotsResponse,
 } from '@/lib/booking/schedule';
-import { canBookFromPlan, planAction, type UserSubscription } from '@/lib/booking/subscriptions';
+import {
+  bookedSlot,
+  rescheduleBlock,
+  withBookedSlot,
+  type BookingDetails,
+} from '@/lib/booking/reschedule';
+import {
+  canBookFromPlan,
+  planAction,
+  shortDate,
+  type UserSubscription,
+} from '@/lib/booking/subscriptions';
+import { RescheduleReasonDialog } from '@/components/booking/reschedule-reason-dialog';
 
 const noSubscribe = () => () => {};
 const timeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kathmandu';
 
-/** What's being booked: a per-session package, or a session from a plan the buyer owns. */
+/** What's being booked: a per-session package, a session from a plan the buyer owns, or a new time for a booking. */
 export type BookingOffer =
   | { kind: 'package'; packageId: string }
-  | { kind: 'plan'; subscriptionId: string };
+  | { kind: 'plan'; subscriptionId: string }
+  | { kind: 'reschedule'; bookingId: string };
 
 /**
  * The app's Schedule Appointment: pick a day (first free one preselected), then a slot, in the buyer's time zone.
  * Plans (prepaid) and free packages book right away; paid packages wait for the website's payments (doc 06).
+ * Rescheduling opens on the booked day, keeps the booked slot unpickable and asks for a reason before moving it.
  */
 export function ScheduleScreen({
   astrologerId,
@@ -84,7 +98,19 @@ export function ScheduleScreen({
     enabled: isResolved && offer.kind === 'package',
     select: data => sortPackages(data.packages ?? []),
   });
-  const subscriptionId = offer.kind === 'plan' ? offer.subscriptionId : null;
+  const bookingId = offer.kind === 'reschedule' ? offer.bookingId : null;
+  // The booking being moved: its length, its current slot and whether it may still move.
+  const booking = useQuery({
+    queryKey: ['consultations', 'booking', bookingId],
+    queryFn: () =>
+      backend.get<BookingDetails>(`/connection-schedule/${encodeURIComponent(bookingId ?? '')}`),
+    enabled: !!bookingId,
+    retry: (count, error) => !(error instanceof BackendError && error.status < 500) && count < 2,
+  });
+  const ownBooking =
+    booking.data && booking.data.astrologerId === astrologerId ? booking.data : null;
+  const subscriptionId =
+    offer.kind === 'plan' ? offer.subscriptionId : (ownBooking?.subscriptionId ?? null);
   // A plan's session length and what's left come from the buyer's own subscription.
   const plan = useQuery({
     queryKey: ['consultations', 'plan', subscriptionId],
@@ -100,14 +126,43 @@ export function ScheduleScreen({
     offer.kind === 'package' ? (packages.data?.find(p => p.id === offer.packageId) ?? null) : null;
   // Another astrologer's plan in the URL books nothing here.
   const ownPlan = plan.data && plan.data.astrologerId === astrologerId ? plan.data : null;
-  const found = offer.kind === 'package' ? pkg : ownPlan;
-  const minutes = (pkg?.consultationMinutes ?? ownPlan?.plan.consultationMinutes) || 15;
+  // A plan session's booking has no package: its length is the plan's.
+  const planLoading = offer.kind === 'reschedule' && !!subscriptionId && plan.isPending;
+  const found =
+    offer.kind === 'package'
+      ? pkg
+      : offer.kind === 'plan'
+        ? ownPlan
+        : planLoading
+          ? null
+          : ownBooking;
+  const minutes =
+    (pkg?.consultationMinutes ??
+      ownBooking?.package?.consultationMinutes ??
+      ownPlan?.plan.consultationMinutes) ||
+    15;
+  const bookedPackageId =
+    ownBooking && !ownBooking.subscriptionId ? ownBooking.package?._id || null : null;
   // Sent with every slot, check and booking call: packageId or subscriptionId, never both (the backend's rule).
   const ref: Record<string, string> =
     offer.kind === 'package'
       ? { packageId: offer.packageId }
-      : { subscriptionId: offer.subscriptionId };
-  const refId = offer.kind === 'package' ? offer.packageId : offer.subscriptionId;
+      : offer.kind === 'plan'
+        ? { subscriptionId: offer.subscriptionId }
+        : bookedPackageId
+          ? { packageId: bookedPackageId }
+          : subscriptionId
+            ? { subscriptionId }
+            : {};
+  const refId =
+    offer.kind === 'package'
+      ? offer.packageId
+      : offer.kind === 'plan'
+        ? offer.subscriptionId
+        : offer.bookingId;
+  const booked = ownBooking ? bookedSlot(ownBooking) : null;
+  const blocked = ownBooking ? rescheduleBlock(ownBooking, new Date()) : null;
+  const bookedDayAhead = !!booked && !!today && dateKey(booked.date) >= dateKey(today);
 
   const slotsPath = (date: CalendarDate) =>
     `/astrologers/${id}/available-slots?date=${dateKey(date)}&duration=${minutes}&${new URLSearchParams(ref)}`;
@@ -133,21 +188,27 @@ export function ScheduleScreen({
       }
       return null;
     },
-    enabled: !!found && !!today,
+    // Rescheduling opens on the booked day instead (the app), unless that day is already past.
+    enabled: !!found && !!today && !bookedDayAhead,
     staleTime: 5 * 60 * 1000,
   });
 
   const [picked, setPicked] = useState<CalendarDate | null>(null);
-  const date = picked ?? (earliest.isFetched ? (earliest.data ?? today) : null);
+  const date =
+    picked ??
+    (bookedDayAhead ? booked!.date : earliest.isFetched ? (earliest.data ?? today) : null);
   const [slot, setSlot] = useState<(Slot & { key: string }) | null>(null);
   const chosen = date && slot?.key === dateKey(date) ? slot : null;
   const [problem, setProblem] = useState<{ title: string; text: string } | null>(null);
-  const [booked, setBooked] = useState(false);
+  const [done, setDone] = useState(false);
+  const [askReason, setAskReason] = useState(false);
+  // A fresh reason popup each time it opens.
+  const [reasonRound, setReasonRound] = useState(0);
 
   const slots = useQuery({
     queryKey: slotsKey(date),
     queryFn: () => backend.get<SlotsResponse>(slotsPath(date!)),
-    enabled: !!found && !!date && !booked,
+    enabled: !!found && !!date && !done,
   });
 
   const pickDate = (next: CalendarDate) => {
@@ -156,8 +217,19 @@ export function ScheduleScreen({
   };
 
   const free = pkg ? priceParts(pkg).free : false;
-  // Paid packages need the website's payments (doc 06); plans are prepaid.
-  const bookable = offer.kind === 'plan' ? !!ownPlan && canBookFromPlan(ownPlan) : free;
+  // Paid packages need the website's payments (doc 06); plans are prepaid; a booking moves while it's upcoming.
+  const bookable =
+    offer.kind === 'plan'
+      ? !!ownPlan && canBookFromPlan(ownPlan)
+      : offer.kind === 'reschedule'
+        ? !!ownBooking && !blocked
+        : free;
+  const isBookedSlot = (s: Pick<Slot, 'start' | 'end'>) =>
+    !!booked &&
+    !!date &&
+    dateKey(booked.date) === dateKey(date) &&
+    booked.start === s.start &&
+    booked.end === s.end;
 
   const book = useMutation({
     mutationFn: async (choice: Slot) => {
@@ -187,46 +259,82 @@ export function ScheduleScreen({
       });
     },
     onSuccess: () => {
-      setBooked(true);
+      setDone(true);
       // My Consultations and the plan's counts change.
       void queryClient.invalidateQueries({ queryKey: ['consultations'] });
     },
+    onError: error => showFailure(error),
+  });
+
+  // The backend checks the new slot itself (availability, clashes) when the booking moves, as for the app.
+  const move = useMutation({
+    mutationFn: async ({ choice, reason }: { choice: Slot; reason: string }) => {
+      await backend.put(`/connection-schedule/${encodeURIComponent(bookingId ?? '')}`, {
+        ...bookingTimes(date!, choice),
+        timezone: timeZone(),
+        rescheduleReason: reason,
+      });
+    },
+    onSuccess: () => {
+      setAskReason(false);
+      setDone(true);
+      void queryClient.invalidateQueries({ queryKey: ['consultations'] });
+    },
     onError: error => {
-      const refused =
-        error instanceof SlotTaken || (error instanceof BackendError && error.status < 500);
-      if (refused) {
-        // The slot is gone or the booking was refused: show fresh slots and drop the stale choice, like the app.
-        setSlot(null);
-        void queryClient.invalidateQueries({ queryKey: ['booking', 'slots', astrologerId] });
-      }
-      setProblem(
-        error instanceof SlotTaken
-          ? {
-              title: 'Slot Unavailable',
-              text: error.message || 'This time slot is no longer available.',
-            }
-          : {
-              title: 'Something went wrong',
-              // A network or server failure keeps the chosen slot, so trying again is one tap.
-              text: refused ? error.message : 'Please try again.',
-            },
-      );
+      setAskReason(false);
+      showFailure(error);
     },
   });
 
-  if (booked) {
-    return <BookedPanel astrologerId={astrologerId} />;
+  function showFailure(error: Error) {
+    const refused =
+      error instanceof SlotTaken || (error instanceof BackendError && error.status < 500);
+    if (refused) {
+      // The slot is gone or the booking was refused: show fresh slots and drop the stale choice, like the app.
+      setSlot(null);
+      void queryClient.invalidateQueries({ queryKey: ['booking', 'slots', astrologerId] });
+    }
+    setProblem(
+      error instanceof SlotTaken
+        ? {
+            title: 'Slot Unavailable',
+            text: error.message || 'This time slot is no longer available.',
+          }
+        : {
+            title: 'Something went wrong',
+            // A network or server failure keeps the chosen slot, so trying again is one tap.
+            text: refused ? error.message : 'Please try again.',
+          },
+    );
   }
 
-  const source = offer.kind === 'package' ? packages : plan;
-  const notFound = plan.error instanceof BackendError && plan.error.status < 500;
-  if (offer.kind === 'package' ? !isResolved || packages.isPending : plan.isPending) {
+  if (done) {
+    return <BookedPanel astrologerId={astrologerId} rescheduled={offer.kind === 'reschedule'} />;
+  }
+
+  // A plan session's booking needs its plan for the session length.
+  const source =
+    offer.kind === 'package'
+      ? packages
+      : offer.kind === 'plan'
+        ? plan
+        : booking.isError || !subscriptionId
+          ? booking
+          : plan;
+  const notFound = source.error instanceof BackendError && source.error.status < 500;
+  const loading =
+    offer.kind === 'package'
+      ? !isResolved || packages.isPending
+      : offer.kind === 'plan'
+        ? plan.isPending
+        : booking.isPending || planLoading;
+  if (loading) {
     return <Spinner />;
   }
   if (source.isError && !notFound) {
     return (
       <Retry
-        text={`We could not load this ${offer.kind === 'package' ? 'package' : 'plan'}.`}
+        text={`We could not load this ${offer.kind === 'package' ? 'package' : offer.kind === 'plan' ? 'plan' : 'consultation'}.`}
         onRetry={() => source.refetch()}
       />
     );
@@ -238,7 +346,9 @@ export function ScheduleScreen({
         <p className="font-app text-[17px] text-[#4a1a1a]">
           {offer.kind === 'package'
             ? 'This package is no longer available.'
-            : 'This plan could not be found.'}
+            : offer.kind === 'plan'
+              ? 'This plan could not be found.'
+              : 'This consultation could not be found.'}
         </p>
         <Link
           href={offer.kind === 'package' ? packagesPath(astrologerId) : '/client/consultations'}
@@ -251,15 +361,31 @@ export function ScheduleScreen({
   }
 
   const pay = pkg ? priceParts(pkg).pay : null;
-  const subtitle = pkg
-    ? `${pkg.packageType} · ${formatDuration(pkg.consultationMinutes)} · ${free ? 'Free' : pay ? priceLabel(pay) : ''}`
-    : ownPlan
-      ? `${planLabel(ownPlan.plan.durationMonths)} plan · ${formatDuration(minutes)} · ${ownPlan.availableToSchedule} of ${ownPlan.totalConsultations} left to book`
-      : '';
+  const subtitle =
+    offer.kind === 'reschedule'
+      ? `${formatDuration(minutes)} consultation${booked ? ` · now booked for ${shortDate(ownBooking!.scheduledStartAt)}, ${formatTime12(booked.start)}` : ''}`
+      : pkg
+        ? `${pkg.packageType} · ${formatDuration(pkg.consultationMinutes)} · ${free ? 'Free' : pay ? priceLabel(pay) : ''}`
+        : ownPlan
+          ? `${planLabel(ownPlan.plan.durationMonths)} plan · ${formatDuration(minutes)} · ${ownPlan.availableToSchedule} of ${ownPlan.totalConsultations} left to book`
+          : '';
+  const working = book.isPending || move.isPending;
   const busy = !date || slots.isPending;
-  const groups =
-    date && today ? groupSlots(slots.data?.availableSlots ?? [], date, minutes, new Date()) : null;
+  const listed =
+    date && offer.kind === 'reschedule'
+      ? withBookedSlot(slots.data?.availableSlots ?? [], date, booked)
+      : (slots.data?.availableSlots ?? []);
+  const groups = date && today ? groupSlots(listed, date, minutes, new Date()) : null;
   const anySlot = !!groups && SLOT_GROUPS.some(g => groups[g.id].length > 0);
+  const submit = () => {
+    if (!chosen) return;
+    if (offer.kind === 'reschedule') {
+      setReasonRound(n => n + 1);
+      setAskReason(true);
+    } else {
+      book.mutate(chosen);
+    }
+  };
 
   return (
     <div className="flex w-full flex-col">
@@ -267,12 +393,7 @@ export function ScheduleScreen({
       <p className="mb-5 mt-1 font-app text-[15px] text-[#6d6d6d]">{subtitle}</p>
 
       {today ? (
-        <DatePicker
-          today={today}
-          date={date}
-          disabled={busy || book.isPending}
-          onChange={pickDate}
-        />
+        <DatePicker today={today} date={date} disabled={busy || working} onChange={pickDate} />
       ) : null}
 
       {busy ? (
@@ -292,12 +413,17 @@ export function ScheduleScreen({
                 <ul className="grid grid-cols-3 gap-4 sm:grid-cols-4 xl:grid-cols-6">
                   {groups![g.id].map(s => {
                     const selected = chosen?.start === s.start && chosen.end === s.end;
+                    const current = offer.kind === 'reschedule' && isBookedSlot(s);
                     return (
                       <li key={`${s.start}-${s.end}`}>
                         <button
                           type="button"
-                          disabled={!s.available || book.isPending}
+                          disabled={!s.available || working}
                           aria-pressed={selected}
+                          aria-label={
+                            current ? `${formatTime12(s.start)}, your current booking` : undefined
+                          }
+                          title={current ? 'Your current booking' : undefined}
                           onClick={() => {
                             setSlot({ ...s, key: dateKey(date!) });
                             setProblem(null);
@@ -308,6 +434,7 @@ export function ScheduleScreen({
                               ? 'border-2 border-[#BE7B71] bg-primary text-[#FFFAE6]'
                               : 'bg-[#FFFAE6] text-primary hover:opacity-80',
                             !s.available && 'text-[#9D9D9D] opacity-50 hover:opacity-50',
+                            current && 'outline-dashed outline-1 outline-[#9D9D9D]',
                           )}
                         >
                           {formatTime12(s.start)}
@@ -342,21 +469,35 @@ export function ScheduleScreen({
         ) : null}
         <button
           type="button"
-          disabled={!chosen || !bookable || book.isPending}
-          onClick={() => chosen && book.mutate(chosen)}
+          disabled={!chosen || !bookable || working || (!!chosen && isBookedSlot(chosen))}
+          onClick={submit}
           className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[32px] bg-primary font-app text-[17px] text-white disabled:opacity-60 lg:mx-auto lg:max-w-[420px]"
         >
-          {book.isPending ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : null}
-          Confirm Appointment
+          {working ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : null}
+          {offer.kind === 'reschedule' ? 'Reschedule Appointment' : 'Confirm Appointment'}
         </button>
         {!bookable ? (
           <p className="text-center font-app text-sm text-[#6d6d6d]">
             {offer.kind === 'plan'
               ? `This plan can't book more sessions (${ownPlan ? planAction(ownPlan).label.toLowerCase() : 'not found'}).`
-              : 'Paying for consultations on the website opens soon.'}
+              : offer.kind === 'reschedule'
+                ? blocked === 'inProgress'
+                  ? 'You cannot reschedule during the scheduled consultation time.'
+                  : 'This consultation can no longer be rescheduled.'
+                : 'Paying for consultations on the website opens soon.'}
           </p>
         ) : null}
       </div>
+
+      {offer.kind === 'reschedule' ? (
+        <RescheduleReasonDialog
+          key={reasonRound}
+          open={askReason}
+          busy={move.isPending}
+          onClose={() => setAskReason(false)}
+          onConfirm={reason => chosen && move.mutate({ choice: chosen, reason })}
+        />
+      ) : null}
     </div>
   );
 }
@@ -501,7 +642,13 @@ function Pill({
 }
 
 /** Booking-Success (Figma): the app goes to My Consultations with a toast instead. */
-function BookedPanel({ astrologerId }: { astrologerId: string }) {
+function BookedPanel({
+  astrologerId,
+  rescheduled,
+}: {
+  astrologerId: string;
+  rescheduled: boolean;
+}) {
   const backend = useBackendClient();
   const { countryCode } = useBuyerCountry();
   const profile = useQuery({
@@ -518,7 +665,8 @@ function BookedPanel({ astrologerId }: { astrologerId: string }) {
         <Check className="h-10 w-10 text-primary" aria-hidden />
       </span>
       <h1 className="mt-5 font-raleway text-[24px] font-semibold leading-tight text-primary">
-        Your consultation{name ? ` with ${name}` : ''} is successfully booked.
+        Your consultation{name ? ` with ${name}` : ''} is successfully{' '}
+        {rescheduled ? 'rescheduled' : 'booked'}.
       </h1>
       <p className="mt-3 font-app text-[15px] text-[#6d6d6d]">
         You can view your booking in My Consultations.

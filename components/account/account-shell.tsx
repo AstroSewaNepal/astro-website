@@ -1,11 +1,30 @@
 'use client';
 
+import { Suspense } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import clsx from 'clsx';
 
 import { ACCOUNT_NAV, type AccountNavItem, parentPage, type PrivateKind } from '@/lib/account/nav';
+
+function BackLink({ href }: { href: string }) {
+  return (
+    <Link
+      href={href}
+      className="mb-3 inline-flex items-center gap-1 font-app text-[15px] text-[#4a1a1a] lg:text-[17px]"
+    >
+      <ChevronLeft className="h-5 w-5" aria-hidden />
+      back
+    </Link>
+  );
+}
+
+function SearchAwareBackLink({ pathname }: { pathname: string }) {
+  const search = useSearchParams();
+  const href = parentPage(pathname, search ? new URLSearchParams(search.toString()) : null);
+  return href ? <BackLink href={href} /> : null;
+}
 
 /** Home is active only on itself; other items also cover their sub-pages. */
 function isActive(pathname: string, item: AccountNavItem, homeHref: string) {
@@ -115,13 +134,10 @@ export function AccountShell({ kind, children }: { kind: PrivateKind; children: 
         {/* Only sub-pages get back (it goes up one level): first-level pages have the sidebar on desktop and the
             tabs/drawer on phones, where back would just repeat Home. */}
         {parent ? (
-          <Link
-            href={parent}
-            className="mb-3 inline-flex items-center gap-1 font-app text-[15px] text-[#4a1a1a] lg:text-[17px]"
-          >
-            <ChevronLeft className="h-5 w-5" aria-hidden />
-            back
-          </Link>
+          // The query can change where back goes; until it's read (static render) the path alone decides.
+          <Suspense fallback={<BackLink href={parent} />}>
+            <SearchAwareBackLink pathname={pathname} />
+          </Suspense>
         ) : null}
         {children}
       </main>
