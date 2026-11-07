@@ -19,6 +19,7 @@ import {
 import clsx from 'clsx';
 
 import { PillTabs } from '@/components/booking/pill-tabs';
+import { ReviewDialog } from '@/components/booking/review-dialog';
 import { SortSheet, type SortFilter } from '@/components/booking/sort-sheet';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { profilePath } from '@/lib/astrologers/list';
@@ -273,7 +274,7 @@ export function MyConsultations({ initialTab }: { initialTab: ConsultationTab })
 
 // Phones: the app's card (details over the buttons). Desktop: Figma's row, buttons on the right.
 const cardClass =
-  'relative h-full rounded-lg border border-[#BE7B71] bg-[#F8F3DF] p-3 lg:flex lg:items-center lg:gap-4 lg:rounded-2xl lg:px-3 lg:py-2.5';
+  'relative h-full rounded-lg border border-[#BE7B71] bg-[#F8F3DF] p-3 lg:flex lg:flex-wrap lg:items-center lg:gap-4 lg:rounded-2xl lg:px-3 lg:py-2.5';
 const detailsClass =
   'flex gap-2 lg:min-w-0 lg:flex-1 lg:items-center lg:gap-3 lg:self-stretch lg:border-r lg:border-dashed lg:border-[#BE7B71] lg:pr-4';
 const linesClass = 'flex flex-col gap-1 lg:flex-row lg:flex-wrap lg:gap-x-4';
@@ -408,6 +409,9 @@ function ConsultationCard({
   const profile = gone ? null : profilePath(c.astrologerId);
   // The app's "Reschedule Unavailable" toast, shown under the buttons.
   const [rescheduleNotice, setRescheduleNotice] = useState(false);
+  const [reviewing, setReviewing] = useState(false);
+  // The app's "Thank you!" toast after a review, shown under the buttons.
+  const [reviewed, setReviewed] = useState(false);
   const chip = sessionNumber ? `Consultation ${sessionNumber}` : priceChip(c.package);
   const icons = { video: Video, date: CalendarDays, time: Clock3 } as const;
 
@@ -476,8 +480,7 @@ function ConsultationCard({
                   View Profile
                 </Link>
               ) : (
-                // The review popup comes in a later step of doc 05.
-                <button type="button" disabled className={outlineButton}>
+                <button type="button" onClick={() => setReviewing(true)} className={outlineButton}>
                   <MessageSquareText className="h-4 w-4" aria-hidden />
                   Leave a Review
                 </button>
@@ -527,7 +530,7 @@ function ConsultationCard({
       {rescheduleNotice ? (
         <p
           role="alert"
-          className="mt-3 flex items-start gap-2 rounded-xl bg-[#fdecea] px-3 py-2 font-app text-[14px] text-[#4a1a1a]"
+          className="mt-3 flex items-start gap-2 rounded-xl lg:mt-0 lg:basis-full bg-[#fdecea] px-3 py-2 font-app text-[14px] text-[#4a1a1a]"
         >
           <span className="flex-1">
             <b>Reschedule Unavailable.</b> You cannot reschedule during the scheduled consultation
@@ -537,6 +540,32 @@ function ConsultationCard({
             ×
           </button>
         </p>
+      ) : null}
+      {reviewed ? (
+        <p
+          role="status"
+          className="mt-3 flex items-start gap-2 rounded-xl lg:mt-0 lg:basis-full bg-[#e7f3e8] px-3 py-2 font-app text-[14px] text-[#1f4d23]"
+        >
+          <span className="flex-1">
+            <b>Thank you!</b> Your rating has been submitted successfully.
+          </span>
+          <button type="button" aria-label="Dismiss" onClick={() => setReviewed(false)}>
+            ×
+          </button>
+        </p>
+      ) : null}
+      {reviewing ? (
+        <ReviewDialog
+          astrologerId={c.astrologerId}
+          bookingId={c._id}
+          astrologerName={name}
+          photo={photo}
+          onClose={() => setReviewing(false)}
+          onDone={() => {
+            setReviewing(false);
+            setReviewed(true);
+          }}
+        />
       ) : null}
     </article>
   );
