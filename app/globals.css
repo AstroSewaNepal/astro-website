@@ -894,3 +894,53 @@ a *,
     --sidebar-ring: 46 72% 92%;
   }
 }
+
+/* Account drawer (components/account/account-menu.tsx): the same 300 ms ease-out slide + fade as the header's
+   hamburger menu. Keyframes, not transitions: Radix removes the drawer only after its closing animation ends. */
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes drawer-out {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes drawer-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes drawer-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Desktop gutter. Tailwind's container is exactly the breakpoint wide (1024 / 1280 / 1536 px) and most pages drop
+   their side padding from lg up (`lg:px-0`), so just past each breakpoint the page touched the window edges (e.g. a
+   1920 px screen at 125% Windows scaling = 1536 CSS px). Keep 2rem each side there; wider windows are unchanged. */
+@utility container {
+  @media (width >= 64rem) {
+    max-width: min(var(--breakpoint-lg), calc(100% - 4rem));
+  }
+  @media (width >= 80rem) {
+    max-width: min(var(--breakpoint-xl), calc(100% - 4rem));
+  }
+  @media (width >= 96rem) {
+    max-width: min(var(--breakpoint-2xl), calc(100% - 4rem));
+  }
+}
+
+/* Bottom sheets on phones (components/booking/sort-sheet.tsx): slide up, like the app's sheets. */
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}

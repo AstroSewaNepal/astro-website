@@ -4,6 +4,7 @@ import Credentials from 'next-auth/providers/credentials';
 import { hasAdminRole } from '@/lib/admin-access';
 import {
   fetchBackendEmail,
+  fetchBackendPicture,
   getJwtExpiry,
   refreshBackendTokens,
   revokeBackendSession,
@@ -34,12 +35,14 @@ type BackendAuthUser = {
   isPendingDeletion?: boolean;
 };
 
-function sessionUser(user: BackendAuthUser, accessToken: string, refreshToken: string) {
+async function sessionUser(user: BackendAuthUser, accessToken: string, refreshToken: string) {
+  // The login response's picture is an unpopulated id (no url): read it from /users/me then.
+  const image = user.profilePicture?.url ?? (await fetchBackendPicture(accessToken));
   return {
     id: user._id,
     name: user.fullName || user.email,
     email: user.email,
-    image: user.profilePicture?.url ?? null,
+    image,
     backendAccessToken: accessToken,
     backendRefreshToken: refreshToken,
     roles: user.roles ?? [],

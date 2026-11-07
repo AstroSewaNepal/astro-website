@@ -69,6 +69,22 @@ export async function revokeBackendSession(refreshToken: string): Promise<void> 
 
 /** The account's email as the backend has it now (after Change email). Null when it can't be read. */
 export async function fetchBackendEmail(accessToken: string): Promise<string | null> {
+  const email = (await fetchBackendMe(accessToken))?.user?.email;
+  return typeof email === 'string' && email.includes('@') ? email : null;
+}
+
+/**
+ * The person's profile picture URL (https only), or null. Login responses carry the picture unpopulated (an id, no
+ * url), so sign-in reads it from /users/me like the app does after login.
+ */
+export async function fetchBackendPicture(accessToken: string): Promise<string | null> {
+  const url = (await fetchBackendMe(accessToken))?.profilePicture?.url;
+  return typeof url === 'string' && url.startsWith('https://') ? url : null;
+}
+
+async function fetchBackendMe(
+  accessToken: string,
+): Promise<{ user?: { email?: unknown }; profilePicture?: { url?: unknown } | null } | null> {
   const apiRoot = tryGetPublicBackendBaseUrl();
   if (!apiRoot) return null;
   try {
@@ -77,8 +93,7 @@ export async function fetchBackendEmail(accessToken: string): Promise<string | n
       cache: 'no-store',
     });
     if (!res.ok) return null;
-    const email = (await res.json())?.data?.user?.email;
-    return typeof email === 'string' && email.includes('@') ? email : null;
+    return (await res.json())?.data ?? null;
   } catch {
     return null;
   }

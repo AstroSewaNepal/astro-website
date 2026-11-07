@@ -22,6 +22,7 @@ import {
   profilePath,
   searchFromFilters,
 } from '@/lib/astrologers/list';
+import { packagesPath } from '@/lib/booking/packages';
 
 type Tag = { _id?: string; name?: string };
 type Language = { id: string; name: string };
@@ -206,6 +207,7 @@ export function AstroConnectList() {
                 <AstrologerAppCard
                   astrologer={astrologer}
                   href={astrologer.user?._id ? profilePath(astrologer.user._id) : undefined}
+                  bookHref={astrologer.user?._id ? packagesPath(astrologer.user._id) : undefined}
                 />
               </li>
             ))}
@@ -219,6 +221,7 @@ export function AstroConnectList() {
                 astrologer={astrologer}
                 priorityImage={i < 2}
                 profileHref={astrologer.user?._id ? profilePath(astrologer.user._id) : undefined}
+                bookHref={astrologer.user?._id ? packagesPath(astrologer.user._id) : undefined}
               />
             ))}
       </div>

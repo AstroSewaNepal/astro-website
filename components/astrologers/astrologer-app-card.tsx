@@ -19,7 +19,17 @@ const slideRow =
  * The app's AstrologerNewCard (Astro Connect list on phones): photo + stars on the left; name, languages, skills and
  * expertise (one line each, sliding sideways), experience and the cheapest price on the right; Schedule / Connect Now.
  */
-export function AstrologerAppCard({ astrologer, href }: { astrologer: Astrologer; href?: string }) {
+export function AstrologerAppCard({
+  astrologer,
+  href,
+  bookHref = href,
+}: {
+  astrologer: Astrologer;
+  /** The profile. */
+  href?: string;
+  /** Schedule / Connect Now (the packages). */
+  bookHref?: string;
+}) {
   const name = astrologer.user?.fullName?.trim() || 'Astrologer';
   const photo =
     astrologer.user?.profilePicture?.thumbnail?.url || astrologer.user?.profilePicture?.url;
@@ -99,13 +109,13 @@ export function AstrologerAppCard({ astrologer, href }: { astrologer: Astrologer
         </div>
       </div>
 
-      {/* Schedule / Connect Now open the profile until booking exists on the web (doc 05). */}
+      {/* Both open the packages, like the app's card. */}
       <div className="mt-2 flex gap-2 border-t border-[#e3c9b5] pt-2">
-        <Action href={href} primary label={`Schedule session with ${name}`}>
+        <Action href={bookHref} primary label={`Schedule session with ${name}`}>
           <CalendarDays className="h-4 w-4" aria-hidden />
           Schedule
         </Action>
-        <Action href={href} label={`Connect with ${name}`}>
+        <Action href={bookHref} label={`Connect with ${name}`}>
           <Phone className="h-4 w-4" aria-hidden />
           Connect Now
         </Action>

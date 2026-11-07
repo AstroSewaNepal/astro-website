@@ -1,11 +1,30 @@
 'use client';
 
+import { Suspense } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import clsx from 'clsx';
 
 import { ACCOUNT_NAV, type AccountNavItem, parentPage, type PrivateKind } from '@/lib/account/nav';
+
+function BackLink({ href }: { href: string }) {
+  return (
+    <Link
+      href={href}
+      className="mb-3 inline-flex items-center gap-1 font-app text-[15px] text-[#4a1a1a] lg:text-[17px]"
+    >
+      <ChevronLeft className="h-5 w-5" aria-hidden />
+      back
+    </Link>
+  );
+}
+
+function SearchAwareBackLink({ pathname }: { pathname: string }) {
+  const search = useSearchParams();
+  const href = parentPage(pathname, search ? new URLSearchParams(search.toString()) : null);
+  return href ? <BackLink href={href} /> : null;
+}
 
 /** Home is active only on itself; other items also cover their sub-pages. */
 function isActive(pathname: string, item: AccountNavItem, homeHref: string) {
@@ -87,10 +106,7 @@ export function AccountShell({ kind, children }: { kind: PrivateKind; children: 
   const pathname = usePathname() ?? '';
   const nav = ACCOUNT_NAV[kind];
   const homeHref = nav.tabs[0].href;
-  const onHome = pathname === homeHref;
   const parent = parentPage(pathname);
-  const isSubPage = parent !== null;
-  const backHref = parent ?? homeHref;
 
   return (
     <div className="container mx-auto flex w-full min-w-0 flex-1 gap-10 px-4 pb-12 lg:px-0">
@@ -115,18 +131,13 @@ export function AccountShell({ kind, children }: { kind: PrivateKind; children: 
       </aside>
 
       <main className="min-w-0 flex-1 py-3 font-app">
-        {!onHome ? (
-          <Link
-            href={backHref}
-            // Desktop has the sidebar for first-level pages, so it only needs back on sub-pages.
-            className={clsx(
-              'mb-3 inline-flex items-center gap-1 font-app text-[15px] text-[#4a1a1a] lg:text-[17px]',
-              !isSubPage && 'lg:hidden',
-            )}
-          >
-            <ChevronLeft className="h-5 w-5" aria-hidden />
-            back
-          </Link>
+        {/* Only sub-pages get back (it goes up one level): first-level pages have the sidebar on desktop and the
+            tabs/drawer on phones, where back would just repeat Home. */}
+        {parent ? (
+          // The query can change where back goes; until it's read (static render) the path alone decides.
+          <Suspense fallback={<BackLink href={parent} />}>
+            <SearchAwareBackLink pathname={pathname} />
+          </Suspense>
         ) : null}
         {children}
       </main>

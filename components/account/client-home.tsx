@@ -1,11 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { Search, UsersRound } from 'lucide-react';
+import { UsersRound } from 'lucide-react';
 
 import type { Astrologer } from '@/components/pages/landing/talk-to-our-astrologer/types';
 import { useBackendClient } from '@/hooks/use-backend-client';
@@ -56,12 +54,10 @@ export function ClientHome({ firstName }: { firstName?: string }) {
 
   return (
     <div className="flex w-full flex-col gap-8">
-      <div>
-        <h1 className="text-[28px] font-normal text-primary lg:text-[34px]">
-          {firstName ? `Namaste, ${firstName}` : 'Namaste'}
-        </h1>
-        <HomeSearch />
-      </div>
+      {/* No search bar under the greeting: it took too much room; Astro Connect has the search. */}
+      <h1 className="text-[28px] font-normal text-primary lg:text-[34px]">
+        {firstName ? `Namaste, ${firstName}` : 'Namaste'}
+      </h1>
 
       <section>
         <div className="mb-3 flex items-center justify-between gap-3">
@@ -249,43 +245,6 @@ function Avatar({
         />
       ) : null}
     </span>
-  );
-}
-
-/** Opens Astro Connect with the search filled in (the app's quick search has no working search yet). */
-function HomeSearch() {
-  const router = useRouter();
-  const [text, setText] = useState('');
-  return (
-    <form
-      role="search"
-      className="relative mt-4"
-      onSubmit={e => {
-        e.preventDefault();
-        const q = text.trim();
-        router.push(q ? `/astrologers?q=${encodeURIComponent(q)}` : '/astrologers');
-      }}
-    >
-      <label htmlFor="home-search" className="sr-only">
-        Search astrologers
-      </label>
-      <input
-        id="home-search"
-        type="search"
-        value={text}
-        onChange={e => setText(e.target.value)}
-        placeholder="Search astrologers"
-        enterKeyHint="search"
-        className="h-[48px] w-full rounded-full border border-[#c9837a] bg-transparent pl-5 pr-12 font-app text-[16px] text-[#4a1a1a] outline-none focus:border-primary"
-      />
-      <button
-        type="submit"
-        aria-label="Search"
-        className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-primary"
-      >
-        <Search className="h-5 w-5" />
-      </button>
-    </form>
   );
 }
 
