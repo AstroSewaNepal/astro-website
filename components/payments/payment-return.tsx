@@ -19,6 +19,12 @@ import {
   statusPath,
 } from '@/lib/payments/checkout';
 import { type PendingPayment, recallPayment } from '@/lib/payments/pending';
+import {
+  WAITING_PACKAGES_PATH,
+  type WaitingPackage,
+  rebookByLabel,
+  rebookPath,
+} from '@/lib/payments/rebook';
 
 const POLL_MS = 3000;
 /** How long the page keeps asking before it says "not confirmed yet" (the server's sweepers carry on). */
@@ -109,6 +115,7 @@ export function PaymentReturn({ query }: { query: string }) {
       outcome={outcome === 'waiting' && stillAsking ? 'verifying' : outcome}
       status={status.data}
       gateway={payment.gateway}
+      pidx={payment.pidx}
       pending={pending}
       onCheckAgain={() => {
         setGaveUp(false);
@@ -123,12 +130,14 @@ function Verdict({
   outcome,
   status,
   gateway,
+  pidx,
   pending,
   onCheckAgain,
 }: {
   outcome: Outcome | 'verifying';
   status: PurchaseStatus;
   gateway: Gateway;
+  pidx: string;
   pending: PendingPayment | null;
   onCheckAgain: () => void;
 }) {
@@ -206,15 +215,12 @@ function Verdict({
       );
     }
     case 'deliveryFailed':
+      if (kind === 'package') return <PackageNotBooked pidx={pidx} via={via} reason={reason} />;
       return (
         <Result
           icon="bad"
-          title={
-            kind === 'package'
-              ? 'Payment received, booking not made'
-              : 'Payment received, purchase not completed'
-          }
-          text={`Your ${via} payment went through, but ${kind === 'package' ? 'the booking' : 'your purchase'} couldn't be completed${reason ? `: ${reason}` : '.'} Please contact support; your payment is safe.`}
+          title="Payment received, purchase not completed"
+          text={`Your ${via} payment went through, but your purchase couldn't be completed${reason ? `: ${reason}` : '.'} Please contact support; your payment is safe.`}
           actions={[
             { href: '/client/support', label: 'Customer Support' },
             { href: '/client/payments', label: 'My Payments', quiet: true },
@@ -243,6 +249,44 @@ function Verdict({
         />
       );
   }
+}
+
+/**
+ * A paid package whose slot went while the buyer paid: the same payment books another time (backend
+ * packages/waiting + rebook), so support only refunds when the buyer asks.
+ */
+function PackageNotBooked({ pidx, via, reason }: { pidx: string; via: string; reason: string }) {
+  const backend = useBackendClient();
+  const waiting = useQuery({
+    queryKey: ['payments', 'waiting-packages'],
+    queryFn: () => backend.bare.get<WaitingPackage[]>(WAITING_PACKAGES_PATH),
+  });
+  const mine = Array.isArray(waiting.data) ? waiting.data.find(w => w.pidx === pidx) : undefined;
+  if (waiting.isPending) {
+    return <Result icon="wait" title="Payment received" text="Checking your booking..." />;
+  }
+  return (
+    <Result
+      icon="bad"
+      title="Payment received, booking not made"
+      text={`Your ${via} payment went through, but the booking couldn't be made${reason ? `: ${reason}` : '.'} ${
+        mine
+          ? `Your payment is safe: choose another time for this session (by ${rebookByLabel(mine)}), or contact support for a refund.`
+          : 'Please contact support; your payment is safe.'
+      }`}
+      actions={
+        mine
+          ? [
+              { href: rebookPath(mine), label: 'Choose Another Time' },
+              { href: '/client/support', label: 'Customer Support', quiet: true },
+            ]
+          : [
+              { href: '/client/support', label: 'Customer Support' },
+              { href: '/client/payments', label: 'My Payments', quiet: true },
+            ]
+      }
+    />
+  );
 }
 
 type Action = { label: string; quiet?: boolean } & ({ href: string } | { onClick: () => void });

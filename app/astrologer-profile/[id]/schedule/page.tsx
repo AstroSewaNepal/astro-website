@@ -6,6 +6,8 @@ import { requireClient } from '@/lib/auth/require-client';
 import { packagesPath, planSchedulePath, schedulePath } from '@/lib/booking/packages';
 import { reschedulePath } from '@/lib/booking/reschedule';
 
+import { rebookPath } from '@/lib/payments/rebook';
+
 export const metadata: Metadata = {
   title: 'Schedule Appointment',
   robots: { index: false, follow: false },
@@ -17,12 +19,15 @@ type Props = {
     package?: string | string[];
     plan?: string | string[];
     booking?: string | string[];
+    /** A paid package that couldn't be booked: book with this payment (lib/payments/rebook). */
+    paid?: string | string[];
   }>;
 };
 
 export default async function ScheduleAppointmentPage({ params, searchParams }: Props) {
   const { id } = await params;
-  const { package: packageId, plan, booking } = await searchParams;
+  const { package: packageId, plan, booking, paid } = await searchParams;
+  const paidWith = typeof paid === 'string' && paid ? paid : undefined;
   // A package comes from the packages screen; a plan and a booking to move from My Consultations.
   const offer: BookingOffer | null =
     typeof booking === 'string' && booking
@@ -30,7 +35,7 @@ export default async function ScheduleAppointmentPage({ params, searchParams }: 
       : typeof plan === 'string' && plan
         ? { kind: 'plan', subscriptionId: plan }
         : typeof packageId === 'string' && packageId
-          ? { kind: 'package', packageId }
+          ? { kind: 'package', packageId, paidWith }
           : null;
   if (!offer) redirect(packagesPath(id));
   await requireClient(
@@ -38,7 +43,9 @@ export default async function ScheduleAppointmentPage({ params, searchParams }: 
       ? reschedulePath(id, offer.bookingId)
       : offer.kind === 'plan'
         ? planSchedulePath(id, offer.subscriptionId)
-        : schedulePath(id, offer.packageId),
+        : offer.paidWith
+          ? rebookPath({ astrologerId: id, packageId: offer.packageId, pidx: offer.paidWith })
+          : schedulePath(id, offer.packageId),
   );
   return (
     <ScheduleScreen
@@ -47,7 +54,7 @@ export default async function ScheduleAppointmentPage({ params, searchParams }: 
           ? offer.bookingId
           : offer.kind === 'plan'
             ? offer.subscriptionId
-            : offer.packageId
+            : `${offer.packageId}-${offer.paidWith ?? ''}`
       }
       astrologerId={id}
       offer={offer}

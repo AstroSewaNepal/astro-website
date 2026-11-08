@@ -20,6 +20,7 @@ import clsx from 'clsx';
 
 import { PillTabs } from '@/components/booking/pill-tabs';
 import { ReviewDialog } from '@/components/booking/review-dialog';
+import { WaitingPackages } from '@/components/payments/waiting-packages';
 import { SortSheet, type SortFilter } from '@/components/booking/sort-sheet';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { profilePath } from '@/lib/astrologers/list';
@@ -196,6 +197,7 @@ export function MyConsultations({ initialTab }: { initialTab: ConsultationTab })
         />
       </div>
 
+      <WaitingPackages />
       {loading ? (
         <div className="flex justify-center py-20" role="status" aria-label="Loading">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
