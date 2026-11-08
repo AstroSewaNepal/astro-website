@@ -7,6 +7,7 @@ import { CalendarX2, Check, ChevronDown, Loader2, X } from 'lucide-react';
 import clsx from 'clsx';
 
 import type { Astrologer } from '@/components/pages/landing/talk-to-our-astrologer/types';
+import { CheckoutSheet } from '@/components/payments/checkout-sheet';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useBuyerCountry } from '@/hooks/use-buyer-country';
 import { profilePath } from '@/lib/astrologers/list';
@@ -17,6 +18,7 @@ import {
   planLabel,
   priceLabel,
   priceParts,
+  schedulePath,
   sortPackages,
   type PackagesResponse,
 } from '@/lib/booking/packages';
@@ -66,7 +68,8 @@ export type BookingOffer =
 
 /**
  * The app's Schedule Appointment: pick a day (first free one preselected), then a slot, in the buyer's time zone.
- * Plans (prepaid) and free packages book right away; paid packages wait for the website's payments (doc 06).
+ * Plans (prepaid) and free packages book right away; a paid package opens the payment options, and the server
+ * books the slot once it is paid.
  * Rescheduling opens on the booked day, keeps the booked slot unpickable and asks for a reason before moving it.
  */
 export function ScheduleScreen({
@@ -201,6 +204,12 @@ export function ScheduleScreen({
   const chosen = date && slot?.key === dateKey(date) ? slot : null;
   const [problem, setProblem] = useState<{ title: string; text: string } | null>(null);
   const [done, setDone] = useState(false);
+  // The checked slot of a paid package while its payment options are open.
+  const [paying, setPaying] = useState<{
+    scheduledStartAt: string;
+    scheduledEndAt: string;
+    timezone: string;
+  } | null>(null);
   const [askReason, setAskReason] = useState(false);
   // A fresh reason popup each time it opens.
   const [reasonRound, setReasonRound] = useState(0);
@@ -217,13 +226,15 @@ export function ScheduleScreen({
   };
 
   const free = pkg ? priceParts(pkg).free : false;
-  // Paid packages need the website's payments (doc 06); plans are prepaid; a booking moves while it's upcoming.
+  const price = pkg ? priceParts(pkg).pay : null;
+  const paid = offer.kind === 'package' && !free && !!price && price.value > 0;
+  // Plans are prepaid; a booking moves while it's upcoming.
   const bookable =
     offer.kind === 'plan'
       ? !!ownPlan && canBookFromPlan(ownPlan)
       : offer.kind === 'reschedule'
         ? !!ownBooking && !blocked
-        : free;
+        : free || paid;
   const isBookedSlot = (s: Pick<Slot, 'start' | 'end'>) =>
     !!booked &&
     !!date &&
@@ -248,6 +259,8 @@ export function ScheduleScreen({
         if (error instanceof BackendError && error.status < 500) throw new SlotTaken(error.message);
         throw error;
       }
+      // Paid: the payment options next; the server checks the slot again and books it once paid.
+      if (paid) return { ...times, timezone: zone };
       await backend.post('/connection-schedule', {
         ...times,
         astrologerId,
@@ -257,8 +270,13 @@ export function ScheduleScreen({
         // A free package's booking carries an empty payment reference, as the app sends it.
         ...(offer.kind === 'package' ? { pidx: '' } : {}),
       });
+      return null;
     },
-    onSuccess: () => {
+    onSuccess: toPay => {
+      if (toPay) {
+        setPaying(toPay);
+        return;
+      }
       setDone(true);
       // My Consultations and the plan's counts change.
       void queryClient.invalidateQueries({ queryKey: ['consultations'] });
@@ -484,10 +502,23 @@ export function ScheduleScreen({
                 ? blocked === 'inProgress'
                   ? 'You cannot reschedule during the scheduled consultation time.'
                   : 'This consultation can no longer be rescheduled.'
-                : 'Paying for consultations on the website opens soon.'}
+                : 'This package is not available.'}
           </p>
         ) : null}
       </div>
+
+      {offer.kind === 'package' && pkg && price ? (
+        <CheckoutSheet
+          purchase={
+            paying ? { kind: 'package', packageId: offer.packageId, astrologerId, ...paying } : null
+          }
+          title={`${formatDuration(pkg.consultationMinutes)} consultation`}
+          priceLabel={priceLabel(price)}
+          currency={price.currency}
+          backHref={schedulePath(astrologerId, offer.packageId)}
+          onClose={() => setPaying(null)}
+        />
+      ) : null}
 
       {offer.kind === 'reschedule' ? (
         <RescheduleReasonDialog

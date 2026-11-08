@@ -49,6 +49,21 @@ describe('createBackendClient', () => {
     });
   });
 
+  it('reads routes that answer without the envelope', async () => {
+    const status = { pidx: 'p1', status: 'Completed', fulfilment: null };
+    const { client, fetchImpl } = setup([json(200, status), json(201, { pidx: 'p2' })]);
+    expect(await client.bare.get('/subscription/payments/hbl/status/p1')).toEqual(status);
+    expect(await client.bare.post('/subscription/payments/hbl/plans/initiate', { a: 1 })).toEqual({
+      pidx: 'p2',
+    });
+    expect((fetchImpl.mock.calls[1] as unknown as [string, RequestInit])[1].body).toBe('{"a":1}');
+  });
+
+  it('still throws on a failed bare request', async () => {
+    const { client } = setup([json(404, { message: 'Payment not found' })]);
+    await expect(client.bare.get('/x')).rejects.toThrow('Payment not found');
+  });
+
   it('retries once with a refreshed token after a 401', async () => {
     const { client, refreshToken, authOf } = setup([
       json(401, {}),

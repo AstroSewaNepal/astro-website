@@ -19,7 +19,13 @@ type Envelope<T> = {
   errors?: { statusCode?: number; message?: string }[];
 };
 
-export type BackendResult<T> = { data: T; pagination?: Pagination; message?: string };
+export type BackendResult<T> = {
+  data: T;
+  pagination?: Pagination;
+  message?: string;
+  /** The whole response body, for the routes that answer without the envelope (most payment routes). */
+  body: unknown;
+};
 
 export class BackendError extends Error {
   constructor(
@@ -98,6 +104,7 @@ export function createBackendClient({
       data: (json?.data ?? null) as T,
       pagination: json?.pagination,
       message: json?.message,
+      body: json,
     };
   }
 
@@ -111,6 +118,12 @@ export function createBackendClient({
     patch: async <T>(path: string, body?: unknown) =>
       (await request<T>('PATCH', path, body ?? {})).data,
     delete: async <T>(path: string, body?: unknown) => (await request<T>('DELETE', path, body)).data,
+    /** Routes that return their DTO as the body itself, not inside `{ success, data }`. */
+    bare: {
+      get: async <T>(path: string) => (await request<unknown>('GET', path)).body as T,
+      post: async <T>(path: string, body?: unknown) =>
+        (await request<unknown>('POST', path, body ?? {})).body as T,
+    },
   };
 }
 

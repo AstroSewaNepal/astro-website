@@ -2,11 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
 import { Check, ChevronDown, Loader2, PackageOpen, X } from 'lucide-react';
 import clsx from 'clsx';
 
 import { PillTabs } from '@/components/booking/pill-tabs';
+import { CheckoutSheet } from '@/components/payments/checkout-sheet';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useBuyerCountry } from '@/hooks/use-buyer-country';
 import {
@@ -23,6 +26,7 @@ import {
   type PlansResponse,
   type Price,
 } from '@/lib/booking/packages';
+import { signInAgainPath } from '@/lib/auth/account';
 
 const TABS: { id: PackageTab; label: string }[] = [
   { id: 'perSession', label: 'Per Session' },
@@ -34,7 +38,7 @@ const onSelected = 'lg:group-data-[selected=true]:text-white';
 
 /**
  * The app's Consultation Packages screen: Per Session packages (Continue -> schedule appointment) and Subscription
- * plans (Subscribe -> payment, doc 06). Phones: the app's list, the chosen card opens. Desktop: Figma's columns.
+ * plans (Subscribe -> the payment options; the server activates the plan once it is paid). Phones: the app's list, the chosen card opens. Desktop: Figma's columns.
  */
 export function PackagesScreen({
   astrologerId,
@@ -49,6 +53,9 @@ export function PackagesScreen({
   const [packageId, setPackageId] = useState<string | null>(null);
   // undefined = not picked yet (the first plan); null = the person closed the open plan, as the app allows.
   const [planId, setPlanId] = useState<string | null | undefined>(undefined);
+  const [buyingId, setBuyingId] = useState<string | null>(null);
+  const router = useRouter();
+  const { status: session } = useSession();
 
   const country = countryCode ? `?countryCode=${countryCode}` : '';
   const id = encodeURIComponent(astrologerId);
@@ -76,6 +83,15 @@ export function PackagesScreen({
   const list = active.data ?? [];
   const chosenPackage = packages.data?.find(p => p.id === packageId) ?? packages.data?.[0] ?? null;
   const chosenPlanId = planId === undefined ? (plans.data?.[0]?.id ?? null) : planId;
+  const plansHref = packagesPath(astrologerId, 'subscription');
+  const buying = plans.data?.find(p => p.id === buyingId) ?? null;
+  const buyingPrice = buying ? priceParts(buying).pay : null;
+  const subscribe = (id: string | null) => {
+    if (!id) return;
+    // Logged out: sign in, then back to the plans.
+    if (session === 'unauthenticated') router.push(signInAgainPath(plansHref));
+    else setBuyingId(id);
+  };
 
   return (
     <div className="flex w-full flex-col">
@@ -159,17 +175,38 @@ export function PackagesScreen({
                   item={plan}
                   selected={chosenPlanId === plan.id}
                   onSelect={() => setPlanId(chosenPlanId === plan.id ? null : plan.id)}
-                  action={<SubscribeButton className={actionClass} />}
+                  action={
+                    <SubscribeButton
+                      className={actionClass}
+                      onClick={() => {
+                        setPlanId(plan.id);
+                        subscribe(plan.id);
+                      }}
+                    />
+                  }
                 />
               </li>
             ))}
           </ul>
           <Footer actionLabel="Subscribe Now">
-            <SubscribeButton className={bottomButton} />
+            <SubscribeButton
+              className={bottomButton}
+              disabled={!chosenPlanId}
+              onClick={() => subscribe(chosenPlanId)}
+            />
           </Footer>
-          <p className="mt-2 text-center font-app text-sm text-[#6d6d6d]">
-            Buying plans on the website opens soon.
-          </p>
+          <CheckoutSheet
+            purchase={
+              buying && buyingPrice?.value
+                ? { kind: 'plan', planId: buying.id, astrologerId }
+                : null
+            }
+            title={buying ? `${planLabel(buying.durationMonths)}` : ''}
+            priceLabel={buyingPrice ? priceLabel(buyingPrice) : ''}
+            currency={buyingPrice?.currency ?? null}
+            backHref={plansHref}
+            onClose={() => setBuyingId(null)}
+          />
         </>
       )}
     </div>
@@ -185,10 +222,17 @@ const actionClass = clsx(
   'lg:group-data-[selected=true]:bg-[#F8F3DF] lg:group-data-[selected=true]:text-primary',
 );
 
-/** Paying for a plan comes with the website's payments (doc 06). */
-function SubscribeButton({ className }: { className: string }) {
+function SubscribeButton({
+  className,
+  disabled,
+  onClick,
+}: {
+  className: string;
+  disabled?: boolean;
+  onClick: () => void;
+}) {
   return (
-    <button type="button" disabled className={className}>
+    <button type="button" disabled={disabled} onClick={onClick} className={className}>
       Subscribe Now
     </button>
   );

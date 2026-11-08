@@ -20,7 +20,8 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self' https://*.astrosewa.com ${backendOrigin} https://nominatim.openstreetmap.org ${googleAnalytics} ${vercelLive}`,
+  // wss://*.fonepay.com: Fonepay's per-payment socket that says when a QR was paid (doc 06).
+  `connect-src 'self' https://*.astrosewa.com ${backendOrigin} https://nominatim.openstreetmap.org wss://*.fonepay.com ${googleAnalytics} ${vercelLive}`,
   "media-src 'self' blob: https:",
   `frame-src 'self' ${vercelLive}`,
   "object-src 'none'",

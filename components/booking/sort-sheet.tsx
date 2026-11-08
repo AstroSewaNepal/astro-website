@@ -7,22 +7,29 @@ import clsx from 'clsx';
 
 import { SORT_OPTIONS, type SortOption } from '@/lib/booking/consultations';
 
-export type SortFilter = { sort: SortOption; from: string; to: string };
+export type SortFilter<T extends string = SortOption> = { sort: T; from: string; to: string };
 
 /**
  * The app's ConsultationSortBottomSheet: sort order and a date range, applied together. Phones: a sheet from the
  * bottom; desktop: a dialog. `active` marks the button when anything differs from the tab's default.
+ * `options` swaps the sort list for another single choice (My Payments: the kind of payment).
  */
-export function SortSheet({
+export function SortSheet<T extends string = SortOption>({
   value,
   defaultSort,
   active,
   onApply,
+  options = SORT_OPTIONS as unknown as { id: T; label: string }[],
+  title = 'Sort & Filter',
+  choiceLabel = 'Sort by',
 }: {
-  value: SortFilter;
-  defaultSort: SortOption;
+  value: SortFilter<T>;
+  defaultSort: T;
   active: boolean;
-  onApply: (next: SortFilter) => void;
+  onApply: (next: SortFilter<T>) => void;
+  options?: { id: T; label: string }[];
+  title?: string;
+  choiceLabel?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(value);
@@ -32,7 +39,7 @@ export function SortSheet({
     if (next) setDraft(value);
     setOpen(next);
   };
-  const apply = (next: SortFilter) => {
+  const apply = (next: SortFilter<T>) => {
     onApply(next);
     setOpen(false);
   };
@@ -40,7 +47,7 @@ export function SortSheet({
   return (
     <DialogPrimitive.Root open={open} onOpenChange={openChange}>
       <DialogPrimitive.Trigger
-        aria-label="Sort and filter"
+        aria-label={title === 'Sort & Filter' ? 'Sort and filter' : title}
         className="relative flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full border border-[#c9837a] text-primary lg:h-11 lg:w-11 lg:border-primary lg:bg-[#F8F3DF]"
       >
         <SlidersHorizontal className="h-5 w-5" aria-hidden />
@@ -66,7 +73,7 @@ export function SortSheet({
         >
           <div className="flex items-center justify-between px-5 pt-5">
             <DialogPrimitive.Title className="font-raleway text-[20px] font-semibold text-primary">
-              Sort &amp; Filter
+              {title}
             </DialogPrimitive.Title>
             <DialogPrimitive.Close aria-label="Close" className="text-primary">
               <X className="h-6 w-6" />
@@ -75,12 +82,12 @@ export function SortSheet({
 
           <div className="flex-1 overflow-y-auto px-5 pb-4 pt-4">
             <fieldset className="flex flex-col gap-4">
-              <legend className="sr-only">Sort by</legend>
-              {SORT_OPTIONS.map(o => (
+              <legend className="sr-only">{choiceLabel}</legend>
+              {options.map(o => (
                 <label key={o.id} className="flex cursor-pointer items-center gap-3">
                   <input
                     type="radio"
-                    name="consultation-sort"
+                    name={`sheet-${choiceLabel}`}
                     value={o.id}
                     checked={draft.sort === o.id}
                     onChange={() => setDraft(d => ({ ...d, sort: o.id }))}

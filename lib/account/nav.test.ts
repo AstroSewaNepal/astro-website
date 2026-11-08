@@ -29,6 +29,7 @@ describe('parentPage', () => {
 it('knows the public pages clients see in their shell', () => {
   expect(isClientShellPage('/astrologers')).toBe(true);
   expect(isClientShellPage('/astrologer-profile/abc')).toBe(true);
+  expect(isClientShellPage('/payment/return')).toBe(true);
   expect(isClientShellPage('/astrologer')).toBe(false);
   expect(isClientShellPage('/astrologers-x')).toBe(false);
 });
