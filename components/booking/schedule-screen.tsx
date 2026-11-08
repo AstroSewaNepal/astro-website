@@ -56,13 +56,15 @@ import {
   type UserSubscription,
 } from '@/lib/booking/subscriptions';
 import { RescheduleReasonDialog } from '@/components/booking/reschedule-reason-dialog';
+import { rebookApiPath } from '@/lib/payments/rebook';
 
 const noSubscribe = () => () => {};
 const timeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kathmandu';
 
 /** What's being booked: a per-session package, a session from a plan the buyer owns, or a new time for a booking. */
 export type BookingOffer =
-  | { kind: 'package'; packageId: string }
+  // paidWith: a paid package that couldn't be booked, booked now with that payment (lib/payments/rebook).
+  | { kind: 'package'; packageId: string; paidWith?: string }
   | { kind: 'plan'; subscriptionId: string }
   | { kind: 'reschedule'; bookingId: string };
 
@@ -227,14 +229,15 @@ export function ScheduleScreen({
 
   const free = pkg ? priceParts(pkg).free : false;
   const price = pkg ? priceParts(pkg).pay : null;
-  const paid = offer.kind === 'package' && !free && !!price && price.value > 0;
+  const paidWith = offer.kind === 'package' ? offer.paidWith : undefined;
+  const paid = offer.kind === 'package' && !free && !!price && price.value > 0 && !paidWith;
   // Plans are prepaid; a booking moves while it's upcoming.
   const bookable =
     offer.kind === 'plan'
       ? !!ownPlan && canBookFromPlan(ownPlan)
       : offer.kind === 'reschedule'
         ? !!ownBooking && !blocked
-        : free || paid;
+        : free || paid || !!paidWith;
   const isBookedSlot = (s: Pick<Slot, 'start' | 'end'>) =>
     !!booked &&
     !!date &&
@@ -261,6 +264,11 @@ export function ScheduleScreen({
       }
       // Paid: the payment options next; the server checks the slot again and books it once paid.
       if (paid) return { ...times, timezone: zone };
+      // Already paid: book with that payment.
+      if (paidWith) {
+        await backend.post(rebookApiPath(paidWith), { ...times, timezone: zone });
+        return null;
+      }
       await backend.post('/connection-schedule', {
         ...times,
         astrologerId,
@@ -280,6 +288,8 @@ export function ScheduleScreen({
       setDone(true);
       // My Consultations and the plan's counts change.
       void queryClient.invalidateQueries({ queryKey: ['consultations'] });
+      // A paid session booked with its payment leaves the waiting list.
+      if (paidWith) void queryClient.invalidateQueries({ queryKey: ['payments', 'waiting-packages'] });
     },
     onError: error => showFailure(error),
   });
@@ -383,7 +393,7 @@ export function ScheduleScreen({
     offer.kind === 'reschedule'
       ? `${formatDuration(minutes)} consultation${booked ? ` · now booked for ${shortDate(ownBooking!.scheduledStartAt)}, ${formatTime12(booked.start)}` : ''}`
       : pkg
-        ? `${pkg.packageType} · ${formatDuration(pkg.consultationMinutes)} · ${free ? 'Free' : pay ? priceLabel(pay) : ''}`
+        ? `${pkg.packageType} · ${formatDuration(pkg.consultationMinutes)} · ${free ? 'Free' : paidWith ? 'Already paid' : pay ? priceLabel(pay) : ''}`
         : ownPlan
           ? `${planLabel(ownPlan.plan.durationMonths)} plan · ${formatDuration(minutes)} · ${ownPlan.availableToSchedule} of ${ownPlan.totalConsultations} left to book`
           : '';
@@ -494,6 +504,11 @@ export function ScheduleScreen({
           {working ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : null}
           {offer.kind === 'reschedule' ? 'Reschedule Appointment' : 'Confirm Appointment'}
         </button>
+        {paidWith ? (
+          <p className="text-center font-app text-sm text-[#6d6d6d]">
+            You&apos;ve already paid for this session. Pick a new time; no new payment is taken.
+          </p>
+        ) : null}
         {!bookable ? (
           <p className="text-center font-app text-sm text-[#6d6d6d]">
             {offer.kind === 'plan'
