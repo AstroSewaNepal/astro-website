@@ -47,9 +47,11 @@ export function CheckoutSheet({
   const router = useRouter();
   const { countryCode } = useBuyerCountry();
   const [choice, setChoice] = useState<Gateway | null>(null);
-  const [qr, setQr] = useState<{ pidx: string; qrMessage: string; websocketUrl: string | null } | null>(
-    null,
-  );
+  const [qr, setQr] = useState<{
+    pidx: string;
+    qrMessage: string;
+    websocketUrl: string | null;
+  } | null>(null);
   const [leaving, setLeaving] = useState(false);
 
   const cards = useQuery({
@@ -132,7 +134,9 @@ export function CheckoutSheet({
           ) : (
             <div className="mt-4 flex min-h-0 flex-col gap-4 overflow-y-auto">
               <section className="flex flex-col gap-2.5">
-                <h2 className="font-raleway text-[18px] font-semibold text-primary">Local Payment</h2>
+                <h2 className="font-raleway text-[18px] font-semibold text-primary">
+                  Local Payment
+                </h2>
                 {!localOk ? (
                   <p className="text-[14px] text-[#6d6d6d]">
                     {cardOn
@@ -189,9 +193,19 @@ export function CheckoutSheet({
                       >
                         {/* eslint-disable @next/next/no-img-element -- static logos */}
                         <img src="/images/payments/card-visa.svg" alt="" width={40} height={13} />
-                        <img src="/images/payments/card-mastercard.svg" alt="" width={26} height={16} />
+                        <img
+                          src="/images/payments/card-mastercard.svg"
+                          alt=""
+                          width={26}
+                          height={16}
+                        />
                         <img src="/images/payments/card-amex.svg" alt="" width={18} height={18} />
-                        <img src="/images/payments/card-unionpay.svg" alt="" width={26} height={16} />
+                        <img
+                          src="/images/payments/card-unionpay.svg"
+                          alt=""
+                          width={26}
+                          height={16}
+                        />
                         {/* eslint-enable @next/next/no-img-element */}
                       </span>
                     </span>

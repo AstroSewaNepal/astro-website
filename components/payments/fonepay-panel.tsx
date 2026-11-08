@@ -59,8 +59,7 @@ export function FonepayPanel({
 
   const status = useQuery({
     queryKey: ['payments', 'fonepay', payment.pidx],
-    queryFn: async () =>
-      readStatus(await backend.bare.get(statusPath('fonepay', payment.pidx))),
+    queryFn: async () => readStatus(await backend.bare.get(statusPath('fonepay', payment.pidx))),
     refetchInterval: POLL_MS,
     refetchIntervalInBackground: false,
     retry: false,
@@ -181,7 +180,6 @@ export function FonepayPanel({
       ) : (
         qr
       )}
-
     </div>
   );
 }

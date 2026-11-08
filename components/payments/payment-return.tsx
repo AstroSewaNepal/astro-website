@@ -65,7 +65,8 @@ export function PaymentReturn({ query }: { query: string }) {
     queryFn: async () => {
       const s = readStatus(await backend.bare.get(statusPath(payment!.gateway, payment!.pidx)));
       // What was bought shows up in these lists now.
-      if (outcomeOf(s) === 'done') void queryClient.invalidateQueries({ queryKey: ['consultations'] });
+      if (outcomeOf(s) === 'done')
+        void queryClient.invalidateQueries({ queryKey: ['consultations'] });
       return s;
     },
     enabled: !!payment,
@@ -134,8 +135,11 @@ function Verdict({
   const kind = status.purpose ?? pending?.kind ?? null;
   const via = GATEWAY_LABEL[gateway];
   const astrologerId = pending?.astrologerId ?? null;
-  const tryAgain = pending?.backHref ?? (astrologerId ? `/astrologer-profile/${astrologerId}` : '/astrologers');
-  const reason = status.fulfilment?.message ? `${status.fulfilment.message.replace(/\.?$/, '.')}` : '';
+  const tryAgain =
+    pending?.backHref ?? (astrologerId ? `/astrologer-profile/${astrologerId}` : '/astrologers');
+  const reason = status.fulfilment?.message
+    ? `${status.fulfilment.message.replace(/\.?$/, '.')}`
+    : '';
 
   switch (outcome) {
     case 'verifying':
@@ -205,7 +209,11 @@ function Verdict({
       return (
         <Result
           icon="bad"
-          title={kind === 'package' ? 'Payment received, booking not made' : 'Payment received, purchase not completed'}
+          title={
+            kind === 'package'
+              ? 'Payment received, booking not made'
+              : 'Payment received, purchase not completed'
+          }
           text={`Your ${via} payment went through, but ${kind === 'package' ? 'the booking' : 'your purchase'} couldn't be completed${reason ? `: ${reason}` : '.'} Please contact support; your payment is safe.`}
           actions={[
             { href: '/client/support', label: 'Customer Support' },

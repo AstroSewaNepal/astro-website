@@ -197,7 +197,9 @@ export function PackagesScreen({
           </Footer>
           <CheckoutSheet
             purchase={
-              buying && buyingPrice?.value ? { kind: 'plan', planId: buying.id, astrologerId } : null
+              buying && buyingPrice?.value
+                ? { kind: 'plan', planId: buying.id, astrologerId }
+                : null
             }
             title={buying ? `${planLabel(buying.durationMonths)}` : ''}
             priceLabel={buyingPrice ? priceLabel(buyingPrice) : ''}
