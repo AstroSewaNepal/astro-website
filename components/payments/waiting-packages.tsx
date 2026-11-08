@@ -36,8 +36,8 @@ export function WaitingPackages() {
           <CalendarClock className="hidden h-6 w-6 shrink-0 text-primary sm:block" aria-hidden />
           <p className="flex-1 text-[15px] text-[#4a1a1a]">
             <b className="block">Paid session waiting for a time</b>
-            {waitingLabel(w)} ({w.currency} {w.amount}). The slot you picked was taken while you paid. Choose
-            another time by {rebookByLabel(w)}, or contact support for a refund.
+            {waitingLabel(w)} ({w.currency} {w.amount}). The slot you picked was taken while you
+            paid. Choose another time by {rebookByLabel(w)}, or contact support for a refund.
           </p>
           <Link
             href={rebookPath(w)}

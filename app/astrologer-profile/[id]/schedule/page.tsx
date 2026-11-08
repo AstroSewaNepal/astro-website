@@ -4,7 +4,8 @@ import { redirect } from 'next/navigation';
 import { ScheduleScreen, type BookingOffer } from '@/components/booking/schedule-screen';
 import { requireClient } from '@/lib/auth/require-client';
 import { packagesPath, planSchedulePath, schedulePath } from '@/lib/booking/packages';
-import { reschedulePath } from '@/lib/booking/reschedule';
+import { reschedulePath } from '@/lib/booking/reschedule';
+
 import { rebookPath } from '@/lib/payments/rebook';
 
 export const metadata: Metadata = {

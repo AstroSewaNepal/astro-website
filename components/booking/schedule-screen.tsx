@@ -289,7 +289,8 @@ export function ScheduleScreen({
       // My Consultations and the plan's counts change.
       void queryClient.invalidateQueries({ queryKey: ['consultations'] });
       // A paid session booked with its payment leaves the waiting list.
-      if (paidWith) void queryClient.invalidateQueries({ queryKey: ['payments', 'waiting-packages'] });
+      if (paidWith)
+        void queryClient.invalidateQueries({ queryKey: ['payments', 'waiting-packages'] });
     },
     onError: error => showFailure(error),
   });
