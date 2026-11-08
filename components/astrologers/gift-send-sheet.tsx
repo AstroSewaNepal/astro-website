@@ -1,18 +1,22 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useMutation } from '@tanstack/react-query';
 import { CheckCircle2, Loader2, X } from 'lucide-react';
 
+import { CheckoutSheet } from '@/components/payments/checkout-sheet';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { type Gift, giftPriceLabel, isGiftFree } from '@/lib/astrologers/gifts';
+import { signInAgainPath } from '@/lib/auth/account';
 import { BackendError } from '@/lib/backend/client';
 
 /**
- * The app's GiftSendSheet: the chosen gift, then "Send Gift" (free gifts go straight away) or "Proceed to Pay".
- * Paying needs the web payment flow (eSewa / Fonepay / card, doc 06); until then paid gifts can only be looked at.
- * Built once for the profile and the live viewer (doc 10).
+ * The app's GiftSendSheet: the chosen gift, then "Send Gift" (free gifts go straight away) or "Proceed to Pay"
+ * (the payment options; the server sends the gift once it is paid). Built once for the profile and the live
+ * viewer (doc 10).
  */
 export function GiftSendSheet({
   gift,
@@ -28,8 +32,12 @@ export function GiftSendSheet({
   onClose: () => void;
 }) {
   const backend = useBackendClient();
+  const router = useRouter();
+  const { status: session } = useSession();
   const [sent, setSent] = useState<string | null>(null);
+  const [paying, setPaying] = useState(false);
   const free = gift ? isGiftFree(gift) : false;
+  const profileHref = `/astrologer-profile/${astrologerId}`;
 
   const send = useMutation({
     mutationFn: (g: Gift) =>
@@ -45,6 +53,7 @@ export function GiftSendSheet({
   const close = () => {
     if (send.isPending) return;
     setSent(null);
+    setPaying(false);
     send.reset();
     onClose();
   };
@@ -105,18 +114,26 @@ export function GiftSendSheet({
 
               <button
                 type="button"
-                disabled={!free || send.isPending}
-                onClick={() => send.mutate(gift)}
+                disabled={send.isPending}
+                onClick={() => {
+                  if (free) send.mutate(gift);
+                  // Logged out: sign in, then back to this profile.
+                  else if (session === 'unauthenticated') router.push(signInAgainPath(profileHref));
+                  else setPaying(true);
+                }}
                 className="mt-5 flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-primary text-[17px] text-white disabled:opacity-60"
               >
                 {send.isPending ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : null}
                 {free ? 'Send Gift' : 'Proceed to Pay'}
               </button>
-              {!free ? (
-                <p className="mt-2 text-center text-[14px] text-[#6d6d6d]">
-                  Paying for gifts on the website opens soon.
-                </p>
-              ) : null}
+              <CheckoutSheet
+                purchase={paying ? { kind: 'gift', giftId: gift._id, astrologerId } : null}
+                title={gift.title}
+                priceLabel={giftPriceLabel(gift)}
+                currency={gift.displayCurrency ?? 'NPR'}
+                backHref={profileHref}
+                onClose={() => setPaying(false)}
+              />
             </>
           ) : null}
         </DialogPrimitive.Content>

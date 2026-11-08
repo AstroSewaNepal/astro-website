@@ -125,7 +125,8 @@ export function isAccountPage(pathname: string | null): boolean {
  * Public pages that a logged-in client sees inside their account shell (sidebar + bottom tabs), like the app's tabs.
  * Guests see them in the plain site layout.
  */
-const CLIENT_SHELL_PAGES = ['/astrologers', '/astrologer-profile'];
+// /payment: the return page after a gateway (logged-in clients only).
+const CLIENT_SHELL_PAGES = ['/astrologers', '/astrologer-profile', '/payment'];
 
 export function isClientShellPage(pathname: string | null): boolean {
   if (!pathname) return false;
