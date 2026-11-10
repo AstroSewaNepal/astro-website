@@ -7,6 +7,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { BadgeCheck, Loader2, SendHorizontal, UserRound, X } from 'lucide-react';
 import clsx from 'clsx';
 
+import css from '@/components/chat/chat.module.css';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import {
   chatPartner,
@@ -80,9 +81,11 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
   const loading = booking.isPending || (!!chatId && history.isPending);
 
   return (
+    // Fills the window below the header and back link: phones stop 12px above the bottom tabs, desktop 16px above
+    // the window's bottom edge.
     <section
       aria-label={`Chat with ${partner.name}`}
-      className="flex h-[calc(100dvh-15rem)] min-h-[420px] flex-col overflow-hidden rounded-2xl border border-[#e8ddd0] bg-[#F8F3DF] shadow-[0_4px_16px_rgba(92,56,23,0.08)] lg:h-[calc(100dvh-12rem)] lg:max-h-[760px]"
+      className="flex h-[calc(100dvh-12.5rem-env(safe-area-inset-bottom))] min-h-[420px] flex-col overflow-hidden rounded-2xl border border-[#e8ddd0] bg-[#F8F3DF] shadow-[0_4px_16px_rgba(92,56,23,0.08)] lg:h-[calc(100dvh-10.5rem)]"
     >
       <header className="flex items-center gap-3 border-b border-[#e8ddd0] bg-[#F8F3DF] px-4 py-3 lg:px-6">
         <Avatar photo={partner.photo} name={partner.name} />
@@ -237,7 +240,7 @@ function MessageList({
     <div
       ref={scroller}
       onScroll={onScroll}
-      className="flex flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 lg:px-6"
+      className={clsx(css.messages, 'flex flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 lg:px-6')}
       aria-live="polite"
     >
       {loadingOlder ? (
