@@ -20,9 +20,20 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment variables
+
+`env/.env.test`, `env/.env.stage` and `env/.env.prod` are committed on purpose. They hold only public, per-environment build config (backend URL, site URL, GA id, Ghost URL, auth URL) and are loaded by `env-cmd` from the `build*` / `start*` scripts in `package.json`. Vercel runs `vercel.sh`, which picks the script by branch; the Cloudflare workflow runs `cf:build:test`.
+
+Secrets are never committed. They live in:
+
+- Vercel: the project's Environment Variables (`AUTH_SECRET`, `GHOST_CONTENT_API_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`).
+- Cloudflare Workers: `wrangler secret put <NAME>` (and `--env test`), see `wrangler.jsonc`.
+- GitHub Actions: repository secrets (`CLOUDFLARE_API_TOKEN`, `GHOST_CONTENT_API_KEY` for the prerender step).
+- Local: `.env.local` (git-ignored) for `next dev` and `next build`. Put `GHOST_CONTENT_API_KEY` there, or the husky pre-push hook build fails while prerendering blog pages. `wrangler` reads `.dev.vars` / `.dev.vars.test` instead.
+
 ## Ghost Content API Proxy
 
-The `/api/ghost` Next.js route proxies the Ghost Content API using the official SDK. Set the following environment variables (see `.env.example` for defaults):
+The `/api/ghost` Next.js route proxies the Ghost Content API using the official SDK. Set the following environment variables (see the files in `env/`):
 
 - `GHOST_CONTENT_API_URL` (falls back to `BLOG_API`)
 - `GHOST_CONTENT_API_KEY` (falls back to `CONTENT_API_KEY`)
