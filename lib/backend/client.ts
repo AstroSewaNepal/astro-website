@@ -117,12 +117,23 @@ export function createBackendClient({
       (await request<T>('PUT', path, body ?? {})).data,
     patch: async <T>(path: string, body?: unknown) =>
       (await request<T>('PATCH', path, body ?? {})).data,
-    delete: async <T>(path: string, body?: unknown) => (await request<T>('DELETE', path, body)).data,
+    delete: async <T>(path: string, body?: unknown) =>
+      (await request<T>('DELETE', path, body)).data,
     /** Routes that return their DTO as the body itself, not inside `{ success, data }`. */
     bare: {
       get: async <T>(path: string) => (await request<unknown>('GET', path)).body as T,
       post: async <T>(path: string, body?: unknown) =>
         (await request<unknown>('POST', path, body ?? {})).body as T,
+    },
+    /** For connections that carry the token themselves (the chat socket), with the same refresh rules as requests. */
+    auth: {
+      token: getToken,
+      /** New token after the server refused `failedToken`; null (and the sign-out) when the session is over. */
+      renew: async (failedToken: string) => {
+        const next = await refreshToken(failedToken);
+        if (!next) onAuthLost();
+        return next;
+      },
     },
   };
 }

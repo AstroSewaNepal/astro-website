@@ -7,6 +7,8 @@ const backendOrigin = (() => {
     return '';
   }
 })();
+// The chat socket (lib/chat/socket.ts) on the same host: CSP doesn't count https:// as covering wss://.
+const backendSocketOrigin = backendOrigin.replace(/^http/, 'ws');
 const isDev = process.env.NODE_ENV === 'development';
 // Vercel preview deploys (test.astrosewa.com) inject the Vercel toolbar.
 const vercelLive = process.env.VERCEL_ENV === 'preview' ? 'https://vercel.live' : '';
@@ -21,7 +23,7 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   // wss://*.fonepay.com: Fonepay's per-payment socket that says when a QR was paid (doc 06).
-  `connect-src 'self' https://*.astrosewa.com ${backendOrigin} https://nominatim.openstreetmap.org wss://*.fonepay.com ${googleAnalytics} ${vercelLive}`,
+  `connect-src 'self' https://*.astrosewa.com ${backendOrigin} ${backendSocketOrigin} https://nominatim.openstreetmap.org wss://*.fonepay.com ${googleAnalytics} ${vercelLive}`,
   "media-src 'self' blob: https:",
   `frame-src 'self' ${vercelLive}`,
   "object-src 'none'",

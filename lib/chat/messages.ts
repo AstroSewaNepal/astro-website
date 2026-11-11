@@ -1,6 +1,7 @@
 // Consultation chat, as the app's ChatDetailsScreen + useChatDetails (ap src/screens/Chat, src/hooks).
 
 import { astrologerShown, type Consultation } from '@/lib/booking/consultations';
+import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
 
 /** Messages per history page (the app asks for 100). */
 export const CHAT_PAGE_LIMIT = 100;
@@ -8,6 +9,17 @@ export const CHAT_PAGE_LIMIT = 100;
 /** The chat of a booking: a sub-page of My Consultations, so the tab stays lit and back goes to the list. */
 export function chatPath(bookingId: string): string {
   return `/client/consultations/${encodeURIComponent(bookingId)}`;
+}
+
+/** The chat socket lives at the API host's root, not under /api/v1. Null when the env is missing. */
+export function chatSocketUrl(): string | null {
+  const api = tryGetPublicBackendBaseUrl();
+  if (!api) return null;
+  try {
+    return new URL(api).origin;
+  } catch {
+    return null;
+  }
 }
 
 export function messagesPath(chatId: string, page: number): string {
@@ -56,6 +68,10 @@ export type ChatItem = {
   image: string | null;
   at: Date;
   mine: boolean;
+  /** Only on own messages the server hasn't confirmed yet (lib/chat/live.ts). */
+  status?: 'sending' | 'failed';
+  /** Why a failed message wasn't sent. */
+  error?: string;
 };
 
 function senderId(m: BackendChatMessage): string {
