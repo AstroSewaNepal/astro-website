@@ -448,12 +448,14 @@ function ConsultationCard({
               </Line>
             ))}
           </div>
-          {/* Desktop: under the lines (Figma). Phones: bottom right (the app). */}
+          {/* Under the lines: desktop on the left (Figma), phones on the right (the app). Kept out of the lines' row
+              so it never narrows them: beside them, "30 minutes consultation" wrapped on phones with a larger
+              system font size. */}
           {chip ? (
             <span
               className={clsx(
                 chipClass,
-                'mt-1 hidden self-start lg:inline-flex',
+                'mt-1 self-end lg:self-start',
                 sessionNumber ? 'text-[11px]' : 'text-[13px]',
               )}
             >
@@ -461,17 +463,6 @@ function ConsultationCard({
             </span>
           ) : null}
         </div>
-        {chip ? (
-          <span
-            className={clsx(
-              chipClass,
-              'self-end lg:hidden',
-              sessionNumber ? 'text-[11px]' : 'text-[13px]',
-            )}
-          >
-            {chip}
-          </span>
-        ) : null}
       </div>
 
       {gone ? null : (
