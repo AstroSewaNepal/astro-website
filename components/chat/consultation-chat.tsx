@@ -331,7 +331,13 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
       </header>
 
       {notAvailable && booking.data ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
+        // Same paper as the message area (the app's chat screen keeps its background here too).
+        <div
+          className={clsx(
+            css.messages,
+            'flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center',
+          )}
+        >
           <Clock3 className="h-16 w-16 text-[#611508]" strokeWidth={1.5} aria-hidden />
           <h2 className="text-[22px] font-semibold text-[#611508]">Chat Not Available</h2>
           <p className="max-w-md text-[16px] text-[#3b3b3b]">{notAvailableText(booking.data)}</p>
