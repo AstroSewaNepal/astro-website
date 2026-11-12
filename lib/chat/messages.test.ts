@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  safeImageUrl,
   chatPartner,
   chatPath,
   dayStarts,
@@ -25,6 +26,58 @@ describe('chat messages', () => {
   it('builds paths', () => {
     expect(chatPath('b 1')).toBe('/client/consultations/b%201');
     expect(messagesPath('c1', 2)).toBe('/chat-messages?chatId=c1&page=2&limit=100');
+  });
+
+  it('shows the WebP copy in the bubble and the original in the viewer', () => {
+    const item = toChatItem(
+      {
+        _id: 'm3',
+        createdAt: '2026-11-09T10:00:00Z',
+        media: { _id: 'md1', url: 'https://x/o.jpg', compressed: { url: 'https://x/c.webp' } },
+      },
+      undefined,
+    );
+    expect(item).toMatchObject({
+      image: 'https://x/c.webp',
+      fullImage: 'https://x/o.jpg',
+      mediaId: 'md1',
+    });
+  });
+
+  it('reads the media id of a socket ack (not populated)', () => {
+    const item = toChatItem(
+      { _id: 'm4', createdAt: '2026-11-09T10:00:00Z', media: 'md2' },
+      undefined,
+    );
+    expect(item).toMatchObject({ image: null, fullImage: null, mediaId: 'md2' });
+  });
+
+  it('only lets web image URLs through', () => {
+    expect(safeImageUrl('https://bucket.s3.amazonaws.com/a.jpg')).toBe(
+      'https://bucket.s3.amazonaws.com/a.jpg',
+    );
+    for (const bad of [
+      'javascript:alert(1)',
+      'data:image/svg+xml,<svg onload=alert(1)>',
+      'http://evil.example/a.jpg',
+      'http://localhost:3300/a.jpg',
+      'blob:https://x/1',
+      '//x/a.jpg',
+      'not a url',
+      '',
+      null,
+      undefined,
+    ])
+      expect(safeImageUrl(bad)).toBeNull();
+    const item = toChatItem(
+      {
+        _id: 'm5',
+        createdAt: '2026-11-09T10:00:00Z',
+        media: { url: 'javascript:alert(1)', compressed: { url: 'data:text/html,x' } },
+      },
+      undefined,
+    );
+    expect(item).toMatchObject({ image: null, fullImage: null });
   });
 
   it('marks my messages and reads images', () => {

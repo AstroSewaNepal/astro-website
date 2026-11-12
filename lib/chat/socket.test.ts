@@ -208,6 +208,21 @@ describe('connectChat', () => {
     await expect(p).resolves.toMatchObject({ _id: 'm1' });
   });
 
+  it('sends a photo by its media id, in the same queue as text', async () => {
+    const { conn, socket } = setup();
+    await flush();
+    const a = conn.send('one');
+    const b = conn.sendImage('md1');
+    await flush();
+    expect(socket().count('message')).toBe(1);
+    socket().lastMessage()!.ack!(null, saved('m1', 'one'));
+    await a;
+    await flush();
+    expect(socket().lastMessage()!.data).toEqual({ chatId: CHAT, mediaId: 'md1' });
+    socket().lastMessage()!.ack!(null, saved('m2', ''));
+    await expect(b).resolves.toMatchObject({ _id: 'm2' });
+  });
+
   it('sends one message at a time, in order', async () => {
     const { conn, socket } = setup();
     await flush();

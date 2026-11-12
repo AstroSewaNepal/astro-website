@@ -3,9 +3,22 @@
 
 import type { ChatItem } from '@/lib/chat/messages';
 
+/** A photo on its way: shown from the device until the server has it. */
+export type OutgoingImage = {
+  /** The picked file (shrunk again on a retry: cheap, and nothing big is kept twice). */
+  file: File;
+  /** Object URL of the file for the pending bubble (the hook revokes it once the bubble is gone). */
+  preview: string;
+  /** Set once uploaded, so a retry only resends the message (the socket's answer carries just the media id). */
+  uploaded?: Uploaded;
+};
+
+export type Uploaded = { mediaId: string; image: string | null; fullImage: string | null };
+
 export type Outgoing = {
   localId: string;
   text: string;
+  image?: OutgoingImage;
   /** When it was written (sorting only; the server's time replaces it once confirmed). */
   at: Date;
   status: 'sending' | 'failed';
@@ -26,6 +39,7 @@ export type LiveAction =
   | { type: 'arrived'; items: ChatItem[] }
   | { type: 'queued'; message: Outgoing }
   | { type: 'sent'; localId: string; item: ChatItem }
+  | { type: 'uploaded'; localId: string; uploaded: Uploaded }
   | { type: 'failed'; localId: string; error: string; uncertain?: boolean }
   | { type: 'retry'; localId: string; at: Date }
   | { type: 'discard'; localId: string };
@@ -57,7 +71,10 @@ export function liveReducer(state: LiveState, action: LiveAction): LiveState {
         const match = own.find(
           m =>
             !used.has(m.id) &&
-            m.text === o.text &&
+            // A photo is matched by its upload, text by its words.
+            (o.image
+              ? !!o.image.uploaded && m.mediaId === o.image.uploaded.mediaId
+              : m.text === o.text) &&
             m.at.getTime() >= o.at.getTime() - UNCERTAIN_MATCH_MS,
         );
         if (!match) return true;
@@ -74,6 +91,15 @@ export function liveReducer(state: LiveState, action: LiveAction): LiveState {
       return {
         arrived: addArrived(state.arrived, [{ ...action.item, mine: true }]),
         outbox: state.outbox.filter(o => o.localId !== action.localId),
+      };
+    case 'uploaded':
+      return {
+        ...state,
+        outbox: state.outbox.map(o =>
+          o.localId === action.localId && o.image
+            ? { ...o, image: { ...o.image, uploaded: action.uploaded } }
+            : o,
+        ),
       };
     case 'failed':
       return {
@@ -117,7 +143,7 @@ export function timeline(history: ChatItem[], live: LiveState): ChatItem[] {
   const pending = live.outbox.map<ChatItem>(o => ({
     id: o.localId,
     text: o.text,
-    image: null,
+    image: o.image?.preview ?? null,
     at: o.at,
     mine: true,
     status: o.status,

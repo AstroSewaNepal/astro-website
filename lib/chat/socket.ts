@@ -53,6 +53,8 @@ export class ChatSendError extends Error {
 export type ChatConnection = {
   /** Sends a text message; resolves with the saved message. */
   send: (text: string) => Promise<BackendChatMessage>;
+  /** Sends a photo uploaded with POST /chat-messages/upload-image; resolves with the saved message (media = id). */
+  sendImage: (mediaId: string) => Promise<BackendChatMessage>;
   /** Call on every keystroke in the composer. */
   typed: () => void;
   stopTyping: () => void;
@@ -75,6 +77,8 @@ const STALE_AFTER_MS = 20_000;
 
 const NO_CONNECTION = 'Not sent. Check your internet connection and try again.';
 const NO_ANSWER = 'Not sent. The connection dropped before the message was confirmed.';
+
+type SendPayload = { message: string } | { mediaId: string };
 
 type SendOutcome = { saved: BackendChatMessage } | { error: ChatSendError } | { authExpired: true };
 
@@ -256,7 +260,10 @@ export function connectChat({
     });
   }
 
-  async function attempt(text: string, retryAfterAuth: boolean): Promise<BackendChatMessage> {
+  async function attempt(
+    payload: SendPayload,
+    retryAfterAuth: boolean,
+  ): Promise<BackendChatMessage> {
     if (stopped) throw new ChatSendError(NO_CONNECTION);
     const started = Date.now();
     await waitConnected(ackTimeoutMs);
@@ -276,7 +283,7 @@ export function connectChat({
         .timeout(remaining)
         .emit(
           'message',
-          { chatId, message: text },
+          { chatId, ...payload },
           (
             err: unknown,
             res: { success?: boolean; data?: BackendChatMessage; message?: string },
@@ -294,18 +301,20 @@ export function connectChat({
     }
     // The guard refuses before saving, so sending again after the reconnect can't double it.
     if ('authExpired' in outcome) {
-      if (retryAfterAuth) return attempt(text, false);
+      if (retryAfterAuth) return attempt(payload, false);
       throw new ChatSendError(NO_CONNECTION);
     }
     throw outcome.error;
   }
 
-  function send(text: string): Promise<BackendChatMessage> {
-    const run = () => attempt(text, true);
+  function enqueue(payload: SendPayload): Promise<BackendChatMessage> {
+    const run = () => attempt(payload, true);
     const result = sendQueue.then(run, run);
     sendQueue = result.catch(() => undefined);
     return result;
   }
+  const send = (text: string) => enqueue({ message: text });
+  const sendImage = (mediaId: string) => enqueue({ mediaId });
 
   function stopTyping() {
     clearTimeout(typingTimer);
@@ -358,5 +367,5 @@ export function connectChat({
   events.status(status);
   socket.connect();
 
-  return { send, typed, stopTyping, wake, stop };
+  return { send, sendImage, typed, stopTyping, wake, stop };
 }

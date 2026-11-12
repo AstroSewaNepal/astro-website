@@ -19,6 +19,8 @@ import {
   ChevronLeft,
   Clock3,
   EllipsisVertical,
+  ImageOff,
+  ImagePlus,
   Loader2,
   SendHorizontal,
   UserRound,
@@ -30,6 +32,7 @@ import clsx from 'clsx';
 import { ConfirmDialog } from '@/components/account/confirm-dialog';
 import { ReviewDialog } from '@/components/booking/review-dialog';
 import css from '@/components/chat/chat.module.css';
+import { ImageViewer, useImageViewer } from '@/components/chat/image-viewer';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,6 +43,7 @@ import { useBackendClient } from '@/hooks/use-backend-client';
 import { useChatLive } from '@/hooks/use-chat-live';
 import { usePhoneFullScreen } from '@/hooks/use-phone-full-screen';
 import { consultationsPath } from '@/lib/booking/consultations';
+import { CHAT_IMAGE_ACCEPT } from '@/lib/chat/image';
 import { timeline } from '@/lib/chat/live';
 import {
   countdownTone,
@@ -74,6 +78,8 @@ const STATUS_BANNER_DELAY_MS = 2_000;
 const COMPOSER_MAX_PX = 128;
 /** The app re-reads the booking this often during the session for the other person's Online/Offline. */
 const ONLINE_POLL_MS = 10_000;
+/** How long a note about a photo that can't be sent stays above the composer. */
+const NOTICE_MS = 6_000;
 
 const noStoreEvents = () => () => {};
 
@@ -144,6 +150,7 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
   const past = useMemo(() => historyItems(history.data?.pages ?? [], myId), [history.data, myId]);
   const items = useMemo(() => timeline(past, chat.live), [past, chat.live]);
   const partner = chatPartner(booking.data);
+  const viewer = useImageViewer();
 
   // Ending the session (the app's openPostEndUI): End Chat, the timer running out, or the other side ending it all
   // leave the booking COMPLETED and open the review.
@@ -328,6 +335,7 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
           loadOlder={() => history.fetchNextPage()}
           onRetry={chat.retry}
           onDiscard={chat.discard}
+          onOpenImage={viewer.open}
         />
       )}
 
@@ -364,6 +372,7 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
         <Composer
           disabled={!ready}
           onSend={chat.send}
+          onSendImage={chat.sendImage}
           onTyped={chat.typed}
           onStopTyping={chat.stopTyping}
         />
@@ -377,6 +386,7 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
         cancelText="No"
         onConfirm={confirmEndChat}
       />
+      <ImageViewer src={viewer.src} onClose={viewer.close} />
       {reviewOpen && booking.data ? (
         <ReviewDialog
           astrologerId={booking.data.astrologerId}
@@ -476,16 +486,35 @@ function enterSends(): boolean {
 function Composer({
   disabled,
   onSend,
+  onSendImage,
   onTyped,
   onStopTyping,
 }: {
   disabled: boolean;
   onSend: (text: string) => boolean;
+  /** Returns why the photo can't be sent, or null once it's on its way. */
+  onSendImage: (file: File) => string | null;
   onTyped: () => void;
   onStopTyping: () => void;
 }) {
   const [text, setText] = useState('');
   const field = useRef<HTMLTextAreaElement>(null);
+  const picker = useRef<HTMLInputElement>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  useEffect(() => {
+    if (!notice) return;
+    const t = setTimeout(() => setNotice(null), NOTICE_MS);
+    return () => clearTimeout(t);
+  }, [notice]);
+
+  // One photo per pick (the app's picker): phones offer the camera or the gallery from the same button.
+  const onPicked = (input: HTMLInputElement) => {
+    const file = input.files?.[0];
+    // Cleared so picking the same photo again still fires a change.
+    input.value = '';
+    if (!file || disabled) return;
+    setNotice(onSendImage(file));
+  };
 
   // Grows with its text; shrinks back after sending.
   useLayoutEffect(() => {
@@ -518,8 +547,33 @@ function Composer({
         e.preventDefault();
         submit();
       }}
-      className="flex items-end gap-2 border-t border-[#e8ddd0] bg-[#F8F3DF] px-3 py-3 max-lg:pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:px-5"
+      className="relative flex items-end gap-2 border-t border-[#e8ddd0] bg-[#F8F3DF] px-3 py-3 max-lg:pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:px-5"
     >
+      {notice ? (
+        <p
+          role="alert"
+          className="absolute inset-x-3 bottom-full mb-2 rounded-lg bg-[#fbe9e7] px-3 py-2 text-[13px] text-[#8a1c12] shadow-sm lg:inset-x-5"
+        >
+          {notice}
+        </p>
+      ) : null}
+      <input
+        ref={picker}
+        type="file"
+        accept={CHAT_IMAGE_ACCEPT}
+        hidden
+        tabIndex={-1}
+        onChange={e => onPicked(e.currentTarget)}
+      />
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => picker.current?.click()}
+        aria-label="Send a photo"
+        className="flex h-11 w-9 shrink-0 items-center justify-center rounded-full text-[#720A0B] hover:bg-[#efe4d2] focus-visible:outline-2 focus-visible:outline-[#720A0B] disabled:opacity-50"
+      >
+        <ImagePlus className="h-6 w-6" aria-hidden />
+      </button>
       <textarea
         ref={field}
         rows={1}
@@ -590,6 +644,7 @@ function MessageList({
   loadOlder,
   onRetry,
   onDiscard,
+  onOpenImage,
 }: {
   items: ChatItem[];
   partner: { name: string; photo: string | null };
@@ -599,6 +654,7 @@ function MessageList({
   loadOlder: () => void;
   onRetry: (item: ChatItem) => void;
   onDiscard: (item: ChatItem) => void;
+  onOpenImage: (url: string) => void;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
   const starts = useMemo(() => dayStarts(items), [items]);
@@ -689,7 +745,13 @@ function MessageList({
                 {dayChip(item.at)}
               </span>
             ) : null}
-            <Bubble item={item} partner={partner} onRetry={onRetry} onDiscard={onDiscard} />
+            <Bubble
+              item={item}
+              partner={partner}
+              onRetry={onRetry}
+              onDiscard={onDiscard}
+              onOpenImage={onOpenImage}
+            />
           </div>
         ))
       )}
@@ -723,11 +785,13 @@ function Bubble({
   partner,
   onRetry,
   onDiscard,
+  onOpenImage,
 }: {
   item: ChatItem;
   partner: { name: string; photo: string | null };
   onRetry: (item: ChatItem) => void;
   onDiscard: (item: ChatItem) => void;
+  onOpenImage: (url: string) => void;
 }) {
   const failed = item.status === 'failed';
   return (
@@ -744,15 +808,15 @@ function Bubble({
             failed && 'opacity-60',
           )}
         >
-          {item.image ? (
-            <a href={item.image} target="_blank" rel="noopener noreferrer" className="block">
-              {/* eslint-disable-next-line @next/next/no-img-element -- chat images are backend media URLs */}
-              <img
-                src={item.image}
-                alt="Photo"
-                className="max-h-[250px] w-[200px] rounded-lg object-cover"
-              />
-            </a>
+          {/* A photo whose URL was refused (lib/chat/messages.ts safeImageUrl) still shows as a photo that won't load. */}
+          {item.image || item.mediaId ? (
+            <ChatPhoto
+              src={item.image}
+              fallback={item.fullImage ?? null}
+              pending={!!item.status}
+              sending={item.status === 'sending'}
+              onOpen={onOpenImage}
+            />
           ) : null}
           {item.text ? (
             <p className="whitespace-pre-wrap break-words text-[15px] font-medium leading-snug lg:text-[16px]">
@@ -795,5 +859,81 @@ function Bubble({
         ) : null}
       </div>
     </div>
+  );
+}
+
+/**
+ * A photo in a bubble, at the app's 200 x 250. The fixed box keeps the scroll position steady while photos load, and
+ * lazy loading leaves photos far up the history unloaded until the reader scrolls to them.
+ */
+function ChatPhoto({
+  src,
+  fallback,
+  pending,
+  sending,
+  onOpen,
+}: {
+  src: string | null;
+  /** The original, tried when the WebP copy is missing. */
+  fallback: string | null;
+  /** Still on this device (not tappable: the full photo isn't uploaded yet). */
+  pending: boolean;
+  sending: boolean;
+  onOpen: (url: string) => void;
+}) {
+  const [failed, setFailed] = useState<string[]>([]);
+  const current = [src, fallback].find(u => !!u && !failed.includes(u)) ?? null;
+  const box =
+    'relative block h-[250px] w-[200px] max-w-full overflow-hidden rounded-lg bg-[#e8ddd0]';
+
+  if (!current) {
+    return (
+      <span
+        className={clsx(
+          box,
+          'flex flex-col items-center justify-center gap-1 text-[13px] text-[#611508]',
+        )}
+      >
+        <ImageOff className="h-7 w-7" aria-hidden />
+        Photo unavailable
+      </span>
+    );
+  }
+  const img = (
+    // eslint-disable-next-line @next/next/no-img-element -- chat photos are backend media URLs (images.unoptimized)
+    <img
+      src={current}
+      alt="Photo"
+      loading="lazy"
+      decoding="async"
+      referrerPolicy="no-referrer"
+      onError={() => setFailed(f => [...f, current])}
+      className="h-full w-full object-cover"
+    />
+  );
+  if (pending) {
+    return (
+      <span className={box}>
+        {img}
+        {sending ? (
+          <span className="absolute inset-0 flex items-center justify-center bg-black/30">
+            <Loader2 className="h-7 w-7 animate-spin text-white" aria-label="Sending photo" />
+          </span>
+        ) : null}
+      </span>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(fallback ?? current)}
+      aria-label="Open photo"
+      className={clsx(
+        box,
+        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#720A0B]',
+      )}
+    >
+      {img}
+    </button>
   );
 }
