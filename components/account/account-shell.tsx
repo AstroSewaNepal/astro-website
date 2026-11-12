@@ -6,7 +6,13 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import clsx from 'clsx';
 
-import { ACCOUNT_NAV, type AccountNavItem, parentPage, type PrivateKind } from '@/lib/account/nav';
+import {
+  ACCOUNT_NAV,
+  type AccountNavItem,
+  hasOwnBack,
+  parentPage,
+  type PrivateKind,
+} from '@/lib/account/nav';
 
 function BackLink({ href }: { href: string }) {
   return (
@@ -106,7 +112,7 @@ export function AccountShell({ kind, children }: { kind: PrivateKind; children: 
   const pathname = usePathname() ?? '';
   const nav = ACCOUNT_NAV[kind];
   const homeHref = nav.tabs[0].href;
-  const parent = parentPage(pathname);
+  const parent = hasOwnBack(pathname) ? null : parentPage(pathname);
 
   return (
     <div className="container mx-auto flex w-full min-w-0 flex-1 gap-10 px-4 pb-12 lg:px-0">

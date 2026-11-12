@@ -41,7 +41,11 @@ export type ChatBooking = Pick<
   | 'scheduledEndAt'
   | 'status'
   | 'chatId'
->;
+  | 'reviewId'
+> & {
+  /** The astrologer has the chat socket open (the app's Online/Offline). */
+  astrologerIsSocketConnected?: boolean;
+};
 
 /** A message from GET /chat-messages or the socket's `message` event. */
 export type BackendChatMessage = {
@@ -49,11 +53,23 @@ export type BackendChatMessage = {
   message?: string | null;
   createdAt: string;
   sender?: { _id?: string; fullName?: string | null } | string | null;
-  media?: {
-    url?: string | null;
-    compressed?: { url?: string | null } | null;
-    thumbnail?: { url?: string | null } | null;
-  } | null;
+  /** Populated in the history and broadcasts; only the id in the sender's own socket ack. */
+  media?:
+    | {
+        _id?: string;
+        url?: string | null;
+        compressed?: { url?: string | null } | null;
+        thumbnail?: { url?: string | null } | null;
+      }
+    | string
+    | null;
+};
+
+/** POST /chat-messages/upload-image (inside the usual envelope). */
+export type UploadedChatImage = {
+  _id: string;
+  url?: string | null;
+  compressed?: { url?: string | null } | null;
 };
 
 /** GET /chat-messages answers without the usual envelope: newest first. */
@@ -65,7 +81,11 @@ export type ChatMessagesPage = {
 export type ChatItem = {
   id: string;
   text: string;
+  /** Shown in the bubble: the WebP copy when there is one. */
   image: string | null;
+  /** Opened in the viewer: the original. */
+  fullImage?: string | null;
+  mediaId?: string;
   at: Date;
   mine: boolean;
   /** Only on own messages the server hasn't confirmed yet (lib/chat/live.ts). */
@@ -79,11 +99,38 @@ function senderId(m: BackendChatMessage): string {
   return typeof m.sender === 'string' ? m.sender : (m.sender._id ?? '');
 }
 
+/**
+ * Only https images reach an <img> or the viewer's link. Message data comes from the other person's side of the
+ * chat, so a `javascript:`/`data:` URL or a typo never gets a link or a request.
+ */
+export function safeImageUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    if (u.protocol === 'https:') return u.href;
+  } catch {
+    // Not a URL.
+  }
+  return null;
+}
+
+/** Bubble and viewer URLs of an uploaded or populated image. */
+export function chatImageUrls(media: {
+  url?: string | null;
+  compressed?: { url?: string | null } | null;
+}): { image: string | null; fullImage: string | null } {
+  const full = safeImageUrl(media.url);
+  return { image: safeImageUrl(media.compressed?.url) ?? full, fullImage: full };
+}
+
 export function toChatItem(m: BackendChatMessage, myId: string | undefined): ChatItem {
+  const media = m.media && typeof m.media === 'object' ? m.media : null;
+  const mediaId = typeof m.media === 'string' ? m.media : media?._id;
   return {
     id: m._id,
     text: m.message ?? '',
-    image: m.media?.url || m.media?.compressed?.url || null,
+    ...(media ? chatImageUrls(media) : { image: null, fullImage: null }),
+    ...(mediaId ? { mediaId: String(mediaId) } : {}),
     at: new Date(m.createdAt),
     mine: !!myId && senderId(m) === myId,
   };

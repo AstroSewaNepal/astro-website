@@ -299,8 +299,9 @@ function Avatar({
   photo: string | null;
   href: string | null;
 }) {
+  // 64px under 375px wide (360px Androids): at 80px "30 minutes consultation" wraps onto two lines.
   const body = (
-    <span className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f1d9d2] font-app text-2xl font-semibold text-primary">
+    <span className="flex h-16 w-16 min-[375px]:h-20 min-[375px]:w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f1d9d2] font-app text-2xl font-semibold text-primary">
       {photo ? (
         // eslint-disable-next-line @next/next/no-img-element -- backend media URLs
         <img src={photo} alt="" className="h-full w-full object-cover" />

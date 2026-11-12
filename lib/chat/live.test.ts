@@ -87,6 +87,40 @@ describe('liveReducer', () => {
   });
 });
 
+describe('photos in the outbox', () => {
+  const photo = (localId: string, minute: number): Outgoing => ({
+    ...outgoing(localId, minute, ''),
+    image: { file: new File(['x'], 'p.jpg', { type: 'image/jpeg' }), preview: `blob:${localId}` },
+  });
+  const uploaded = { mediaId: 'md1', image: 'https://x/c.webp', fullImage: 'https://x/o.jpg' };
+
+  it('shows the device copy while pending and keeps the upload for a retry', () => {
+    let s = liveReducer(emptyLive, { type: 'queued', message: photo('p1', 1) });
+    expect(timeline([], s)[0]).toMatchObject({ image: 'blob:p1', status: 'sending' });
+    s = liveReducer(s, { type: 'uploaded', localId: 'p1', uploaded });
+    s = liveReducer(s, { type: 'failed', localId: 'p1', error: 'x' });
+    s = liveReducer(s, { type: 'retry', localId: 'p1', at: new Date() });
+    expect(s.outbox[0].image?.uploaded).toEqual(uploaded);
+    expect(s.outbox[0].status).toBe('sending');
+  });
+
+  it('drops a timed-out photo when the history has its upload, not a different photo', () => {
+    let s = liveReducer(emptyLive, { type: 'queued', message: photo('p1', 1) });
+    s = liveReducer(s, { type: 'uploaded', localId: 'p1', uploaded });
+    s = liveReducer(s, { type: 'failed', localId: 'p1', error: 'x', uncertain: true });
+    s = liveReducer(s, {
+      type: 'arrived',
+      items: [{ ...item('other', 1, true, ''), mediaId: 'md-other' }],
+    });
+    expect(s.outbox).toHaveLength(1);
+    s = liveReducer(s, {
+      type: 'arrived',
+      items: [{ ...item('srv', 1, true, ''), mediaId: 'md1' }],
+    });
+    expect(s.outbox).toHaveLength(0);
+  });
+});
+
 describe('timeline', () => {
   it('merges history and live messages once each, oldest first, pending last', () => {
     let live = liveReducer(emptyLive, { type: 'arrived', items: [item('c', 3), item('b', 2)] });

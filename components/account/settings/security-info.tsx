@@ -35,15 +35,25 @@ export function SecurityInfo({ kind }: { kind: PrivateKind }) {
       </div>
 
       <div className="mt-8 flex flex-col gap-3">
-        {/* Blocked users ships with doc 13 (support and moderation). */}
-        <span
-          aria-disabled
-          className={`${buttonClass} cursor-default border-[#720A0B]/30 text-[#720A0B]/45`}
-        >
-          <Ban className="h-5 w-5" aria-hidden />
-          Blocked users
-          <span className="text-xs text-[#8a7a6a]">Soon</span>
-        </span>
+        {kind === 'client' ? (
+          <Link
+            href={settingsPaths(kind).blockedUsers}
+            className={`${buttonClass} border-[#720A0B] text-[#720A0B]`}
+          >
+            <Ban className="h-5 w-5" aria-hidden />
+            Blocked users
+          </Link>
+        ) : (
+          // The astrologer area is built in doc 17.
+          <span
+            aria-disabled
+            className={`${buttonClass} cursor-default border-[#720A0B]/30 text-[#720A0B]/45`}
+          >
+            <Ban className="h-5 w-5" aria-hidden />
+            Blocked users
+            <span className="text-xs text-[#8a7a6a]">Soon</span>
+          </span>
+        )}
         <Link
           href={settingsPaths(kind).deleteAccount}
           className={`${buttonClass} border-[#BE7B71] text-[#BE7B71]`}

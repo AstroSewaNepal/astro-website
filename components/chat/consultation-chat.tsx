@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -11,11 +12,18 @@ import {
 } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertCircle,
   BadgeCheck,
+  Ban,
+  ChevronLeft,
   Clock3,
+  Copy,
+  EllipsisVertical,
+  Flag,
+  ImageOff,
+  ImagePlus,
   Loader2,
   SendHorizontal,
   UserRound,
@@ -24,10 +32,34 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 
+import { ConfirmDialog } from '@/components/account/confirm-dialog';
+import { ReviewDialog } from '@/components/booking/review-dialog';
 import css from '@/components/chat/chat.module.css';
+import { ImageViewer, useImageViewer } from '@/components/chat/image-viewer';
+import { BlockDialog } from '@/components/moderation/block-dialog';
+import { ReportDialog } from '@/components/moderation/report-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useChatLive } from '@/hooks/use-chat-live';
+import { useLongPress } from '@/hooks/use-long-press';
+import { usePhoneFullScreen } from '@/hooks/use-phone-full-screen';
+import { settingsPaths } from '@/lib/account/settings';
+import { consultationsPath } from '@/lib/booking/consultations';
+import { CHAT_IMAGE_ACCEPT } from '@/lib/chat/image';
 import { timeline } from '@/lib/chat/live';
+import {
+  countdownTone,
+  formatCountdown,
+  msUntilNextPhase,
+  notAvailableText,
+  secondsLeft,
+  sessionPhase,
+} from '@/lib/chat/session';
 import type { ChatStatus } from '@/lib/chat/socket';
 import {
   chatPartner,
@@ -41,6 +73,7 @@ import {
   type ChatItem,
   type ChatMessagesPage,
 } from '@/lib/chat/messages';
+import { BLOCKED_CHAT_TEXT, BLOCKED_IDS_KEY, type ReportTarget } from '@/lib/moderation';
 
 const TOS_KEY = 'chatTosAndPrivacyAccepted';
 /** Load older messages once the reader scrolls this close to the top. */
@@ -51,6 +84,15 @@ const NEAR_BOTTOM_PX = 120;
 const STATUS_BANNER_DELAY_MS = 2_000;
 /** The composer grows with the text up to about five lines, then scrolls. */
 const COMPOSER_MAX_PX = 128;
+/** The app re-reads the booking this often during the session for the other person's Online/Offline. */
+const ONLINE_POLL_MS = 10_000;
+const menuItemClass =
+  'gap-2 text-[15px] font-semibold text-[#611508] focus:bg-[#efe4d2] focus:text-[#611508]';
+/** Menus over the full-screen phone chat (z-55; the shared menu sits at z-50). Rendered outside the page, so they
+ * need the app font themselves. */
+const menuContentClass = 'z-[60] min-w-40 border-[#e8ddd0] bg-[#F8F3DF] p-2 font-app';
+/** How long a note about a photo that can't be sent stays above the composer. */
+const NOTICE_MS = 6_000;
 
 const noStoreEvents = () => () => {};
 
@@ -75,8 +117,30 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
     queryKey: ['chat', 'booking', bookingId],
     queryFn: () =>
       backend.get<ChatBooking>(`/connection-schedule/${encodeURIComponent(bookingId)}`),
+    // Online/Offline and an end by the other side show up through this (the app's ChatOnlineStatus).
+    refetchInterval: q =>
+      q.state.data && sessionPhase(q.state.data, Date.now()) === 'active' ? ONLINE_POLL_MS : false,
   });
   const chatId = booking.data?.chatId ?? null;
+
+  // The phase only changes at the start and end times (or when the booking's status changes): re-render then, not
+  // every second (SessionTimer ticks on its own).
+  const [now, setNow] = useState(() => Date.now());
+  const phase = booking.data ? sessionPhase(booking.data, now) : null;
+  useEffect(() => {
+    if (!booking.data) return;
+    const wait = msUntilNextPhase(booking.data, now);
+    if (wait === null) return;
+    const t = setTimeout(() => setNow(Date.now()), wait + 50);
+    return () => clearTimeout(t);
+  }, [booking.data, now]);
+
+  // Like the app (wasActiveOnMount): a chat that was open during the session stays readable after it ends; one
+  // opened before or after its time shows "Chat Not Available" instead.
+  const [seenActive, setSeenActive] = useState(false);
+  if (phase === 'active' && !seenActive) setSeenActive(true);
+  const showChat = phase === 'active' || (phase === 'ended' && seenActive);
+  const notAvailable = !!booking.data && phase !== null && !showChat;
 
   const history = useInfiniteQuery({
     queryKey: ['chat', 'messages', chatId],
@@ -84,13 +148,83 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
       backend.bare.get<ChatMessagesPage>(messagesPath(chatId!, pageParam)),
     initialPageParam: 1,
     getNextPageParam: (last, all) => (hasOlderPage(last) ? all.length + 1 : undefined),
-    enabled: !!chatId,
+    enabled: !!chatId && showChat,
   });
 
-  const chat = useChatLive({ chatId, myId, bookingId });
+  // The astrologer ended it (chat_ended from someone else): the review says so, like the app.
+  const [endedByPartner, setEndedByPartner] = useState(false);
+  const onEnded = useCallback(
+    (endedBy: string | null) => {
+      if (endedBy && endedBy !== myId) setEndedByPartner(true);
+    },
+    [myId],
+  );
+  const chat = useChatLive({ chatId, myId, bookingId, enabled: phase === 'active', onEnded });
   const past = useMemo(() => historyItems(history.data?.pages ?? [], myId), [history.data, myId]);
   const items = useMemo(() => timeline(past, chat.live), [past, chat.live]);
   const partner = chatPartner(booking.data);
+  const viewer = useImageViewer();
+
+  // Report and block (the app's chat menu and message long-press). The backend refuses messages either way once one
+  // side has blocked the other, so a blocked chat shows why instead of a composer that can only fail.
+  const astrologerId = booking.data?.astrologerId ?? null;
+  const blockedIds = useQuery({
+    queryKey: BLOCKED_IDS_KEY,
+    queryFn: () => backend.get<string[]>('/blocks/ids'),
+    enabled: !!astrologerId,
+    staleTime: 60_000,
+  });
+  const [blockedHere, setBlockedHere] = useState(false);
+  const blocked =
+    blockedHere ||
+    (!!astrologerId && Array.isArray(blockedIds.data) && blockedIds.data.includes(astrologerId));
+  const [report, setReport] = useState<{ title: string; target: ReportTarget } | null>(null);
+  const [confirmBlock, setConfirmBlock] = useState(false);
+  const reportMessage = useCallback(
+    (item: ChatItem) => {
+      if (!astrologerId) return;
+      setReport({
+        title: 'Report message',
+        target: {
+          targetType: 'CHAT_MESSAGE',
+          targetId: item.id,
+          reportedUserId: astrologerId,
+          contentSnapshot: item.text || undefined,
+          chatId: chatId ?? undefined,
+        },
+      });
+    },
+    [astrologerId, chatId],
+  );
+
+  // Ending the session (the app's openPostEndUI): End Chat, the timer running out, or the other side ending it all
+  // leave the booking COMPLETED and open the review.
+  const queryClient = useQueryClient();
+  const endSession = useMutation({
+    mutationFn: () => backend.patch(`/connection-schedule/${encodeURIComponent(bookingId)}/end`),
+    // Idempotent on the backend; either way the booking and My Consultations are re-read.
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['chat', 'booking', bookingId] });
+      void queryClient.invalidateQueries({ queryKey: ['consultations'] });
+    },
+  });
+  const [confirmEnd, setConfirmEnd] = useState(false);
+  const [endRequested, setEndRequested] = useState(false);
+  const [review, setReview] = useState<'pending' | 'closed' | 'done'>('pending');
+  const sessionOver = endRequested || (phase === 'ended' && seenActive);
+  // The clock ran out while the chat was open and nobody pressed End: end it on the backend too (the app does).
+  const needsEnd = phase === 'ended' && seenActive && booking.data?.status === 'CONFIRMED';
+  const { mutate: endNow, isIdle: endIdle } = endSession;
+  useEffect(() => {
+    if (needsEnd && endIdle) endNow();
+  }, [needsEnd, endIdle, endNow]);
+  const reviewOpen =
+    sessionOver && review === 'pending' && !!booking.data && !booking.data.reviewId;
+  const confirmEndChat = () => {
+    setConfirmEnd(false);
+    setEndRequested(true);
+    endSession.mutate();
+  };
 
   // Stored per browser like the app's MMKV flag; the server render assumes accepted so nothing flashes.
   const tosStored = useSyncExternalStore(noStoreEvents, readTosAccepted, () => true);
@@ -105,18 +239,31 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
     }
   };
 
+  // Phones: full screen above the keyboard, like the app's chat screen (no site header, footer or tabs).
+  const panel = useRef<HTMLElement>(null);
+  usePhoneFullScreen(panel);
+
   const failed = booking.isError || history.isError || (booking.isSuccess && !chatId);
-  const loading = booking.isPending || (!!chatId && history.isPending);
+  const loading = booking.isPending || (!!chatId && showChat && history.isPending);
   const ready = !loading && !failed;
 
   return (
-    // Fills the window below the header and back link: phones stop 12px above the bottom tabs, desktop 16px above
-    // the window's bottom edge.
+    // Phones: fixed over the whole screen (usePhoneFullScreen sizes it to the space above the keyboard). Desktop:
+    // fills the window below the site header and back link, 16px above its bottom edge.
     <section
+      ref={panel}
       aria-label={`Chat with ${partner.name}`}
-      className="flex h-[calc(100dvh-12.5rem-env(safe-area-inset-bottom))] min-h-[420px] flex-col overflow-hidden rounded-2xl border border-[#e8ddd0] bg-[#F8F3DF] shadow-[0_4px_16px_rgba(92,56,23,0.08)] lg:h-[calc(100dvh-10.5rem)]"
+      className="fixed inset-0 z-[55] flex flex-col overflow-hidden bg-[#F8F3DF] lg:static lg:z-auto lg:h-[calc(100dvh-8.15rem)] lg:min-h-[420px] lg:rounded-2xl lg:border lg:border-[#e8ddd0] lg:shadow-[0_4px_16px_rgba(92,56,23,0.08)]"
     >
-      <header className="flex items-center gap-3 border-b border-[#e8ddd0] bg-[#F8F3DF] px-4 py-3 lg:px-6">
+      <header className="flex items-center gap-3 border-b border-[#e8ddd0] bg-[#F8F3DF] px-4 py-3 max-lg:pl-1 max-lg:pt-[max(0.75rem,env(safe-area-inset-top))] lg:pl-3 lg:pr-6">
+        {/* The chat's own back: phones cover the site's back link, and desktop leaves it out for a taller panel. */}
+        <Link
+          href={consultationsPath()}
+          aria-label="Back to My Consultations"
+          className="flex h-10 w-8 shrink-0 items-center justify-center rounded-lg text-[#611508] lg:w-9 lg:hover:bg-[#efe4d2]"
+        >
+          <ChevronLeft className="h-6 w-6" aria-hidden />
+        </Link>
         <Avatar photo={partner.photo} name={partner.name} />
         <div className="min-w-0 flex-1">
           <p className="flex items-center gap-1.5 text-[17px] font-semibold text-[#611508] lg:text-[19px]">
@@ -125,10 +272,73 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
               <BadgeCheck className="h-4 w-4 shrink-0 text-[#720A0B]" aria-label="Verified" />
             ) : null}
           </p>
+          {showChat && booking.data ? (
+            <p className="mt-0.5 flex items-center gap-3 text-[14px] lg:text-[15px]">
+              <span
+                className={clsx(
+                  'font-medium',
+                  booking.data.astrologerIsSocketConnected ? 'text-[#15B763]' : 'text-[#FF3B3B]',
+                )}
+              >
+                {booking.data.astrologerIsSocketConnected ? 'Online' : 'Offline'}
+              </span>
+              <SessionTimer endAt={booking.data.scheduledEndAt} ended={phase === 'ended'} />
+            </p>
+          ) : null}
         </div>
+        {astrologerId ? (
+          // Not modal: a modal menu that opens a dialog can leave the page unclickable (Radix).
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger
+              aria-label="Chat options"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#611508] hover:bg-[#efe4d2] focus-visible:outline-2 focus-visible:outline-[#611508]"
+            >
+              <EllipsisVertical className="h-5 w-5" aria-hidden />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className={menuContentClass}>
+              {phase === 'active' && !endRequested ? (
+                <DropdownMenuItem onSelect={() => setConfirmEnd(true)} className={menuItemClass}>
+                  <X className="h-4 w-4 text-[#611508]" aria-hidden />
+                  End Chat
+                </DropdownMenuItem>
+              ) : null}
+              <DropdownMenuItem
+                onSelect={() =>
+                  setReport({
+                    title: 'Report astrologer',
+                    target: {
+                      targetType: 'ASTROLOGER',
+                      targetId: astrologerId,
+                      reportedUserId: astrologerId,
+                      chatId: chatId ?? undefined,
+                    },
+                  })
+                }
+                className={menuItemClass}
+              >
+                <Flag className="h-4 w-4 text-[#611508]" aria-hidden />
+                Report
+              </DropdownMenuItem>
+              {!blocked ? (
+                <DropdownMenuItem onSelect={() => setConfirmBlock(true)} className={menuItemClass}>
+                  <Ban className="h-4 w-4 text-[#611508]" aria-hidden />
+                  Block
+                </DropdownMenuItem>
+              ) : null}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
       </header>
 
-      {!tosAccepted ? (
+      {notAvailable && booking.data ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
+          <Clock3 className="h-16 w-16 text-[#611508]" strokeWidth={1.5} aria-hidden />
+          <h2 className="text-[22px] font-semibold text-[#611508]">Chat Not Available</h2>
+          <p className="max-w-md text-[16px] text-[#3b3b3b]">{notAvailableText(booking.data)}</p>
+        </div>
+      ) : null}
+
+      {!notAvailable && !tosAccepted ? (
         <div className="flex items-center gap-3 bg-[#BE7B71] px-4 py-2.5 text-[13px] text-white lg:px-6 lg:text-[15px]">
           <p className="flex-1">
             By continuing, you agree to our{' '}
@@ -158,9 +368,11 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
         </div>
       ) : null}
 
-      {ready ? <ConnectionBanner status={chat.status} onRetry={chat.reconnect} /> : null}
+      {ready && phase === 'active' ? (
+        <ConnectionBanner status={chat.status} onRetry={chat.reconnect} />
+      ) : null}
 
-      {loading ? (
+      {notAvailable ? null : loading ? (
         <div className="flex flex-1 items-center justify-center text-[#611508]">
           <Loader2 className="h-6 w-6 animate-spin" aria-label="Loading chat" />
         </div>
@@ -185,16 +397,127 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
           loadOlder={() => history.fetchNextPage()}
           onRetry={chat.retry}
           onDiscard={chat.discard}
+          onOpenImage={viewer.open}
+          onReport={astrologerId ? reportMessage : undefined}
         />
       )}
 
-      <Composer
-        disabled={!ready}
-        onSend={chat.send}
-        onTyped={chat.typed}
-        onStopTyping={chat.stopTyping}
+      {notAvailable ? null : phase === 'ended' ? (
+        <div
+          role="status"
+          className="flex flex-col items-center gap-1.5 border-t border-[#e8ddd0] bg-[#efe4d2] px-4 py-3 text-center text-[15px]"
+        >
+          {review === 'done' ? (
+            <p className="text-[#1f4d23]">
+              <b>Thank you!</b> Your rating has been submitted successfully.
+            </p>
+          ) : (
+            <p className="font-medium text-[#611508]">This consultation has ended.</p>
+          )}
+          <div className="flex gap-5 text-[14px] font-semibold text-[#720A0B]">
+            {review === 'closed' &&
+            booking.data?.status === 'COMPLETED' &&
+            !booking.data.reviewId ? (
+              <button
+                type="button"
+                onClick={() => setReview('pending')}
+                className="hover:underline"
+              >
+                Leave a Review
+              </button>
+            ) : null}
+            <Link href={consultationsPath('completed')} className="hover:underline">
+              My Consultations
+            </Link>
+          </div>
+        </div>
+      ) : blocked ? (
+        <div
+          role="status"
+          className="flex flex-col items-center gap-1.5 border-t border-[#e8ddd0] bg-[#efe4d2] px-4 py-3 text-center text-[15px] max-lg:pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+        >
+          <p className="font-medium text-[#611508]">
+            {blockedHere ? `You blocked ${partner.name}. ` : ''}
+            {BLOCKED_CHAT_TEXT}
+          </p>
+          <Link
+            href={settingsPaths('client').blockedUsers}
+            className="text-[14px] font-semibold text-[#720A0B] hover:underline"
+          >
+            Blocked users
+          </Link>
+        </div>
+      ) : (
+        <Composer
+          disabled={!ready}
+          onSend={chat.send}
+          onSendImage={chat.sendImage}
+          onTyped={chat.typed}
+          onStopTyping={chat.stopTyping}
+        />
+      )}
+
+      <ConfirmDialog
+        open={confirmEnd}
+        onOpenChange={setConfirmEnd}
+        title="Are you sure you want to end the chat?"
+        confirmText="Yes"
+        cancelText="No"
+        onConfirm={confirmEndChat}
       />
+      <ImageViewer src={viewer.src} onClose={viewer.close} />
+      {report ? (
+        <ReportDialog title={report.title} target={report.target} onClose={() => setReport(null)} />
+      ) : null}
+      {astrologerId ? (
+        <BlockDialog
+          user={{ id: astrologerId, name: partner.name }}
+          open={confirmBlock}
+          onOpenChange={setConfirmBlock}
+          onBlocked={() => setBlockedHere(true)}
+        />
+      ) : null}
+      {reviewOpen && booking.data ? (
+        <ReviewDialog
+          astrologerId={booking.data.astrologerId}
+          bookingId={bookingId}
+          astrologerName={partner.name}
+          photo={partner.photo}
+          note={endedByPartner ? `Your chat has been ended by ${partner.name}.` : undefined}
+          waiting={endSession.isPending}
+          onClose={() => setReview('closed')}
+          onDone={() => setReview('done')}
+        />
+      ) : null}
     </section>
+  );
+}
+
+/** Time left in the session, ticking every second (the app's ChatTimer). */
+function SessionTimer({ endAt, ended }: { endAt: string; ended: boolean }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (ended) return;
+    const t = setInterval(() => setNow(Date.now()), 1_000);
+    return () => clearInterval(t);
+  }, [ended]);
+  const left = ended ? 0 : secondsLeft(endAt, now);
+  const tone = countdownTone(left);
+  return (
+    <span
+      role="timer"
+      aria-label={`${formatCountdown(left)} left`}
+      className={clsx(
+        'flex items-center gap-1 tabular-nums',
+        // The app's #FFBB50 amber is unreadable on the cream header: a darker amber instead.
+        tone === 'calm' && 'font-medium text-[#15B763]',
+        tone === 'soon' && 'font-bold text-[#B87400]',
+        tone === 'urgent' && 'font-bold text-[#C00303]',
+      )}
+    >
+      <Clock3 className="h-4 w-4 text-[#611508]" aria-hidden />
+      {formatCountdown(left)}
+    </span>
   );
 }
 
@@ -253,16 +576,35 @@ function enterSends(): boolean {
 function Composer({
   disabled,
   onSend,
+  onSendImage,
   onTyped,
   onStopTyping,
 }: {
   disabled: boolean;
   onSend: (text: string) => boolean;
+  /** Returns why the photo can't be sent, or null once it's on its way. */
+  onSendImage: (file: File) => string | null;
   onTyped: () => void;
   onStopTyping: () => void;
 }) {
   const [text, setText] = useState('');
   const field = useRef<HTMLTextAreaElement>(null);
+  const picker = useRef<HTMLInputElement>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  useEffect(() => {
+    if (!notice) return;
+    const t = setTimeout(() => setNotice(null), NOTICE_MS);
+    return () => clearTimeout(t);
+  }, [notice]);
+
+  // One photo per pick (the app's picker): phones offer the camera or the gallery from the same button.
+  const onPicked = (input: HTMLInputElement) => {
+    const file = input.files?.[0];
+    // Cleared so picking the same photo again still fires a change.
+    input.value = '';
+    if (!file || disabled) return;
+    setNotice(onSendImage(file));
+  };
 
   // Grows with its text; shrinks back after sending.
   useLayoutEffect(() => {
@@ -295,8 +637,33 @@ function Composer({
         e.preventDefault();
         submit();
       }}
-      className="flex items-end gap-2 border-t border-[#e8ddd0] bg-[#F8F3DF] px-3 py-3 lg:px-5"
+      className="relative flex items-end gap-2 border-t border-[#e8ddd0] bg-[#F8F3DF] px-3 py-3 max-lg:pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:px-5"
     >
+      {notice ? (
+        <p
+          role="alert"
+          className="absolute inset-x-3 bottom-full mb-2 rounded-lg bg-[#fbe9e7] px-3 py-2 text-[13px] text-[#8a1c12] shadow-sm lg:inset-x-5"
+        >
+          {notice}
+        </p>
+      ) : null}
+      <input
+        ref={picker}
+        type="file"
+        accept={CHAT_IMAGE_ACCEPT}
+        hidden
+        tabIndex={-1}
+        onChange={e => onPicked(e.currentTarget)}
+      />
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => picker.current?.click()}
+        aria-label="Send a photo"
+        className="flex h-11 w-9 shrink-0 items-center justify-center rounded-full text-[#720A0B] hover:bg-[#efe4d2] focus-visible:outline-2 focus-visible:outline-[#720A0B] disabled:opacity-50"
+      >
+        <ImagePlus className="h-6 w-6" aria-hidden />
+      </button>
       <textarea
         ref={field}
         rows={1}
@@ -367,6 +734,8 @@ function MessageList({
   loadOlder,
   onRetry,
   onDiscard,
+  onOpenImage,
+  onReport,
 }: {
   items: ChatItem[];
   partner: { name: string; photo: string | null };
@@ -376,6 +745,9 @@ function MessageList({
   loadOlder: () => void;
   onRetry: (item: ChatItem) => void;
   onDiscard: (item: ChatItem) => void;
+  onOpenImage: (url: string) => void;
+  /** Report one of the other person's messages; missing while the booking isn't known. */
+  onReport?: (item: ChatItem) => void;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
   const starts = useMemo(() => dayStarts(items), [items]);
@@ -441,6 +813,12 @@ function MessageList({
     <div
       ref={scroller}
       onScroll={onScroll}
+      // Touching the messages (tap or drag) puts the keyboard away, like iMessage/WhatsApp: iPhones have no back
+      // button, and Send keeps the keyboard up for the next message. Mouse clicks keep the focus.
+      onPointerDown={e => {
+        const active = document.activeElement;
+        if (e.pointerType !== 'mouse' && active instanceof HTMLTextAreaElement) active.blur();
+      }}
       className={clsx(css.messages, 'flex flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 lg:px-6')}
       aria-live="polite"
     >
@@ -460,7 +838,14 @@ function MessageList({
                 {dayChip(item.at)}
               </span>
             ) : null}
-            <Bubble item={item} partner={partner} onRetry={onRetry} onDiscard={onDiscard} />
+            <Bubble
+              item={item}
+              partner={partner}
+              onRetry={onRetry}
+              onDiscard={onDiscard}
+              onOpenImage={onOpenImage}
+              onReport={onReport}
+            />
           </div>
         ))
       )}
@@ -494,19 +879,33 @@ function Bubble({
   partner,
   onRetry,
   onDiscard,
+  onOpenImage,
+  onReport,
 }: {
   item: ChatItem;
   partner: { name: string; photo: string | null };
   onRetry: (item: ChatItem) => void;
   onDiscard: (item: ChatItem) => void;
+  onOpenImage: (url: string) => void;
+  onReport?: (item: ChatItem) => void;
 }) {
   const failed = item.status === 'failed';
+  // The other person's messages have actions (copy, report): a hover button on computers, a long press on touch
+  // screens (the app's long-press report).
+  const hasActions = !item.mine && !item.status && !!onReport;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const press = useLongPress(() => setMenuOpen(true), hasActions);
   return (
-    <div className={clsx('flex items-start gap-2', item.mine ? 'justify-end' : 'justify-start')}>
+    <div
+      className={clsx('group flex items-start gap-2', item.mine ? 'justify-end' : 'justify-start')}
+    >
       {!item.mine ? <Avatar photo={partner.photo} name={partner.name} small /> : null}
       <div className={clsx('flex max-w-[78%] flex-col lg:max-w-[60%]', item.mine && 'items-end')}>
         <div
+          {...press}
           className={clsx(
+            // Touch: a long press opens the actions instead of selecting text (Copy is in the menu).
+            hasActions && '[-webkit-touch-callout:none] [@media(pointer:coarse)]:select-none',
             'px-3 py-2',
             item.mine
               ? 'rounded-xl rounded-tr-[4px] bg-[#720A0B] text-white'
@@ -515,15 +914,15 @@ function Bubble({
             failed && 'opacity-60',
           )}
         >
-          {item.image ? (
-            <a href={item.image} target="_blank" rel="noopener noreferrer" className="block">
-              {/* eslint-disable-next-line @next/next/no-img-element -- chat images are backend media URLs */}
-              <img
-                src={item.image}
-                alt="Photo"
-                className="max-h-[250px] w-[200px] rounded-lg object-cover"
-              />
-            </a>
+          {/* A photo whose URL was refused (lib/chat/messages.ts safeImageUrl) still shows as a photo that won't load. */}
+          {item.image || item.mediaId ? (
+            <ChatPhoto
+              src={item.image}
+              fallback={item.fullImage ?? null}
+              pending={!!item.status}
+              sending={item.status === 'sending'}
+              onOpen={onOpenImage}
+            />
           ) : null}
           {item.text ? (
             <p className="whitespace-pre-wrap break-words text-[15px] font-medium leading-snug lg:text-[16px]">
@@ -565,6 +964,114 @@ function Bubble({
           </div>
         ) : null}
       </div>
+      {hasActions ? (
+        <DropdownMenu modal={false} open={menuOpen} onOpenChange={setMenuOpen}>
+          <DropdownMenuTrigger
+            aria-label="Message options"
+            // Shown on hover with a mouse; on touch screens it only anchors the long-press menu.
+            className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#611508] opacity-0 hover:bg-[#efe4d2] focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-[#611508] group-hover:opacity-100 data-[state=open]:opacity-100 [@media(pointer:coarse)]:pointer-events-none"
+          >
+            <EllipsisVertical className="h-4 w-4" aria-hidden />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            className={menuContentClass}
+            // Lifting the finger after a long press on a photo focuses its button, which would close the menu at once.
+            // A tap elsewhere still closes it.
+            onFocusOutside={e => e.preventDefault()}
+          >
+            {item.text ? (
+              <DropdownMenuItem
+                onSelect={() => void navigator.clipboard?.writeText(item.text).catch(() => {})}
+                className={menuItemClass}
+              >
+                <Copy className="h-4 w-4 text-[#611508]" aria-hidden />
+                Copy text
+              </DropdownMenuItem>
+            ) : null}
+            <DropdownMenuItem onSelect={() => onReport?.(item)} className={menuItemClass}>
+              <Flag className="h-4 w-4 text-[#611508]" aria-hidden />
+              Report message
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : null}
     </div>
+  );
+}
+
+/**
+ * A photo in a bubble, at the app's 200 x 250. The fixed box keeps the scroll position steady while photos load, and
+ * lazy loading leaves photos far up the history unloaded until the reader scrolls to them.
+ */
+function ChatPhoto({
+  src,
+  fallback,
+  pending,
+  sending,
+  onOpen,
+}: {
+  src: string | null;
+  /** The original, tried when the WebP copy is missing. */
+  fallback: string | null;
+  /** Still on this device (not tappable: the full photo isn't uploaded yet). */
+  pending: boolean;
+  sending: boolean;
+  onOpen: (url: string) => void;
+}) {
+  const [failed, setFailed] = useState<string[]>([]);
+  const current = [src, fallback].find(u => !!u && !failed.includes(u)) ?? null;
+  const box =
+    'relative block h-[250px] w-[200px] max-w-full overflow-hidden rounded-lg bg-[#e8ddd0]';
+
+  if (!current) {
+    return (
+      <span
+        className={clsx(
+          box,
+          'flex flex-col items-center justify-center gap-1 text-[13px] text-[#611508]',
+        )}
+      >
+        <ImageOff className="h-7 w-7" aria-hidden />
+        Photo unavailable
+      </span>
+    );
+  }
+  const img = (
+    // eslint-disable-next-line @next/next/no-img-element -- chat photos are backend media URLs (images.unoptimized)
+    <img
+      src={current}
+      alt="Photo"
+      loading="lazy"
+      decoding="async"
+      referrerPolicy="no-referrer"
+      onError={() => setFailed(f => [...f, current])}
+      className="h-full w-full object-cover"
+    />
+  );
+  if (pending) {
+    return (
+      <span className={box}>
+        {img}
+        {sending ? (
+          <span className="absolute inset-0 flex items-center justify-center bg-black/30">
+            <Loader2 className="h-7 w-7 animate-spin text-white" aria-label="Sending photo" />
+          </span>
+        ) : null}
+      </span>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(fallback ?? current)}
+      aria-label="Open photo"
+      className={clsx(
+        box,
+        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#720A0B]',
+      )}
+    >
+      {img}
+    </button>
   );
 }
