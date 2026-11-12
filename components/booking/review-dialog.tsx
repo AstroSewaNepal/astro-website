@@ -15,8 +15,9 @@ import {
 } from '@/lib/booking/review';
 
 /**
- * The app's FeedbackModal on My Consultations: stars for every rating topic, an optional message and "hide my
- * profile", then POST /ratings. Rendered only while open, so each opening starts empty (the app resets it too).
+ * The app's FeedbackModal (My Consultations, and the chat once a session ends): stars for every rating topic, an
+ * optional message and "hide my profile", then POST /ratings. Rendered only while open, so each opening starts empty
+ * (the app resets it too).
  */
 export function ReviewDialog({
   astrologerId,
@@ -25,6 +26,8 @@ export function ReviewDialog({
   photo,
   onClose,
   onDone,
+  note,
+  waiting = false,
 }: {
   astrologerId: string;
   bookingId: string;
@@ -32,6 +35,10 @@ export function ReviewDialog({
   photo: string | null;
   onClose: () => void;
   onDone: () => void;
+  /** A line under the subtitle (the chat's "Your chat has been ended by …"). */
+  note?: string;
+  /** Hold Submit: the backend only takes a review once the booking is COMPLETED, and the end call is still out. */
+  waiting?: boolean;
 }) {
   const backend = useBackendClient();
   const queryClient = useQueryClient();
@@ -90,6 +97,7 @@ export function ReviewDialog({
               <p id="review-subtitle" className="font-app text-[15px] text-primary">
                 Please rate your astrology session.
               </p>
+              {note ? <p className="font-app text-[13px] text-[#6b6b6b]">{note}</p> : null}
             </div>
 
             <span className="flex h-[120px] w-[120px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f1d9d2] font-app text-4xl font-semibold text-primary">
@@ -166,11 +174,13 @@ export function ReviewDialog({
             </label>
             <button
               type="button"
-              disabled={!ready || submit.isPending}
+              disabled={!ready || submit.isPending || waiting}
               onClick={() => submit.mutate()}
               className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[32px] bg-primary font-app text-[17px] text-white disabled:opacity-60"
             >
-              {submit.isPending ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : null}
+              {submit.isPending || (ready && waiting) ? (
+                <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+              ) : null}
               {ready ? 'Submit' : 'Rate all fields'}
             </button>
           </div>

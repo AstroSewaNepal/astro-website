@@ -21,8 +21,8 @@ export type ChatConnectionEvents = {
   /** A message from the other person (or from this user on another device). */
   message: (message: BackendChatMessage) => void;
   partnerTyping: (typing: boolean) => void;
-  /** Someone pressed End on the booking. */
-  ended: () => void;
+  /** Someone ended the booking (End Chat, or the app's timer): who did, when the server says. */
+  ended: (endedByUserId: string | null) => void;
   /** Messages may have been missed (reconnected, or back from the background): fetch the latest page. */
   resync: () => void;
 };
@@ -233,8 +233,9 @@ export function connectChat({
   socket.on('stop_typing', onTypingEvent(false));
   socket.on('user_disconnected', onTypingEvent(false));
 
-  socket.on('chat_ended', (data: { chatId?: unknown } | undefined) => {
-    if (forThisChat(data?.chatId)) events.ended();
+  socket.on('chat_ended', (data: { chatId?: unknown; endedByUser?: unknown } | undefined) => {
+    if (!forThisChat(data?.chatId)) return;
+    events.ended(typeof data?.endedByUser === 'string' ? data.endedByUser : null);
   });
 
   function waitConnected(timeoutMs: number): Promise<void> {

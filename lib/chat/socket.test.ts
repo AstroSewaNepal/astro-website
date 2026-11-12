@@ -341,8 +341,10 @@ describe('connectChat', () => {
   it('reports the end of the booking', async () => {
     const { socket, events } = setup();
     await flush();
-    socket().fire('chat_ended', { chatId: CHAT, scheduleId: 's' });
+    socket().fire('chat_ended', { chatId: CHAT, scheduleId: 's', endedByUser: 'astro' });
+    socket().fire('chat_ended', { chatId: 'other-chat', endedByUser: 'astro' });
     expect(events.ended).toHaveBeenCalledTimes(1);
+    expect(events.ended).toHaveBeenCalledWith('astro');
   });
 
   it('resyncs on a short wake and reconnects after a long one', async () => {

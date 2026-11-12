@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -11,12 +12,13 @@ import {
 } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertCircle,
   BadgeCheck,
   ChevronLeft,
   Clock3,
+  EllipsisVertical,
   Loader2,
   SendHorizontal,
   UserRound,
@@ -25,7 +27,15 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 
+import { ConfirmDialog } from '@/components/account/confirm-dialog';
+import { ReviewDialog } from '@/components/booking/review-dialog';
 import css from '@/components/chat/chat.module.css';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useChatLive } from '@/hooks/use-chat-live';
 import { usePhoneFullScreen } from '@/hooks/use-phone-full-screen';
@@ -122,10 +132,47 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
     enabled: !!chatId && showChat,
   });
 
-  const chat = useChatLive({ chatId, myId, bookingId, enabled: phase === 'active' });
+  // The astrologer ended it (chat_ended from someone else): the review says so, like the app.
+  const [endedByPartner, setEndedByPartner] = useState(false);
+  const onEnded = useCallback(
+    (endedBy: string | null) => {
+      if (endedBy && endedBy !== myId) setEndedByPartner(true);
+    },
+    [myId],
+  );
+  const chat = useChatLive({ chatId, myId, bookingId, enabled: phase === 'active', onEnded });
   const past = useMemo(() => historyItems(history.data?.pages ?? [], myId), [history.data, myId]);
   const items = useMemo(() => timeline(past, chat.live), [past, chat.live]);
   const partner = chatPartner(booking.data);
+
+  // Ending the session (the app's openPostEndUI): End Chat, the timer running out, or the other side ending it all
+  // leave the booking COMPLETED and open the review.
+  const queryClient = useQueryClient();
+  const endSession = useMutation({
+    mutationFn: () => backend.patch(`/connection-schedule/${encodeURIComponent(bookingId)}/end`),
+    // Idempotent on the backend; either way the booking and My Consultations are re-read.
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['chat', 'booking', bookingId] });
+      void queryClient.invalidateQueries({ queryKey: ['consultations'] });
+    },
+  });
+  const [confirmEnd, setConfirmEnd] = useState(false);
+  const [endRequested, setEndRequested] = useState(false);
+  const [review, setReview] = useState<'pending' | 'closed' | 'done'>('pending');
+  const sessionOver = endRequested || (phase === 'ended' && seenActive);
+  // The clock ran out while the chat was open and nobody pressed End: end it on the backend too (the app does).
+  const needsEnd = phase === 'ended' && seenActive && booking.data?.status === 'CONFIRMED';
+  const { mutate: endNow, isIdle: endIdle } = endSession;
+  useEffect(() => {
+    if (needsEnd && endIdle) endNow();
+  }, [needsEnd, endIdle, endNow]);
+  const reviewOpen =
+    sessionOver && review === 'pending' && !!booking.data && !booking.data.reviewId;
+  const confirmEndChat = () => {
+    setConfirmEnd(false);
+    setEndRequested(true);
+    endSession.mutate();
+  };
 
   // Stored per browser like the app's MMKV flag; the server render assumes accepted so nothing flashes.
   const tosStored = useSyncExternalStore(noStoreEvents, readTosAccepted, () => true);
@@ -187,6 +234,31 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
             </p>
           ) : null}
         </div>
+        {phase === 'active' && !endRequested ? (
+          // Not modal: a modal menu that opens a dialog can leave the page unclickable (Radix).
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger
+              aria-label="Chat options"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#611508] hover:bg-[#efe4d2] focus-visible:outline-2 focus-visible:outline-[#611508]"
+            >
+              <EllipsisVertical className="h-5 w-5" aria-hidden />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              // Above the full-screen phone chat (z-55; the shared menu sits at z-50). Rendered outside the page, so it
+              // needs the app font itself.
+              className="z-[60] min-w-40 border-[#e8ddd0] bg-[#F8F3DF] p-2 font-app"
+            >
+              <DropdownMenuItem
+                onSelect={() => setConfirmEnd(true)}
+                className="gap-2 text-[15px] font-semibold text-[#611508] focus:bg-[#efe4d2] focus:text-[#611508]"
+              >
+                <X className="h-4 w-4 text-[#611508]" aria-hidden />
+                End Chat
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
       </header>
 
       {notAvailable && booking.data ? (
@@ -260,12 +332,34 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
       )}
 
       {notAvailable ? null : phase === 'ended' ? (
-        <p
+        <div
           role="status"
-          className="border-t border-[#e8ddd0] bg-[#efe4d2] px-4 py-4 text-center text-[15px] font-medium text-[#611508]"
+          className="flex flex-col items-center gap-1.5 border-t border-[#e8ddd0] bg-[#efe4d2] px-4 py-3 text-center text-[15px]"
         >
-          This consultation has ended.
-        </p>
+          {review === 'done' ? (
+            <p className="text-[#1f4d23]">
+              <b>Thank you!</b> Your rating has been submitted successfully.
+            </p>
+          ) : (
+            <p className="font-medium text-[#611508]">This consultation has ended.</p>
+          )}
+          <div className="flex gap-5 text-[14px] font-semibold text-[#720A0B]">
+            {review === 'closed' &&
+            booking.data?.status === 'COMPLETED' &&
+            !booking.data.reviewId ? (
+              <button
+                type="button"
+                onClick={() => setReview('pending')}
+                className="hover:underline"
+              >
+                Leave a Review
+              </button>
+            ) : null}
+            <Link href={consultationsPath('completed')} className="hover:underline">
+              My Consultations
+            </Link>
+          </div>
+        </div>
       ) : (
         <Composer
           disabled={!ready}
@@ -274,6 +368,27 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
           onStopTyping={chat.stopTyping}
         />
       )}
+
+      <ConfirmDialog
+        open={confirmEnd}
+        onOpenChange={setConfirmEnd}
+        title="Are you sure you want to end the chat?"
+        confirmText="Yes"
+        cancelText="No"
+        onConfirm={confirmEndChat}
+      />
+      {reviewOpen && booking.data ? (
+        <ReviewDialog
+          astrologerId={booking.data.astrologerId}
+          bookingId={bookingId}
+          astrologerName={partner.name}
+          photo={partner.photo}
+          note={endedByPartner ? `Your chat has been ended by ${partner.name}.` : undefined}
+          waiting={endSession.isPending}
+          onClose={() => setReview('closed')}
+          onDone={() => setReview('done')}
+        />
+      ) : null}
     </section>
   );
 }

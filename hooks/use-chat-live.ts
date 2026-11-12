@@ -33,12 +33,15 @@ export function useChatLive({
   myId,
   bookingId,
   enabled = true,
+  onEnded,
 }: {
   chatId: string | null;
   myId: string | undefined;
   bookingId: string;
   /** Connect only while the session runs (the server refuses messages outside it anyway). */
   enabled?: boolean;
+  /** The booking was ended over the socket; `endedByUserId` says by whom (null when the server doesn't say). */
+  onEnded?: (endedByUserId: string | null) => void;
 }) {
   const backend = useBackendClient();
   const queryClient = useQueryClient();
@@ -46,6 +49,11 @@ export function useChatLive({
   const [status, setStatus] = useState<ChatStatus>('connecting');
   const [partnerTyping, setPartnerTyping] = useState(false);
   const conn = useRef<ChatConnection | null>(null);
+  // Latest callback without reconnecting the socket when it changes.
+  const onEndedRef = useRef(onEnded);
+  useEffect(() => {
+    onEndedRef.current = onEnded;
+  }, [onEnded]);
   /** The connection once its module has loaded (null if the page left first): sends wait for it. */
   const connecting = useRef<Promise<ChatConnection | null>>(Promise.resolve(null));
 
@@ -79,8 +87,11 @@ export function useChatLive({
             message: m => dispatch({ type: 'arrived', items: [toChatItem(m, myId)] }),
             partnerTyping: setPartnerTyping,
             // Step 3 shows the ended state from the refetched booking.
-            ended: () =>
-              void queryClient.invalidateQueries({ queryKey: ['chat', 'booking', bookingId] }),
+            // The refetched booking (now COMPLETED) moves the page to its ended state.
+            ended: endedBy => {
+              onEndedRef.current?.(endedBy);
+              void queryClient.invalidateQueries({ queryKey: ['chat', 'booking', bookingId] });
+            },
             resync: () => void resync(),
           },
         });

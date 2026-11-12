@@ -41,6 +41,7 @@ export type ChatBooking = Pick<
   | 'scheduledEndAt'
   | 'status'
   | 'chatId'
+  | 'reviewId'
 > & {
   /** The astrologer has the chat socket open (the app's Online/Offline). */
   astrologerIsSocketConnected?: boolean;
