@@ -1,0 +1,36 @@
+/*
+ * Message area (Figma Chat-History): the site's paper texture under a 9% maroon (#691709) tint. Figma also lays
+ * WhatsApp's doodle wallpaper on top at 5%; that's WhatsApp's artwork (it has their logo), so it's left out.
+ */
+.messages {
+  background-image:
+    linear-gradient(rgb(105 23 9 / 0.09), rgb(105 23 9 / 0.09)), url('../images/background.webp');
+  /* Same scale as the page background (app/landing-page.module.css). */
+  background-size:
+    auto,
+    1728px auto;
+}
+
+/* "Typing" dots (TypingBubble): each rises in turn. */
+.typingDot {
+  animation: typing-dot 1s ease-in-out infinite;
+}
+
+@keyframes typing-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typingDot {
+    animation: none;
+  }
+}

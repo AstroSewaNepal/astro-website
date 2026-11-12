@@ -41,6 +41,7 @@ import {
 } from '@/lib/booking/consultations';
 import { packagesPath, planLabel, planSchedulePath } from '@/lib/booking/packages';
 import { reschedulePath } from '@/lib/booking/reschedule';
+import { chatPath } from '@/lib/chat/messages';
 import {
   paidLabel,
   planAction,
@@ -515,16 +516,10 @@ function ConsultationCard({
                   Reschedule
                 </Link>
               )}
-              {/* Chat comes with doc 07. */}
-              <button
-                type="button"
-                disabled
-                title="Chat on the website opens soon"
-                className={solidButton}
-              >
+              <Link href={chatPath(c._id)} className={solidButton}>
                 <MessageSquareText className="h-4 w-4" aria-hidden />
                 Chat
-              </button>
+              </Link>
             </>
           )}
         </div>
