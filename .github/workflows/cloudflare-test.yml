@@ -29,7 +29,10 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run check:images
+      # Blog pages are prerendered at build time and env/.env.test holds no secrets, so the Ghost key comes from a repository secret.
       - run: npm run cf:build:test
+        env:
+          GHOST_CONTENT_API_KEY: ${{ secrets.GHOST_CONTENT_API_KEY }}
       - name: Worker size
         run: node scripts/check-worker-size.mjs --env test
       - name: Deploy
