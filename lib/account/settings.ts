@@ -9,6 +9,7 @@ export const settingsPaths = (kind: PrivateKind) => {
   return {
     root,
     security: `${root}/security`,
+    blockedUsers: `${root}/security/blocked-users`,
     changeEmail: `${root}/change-email`,
     deleteAccount: `${root}/delete-account`,
   };

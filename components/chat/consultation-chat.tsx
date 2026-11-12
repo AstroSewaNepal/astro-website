@@ -16,9 +16,12 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import {
   AlertCircle,
   BadgeCheck,
+  Ban,
   ChevronLeft,
   Clock3,
+  Copy,
   EllipsisVertical,
+  Flag,
   ImageOff,
   ImagePlus,
   Loader2,
@@ -33,6 +36,8 @@ import { ConfirmDialog } from '@/components/account/confirm-dialog';
 import { ReviewDialog } from '@/components/booking/review-dialog';
 import css from '@/components/chat/chat.module.css';
 import { ImageViewer, useImageViewer } from '@/components/chat/image-viewer';
+import { BlockDialog } from '@/components/moderation/block-dialog';
+import { ReportDialog } from '@/components/moderation/report-dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,7 +46,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useChatLive } from '@/hooks/use-chat-live';
+import { useLongPress } from '@/hooks/use-long-press';
 import { usePhoneFullScreen } from '@/hooks/use-phone-full-screen';
+import { settingsPaths } from '@/lib/account/settings';
 import { consultationsPath } from '@/lib/booking/consultations';
 import { CHAT_IMAGE_ACCEPT } from '@/lib/chat/image';
 import { timeline } from '@/lib/chat/live';
@@ -66,6 +73,7 @@ import {
   type ChatItem,
   type ChatMessagesPage,
 } from '@/lib/chat/messages';
+import { BLOCKED_CHAT_TEXT, BLOCKED_IDS_KEY, type ReportTarget } from '@/lib/moderation';
 
 const TOS_KEY = 'chatTosAndPrivacyAccepted';
 /** Load older messages once the reader scrolls this close to the top. */
@@ -78,6 +86,11 @@ const STATUS_BANNER_DELAY_MS = 2_000;
 const COMPOSER_MAX_PX = 128;
 /** The app re-reads the booking this often during the session for the other person's Online/Offline. */
 const ONLINE_POLL_MS = 10_000;
+const menuItemClass =
+  'gap-2 text-[15px] font-semibold text-[#611508] focus:bg-[#efe4d2] focus:text-[#611508]';
+/** Menus over the full-screen phone chat (z-55; the shared menu sits at z-50). Rendered outside the page, so they
+ * need the app font themselves. */
+const menuContentClass = 'z-[60] min-w-40 border-[#e8ddd0] bg-[#F8F3DF] p-2 font-app';
 /** How long a note about a photo that can't be sent stays above the composer. */
 const NOTICE_MS = 6_000;
 
@@ -151,6 +164,38 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
   const items = useMemo(() => timeline(past, chat.live), [past, chat.live]);
   const partner = chatPartner(booking.data);
   const viewer = useImageViewer();
+
+  // Report and block (the app's chat menu and message long-press). The backend refuses messages either way once one
+  // side has blocked the other, so a blocked chat shows why instead of a composer that can only fail.
+  const astrologerId = booking.data?.astrologerId ?? null;
+  const blockedIds = useQuery({
+    queryKey: BLOCKED_IDS_KEY,
+    queryFn: () => backend.get<string[]>('/blocks/ids'),
+    enabled: !!astrologerId,
+    staleTime: 60_000,
+  });
+  const [blockedHere, setBlockedHere] = useState(false);
+  const blocked =
+    blockedHere ||
+    (!!astrologerId && Array.isArray(blockedIds.data) && blockedIds.data.includes(astrologerId));
+  const [report, setReport] = useState<{ title: string; target: ReportTarget } | null>(null);
+  const [confirmBlock, setConfirmBlock] = useState(false);
+  const reportMessage = useCallback(
+    (item: ChatItem) => {
+      if (!astrologerId) return;
+      setReport({
+        title: 'Report message',
+        target: {
+          targetType: 'CHAT_MESSAGE',
+          targetId: item.id,
+          reportedUserId: astrologerId,
+          contentSnapshot: item.text || undefined,
+          chatId: chatId ?? undefined,
+        },
+      });
+    },
+    [astrologerId, chatId],
+  );
 
   // Ending the session (the app's openPostEndUI): End Chat, the timer running out, or the other side ending it all
   // leave the booking COMPLETED and open the review.
@@ -241,7 +286,7 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
             </p>
           ) : null}
         </div>
-        {phase === 'active' && !endRequested ? (
+        {astrologerId ? (
           // Not modal: a modal menu that opens a dialog can leave the page unclickable (Radix).
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger
@@ -250,19 +295,36 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
             >
               <EllipsisVertical className="h-5 w-5" aria-hidden />
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              // Above the full-screen phone chat (z-55; the shared menu sits at z-50). Rendered outside the page, so it
-              // needs the app font itself.
-              className="z-[60] min-w-40 border-[#e8ddd0] bg-[#F8F3DF] p-2 font-app"
-            >
+            <DropdownMenuContent align="end" className={menuContentClass}>
+              {phase === 'active' && !endRequested ? (
+                <DropdownMenuItem onSelect={() => setConfirmEnd(true)} className={menuItemClass}>
+                  <X className="h-4 w-4 text-[#611508]" aria-hidden />
+                  End Chat
+                </DropdownMenuItem>
+              ) : null}
               <DropdownMenuItem
-                onSelect={() => setConfirmEnd(true)}
-                className="gap-2 text-[15px] font-semibold text-[#611508] focus:bg-[#efe4d2] focus:text-[#611508]"
+                onSelect={() =>
+                  setReport({
+                    title: 'Report astrologer',
+                    target: {
+                      targetType: 'ASTROLOGER',
+                      targetId: astrologerId,
+                      reportedUserId: astrologerId,
+                      chatId: chatId ?? undefined,
+                    },
+                  })
+                }
+                className={menuItemClass}
               >
-                <X className="h-4 w-4 text-[#611508]" aria-hidden />
-                End Chat
+                <Flag className="h-4 w-4 text-[#611508]" aria-hidden />
+                Report
               </DropdownMenuItem>
+              {!blocked ? (
+                <DropdownMenuItem onSelect={() => setConfirmBlock(true)} className={menuItemClass}>
+                  <Ban className="h-4 w-4 text-[#611508]" aria-hidden />
+                  Block
+                </DropdownMenuItem>
+              ) : null}
             </DropdownMenuContent>
           </DropdownMenu>
         ) : null}
@@ -336,6 +398,7 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
           onRetry={chat.retry}
           onDiscard={chat.discard}
           onOpenImage={viewer.open}
+          onReport={astrologerId ? reportMessage : undefined}
         />
       )}
 
@@ -368,6 +431,22 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
             </Link>
           </div>
         </div>
+      ) : blocked ? (
+        <div
+          role="status"
+          className="flex flex-col items-center gap-1.5 border-t border-[#e8ddd0] bg-[#efe4d2] px-4 py-3 text-center text-[15px] max-lg:pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+        >
+          <p className="font-medium text-[#611508]">
+            {blockedHere ? `You blocked ${partner.name}. ` : ''}
+            {BLOCKED_CHAT_TEXT}
+          </p>
+          <Link
+            href={settingsPaths('client').blockedUsers}
+            className="text-[14px] font-semibold text-[#720A0B] hover:underline"
+          >
+            Blocked users
+          </Link>
+        </div>
       ) : (
         <Composer
           disabled={!ready}
@@ -387,6 +466,17 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
         onConfirm={confirmEndChat}
       />
       <ImageViewer src={viewer.src} onClose={viewer.close} />
+      {report ? (
+        <ReportDialog title={report.title} target={report.target} onClose={() => setReport(null)} />
+      ) : null}
+      {astrologerId ? (
+        <BlockDialog
+          user={{ id: astrologerId, name: partner.name }}
+          open={confirmBlock}
+          onOpenChange={setConfirmBlock}
+          onBlocked={() => setBlockedHere(true)}
+        />
+      ) : null}
       {reviewOpen && booking.data ? (
         <ReviewDialog
           astrologerId={booking.data.astrologerId}
@@ -645,6 +735,7 @@ function MessageList({
   onRetry,
   onDiscard,
   onOpenImage,
+  onReport,
 }: {
   items: ChatItem[];
   partner: { name: string; photo: string | null };
@@ -655,6 +746,8 @@ function MessageList({
   onRetry: (item: ChatItem) => void;
   onDiscard: (item: ChatItem) => void;
   onOpenImage: (url: string) => void;
+  /** Report one of the other person's messages; missing while the booking isn't known. */
+  onReport?: (item: ChatItem) => void;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
   const starts = useMemo(() => dayStarts(items), [items]);
@@ -751,6 +844,7 @@ function MessageList({
               onRetry={onRetry}
               onDiscard={onDiscard}
               onOpenImage={onOpenImage}
+              onReport={onReport}
             />
           </div>
         ))
@@ -786,20 +880,32 @@ function Bubble({
   onRetry,
   onDiscard,
   onOpenImage,
+  onReport,
 }: {
   item: ChatItem;
   partner: { name: string; photo: string | null };
   onRetry: (item: ChatItem) => void;
   onDiscard: (item: ChatItem) => void;
   onOpenImage: (url: string) => void;
+  onReport?: (item: ChatItem) => void;
 }) {
   const failed = item.status === 'failed';
+  // The other person's messages have actions (copy, report): a hover button on computers, a long press on touch
+  // screens (the app's long-press report).
+  const hasActions = !item.mine && !item.status && !!onReport;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const press = useLongPress(() => setMenuOpen(true), hasActions);
   return (
-    <div className={clsx('flex items-start gap-2', item.mine ? 'justify-end' : 'justify-start')}>
+    <div
+      className={clsx('group flex items-start gap-2', item.mine ? 'justify-end' : 'justify-start')}
+    >
       {!item.mine ? <Avatar photo={partner.photo} name={partner.name} small /> : null}
       <div className={clsx('flex max-w-[78%] flex-col lg:max-w-[60%]', item.mine && 'items-end')}>
         <div
+          {...press}
           className={clsx(
+            // Touch: a long press opens the actions instead of selecting text (Copy is in the menu).
+            hasActions && '[-webkit-touch-callout:none] [@media(pointer:coarse)]:select-none',
             'px-3 py-2',
             item.mine
               ? 'rounded-xl rounded-tr-[4px] bg-[#720A0B] text-white'
@@ -858,6 +964,38 @@ function Bubble({
           </div>
         ) : null}
       </div>
+      {hasActions ? (
+        <DropdownMenu modal={false} open={menuOpen} onOpenChange={setMenuOpen}>
+          <DropdownMenuTrigger
+            aria-label="Message options"
+            // Shown on hover with a mouse; on touch screens it only anchors the long-press menu.
+            className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#611508] opacity-0 hover:bg-[#efe4d2] focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-[#611508] group-hover:opacity-100 data-[state=open]:opacity-100 [@media(pointer:coarse)]:pointer-events-none"
+          >
+            <EllipsisVertical className="h-4 w-4" aria-hidden />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            className={menuContentClass}
+            // Lifting the finger after a long press on a photo focuses its button, which would close the menu at once.
+            // A tap elsewhere still closes it.
+            onFocusOutside={e => e.preventDefault()}
+          >
+            {item.text ? (
+              <DropdownMenuItem
+                onSelect={() => void navigator.clipboard?.writeText(item.text).catch(() => {})}
+                className={menuItemClass}
+              >
+                <Copy className="h-4 w-4 text-[#611508]" aria-hidden />
+                Copy text
+              </DropdownMenuItem>
+            ) : null}
+            <DropdownMenuItem onSelect={() => onReport?.(item)} className={menuItemClass}>
+              <Flag className="h-4 w-4 text-[#611508]" aria-hidden />
+              Report message
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : null}
     </div>
   );
 }
