@@ -32,10 +32,13 @@ export function useChatLive({
   chatId,
   myId,
   bookingId,
+  enabled = true,
 }: {
   chatId: string | null;
   myId: string | undefined;
   bookingId: string;
+  /** Connect only while the session runs (the server refuses messages outside it anyway). */
+  enabled?: boolean;
 }) {
   const backend = useBackendClient();
   const queryClient = useQueryClient();
@@ -48,7 +51,7 @@ export function useChatLive({
 
   useEffect(() => {
     const url = SOCKET_URL;
-    if (!chatId || !myId || !url) return;
+    if (!enabled || !chatId || !myId || !url) return;
     let cancelled = false;
     let c: ChatConnection | null = null;
 
@@ -120,7 +123,7 @@ export function useChatLive({
       connecting.current = Promise.resolve(null);
       setPartnerTyping(false);
     };
-  }, [backend, bookingId, chatId, myId, queryClient]);
+  }, [backend, bookingId, chatId, enabled, myId, queryClient]);
 
   const deliver = useCallback(
     (localId: string, text: string) => {

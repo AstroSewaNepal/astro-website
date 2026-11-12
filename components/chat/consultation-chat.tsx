@@ -28,6 +28,14 @@ import css from '@/components/chat/chat.module.css';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useChatLive } from '@/hooks/use-chat-live';
 import { timeline } from '@/lib/chat/live';
+import {
+  countdownTone,
+  formatCountdown,
+  msUntilNextPhase,
+  notAvailableText,
+  secondsLeft,
+  sessionPhase,
+} from '@/lib/chat/session';
 import type { ChatStatus } from '@/lib/chat/socket';
 import {
   chatPartner,
@@ -51,6 +59,8 @@ const NEAR_BOTTOM_PX = 120;
 const STATUS_BANNER_DELAY_MS = 2_000;
 /** The composer grows with the text up to about five lines, then scrolls. */
 const COMPOSER_MAX_PX = 128;
+/** The app re-reads the booking this often during the session for the other person's Online/Offline. */
+const ONLINE_POLL_MS = 10_000;
 
 const noStoreEvents = () => () => {};
 
@@ -75,8 +85,30 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
     queryKey: ['chat', 'booking', bookingId],
     queryFn: () =>
       backend.get<ChatBooking>(`/connection-schedule/${encodeURIComponent(bookingId)}`),
+    // Online/Offline and an end by the other side show up through this (the app's ChatOnlineStatus).
+    refetchInterval: q =>
+      q.state.data && sessionPhase(q.state.data, Date.now()) === 'active' ? ONLINE_POLL_MS : false,
   });
   const chatId = booking.data?.chatId ?? null;
+
+  // The phase only changes at the start and end times (or when the booking's status changes): re-render then, not
+  // every second (SessionTimer ticks on its own).
+  const [now, setNow] = useState(() => Date.now());
+  const phase = booking.data ? sessionPhase(booking.data, now) : null;
+  useEffect(() => {
+    if (!booking.data) return;
+    const wait = msUntilNextPhase(booking.data, now);
+    if (wait === null) return;
+    const t = setTimeout(() => setNow(Date.now()), wait + 50);
+    return () => clearTimeout(t);
+  }, [booking.data, now]);
+
+  // Like the app (wasActiveOnMount): a chat that was open during the session stays readable after it ends; one
+  // opened before or after its time shows "Chat Not Available" instead.
+  const [seenActive, setSeenActive] = useState(false);
+  if (phase === 'active' && !seenActive) setSeenActive(true);
+  const showChat = phase === 'active' || (phase === 'ended' && seenActive);
+  const notAvailable = !!booking.data && phase !== null && !showChat;
 
   const history = useInfiniteQuery({
     queryKey: ['chat', 'messages', chatId],
@@ -84,10 +116,10 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
       backend.bare.get<ChatMessagesPage>(messagesPath(chatId!, pageParam)),
     initialPageParam: 1,
     getNextPageParam: (last, all) => (hasOlderPage(last) ? all.length + 1 : undefined),
-    enabled: !!chatId,
+    enabled: !!chatId && showChat,
   });
 
-  const chat = useChatLive({ chatId, myId, bookingId });
+  const chat = useChatLive({ chatId, myId, bookingId, enabled: phase === 'active' });
   const past = useMemo(() => historyItems(history.data?.pages ?? [], myId), [history.data, myId]);
   const items = useMemo(() => timeline(past, chat.live), [past, chat.live]);
   const partner = chatPartner(booking.data);
@@ -106,7 +138,7 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
   };
 
   const failed = booking.isError || history.isError || (booking.isSuccess && !chatId);
-  const loading = booking.isPending || (!!chatId && history.isPending);
+  const loading = booking.isPending || (!!chatId && showChat && history.isPending);
   const ready = !loading && !failed;
 
   return (
@@ -125,10 +157,31 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
               <BadgeCheck className="h-4 w-4 shrink-0 text-[#720A0B]" aria-label="Verified" />
             ) : null}
           </p>
+          {showChat && booking.data ? (
+            <p className="mt-0.5 flex items-center gap-3 text-[14px] lg:text-[15px]">
+              <span
+                className={clsx(
+                  'font-medium',
+                  booking.data.astrologerIsSocketConnected ? 'text-[#15B763]' : 'text-[#FF3B3B]',
+                )}
+              >
+                {booking.data.astrologerIsSocketConnected ? 'Online' : 'Offline'}
+              </span>
+              <SessionTimer endAt={booking.data.scheduledEndAt} ended={phase === 'ended'} />
+            </p>
+          ) : null}
         </div>
       </header>
 
-      {!tosAccepted ? (
+      {notAvailable && booking.data ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
+          <Clock3 className="h-16 w-16 text-[#611508]" strokeWidth={1.5} aria-hidden />
+          <h2 className="text-[22px] font-semibold text-[#611508]">Chat Not Available</h2>
+          <p className="max-w-md text-[16px] text-[#3b3b3b]">{notAvailableText(booking.data)}</p>
+        </div>
+      ) : null}
+
+      {!notAvailable && !tosAccepted ? (
         <div className="flex items-center gap-3 bg-[#BE7B71] px-4 py-2.5 text-[13px] text-white lg:px-6 lg:text-[15px]">
           <p className="flex-1">
             By continuing, you agree to our{' '}
@@ -158,9 +211,11 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
         </div>
       ) : null}
 
-      {ready ? <ConnectionBanner status={chat.status} onRetry={chat.reconnect} /> : null}
+      {ready && phase === 'active' ? (
+        <ConnectionBanner status={chat.status} onRetry={chat.reconnect} />
+      ) : null}
 
-      {loading ? (
+      {notAvailable ? null : loading ? (
         <div className="flex flex-1 items-center justify-center text-[#611508]">
           <Loader2 className="h-6 w-6 animate-spin" aria-label="Loading chat" />
         </div>
@@ -188,13 +243,50 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
         />
       )}
 
-      <Composer
-        disabled={!ready}
-        onSend={chat.send}
-        onTyped={chat.typed}
-        onStopTyping={chat.stopTyping}
-      />
+      {notAvailable ? null : phase === 'ended' ? (
+        <p
+          role="status"
+          className="border-t border-[#e8ddd0] bg-[#efe4d2] px-4 py-4 text-center text-[15px] font-medium text-[#611508]"
+        >
+          This consultation has ended.
+        </p>
+      ) : (
+        <Composer
+          disabled={!ready}
+          onSend={chat.send}
+          onTyped={chat.typed}
+          onStopTyping={chat.stopTyping}
+        />
+      )}
     </section>
+  );
+}
+
+/** Time left in the session, ticking every second (the app's ChatTimer). */
+function SessionTimer({ endAt, ended }: { endAt: string; ended: boolean }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (ended) return;
+    const t = setInterval(() => setNow(Date.now()), 1_000);
+    return () => clearInterval(t);
+  }, [ended]);
+  const left = ended ? 0 : secondsLeft(endAt, now);
+  const tone = countdownTone(left);
+  return (
+    <span
+      role="timer"
+      aria-label={`${formatCountdown(left)} left`}
+      className={clsx(
+        'flex items-center gap-1 tabular-nums',
+        // The app's #FFBB50 amber is unreadable on the cream header: a darker amber instead.
+        tone === 'calm' && 'font-medium text-[#15B763]',
+        tone === 'soon' && 'font-bold text-[#B87400]',
+        tone === 'urgent' && 'font-bold text-[#C00303]',
+      )}
+    >
+      <Clock3 className="h-4 w-4 text-[#611508]" aria-hidden />
+      {formatCountdown(left)}
+    </span>
   );
 }
 
