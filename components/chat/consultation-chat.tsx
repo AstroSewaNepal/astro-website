@@ -15,6 +15,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {
   AlertCircle,
   BadgeCheck,
+  ChevronLeft,
   Clock3,
   Loader2,
   SendHorizontal,
@@ -27,6 +28,8 @@ import clsx from 'clsx';
 import css from '@/components/chat/chat.module.css';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useChatLive } from '@/hooks/use-chat-live';
+import { usePhoneFullScreen } from '@/hooks/use-phone-full-screen';
+import { consultationsPath } from '@/lib/booking/consultations';
 import { timeline } from '@/lib/chat/live';
 import {
   countdownTone,
@@ -137,18 +140,31 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
     }
   };
 
+  // Phones: full screen above the keyboard, like the app's chat screen (no site header, footer or tabs).
+  const panel = useRef<HTMLElement>(null);
+  usePhoneFullScreen(panel);
+
   const failed = booking.isError || history.isError || (booking.isSuccess && !chatId);
   const loading = booking.isPending || (!!chatId && showChat && history.isPending);
   const ready = !loading && !failed;
 
   return (
-    // Fills the window below the header and back link: phones stop 12px above the bottom tabs, desktop 16px above
-    // the window's bottom edge.
+    // Phones: fixed over the whole screen (usePhoneFullScreen sizes it to the space above the keyboard). Desktop:
+    // fills the window below the site header and back link, 16px above its bottom edge.
     <section
+      ref={panel}
       aria-label={`Chat with ${partner.name}`}
-      className="flex h-[calc(100dvh-12.5rem-env(safe-area-inset-bottom))] min-h-[420px] flex-col overflow-hidden rounded-2xl border border-[#e8ddd0] bg-[#F8F3DF] shadow-[0_4px_16px_rgba(92,56,23,0.08)] lg:h-[calc(100dvh-10.5rem)]"
+      className="fixed inset-0 z-[55] flex flex-col overflow-hidden bg-[#F8F3DF] lg:static lg:z-auto lg:h-[calc(100dvh-8.15rem)] lg:min-h-[420px] lg:rounded-2xl lg:border lg:border-[#e8ddd0] lg:shadow-[0_4px_16px_rgba(92,56,23,0.08)]"
     >
-      <header className="flex items-center gap-3 border-b border-[#e8ddd0] bg-[#F8F3DF] px-4 py-3 lg:px-6">
+      <header className="flex items-center gap-3 border-b border-[#e8ddd0] bg-[#F8F3DF] px-4 py-3 max-lg:pl-1 max-lg:pt-[max(0.75rem,env(safe-area-inset-top))] lg:pl-3 lg:pr-6">
+        {/* The chat's own back: phones cover the site's back link, and desktop leaves it out for a taller panel. */}
+        <Link
+          href={consultationsPath()}
+          aria-label="Back to My Consultations"
+          className="flex h-10 w-8 shrink-0 items-center justify-center rounded-lg text-[#611508] lg:w-9 lg:hover:bg-[#efe4d2]"
+        >
+          <ChevronLeft className="h-6 w-6" aria-hidden />
+        </Link>
         <Avatar photo={partner.photo} name={partner.name} />
         <div className="min-w-0 flex-1">
           <p className="flex items-center gap-1.5 text-[17px] font-semibold text-[#611508] lg:text-[19px]">
@@ -387,7 +403,7 @@ function Composer({
         e.preventDefault();
         submit();
       }}
-      className="flex items-end gap-2 border-t border-[#e8ddd0] bg-[#F8F3DF] px-3 py-3 lg:px-5"
+      className="flex items-end gap-2 border-t border-[#e8ddd0] bg-[#F8F3DF] px-3 py-3 max-lg:pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:px-5"
     >
       <textarea
         ref={field}
@@ -533,6 +549,12 @@ function MessageList({
     <div
       ref={scroller}
       onScroll={onScroll}
+      // Touching the messages (tap or drag) puts the keyboard away, like iMessage/WhatsApp: iPhones have no back
+      // button, and Send keeps the keyboard up for the next message. Mouse clicks keep the focus.
+      onPointerDown={e => {
+        const active = document.activeElement;
+        if (e.pointerType !== 'mouse' && active instanceof HTMLTextAreaElement) active.blur();
+      }}
       className={clsx(css.messages, 'flex flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 lg:px-6')}
       aria-live="polite"
     >

@@ -150,6 +150,11 @@ const PARENT_PAGES: {
   },
 ];
 
+/** Pages that draw their own back control (the chat), so the shell's back link would only take room from them. */
+export function hasOwnBack(pathname: string): boolean {
+  return /^\/client\/consultations\/[^/]+$/.test(pathname);
+}
+
 /**
  * Where "back" goes, or null on first-level pages (no back there: the sidebar or the tabs/drawer cover them):
  * the known parent, else one level up (/client/settings/security -> /client/settings).

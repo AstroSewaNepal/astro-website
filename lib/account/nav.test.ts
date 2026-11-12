@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { isClientShellPage, parentPage } from './nav';
+import { hasOwnBack, isClientShellPage, parentPage } from './nav';
 
 describe('parentPage', () => {
   it('goes one level up from a sub-page', () => {
@@ -32,4 +32,13 @@ it('knows the public pages clients see in their shell', () => {
   expect(isClientShellPage('/payment/return')).toBe(true);
   expect(isClientShellPage('/astrologer')).toBe(false);
   expect(isClientShellPage('/astrologers-x')).toBe(false);
+});
+
+describe('hasOwnBack', () => {
+  it('is only the chat page', () => {
+    expect(hasOwnBack('/client/consultations/abc123')).toBe(true);
+    expect(hasOwnBack('/client/consultations')).toBe(false);
+    expect(hasOwnBack('/client/consultations/abc123/more')).toBe(false);
+    expect(hasOwnBack('/client/settings/security')).toBe(false);
+  });
 });
