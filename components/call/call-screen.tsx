@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { UserRound, Volume2, WifiOff } from 'lucide-react';
+import { Maximize2, Minimize2, UserRound, Volume2, WifiOff } from 'lucide-react';
 
 import {
   CameraOffIcon,
@@ -21,22 +21,33 @@ import type { CallSession, CallState } from '@/lib/call/session';
 const CONTROLS_HIDE_MS = 20_000;
 
 /**
+ * Where the call sits (call-overlay.tsx): full screen / centred panel, beside the chat on desktop (no header bar of
+ * its own: the chat shows who it is with), or the small draggable window over the page.
+ */
+export type CallLayout = 'full' | 'docked' | 'mini';
+
+/**
  * The call itself, after Join (Figma Video-Call / Audio-Call / Voice-Call, the app's VideoCallView and VoiceCallView).
  * Video and audio elements are mounted once and handed to the session; only their visibility changes between the
- * voice and video layouts, so the browser never rebuilds them mid-call.
+ * voice and video layouts and the placements, so the browser never rebuilds them mid-call.
  */
 export function CallScreen({
   session,
   state,
   request,
-  docked,
+  layout,
+  onMinimize,
+  onExpand,
 }: {
   session: CallSession;
   state: CallState;
   request: CallRequest;
-  /** Desktop, beside the chat: no header bar of its own (the chat shows who it is with). */
-  docked: boolean;
+  layout: CallLayout;
+  onMinimize: () => void;
+  onExpand: () => void;
 }) {
+  const docked = layout === 'docked';
+  const mini = layout === 'mini';
   const remoteVideo = useRef<HTMLVideoElement>(null);
   const localVideo = useRef<HTMLVideoElement>(null);
   const remoteAudio = useRef<HTMLAudioElement>(null);
@@ -67,11 +78,32 @@ export function CallScreen({
   const controlsVisible = !videoLayout || controlsShown;
 
   const status = statusText(state, request.partner.name);
+  // The small window without their video: a one-line card (photo, name, status, buttons).
+  const miniCard = mini && !theirVideo;
+
+  const minimizeButton = (
+    <button
+      type="button"
+      onClick={onMinimize}
+      aria-label="Minimize call"
+      title="Minimize: keep the call in a small window"
+      className={clsx(
+        'flex h-10 w-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10',
+        // Voice header: the title stays centred, the button sits at its left.
+        !videoLayout && 'absolute bottom-1 left-2',
+      )}
+    >
+      <Minimize2 className="h-5 w-5" aria-hidden />
+    </button>
+  );
 
   return (
     <div
-      className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-[#16110f] text-white"
-      onPointerDown={videoLayout ? poke : undefined}
+      className={clsx(
+        'relative flex min-h-0 flex-1 overflow-hidden bg-[#16110f] text-white',
+        miniCard ? 'flex-row items-center' : 'flex-col',
+      )}
+      onPointerDown={videoLayout && !mini ? poke : undefined}
     >
       {/* Voice layout (and video before their camera is on): the Figma blurred-photo backdrop. */}
       {theirVideo ? null : <Backdrop photo={request.partner.photo} />}
@@ -85,7 +117,7 @@ export function CallScreen({
       <audio ref={remoteAudio} autoPlay />
 
       {/* Header: phones show who it is with (Figma); beside the chat on desktop the chat header already does. */}
-      {docked ? null : (
+      {docked || mini ? null : (
         <header
           className={clsx(
             'relative z-10 flex items-center gap-3 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] transition-opacity duration-300',
@@ -95,6 +127,7 @@ export function CallScreen({
         >
           {videoLayout ? (
             <>
+              {minimizeButton}
               <Photo photo={request.partner.photo} name={request.partner.name} size="sm" />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[18px] font-semibold">{request.partner.name}</p>
@@ -105,7 +138,10 @@ export function CallScreen({
               </div>
             </>
           ) : (
-            <p className="text-[17px] font-semibold">Voice call</p>
+            <>
+              {minimizeButton}
+              <p className="text-[17px] font-semibold">Voice call</p>
+            </>
           )}
         </header>
       )}
@@ -120,13 +156,36 @@ export function CallScreen({
           'absolute right-3 z-10 h-[150px] w-[105px] rounded-xl object-cover shadow-lg lg:h-[170px] lg:w-[130px]',
           docked ? 'top-3' : 'top-[calc(max(0.75rem,env(safe-area-inset-top))+4.25rem)]',
           state.facing === 'user' && '-scale-x-100',
-          (!myVideo || !videoLayout) && 'invisible',
+          (!myVideo || !videoLayout || mini) && 'invisible',
         )}
       />
 
       {/* Middle: who and how long, whenever their video isn't filling the screen. */}
-      <div className="relative z-[1] flex min-h-0 flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
-        {theirVideo ? null : (
+      <div
+        className={clsx(
+          'relative z-[1] flex min-h-0 min-w-0 flex-1',
+          miniCard
+            ? 'items-center gap-3 pl-3'
+            : 'flex-col items-center justify-center gap-2 px-6 text-center',
+        )}
+      >
+        {theirVideo ? null : miniCard ? (
+          <>
+            <Photo photo={request.partner.photo} name={request.partner.name} size="sm" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[15px] font-semibold">{request.partner.name}</p>
+              <p className="truncate text-[13px] text-white/80">
+                {state.audioBlocked ? (
+                  'Tap to hear'
+                ) : status ? (
+                  <span className="text-[#FFBB50]">{status}</span>
+                ) : (
+                  <Countdown endsAt={state.endsAt} />
+                )}
+              </p>
+            </div>
+          </>
+        ) : (
           <>
             <Photo photo={request.partner.photo} name={request.partner.name} size="lg" />
             <p
@@ -150,14 +209,23 @@ export function CallScreen({
 
       {/* Notices over the call. */}
       <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 flex-col items-center gap-3 px-4">
-        {state.phase === 'reconnecting' ? (
-          <p className="inline-flex items-center gap-2 rounded-full bg-black/70 px-4 py-2 text-[15px]">
+        {/* The small card says it in its status line. */}
+        {state.phase === 'reconnecting' && !miniCard ? (
+          <p
+            className={clsx(
+              'inline-flex items-center gap-2 rounded-full bg-black/70',
+              mini ? 'px-2.5 py-1 text-[12px]' : 'px-4 py-2 text-[15px]',
+            )}
+          >
             <WifiOff className="h-4 w-4" aria-hidden /> Reconnecting…
           </p>
         ) : null}
       </div>
 
-      <div className="relative z-20 flex flex-col items-center gap-3 px-4">
+      {/* The small window has no room for these; a tap opens the call full. */}
+      <div
+        className={clsx('relative z-20 flex flex-col items-center gap-3 px-4', mini && 'hidden')}
+      >
         {state.audioBlocked ? (
           <button
             type="button"
@@ -197,13 +265,72 @@ export function CallScreen({
         ) : null}
       </div>
 
-      <Controls
-        session={session}
-        state={state}
-        videoLayout={videoLayout}
-        visible={controlsVisible}
-        docked={docked}
-      />
+      {mini ? (
+        <MiniControls session={session} state={state} overVideo={!miniCard} onExpand={onExpand} />
+      ) : (
+        <Controls
+          session={session}
+          state={state}
+          videoLayout={videoLayout}
+          visible={controlsVisible}
+          docked={docked}
+        />
+      )}
+    </div>
+  );
+}
+
+/** The small window's buttons: mute, end and open full. Over their video, along the bottom. */
+function MiniControls({
+  session,
+  state,
+  overVideo,
+  onExpand,
+}: {
+  session: CallSession;
+  state: CallState;
+  overVideo: boolean;
+  onExpand: () => void;
+}) {
+  const button = (
+    label: string,
+    Icon: React.ComponentType<{ className?: string }>,
+    onClick: () => void,
+    tone: 'plain' | 'pressed' | 'danger' = 'plain',
+  ) => (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      aria-pressed={tone === 'pressed' ? true : undefined}
+      className={clsx(
+        'flex h-9 w-9 shrink-0 items-center justify-center rounded-full',
+        tone === 'danger' && 'bg-[#FF3B3B] text-[#F8F3DF] hover:bg-[#e53434]',
+        tone === 'pressed' && 'bg-[#F8F3DF] text-[#611508]',
+        tone === 'plain' && 'bg-white/15 text-[#F8F3DF] hover:bg-white/25',
+      )}
+    >
+      <Icon className="h-[18px] w-[18px]" />
+    </button>
+  );
+  return (
+    <div
+      className={clsx(
+        'z-20 flex items-center gap-2',
+        overVideo
+          ? 'absolute inset-x-0 bottom-0 justify-center bg-gradient-to-t from-black/70 to-transparent pb-2 pt-6'
+          : 'relative shrink-0 pr-3',
+      )}
+    >
+      {button(
+        state.micOn ? 'Mute' : 'Unmute',
+        state.micOn ? MicIcon : MicOffIcon,
+        () => void session.toggleMic(),
+        state.micOn ? 'plain' : 'pressed',
+      )}
+      {button('End call', EndCallIcon, () => void session.end(), 'danger')}
+      {button('Open call', Maximize2, onExpand)}
     </div>
   );
 }
