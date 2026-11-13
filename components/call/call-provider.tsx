@@ -19,6 +19,13 @@ type CallsContext = {
   openCall: (request: CallRequest) => void;
   /** A call (or its before-call screen) is open. */
   busy: boolean;
+  /** The booking whose call is open, if any. */
+  activeBookingId: string | null;
+  /**
+   * Desktop: the chat page of the call's booking hands over an empty slot beside the chat (Figma desktop call), and
+   * the call sits exactly over it. Pass null when the slot goes away.
+   */
+  registerDock: (slot: HTMLElement | null) => void;
 };
 
 const Calls = createContext<CallsContext | null>(null);
@@ -32,16 +39,30 @@ const CallOverlay = dynamic(() => import('@/components/call/call-overlay'), { ss
  */
 export function CallProvider({ children }: { children: React.ReactNode }) {
   const [request, setRequest] = useState<CallRequest | null>(null);
+  const [dock, setDock] = useState<HTMLElement | null>(null);
+  // "Call again" after a dropped call starts over with a fresh before-call screen.
+  const [attempt, setAttempt] = useState(0);
+  const again = useCallback(() => setAttempt(n => n + 1), []);
   const openCall = useCallback((next: CallRequest) => {
     setRequest(current => current ?? next);
   }, []);
   const close = useCallback(() => setRequest(null), []);
-  const value = useMemo(() => ({ openCall, busy: request !== null }), [openCall, request]);
+  const value = useMemo(
+    () => ({
+      openCall,
+      busy: request !== null,
+      activeBookingId: request?.bookingId ?? null,
+      registerDock: setDock,
+    }),
+    [openCall, request],
+  );
 
   return (
     <Calls.Provider value={value}>
       {children}
-      {request ? <CallOverlay request={request} onClose={close} /> : null}
+      {request ? (
+        <CallOverlay key={attempt} request={request} dock={dock} onClose={close} onAgain={again} />
+      ) : null}
     </Calls.Provider>
   );
 }

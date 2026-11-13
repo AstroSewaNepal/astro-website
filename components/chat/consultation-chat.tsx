@@ -242,11 +242,13 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
   };
 
   // Voice and video calls (the app's chat header buttons), during the session only.
-  const calls = useCalls();
-  const canCall = phase === 'active' && !sessionOver && !blocked && !!booking.data;
+  const { openCall, busy: callBusy, activeBookingId: callBookingId, registerDock } = useCalls();
+  const callHere = callBookingId === bookingId;
+  // Hidden while this booking's call is open: the call is on screen, and the name gets the room.
+  const canCall = phase === 'active' && !sessionOver && !blocked && !!booking.data && !callHere;
   const startCall = (callType: 'audio' | 'video') => {
     if (!booking.data) return;
-    calls.openCall({
+    openCall({
       bookingId,
       callType,
       partner: { name: partner.name, photo: partner.photo },
@@ -263,276 +265,297 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
   const ready = !loading && !failed;
 
   return (
-    // Phones: fixed over the whole screen (usePhoneFullScreen sizes it to the space above the keyboard). Desktop:
-    // fills the window below the site header and back link, 16px above its bottom edge.
-    <section
-      ref={panel}
-      aria-label={`Chat with ${partner.name}`}
-      className="fixed inset-0 z-[55] flex flex-col overflow-hidden bg-[#F8F3DF] lg:static lg:z-auto lg:h-[calc(100dvh-8.15rem)] lg:min-h-[420px] lg:rounded-2xl lg:border lg:border-[#e8ddd0] lg:shadow-[0_4px_16px_rgba(92,56,23,0.08)]"
-    >
-      <header className="flex items-center gap-3 border-b border-[#e8ddd0] bg-[#F8F3DF] px-4 py-3 max-lg:pl-1 max-lg:pt-[max(0.75rem,env(safe-area-inset-top))] lg:pl-3 lg:pr-6">
-        {/* The chat's own back: phones cover the site's back link, and desktop leaves it out for a taller panel. */}
-        <Link
-          href={consultationsPath()}
-          aria-label="Back to My Consultations"
-          className="flex h-10 w-8 shrink-0 items-center justify-center rounded-lg text-[#611508] lg:w-9 lg:hover:bg-[#efe4d2]"
-        >
-          <ChevronLeft className="h-6 w-6" aria-hidden />
-        </Link>
-        <Avatar photo={partner.photo} name={partner.name} />
-        <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-1.5 text-[17px] font-semibold text-[#611508] lg:text-[19px]">
-            <span className="truncate">{booking.isPending ? 'Loading…' : partner.name}</span>
-            {booking.data && !booking.data.astrologer?.isPendingDeletion ? (
-              <BadgeCheck className="h-4 w-4 shrink-0 text-[#720A0B]" aria-label="Verified" />
-            ) : null}
-          </p>
-          {showChat && booking.data ? (
-            <p className="mt-0.5 flex items-center gap-3 text-[14px] lg:text-[15px]">
-              <span
-                className={clsx(
-                  'font-medium',
-                  booking.data.astrologerIsSocketConnected ? 'text-[#15B763]' : 'text-[#FF3B3B]',
-                )}
-              >
-                {booking.data.astrologerIsSocketConnected ? 'Online' : 'Offline'}
-              </span>
-              <SessionTimer endAt={booking.data.scheduledEndAt} ended={phase === 'ended'} />
-            </p>
-          ) : null}
-        </div>
-        {canCall ? (
-          <div className="flex shrink-0 items-center gap-1">
-            <button
-              type="button"
-              onClick={() => startCall('audio')}
-              disabled={calls.busy}
-              aria-label="Voice call"
-              className="flex h-10 w-10 items-center justify-center rounded-lg text-[#720A0B] hover:bg-[#efe4d2] disabled:text-[#B6ACA6] focus-visible:outline-2 focus-visible:outline-[#611508]"
-            >
-              <CallIcon className="h-6 w-6" />
-            </button>
-            <button
-              type="button"
-              onClick={() => startCall('video')}
-              disabled={calls.busy}
-              aria-label="Video call"
-              className="flex h-10 w-10 items-center justify-center rounded-lg text-[#720A0B] hover:bg-[#efe4d2] disabled:text-[#B6ACA6] focus-visible:outline-2 focus-visible:outline-[#611508]"
-            >
-              <VideoCallIcon className="h-6 w-6" />
-            </button>
-          </div>
-        ) : null}
-        {astrologerId ? (
-          // Not modal: a modal menu that opens a dialog can leave the page unclickable (Radix).
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger
-              aria-label="Chat options"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#611508] hover:bg-[#efe4d2] focus-visible:outline-2 focus-visible:outline-[#611508]"
-            >
-              <EllipsisVertical className="h-5 w-5" aria-hidden />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className={menuContentClass}>
-              {phase === 'active' && !endRequested ? (
-                <DropdownMenuItem onSelect={() => setConfirmEnd(true)} className={menuItemClass}>
-                  <X className="h-4 w-4 text-[#611508]" aria-hidden />
-                  End Chat
-                </DropdownMenuItem>
-              ) : null}
-              <DropdownMenuItem
-                onSelect={() =>
-                  setReport({
-                    title: 'Report astrologer',
-                    target: {
-                      targetType: 'ASTROLOGER',
-                      targetId: astrologerId,
-                      reportedUserId: astrologerId,
-                      chatId: chatId ?? undefined,
-                    },
-                  })
-                }
-                className={menuItemClass}
-              >
-                <Flag className="h-4 w-4 text-[#611508]" aria-hidden />
-                Report
-              </DropdownMenuItem>
-              {!blocked ? (
-                <DropdownMenuItem onSelect={() => setConfirmBlock(true)} className={menuItemClass}>
-                  <Ban className="h-4 w-4 text-[#611508]" aria-hidden />
-                  Block
-                </DropdownMenuItem>
-              ) : null}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null}
-      </header>
-
-      {notAvailable && booking.data ? (
-        // Same paper as the message area (the app's chat screen keeps its background here too).
+    // Desktop with this booking's call open: the call on the left (in the empty slot handed to the call layer), the
+    // chat narrower on the right (Figma desktop call). The wrapper is always there so the chat never remounts.
+    <div className={clsx(callHere && 'lg:flex lg:gap-4')}>
+      {callHere ? (
         <div
-          className={clsx(
-            css.messages,
-            'flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center',
-          )}
-        >
-          <Clock3 className="h-16 w-16 text-[#611508]" strokeWidth={1.5} aria-hidden />
-          <h2 className="text-[22px] font-semibold text-[#611508]">Chat Not Available</h2>
-          <p className="max-w-md text-[16px] text-[#3b3b3b]">{notAvailableText(booking.data)}</p>
-        </div>
-      ) : null}
-
-      {!notAvailable && !tosAccepted ? (
-        <div className="flex items-center gap-3 bg-[#BE7B71] px-4 py-2.5 text-[13px] text-white lg:px-6 lg:text-[15px]">
-          <p className="flex-1">
-            By continuing, you agree to our{' '}
-            <Link
-              href="/terms-and-conditions"
-              className="font-semibold underline-offset-2 hover:underline"
-            >
-              Terms and Conditions
-            </Link>{' '}
-            and{' '}
-            <Link
-              href="/privacy-policy"
-              className="font-semibold underline-offset-2 hover:underline"
-            >
-              Privacy Policy
-            </Link>
-            .
-          </p>
-          <button
-            type="button"
-            onClick={acceptTos}
-            aria-label="Close"
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-[#BE7B71]"
-          >
-            <X className="h-4 w-4" strokeWidth={3} aria-hidden />
-          </button>
-        </div>
-      ) : null}
-
-      {ready && phase === 'active' ? (
-        <ConnectionBanner status={chat.status} onRetry={chat.reconnect} />
-      ) : null}
-
-      {notAvailable ? null : loading ? (
-        <div className="flex flex-1 items-center justify-center text-[#611508]">
-          <Loader2 className="h-6 w-6 animate-spin" aria-label="Loading chat" />
-        </div>
-      ) : failed ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center text-[#4a1a1a]">
-          <p>This chat could not be opened.</p>
-          <button
-            type="button"
-            onClick={() => (booking.isError || !chatId ? booking.refetch() : history.refetch())}
-            className="rounded-full border border-[#611508] px-4 py-1.5 text-[#611508]"
-          >
-            Try again
-          </button>
-        </div>
-      ) : (
-        <MessageList
-          items={items}
-          partner={partner}
-          partnerTyping={chat.partnerTyping}
-          loadingOlder={history.isFetchingNextPage}
-          canLoadOlder={!!history.hasNextPage}
-          loadOlder={() => history.fetchNextPage()}
-          onRetry={chat.retry}
-          onDiscard={chat.discard}
-          onOpenImage={viewer.open}
-          onReport={astrologerId ? reportMessage : undefined}
+          ref={registerDock}
+          aria-hidden
+          className="hidden lg:block lg:h-[calc(100dvh-8.15rem)] lg:min-h-[420px] lg:min-w-0 lg:flex-1"
         />
-      )}
-
-      {notAvailable ? null : phase === 'ended' ? (
-        <div
-          role="status"
-          className="flex flex-col items-center gap-1.5 border-t border-[#e8ddd0] bg-[#efe4d2] px-4 py-3 text-center text-[15px]"
-        >
-          {review === 'done' ? (
-            <p className="text-[#1f4d23]">
-              <b>Thank you!</b> Your rating has been submitted successfully.
+      ) : null}
+      {/* Phones: fixed over the whole screen (usePhoneFullScreen sizes it to the space above the keyboard). Desktop:
+          fills the window below the site header and back link, 16px above its bottom edge. */}
+      <section
+        ref={panel}
+        aria-label={`Chat with ${partner.name}`}
+        className={clsx(
+          'fixed inset-0 z-[55] flex flex-col overflow-hidden bg-[#F8F3DF] lg:static lg:z-auto lg:h-[calc(100dvh-8.15rem)] lg:min-h-[420px] lg:rounded-2xl lg:border lg:border-[#e8ddd0] lg:shadow-[0_4px_16px_rgba(92,56,23,0.08)]',
+          callHere && 'lg:w-[360px] lg:shrink-0 xl:w-[420px]',
+        )}
+      >
+        <header className="flex items-center gap-3 border-b border-[#e8ddd0] bg-[#F8F3DF] px-4 py-3 max-lg:pl-1 max-lg:pt-[max(0.75rem,env(safe-area-inset-top))] lg:pl-3 lg:pr-6">
+          {/* The chat's own back: phones cover the site's back link, and desktop leaves it out for a taller panel. */}
+          <Link
+            href={consultationsPath()}
+            aria-label="Back to My Consultations"
+            className="flex h-10 w-8 shrink-0 items-center justify-center rounded-lg text-[#611508] lg:w-9 lg:hover:bg-[#efe4d2]"
+          >
+            <ChevronLeft className="h-6 w-6" aria-hidden />
+          </Link>
+          <Avatar photo={partner.photo} name={partner.name} />
+          <div className="min-w-0 flex-1">
+            <p className="flex items-center gap-1.5 text-[17px] font-semibold text-[#611508] lg:text-[19px]">
+              <span className="truncate">{booking.isPending ? 'Loading…' : partner.name}</span>
+              {booking.data && !booking.data.astrologer?.isPendingDeletion ? (
+                <BadgeCheck className="h-4 w-4 shrink-0 text-[#720A0B]" aria-label="Verified" />
+              ) : null}
             </p>
-          ) : (
-            <p className="font-medium text-[#611508]">This consultation has ended.</p>
-          )}
-          <div className="flex gap-5 text-[14px] font-semibold text-[#720A0B]">
-            {review === 'closed' &&
-            booking.data?.status === 'COMPLETED' &&
-            !booking.data.reviewId ? (
+            {showChat && booking.data ? (
+              <p className="mt-0.5 flex items-center gap-3 text-[14px] lg:text-[15px]">
+                <span
+                  className={clsx(
+                    'font-medium',
+                    booking.data.astrologerIsSocketConnected ? 'text-[#15B763]' : 'text-[#FF3B3B]',
+                  )}
+                >
+                  {booking.data.astrologerIsSocketConnected ? 'Online' : 'Offline'}
+                </span>
+                <SessionTimer endAt={booking.data.scheduledEndAt} ended={phase === 'ended'} />
+              </p>
+            ) : null}
+          </div>
+          {canCall ? (
+            <div className="flex shrink-0 items-center gap-1">
               <button
                 type="button"
-                onClick={() => setReview('pending')}
-                className="hover:underline"
+                onClick={() => startCall('audio')}
+                disabled={callBusy}
+                aria-label="Voice call"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-[#720A0B] hover:bg-[#efe4d2] disabled:text-[#B6ACA6] focus-visible:outline-2 focus-visible:outline-[#611508]"
               >
-                Leave a Review
+                <CallIcon className="h-6 w-6" />
               </button>
-            ) : null}
-            <Link href={consultationsPath('completed')} className="hover:underline">
-              My Consultations
+              <button
+                type="button"
+                onClick={() => startCall('video')}
+                disabled={callBusy}
+                aria-label="Video call"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-[#720A0B] hover:bg-[#efe4d2] disabled:text-[#B6ACA6] focus-visible:outline-2 focus-visible:outline-[#611508]"
+              >
+                <VideoCallIcon className="h-6 w-6" />
+              </button>
+            </div>
+          ) : null}
+          {astrologerId ? (
+            // Not modal: a modal menu that opens a dialog can leave the page unclickable (Radix).
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger
+                aria-label="Chat options"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#611508] hover:bg-[#efe4d2] focus-visible:outline-2 focus-visible:outline-[#611508]"
+              >
+                <EllipsisVertical className="h-5 w-5" aria-hidden />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className={menuContentClass}>
+                {phase === 'active' && !endRequested ? (
+                  <DropdownMenuItem onSelect={() => setConfirmEnd(true)} className={menuItemClass}>
+                    <X className="h-4 w-4 text-[#611508]" aria-hidden />
+                    End Chat
+                  </DropdownMenuItem>
+                ) : null}
+                <DropdownMenuItem
+                  onSelect={() =>
+                    setReport({
+                      title: 'Report astrologer',
+                      target: {
+                        targetType: 'ASTROLOGER',
+                        targetId: astrologerId,
+                        reportedUserId: astrologerId,
+                        chatId: chatId ?? undefined,
+                      },
+                    })
+                  }
+                  className={menuItemClass}
+                >
+                  <Flag className="h-4 w-4 text-[#611508]" aria-hidden />
+                  Report
+                </DropdownMenuItem>
+                {!blocked ? (
+                  <DropdownMenuItem
+                    onSelect={() => setConfirmBlock(true)}
+                    className={menuItemClass}
+                  >
+                    <Ban className="h-4 w-4 text-[#611508]" aria-hidden />
+                    Block
+                  </DropdownMenuItem>
+                ) : null}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : null}
+        </header>
+
+        {notAvailable && booking.data ? (
+          // Same paper as the message area (the app's chat screen keeps its background here too).
+          <div
+            className={clsx(
+              css.messages,
+              'flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center',
+            )}
+          >
+            <Clock3 className="h-16 w-16 text-[#611508]" strokeWidth={1.5} aria-hidden />
+            <h2 className="text-[22px] font-semibold text-[#611508]">Chat Not Available</h2>
+            <p className="max-w-md text-[16px] text-[#3b3b3b]">{notAvailableText(booking.data)}</p>
+          </div>
+        ) : null}
+
+        {!notAvailable && !tosAccepted ? (
+          <div className="flex items-center gap-3 bg-[#BE7B71] px-4 py-2.5 text-[13px] text-white lg:px-6 lg:text-[15px]">
+            <p className="flex-1">
+              By continuing, you agree to our{' '}
+              <Link
+                href="/terms-and-conditions"
+                className="font-semibold underline-offset-2 hover:underline"
+              >
+                Terms and Conditions
+              </Link>{' '}
+              and{' '}
+              <Link
+                href="/privacy-policy"
+                className="font-semibold underline-offset-2 hover:underline"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </p>
+            <button
+              type="button"
+              onClick={acceptTos}
+              aria-label="Close"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-[#BE7B71]"
+            >
+              <X className="h-4 w-4" strokeWidth={3} aria-hidden />
+            </button>
+          </div>
+        ) : null}
+
+        {ready && phase === 'active' ? (
+          <ConnectionBanner status={chat.status} onRetry={chat.reconnect} />
+        ) : null}
+
+        {notAvailable ? null : loading ? (
+          <div className="flex flex-1 items-center justify-center text-[#611508]">
+            <Loader2 className="h-6 w-6 animate-spin" aria-label="Loading chat" />
+          </div>
+        ) : failed ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center text-[#4a1a1a]">
+            <p>This chat could not be opened.</p>
+            <button
+              type="button"
+              onClick={() => (booking.isError || !chatId ? booking.refetch() : history.refetch())}
+              className="rounded-full border border-[#611508] px-4 py-1.5 text-[#611508]"
+            >
+              Try again
+            </button>
+          </div>
+        ) : (
+          <MessageList
+            items={items}
+            partner={partner}
+            partnerTyping={chat.partnerTyping}
+            loadingOlder={history.isFetchingNextPage}
+            canLoadOlder={!!history.hasNextPage}
+            loadOlder={() => history.fetchNextPage()}
+            onRetry={chat.retry}
+            onDiscard={chat.discard}
+            onOpenImage={viewer.open}
+            onReport={astrologerId ? reportMessage : undefined}
+          />
+        )}
+
+        {notAvailable ? null : phase === 'ended' ? (
+          <div
+            role="status"
+            className="flex flex-col items-center gap-1.5 border-t border-[#e8ddd0] bg-[#efe4d2] px-4 py-3 text-center text-[15px]"
+          >
+            {review === 'done' ? (
+              <p className="text-[#1f4d23]">
+                <b>Thank you!</b> Your rating has been submitted successfully.
+              </p>
+            ) : (
+              <p className="font-medium text-[#611508]">This consultation has ended.</p>
+            )}
+            <div className="flex gap-5 text-[14px] font-semibold text-[#720A0B]">
+              {review === 'closed' &&
+              booking.data?.status === 'COMPLETED' &&
+              !booking.data.reviewId ? (
+                <button
+                  type="button"
+                  onClick={() => setReview('pending')}
+                  className="hover:underline"
+                >
+                  Leave a Review
+                </button>
+              ) : null}
+              <Link href={consultationsPath('completed')} className="hover:underline">
+                My Consultations
+              </Link>
+            </div>
+          </div>
+        ) : blocked ? (
+          <div
+            role="status"
+            className="flex flex-col items-center gap-1.5 border-t border-[#e8ddd0] bg-[#efe4d2] px-4 py-3 text-center text-[15px] max-lg:pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+          >
+            <p className="font-medium text-[#611508]">
+              {blockedHere ? `You blocked ${partner.name}. ` : ''}
+              {BLOCKED_CHAT_TEXT}
+            </p>
+            <Link
+              href={settingsPaths('client').blockedUsers}
+              className="text-[14px] font-semibold text-[#720A0B] hover:underline"
+            >
+              Blocked users
             </Link>
           </div>
-        </div>
-      ) : blocked ? (
-        <div
-          role="status"
-          className="flex flex-col items-center gap-1.5 border-t border-[#e8ddd0] bg-[#efe4d2] px-4 py-3 text-center text-[15px] max-lg:pb-[max(0.75rem,env(safe-area-inset-bottom))]"
-        >
-          <p className="font-medium text-[#611508]">
-            {blockedHere ? `You blocked ${partner.name}. ` : ''}
-            {BLOCKED_CHAT_TEXT}
-          </p>
-          <Link
-            href={settingsPaths('client').blockedUsers}
-            className="text-[14px] font-semibold text-[#720A0B] hover:underline"
-          >
-            Blocked users
-          </Link>
-        </div>
-      ) : (
-        <Composer
-          disabled={!ready}
-          onSend={chat.send}
-          onSendImage={chat.sendImage}
-          onTyped={chat.typed}
-          onStopTyping={chat.stopTyping}
-        />
-      )}
+        ) : (
+          <Composer
+            disabled={!ready}
+            onSend={chat.send}
+            onSendImage={chat.sendImage}
+            onTyped={chat.typed}
+            onStopTyping={chat.stopTyping}
+          />
+        )}
 
-      <ConfirmDialog
-        open={confirmEnd}
-        onOpenChange={setConfirmEnd}
-        title="Are you sure you want to end the chat?"
-        confirmText="Yes"
-        cancelText="No"
-        onConfirm={confirmEndChat}
-      />
-      <ImageViewer src={viewer.src} onClose={viewer.close} />
-      {report ? (
-        <ReportDialog title={report.title} target={report.target} onClose={() => setReport(null)} />
-      ) : null}
-      {astrologerId ? (
-        <BlockDialog
-          user={{ id: astrologerId, name: partner.name }}
-          open={confirmBlock}
-          onOpenChange={setConfirmBlock}
-          onBlocked={() => setBlockedHere(true)}
+        <ConfirmDialog
+          open={confirmEnd}
+          onOpenChange={setConfirmEnd}
+          title="Are you sure you want to end the chat?"
+          confirmText="Yes"
+          cancelText="No"
+          onConfirm={confirmEndChat}
         />
-      ) : null}
-      {reviewOpen && booking.data ? (
-        <ReviewDialog
-          astrologerId={booking.data.astrologerId}
-          bookingId={bookingId}
-          astrologerName={partner.name}
-          photo={partner.photo}
-          note={endedByPartner ? `Your chat has been ended by ${partner.name}.` : undefined}
-          waiting={endSession.isPending}
-          onClose={() => setReview('closed')}
-          onDone={() => setReview('done')}
-        />
-      ) : null}
-    </section>
+        <ImageViewer src={viewer.src} onClose={viewer.close} />
+        {report ? (
+          <ReportDialog
+            title={report.title}
+            target={report.target}
+            onClose={() => setReport(null)}
+          />
+        ) : null}
+        {astrologerId ? (
+          <BlockDialog
+            user={{ id: astrologerId, name: partner.name }}
+            open={confirmBlock}
+            onOpenChange={setConfirmBlock}
+            onBlocked={() => setBlockedHere(true)}
+          />
+        ) : null}
+        {reviewOpen && booking.data ? (
+          <ReviewDialog
+            astrologerId={booking.data.astrologerId}
+            bookingId={bookingId}
+            astrologerName={partner.name}
+            photo={partner.photo}
+            note={endedByPartner ? `Your chat has been ended by ${partner.name}.` : undefined}
+            waiting={endSession.isPending}
+            onClose={() => setReview('closed')}
+            onDone={() => setReview('done')}
+          />
+        ) : null}
+      </section>
+    </div>
   );
 }
 

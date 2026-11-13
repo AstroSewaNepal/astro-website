@@ -2,21 +2,18 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import clsx from 'clsx';
-import {
-  Loader2,
-  Mic,
-  MicOff,
-  PhoneOff,
-  RefreshCw,
-  UserRound,
-  Video,
-  VideoOff,
-  Volume2,
-  X,
-} from 'lucide-react';
+import { Loader2, RefreshCw, X } from 'lucide-react';
 
-import { CallIcon, VideoCallIcon } from '@/components/call/call-icons';
+import {
+  CallIcon,
+  CameraOffIcon,
+  CameraOnIcon,
+  MicIcon,
+  MicOffIcon,
+  VideoCallIcon,
+} from '@/components/call/call-icons';
 import type { CallRequest } from '@/components/call/call-provider';
+import { CallScreen, Photo } from '@/components/call/call-screen';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { callApi, callStartError } from '@/lib/call/api';
 import { createLiveKitRoom } from '@/lib/call/livekit-room';
@@ -38,16 +35,25 @@ type Stage =
   | { kind: 'blocked'; problem: MediaProblem }
   | { kind: 'call'; session: CallSession };
 
+/** Endings that need no explanation: the screen says so briefly and closes by itself. */
+const QUIET_ENDS = new Set<CallEndReason>(['hangup', 'other-left', 'time-up']);
+const QUIET_END_MS = 1_800;
+
 /**
- * The call over the page: first the before-call screen (camera and mic check with a preview, choices, Join), then
- * the call. Step 2 of doc 08: the call view here is plain on purpose; step 3 gives it the Figma look.
+ * The call over the page: the before-call screen (camera and mic check with a preview, choices, Join), then the
+ * call. Phones: full screen. Desktop: beside the chat when the booking's chat page is open (Figma desktop call), a
+ * centred panel elsewhere. The same elements stay mounted whichever way it is placed.
  */
 export default function CallOverlay({
   request,
+  dock,
   onClose,
+  onAgain,
 }: {
   request: CallRequest;
+  dock: HTMLElement | null;
   onClose: () => void;
+  onAgain: () => void;
 }) {
   const backend = useBackendClient();
   const [stage, setStage] = useState<Stage>({ kind: 'checking' });
@@ -119,17 +125,34 @@ export default function CallOverlay({
   // Leaving the logged-in area (or logging out) unmounts this: hang up.
   const session = stage.kind === 'call' ? stage.session : null;
   useEffect(() => () => void session?.end(), [session]);
+  const callState = useCallState(session);
 
-  // Keep the page behind still while the call covers it.
+  // A plain ending says "Call ended" for a moment and closes; problems stay until the person closes them.
+  const quietEnd =
+    callState?.phase === 'ended' &&
+    QUIET_ENDS.has(callState.endReason ?? 'hangup') &&
+    !callState.error;
   useEffect(() => {
+    if (!quietEnd) return;
+    const t = setTimeout(onClose, QUIET_END_MS);
+    return () => clearTimeout(t);
+  }, [quietEnd, onClose]);
+
+  // Placement. Desktop with the booking's chat open: exactly over the slot beside the chat.
+  const desktop = useMediaQuery('(min-width: 1024px)');
+  const dockRect = useElementRect(desktop ? dock : null);
+  const docked = dockRect !== null;
+
+  // Keep the page behind still while the call covers it (beside the chat, the chat stays usable).
+  useEffect(() => {
+    if (docked) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = previous;
     };
-  }, []);
+  }, [docked]);
 
-  const callState = useCallState(session);
   const closeLobby = () => {
     stopMedia(previewStream.current);
     previewStream.current = null;
@@ -137,60 +160,54 @@ export default function CallOverlay({
   };
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 font-app lg:p-8">
+    <div
+      className={clsx(
+        'font-app',
+        docked
+          ? 'fixed z-30'
+          : 'fixed inset-0 z-[70] flex items-center justify-center bg-black/60 lg:p-8',
+      )}
+      style={
+        dockRect
+          ? {
+              top: dockRect.top,
+              left: dockRect.left,
+              width: dockRect.width,
+              height: dockRect.height,
+            }
+          : undefined
+      }
+    >
       <section
         role="dialog"
-        aria-modal="true"
+        aria-modal={!docked}
         aria-label={`${isVideo ? 'Video' : 'Voice'} call with ${request.partner.name}`}
-        className="flex h-[100dvh] w-full flex-col overflow-hidden bg-[#16110f] text-white lg:h-[min(760px,calc(100dvh-4rem))] lg:max-w-[1100px] lg:rounded-2xl lg:shadow-2xl"
-      >
-        <header className="flex items-center gap-3 bg-[#611508] px-3 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] lg:px-5">
-          {stage.kind === 'call' ? null : (
-            <button
-              type="button"
-              onClick={closeLobby}
-              aria-label="Cancel call"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10"
-            >
-              <X className="h-6 w-6" aria-hidden />
-            </button>
-          )}
-          <PartnerPhoto photo={request.partner.photo} name={request.partner.name} size="sm" />
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[18px] font-semibold">{request.partner.name}</p>
-            <p className="flex items-center gap-1.5 text-[14px] text-white/80">
-              {isVideo ? (
-                <VideoCallIcon className="h-3.5 w-3.5" />
-              ) : (
-                <CallIcon className="h-3.5 w-3.5" />
-              )}
-              {isVideo ? 'Video call' : 'Voice call'}
-              {stage.kind === 'call' && callState
-                ? ` · ${phaseLabel(callState, request.partner.name)}`
-                : ''}
-            </p>
-          </div>
-        </header>
-
-        {stage.kind === 'call' ? (
-          <PlainCall
-            session={stage.session}
-            state={callState}
-            request={request}
-            onClose={onClose}
-          />
-        ) : (
-          <Lobby
-            stage={stage}
-            request={request}
-            mic={mic}
-            camera={camera}
-            onMic={() => setMic(v => !v)}
-            onCamera={() => setCamera(v => !v)}
-            onRetry={retry}
-            onJoin={join}
-          />
+        className={clsx(
+          'flex flex-col overflow-hidden bg-[#16110f] text-white',
+          docked
+            ? 'h-full w-full rounded-2xl shadow-[0_4px_16px_rgba(92,56,23,0.08)]'
+            : 'h-[100dvh] w-full lg:h-[min(760px,calc(100dvh-4rem))] lg:max-w-[1100px] lg:rounded-2xl lg:shadow-2xl',
         )}
+      >
+        {stage.kind !== 'call' ? (
+          <>
+            <LobbyHeader request={request} onCancel={closeLobby} />
+            <Lobby
+              stage={stage}
+              request={request}
+              mic={mic}
+              camera={camera}
+              onMic={() => setMic(v => !v)}
+              onCamera={() => setCamera(v => !v)}
+              onRetry={retry}
+              onJoin={join}
+            />
+          </>
+        ) : callState?.phase === 'ended' ? (
+          <Ended state={callState} request={request} onClose={onClose} onAgain={onAgain} />
+        ) : callState ? (
+          <CallScreen session={stage.session} state={callState} request={request} docked={docked} />
+        ) : null}
       </section>
     </div>
   );
@@ -204,7 +221,84 @@ function useCallState(session: CallSession | null): CallState | null {
   );
 }
 
+function useMediaQuery(query: string): boolean {
+  return useSyncExternalStore(
+    useCallback(
+      listener => {
+        const list = window.matchMedia(query);
+        list.addEventListener('change', listener);
+        return () => list.removeEventListener('change', listener);
+      },
+      [query],
+    ),
+    () => window.matchMedia(query).matches,
+    () => false,
+  );
+}
+
+type Rect = { top: number; left: number; width: number; height: number };
+
+/** Where an element is in the window, following resizes and scrolling. */
+function useElementRect(element: HTMLElement | null): Rect | null {
+  const key = useSyncExternalStore(
+    useCallback(
+      listener => {
+        if (!element) return () => {};
+        const observer = new ResizeObserver(listener);
+        observer.observe(element);
+        window.addEventListener('resize', listener);
+        window.addEventListener('scroll', listener, true);
+        return () => {
+          observer.disconnect();
+          window.removeEventListener('resize', listener);
+          window.removeEventListener('scroll', listener, true);
+        };
+      },
+      [element],
+    ),
+    () => {
+      if (!element || !element.isConnected) return null;
+      const r = element.getBoundingClientRect();
+      // Hidden (display:none on phones): not a place to dock.
+      if (r.width === 0 || r.height === 0) return null;
+      return `${r.top}|${r.left}|${r.width}|${r.height}`;
+    },
+    () => null,
+  );
+  if (!key) return null;
+  const [top, left, width, height] = key.split('|').map(Number);
+  return { top, left, width, height };
+}
+
 // ---- Before the call ----
+
+function LobbyHeader({ request, onCancel }: { request: CallRequest; onCancel: () => void }) {
+  const isVideo = request.callType === 'video';
+  return (
+    <header className="flex items-center gap-3 bg-[#611508] px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] lg:px-5">
+      <button
+        type="button"
+        onClick={onCancel}
+        aria-label="Cancel call"
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10"
+      >
+        <X className="h-6 w-6" aria-hidden />
+      </button>
+      <Photo photo={request.partner.photo} name={request.partner.name} size="sm" />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-[18px] font-semibold">{request.partner.name}</p>
+        <p className="flex items-center gap-1.5 text-[14px] text-white/80">
+          {isVideo ? (
+            <VideoCallIcon className="h-3.5 w-3.5" />
+          ) : (
+            <CallIcon className="h-3.5 w-3.5" />
+          )}
+          {isVideo ? 'Video call' : 'Voice call'}
+        </p>
+      </div>
+    </header>
+  );
+}
 
 function Lobby({
   stage,
@@ -241,7 +335,7 @@ function Lobby({
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-5 overflow-y-auto px-6 py-8 text-center">
         <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
-          <MicOff className="h-8 w-8" aria-hidden />
+          <MicOffIcon className="h-8 w-8 text-[#F8F3DF]" />
         </span>
         <h2 className="text-[20px] font-semibold">{help.title}</h2>
         <ol className="max-w-md list-decimal space-y-2 pl-5 text-left text-[15px] text-white/85">
@@ -252,7 +346,7 @@ function Lobby({
         <button
           type="button"
           onClick={onRetry}
-          className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-[16px] font-semibold text-[#611508]"
+          className="inline-flex items-center gap-2 rounded-full bg-[#F8F3DF] px-6 py-3 text-[16px] font-semibold text-[#611508]"
         >
           <RefreshCw className="h-4 w-4" aria-hidden /> Try again
         </button>
@@ -280,7 +374,7 @@ function Lobby({
         />
         {showVideo ? null : (
           <div className="relative flex flex-col items-center gap-4 px-6 text-center">
-            <PartnerPhoto photo={request.partner.photo} name={request.partner.name} size="lg" />
+            <Photo photo={request.partner.photo} name={request.partner.name} size="lg" />
             {stage.kind === 'checking' ? (
               <p className="flex items-center gap-2 text-[15px] text-white/80">
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -299,28 +393,28 @@ function Lobby({
         )}
       </div>
 
-      <div className="flex items-center justify-center gap-6 rounded-t-3xl bg-[#2b2522] px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 lg:rounded-none">
-        <RoundButton
+      <div className="flex items-start justify-center gap-6 bg-black/40 px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
+        <LobbyToggle
           label={mic ? 'Mute' : 'Unmute'}
           pressed={!mic}
           disabled={!ready}
           onClick={onMic}
-          icon={mic ? Mic : MicOff}
+          icon={mic ? MicIcon : MicOffIcon}
         />
         {isVideo ? (
-          <RoundButton
+          <LobbyToggle
             label={camera ? 'Camera off' : 'Camera on'}
             pressed={!camera}
             disabled={!ready || cameraProblem !== null}
             onClick={onCamera}
-            icon={camera ? Video : VideoOff}
+            icon={camera ? CameraOnIcon : CameraOffIcon}
           />
         ) : null}
         <button
           type="button"
           onClick={onJoin}
           disabled={!ready}
-          className="flex h-14 items-center gap-2 rounded-full bg-[#15B763] px-7 text-[17px] font-semibold text-white disabled:opacity-50"
+          className="mt-0.5 flex h-14 items-center gap-2 rounded-full bg-[#15B763] px-7 text-[17px] font-semibold text-white hover:bg-[#12a157] disabled:opacity-50"
         >
           {isVideo ? <VideoCallIcon className="h-5 w-5" /> : <CallIcon className="h-5 w-5" />}
           Join call
@@ -330,188 +424,17 @@ function Lobby({
   );
 }
 
-// ---- The call (plain until step 3) ----
-
-function PlainCall({
-  session,
-  state,
-  request,
-  onClose,
-}: {
-  session: CallSession;
-  state: CallState | null;
-  request: CallRequest;
-  onClose: () => void;
-}) {
-  // Handed to the session once; tracks come and go inside these same elements.
-  const remoteVideo = useRef<HTMLVideoElement>(null);
-  const localVideo = useRef<HTMLVideoElement>(null);
-  const remoteAudio = useRef<HTMLAudioElement>(null);
-  useEffect(() => {
-    session.setMediaElements({
-      remoteVideo: remoteVideo.current,
-      localVideo: localVideo.current,
-      remoteAudio: remoteAudio.current,
-    });
-  }, [session]);
-
-  const ended = state?.phase === 'ended';
-  const showRemoteVideo = !!state?.video && !!state.other.cameraOn && !ended;
-  const showLocalVideo = !!state?.cameraOn && !ended;
-
-  return (
-    <>
-      <div className="relative flex min-h-0 flex-1 items-center justify-center bg-black">
-        <video
-          ref={remoteVideo}
-          autoPlay
-          playsInline
-          className={clsx(
-            'absolute inset-0 h-full w-full object-cover',
-            !showRemoteVideo && 'invisible',
-          )}
-        />
-        <audio ref={remoteAudio} autoPlay />
-        <video
-          ref={localVideo}
-          autoPlay
-          playsInline
-          muted
-          className={clsx(
-            'absolute right-3 top-3 h-40 w-28 rounded-xl object-cover lg:h-48 lg:w-36',
-            state?.facing !== 'environment' && '-scale-x-100',
-            !showLocalVideo && 'invisible',
-          )}
-        />
-        {showRemoteVideo ? null : (
-          <div className="relative flex flex-col items-center gap-3 px-6 text-center">
-            <PartnerPhoto photo={request.partner.photo} name={request.partner.name} size="lg" />
-            <p className="text-[16px] text-white/85">
-              {state
-                ? ended
-                  ? endedText(state)
-                  : phaseLabel(state, request.partner.name)
-                : 'Connecting…'}
-            </p>
-            {state?.cameraProblem && !ended ? (
-              <p className="max-w-sm text-[14px] text-white/70">{state.cameraProblem}</p>
-            ) : null}
-          </div>
-        )}
-        {state?.audioBlocked && !ended ? (
-          <button
-            type="button"
-            onClick={() => void session.startAudio()}
-            className="absolute bottom-4 left-1/2 inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[15px] font-semibold text-[#611508]"
-          >
-            <Volume2 className="h-4 w-4" aria-hidden /> Tap to hear {request.partner.name}
-          </button>
-        ) : null}
-        {state?.otherStartedVideo && !ended ? (
-          <div className="absolute inset-x-4 bottom-4 mx-auto flex max-w-sm items-center gap-3 rounded-2xl bg-white p-3 text-[#2b2522]">
-            <p className="flex-1 text-[14px]">
-              {request.partner.name} turned on video. Turn on yours?
-            </p>
-            <button
-              type="button"
-              onClick={() => session.dismissVideoOffer()}
-              className="rounded-full px-3 py-1.5 text-[14px] font-medium"
-            >
-              Not now
-            </button>
-            <button
-              type="button"
-              onClick={() => void session.toggleCamera()}
-              className="rounded-full bg-[#611508] px-3 py-1.5 text-[14px] font-semibold text-white"
-            >
-              Turn on
-            </button>
-          </div>
-        ) : null}
-      </div>
-
-      <div className="flex items-center justify-center gap-6 rounded-t-3xl bg-[#2b2522] px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 lg:rounded-none">
-        {ended ? (
-          <button
-            type="button"
-            onClick={onClose}
-            className="h-14 rounded-full bg-white px-8 text-[17px] font-semibold text-[#611508]"
-          >
-            Close
-          </button>
-        ) : (
-          <>
-            <RoundButton
-              label={state?.micOn ? 'Mute' : 'Unmute'}
-              pressed={!state?.micOn}
-              onClick={() => void session.toggleMic()}
-              icon={state?.micOn ? Mic : MicOff}
-            />
-            <RoundButton
-              label={state?.cameraOn ? 'Camera off' : 'Camera on'}
-              pressed={!state?.cameraOn}
-              onClick={() => void session.toggleCamera()}
-              icon={state?.cameraOn ? Video : VideoOff}
-            />
-            {state?.cameraOn ? (
-              <RoundButton
-                label="Flip"
-                onClick={() => void session.flipCamera()}
-                icon={RefreshCw}
-              />
-            ) : null}
-            <RoundButton label="End" danger onClick={() => void session.end()} icon={PhoneOff} />
-          </>
-        )}
-      </div>
-    </>
-  );
-}
-
-function phaseLabel(state: CallState, name: string): string {
-  switch (state.phase) {
-    case 'idle':
-    case 'connecting':
-      return 'Connecting…';
-    case 'waiting':
-      return `Calling ${name}…`;
-    case 'in-call':
-      return 'In call';
-    case 'reconnecting':
-      return 'Reconnecting…';
-    case 'ended':
-      return 'Call ended';
-  }
-}
-
-const END_TEXT: Record<CallEndReason, string> = {
-  hangup: 'Call ended.',
-  'time-up': 'The consultation time is over.',
-  'other-left': 'The other person left the call.',
-  'connection-lost': 'The call dropped. Check your internet connection.',
-  'other-device': 'You joined this call on another device or tab.',
-  failed: 'The call could not start.',
-};
-
-function endedText(state: CallState): string {
-  return state.error ?? END_TEXT[state.endReason ?? 'hangup'];
-}
-
-// ---- Bits ----
-
-function RoundButton({
+function LobbyToggle({
   label,
   icon: Icon,
   onClick,
   pressed,
-  danger,
   disabled,
 }: {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   onClick: () => void;
   pressed?: boolean;
-  danger?: boolean;
   disabled?: boolean;
 }) {
   return (
@@ -520,43 +443,73 @@ function RoundButton({
       onClick={onClick}
       disabled={disabled}
       aria-pressed={pressed}
-      className="flex flex-col items-center gap-1.5 text-[13px] text-white/90 disabled:opacity-40"
+      className="flex w-16 flex-col items-center gap-2 text-[13px] font-medium text-white disabled:opacity-40"
     >
       <span
         className={clsx(
           'flex h-14 w-14 items-center justify-center rounded-full',
-          danger ? 'bg-[#FF3B3B]' : pressed ? 'bg-white text-[#2b2522]' : 'bg-white/15',
+          pressed ? 'bg-[#F8F3DF] text-[#611508]' : 'bg-white/10 text-[#F8F3DF] hover:bg-white/20',
         )}
       >
-        <Icon className="h-6 w-6" aria-hidden />
+        <Icon className="h-6 w-6" />
       </span>
       {label}
     </button>
   );
 }
 
-function PartnerPhoto({
-  photo,
-  name,
-  size,
+// ---- After the call ----
+
+const END_TEXT: Record<CallEndReason, string> = {
+  hangup: 'Call ended',
+  'time-up': 'The consultation time is over',
+  'other-left': 'Call ended',
+  'connection-lost': 'The call dropped. Check your internet connection.',
+  'other-device': 'You joined this call on another device or tab.',
+  failed: 'The call could not start.',
+};
+
+function Ended({
+  state,
+  request,
+  onClose,
+  onAgain,
 }: {
-  photo: string | null;
-  name: string;
-  size: 'sm' | 'lg';
+  state: CallState;
+  request: CallRequest;
+  onClose: () => void;
+  onAgain: () => void;
 }) {
-  const box = size === 'sm' ? 'h-10 w-10' : 'h-24 w-24';
-  return photo ? (
-    // eslint-disable-next-line @next/next/no-img-element -- backend media URLs (images.unoptimized on the Worker)
-    <img
-      src={photo}
-      alt={size === 'lg' ? name : ''}
-      className={clsx(box, 'shrink-0 rounded-full object-cover')}
-    />
-  ) : (
-    <span
-      className={clsx(box, 'flex shrink-0 items-center justify-center rounded-full bg-white/15')}
-    >
-      <UserRound className={size === 'sm' ? 'h-5 w-5' : 'h-12 w-12'} aria-hidden />
-    </span>
+  const reason = state.endReason ?? 'hangup';
+  const quiet = QUIET_ENDS.has(reason) && !state.error;
+  const canRetry = reason === 'connection-lost' || reason === 'failed';
+  return (
+    <div className="relative flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+      <Photo photo={request.partner.photo} name={request.partner.name} size="lg" />
+      <p className="text-[20px] font-semibold">{request.partner.name}</p>
+      <p role="status" className="max-w-sm text-[16px] text-white/85">
+        {state.error ?? END_TEXT[reason]}
+      </p>
+      {quiet ? null : (
+        <div className="mt-2 flex gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-12 rounded-full bg-white/10 px-6 text-[16px] font-semibold hover:bg-white/20"
+          >
+            Close
+          </button>
+          {canRetry ? (
+            <button
+              type="button"
+              onClick={onAgain}
+              className="h-12 rounded-full bg-[#15B763] px-6 text-[16px] font-semibold hover:bg-[#12a157]"
+            >
+              Call again
+            </button>
+          ) : null}
+        </div>
+      )}
+    </div>
   );
 }
