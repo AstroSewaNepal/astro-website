@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -16,6 +16,7 @@ import {
   readStarted,
   startRequest,
 } from '@/lib/payments/checkout';
+import { noteOutsideTrip } from '@/lib/navigation/outside-trip';
 import { rememberPayment } from '@/lib/payments/pending';
 import { FonepayPanel } from './fonepay-panel';
 
@@ -80,14 +81,24 @@ export function CheckoutSheet({
         startedAt: Date.now(),
       });
       if ('redirect' in started) {
-        // Same tab: the gateway sends the browser back to /payment/return.
+        // Same tab: the gateway sends the browser back to /payment/return, and Back from there skips its pages.
         setLeaving(true);
+        noteOutsideTrip('payment');
         window.location.assign(started.redirect);
       } else {
         setQr(started);
       }
     },
   });
+
+  // Back from the gateway can restore this page as it was (back/forward cache): not leaving any more.
+  useEffect(() => {
+    const onShow = (event: PageTransitionEvent) => {
+      if (event.persisted) setLeaving(false);
+    };
+    window.addEventListener('pageshow', onShow);
+    return () => window.removeEventListener('pageshow', onShow);
+  }, []);
 
   const busy = start.isPending || leaving;
   const close = () => {
