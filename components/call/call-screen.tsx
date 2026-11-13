@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { Maximize2, Minimize2, UserRound, Volume2, WifiOff } from 'lucide-react';
+import { Maximize2, Minimize2, Smartphone, UserRound, Volume2, WifiOff, X } from 'lucide-react';
 
 import {
   CameraOffIcon,
@@ -14,11 +14,15 @@ import {
   VideoCallIcon,
 } from '@/components/call/call-icons';
 import type { CallRequest } from '@/components/call/call-provider';
+import { platformOf } from '@/lib/call/media-check';
 import { formatCountdown } from '@/lib/chat/session';
 import type { CallSession, CallState } from '@/lib/call/session';
 
 /** Like the app's VideoCallView: video-call controls hide after this long without a tap. */
 const CONTROLS_HIDE_MS = 20_000;
+
+/** The "keep this page open" notice stays this long after the other person joins. */
+const KEEP_OPEN_MS = 15_000;
 
 /**
  * Where the call sits (call-overlay.tsx): full screen / centred panel, beside the chat on desktop (no header bar of
@@ -78,6 +82,7 @@ export function CallScreen({
   const controlsVisible = !videoLayout || controlsShown;
 
   const status = statusText(state, request.partner.name);
+  const keepOpen = useKeepOpenNotice(state);
   // The small window: a video call is a tile (their video, or their photo while their camera is off; mine in the
   // corner, like the app's PiP), a voice call a one-line card (photo, name, status, buttons).
   const miniCard = mini && !videoLayout;
@@ -246,6 +251,27 @@ export function CallScreen({
       <div
         className={clsx('relative z-20 flex flex-col items-center gap-3 px-4', mini && 'hidden')}
       >
+        {keepOpen.shown ? (
+          // Phones have no background calls on the web (the app has system PiP): say so while the call starts.
+          <div
+            role="note"
+            className="flex w-full max-w-sm items-start gap-2.5 rounded-xl bg-black/65 py-2.5 pl-3 pr-1.5 text-left text-[13px] text-white/90"
+          >
+            <Smartphone className="mt-0.5 h-4 w-4 shrink-0 text-[#FFBB50]" aria-hidden />
+            <p className="flex-1">
+              Keep this page open during the call. Switching to another app can pause your video or
+              end the call.
+            </p>
+            <button
+              type="button"
+              onClick={keepOpen.dismiss}
+              aria-label="Dismiss"
+              className="-mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full hover:bg-white/10"
+            >
+              <X className="h-4 w-4" aria-hidden />
+            </button>
+          </div>
+        ) : null}
         {state.audioBlocked ? (
           <button
             type="button"
@@ -523,4 +549,29 @@ export function Photo({
       <UserRound className={size === 'sm' ? 'h-5 w-5' : 'h-12 w-12'} aria-hidden />
     </span>
   );
+}
+
+/**
+ * Phones and tablets: while the call starts and for a little while after the other person joins, a note that the page
+ * must stay open (no background calls on the web). Closed by its X or when the time is over.
+ */
+function useKeepOpenNotice(state: CallState): { shown: boolean; dismiss: () => void } {
+  const [phone] = useState(
+    () => platformOf(navigator.userAgent, navigator.maxTouchPoints) !== 'desktop',
+  );
+  const [dismissed, setDismissed] = useState(false);
+  const [expired, setExpired] = useState(false);
+  const { connectedAt } = state;
+  useEffect(() => {
+    if (connectedAt === null) return;
+    const t = setTimeout(
+      () => setExpired(true),
+      Math.max(0, connectedAt + KEEP_OPEN_MS - Date.now()),
+    );
+    return () => clearTimeout(t);
+  }, [connectedAt]);
+  return {
+    shown: phone && !dismissed && !expired && state.phase !== 'ended',
+    dismiss: () => setDismissed(true),
+  };
 }

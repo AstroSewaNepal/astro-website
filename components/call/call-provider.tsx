@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
 
@@ -13,6 +13,11 @@ export type CallRequest = {
   partner: { name: string; photo: string | null };
   /** Booking end (ms): the call ends then. */
   endsAt: number;
+  /**
+   * Client calls: the astrologer, so the review opens when the session's time runs out during the call (the app's
+   * openPostEndUI). Astrologers' calls leave it out.
+   */
+  astrologerId?: string;
 };
 
 type CallsContext = {
@@ -27,12 +32,18 @@ type CallsContext = {
    * the call sits exactly over it. Pass null when the slot goes away.
    */
   registerDock: (slot: HTMLElement | null) => void;
+  /**
+   * A booking's chat page is on screen (call from an effect; returns the cleanup). That page ends the session and
+   * opens the review itself when the time runs out, so the call layer leaves it to the page then.
+   */
+  chatShown: (bookingId: string) => () => void;
 };
 
 const Calls = createContext<CallsContext | null>(null);
 
 // The call screen and everything behind it (LiveKit included) load only when a call is opened.
 const CallOverlay = dynamic(() => import('@/components/call/call-overlay'), { ssr: false });
+const SessionReview = dynamic(() => import('@/components/call/session-review'), { ssr: false });
 
 /**
  * Holds the one call of the site, above every page layout (root layout): moving to any page keeps the call, including
@@ -49,24 +60,55 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     setRequest(current => current ?? next);
   }, []);
   const close = useCallback(() => setRequest(null), []);
-  // Logged out: no call (the overlay unmounts and hangs up).
+
+  // Chat pages on screen, by booking (a count: a page can briefly mount twice while navigating).
+  const chats = useRef(new Map<string, number>());
+  const chatShown = useCallback((bookingId: string) => {
+    chats.current.set(bookingId, (chats.current.get(bookingId) ?? 0) + 1);
+    return () => {
+      const left = (chats.current.get(bookingId) ?? 1) - 1;
+      if (left > 0) chats.current.set(bookingId, left);
+      else chats.current.delete(bookingId);
+    };
+  }, []);
+
+  // The session's time ran out during a call while its chat wasn't on screen: end the booking and ask for the review
+  // once the call screen has closed.
+  const [review, setReview] = useState<CallRequest | null>(null);
+  const onTimeUp = useCallback((ended: CallRequest) => {
+    if (ended.astrologerId && !chats.current.has(ended.bookingId)) setReview(ended);
+  }, []);
+  const closeReview = useCallback(() => setReview(null), []);
+
+  // Logged out: no call (the overlay unmounts and hangs up) and no review.
   const { status } = useSession();
-  const active = status === 'unauthenticated' ? null : request;
+  const loggedOut = status === 'unauthenticated';
+  const active = loggedOut ? null : request;
   const value = useMemo(
     () => ({
       openCall,
       busy: active !== null,
       activeBookingId: active?.bookingId ?? null,
       registerDock: setDock,
+      chatShown,
     }),
-    [openCall, active],
+    [openCall, active, chatShown],
   );
 
   return (
     <Calls.Provider value={value}>
       {children}
       {active ? (
-        <CallOverlay key={attempt} request={active} dock={dock} onClose={close} onAgain={again} />
+        <CallOverlay
+          key={attempt}
+          request={active}
+          dock={dock}
+          onClose={close}
+          onAgain={again}
+          onTimeUp={onTimeUp}
+        />
+      ) : review && !loggedOut ? (
+        <SessionReview request={review} onClose={closeReview} />
       ) : null}
     </Calls.Provider>
   );

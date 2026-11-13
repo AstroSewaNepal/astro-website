@@ -10,8 +10,8 @@ export function callApi(backend: BackendClient): CallApi {
         '/video-call/consultation/token',
         { connectionScheduleId: bookingId, callType },
       ),
-    reportLeft: (bookingId: string) =>
-      backend.post('/video-call/consultation/left', { connectionScheduleId: bookingId }),
+    reportLeft: (bookingId: string, options?: { keepalive?: boolean }) =>
+      backend.post('/video-call/consultation/left', { connectionScheduleId: bookingId }, options),
   };
 }
 

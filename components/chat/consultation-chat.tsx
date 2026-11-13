@@ -244,7 +244,15 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
   };
 
   // Voice and video calls (the app's chat header buttons), during the session only.
-  const { openCall, busy: callBusy, activeBookingId: callBookingId, registerDock } = useCalls();
+  const {
+    openCall,
+    busy: callBusy,
+    activeBookingId: callBookingId,
+    registerDock,
+    chatShown,
+  } = useCalls();
+  // While this page is up it ends the session and asks for the review itself when the time runs out mid-call.
+  useEffect(() => chatShown(bookingId), [chatShown, bookingId]);
   const callHere = callBookingId === bookingId;
   // Hidden while this booking's call is open: the call is on screen, and the name gets the room.
   const canCall = phase === 'active' && !sessionOver && !blocked && !!booking.data && !callHere;
@@ -255,6 +263,7 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
       callType,
       partner: { name: partner.name, photo: partner.photo },
       endsAt: new Date(booking.data.scheduledEndAt).getTime(),
+      astrologerId: booking.data.astrologerId,
     });
   };
   // A call message's Join: this booking's call, still open, while no call is open in this tab (one chat holds the
