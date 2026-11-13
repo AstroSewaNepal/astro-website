@@ -1147,7 +1147,10 @@ function CallMessage({
               )}
             >
               {call.status === 'ongoing' ? (
-                <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-[#15B763]" aria-hidden />
+                <span
+                  className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-[#15B763]"
+                  aria-hidden
+                />
               ) : null}
               {detail}
             </p>
