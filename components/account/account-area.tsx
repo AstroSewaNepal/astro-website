@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import { auth } from '@/auth';
 import { AccountShell } from '@/components/account/account-shell';
+import { CallProvider } from '@/components/call/call-provider';
 import { ClientHome } from '@/components/account/client-home';
 import { ComingSoon } from '@/components/account/coming-soon';
 import { LoginRedirect } from '@/components/account/login-redirect';
@@ -31,7 +32,9 @@ export async function AccountArea({
 
   return (
     <QueryProvider>
-      <AccountShell kind={kind}>{children}</AccountShell>
+      <CallProvider>
+        <AccountShell kind={kind}>{children}</AccountShell>
+      </CallProvider>
     </QueryProvider>
   );
 }

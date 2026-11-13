@@ -23,7 +23,9 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   // wss://*.fonepay.com: Fonepay's per-payment socket that says when a QR was paid (doc 06).
-  `connect-src 'self' https://*.astrosewa.com ${backendOrigin} ${backendSocketOrigin} https://nominatim.openstreetmap.org wss://*.fonepay.com ${googleAnalytics} ${vercelLive}`,
+  // *.livekit.cloud: consultation calls (doc 08) sign in to LiveKit Cloud over wss and look up its regions over https;
+  // the audio/video itself (WebRTC) is not governed by connect-src.
+  `connect-src 'self' https://*.astrosewa.com ${backendOrigin} ${backendSocketOrigin} https://nominatim.openstreetmap.org wss://*.fonepay.com wss://*.livekit.cloud https://*.livekit.cloud ${googleAnalytics} ${vercelLive}`,
   "media-src 'self' blob: https:",
   `frame-src 'self' ${vercelLive}`,
   "object-src 'none'",

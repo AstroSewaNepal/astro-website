@@ -74,7 +74,11 @@ class FakeRoom implements CallRoom {
     return [...this.listeners.values()].reduce((n, fns) => n + fns.length, 0);
   }
   async connect(url: string, token: string) {
-    if (this.failConnect) throw new Error('could not connect');
+    if (this.failConnect) {
+      // Like livekit-client: a failing connect also emits Disconnected before rejecting.
+      this.fire(ROOM_EVENTS.Disconnected, 0);
+      throw new Error('could not connect');
+    }
     this.connectedTo.push(`${url}|${token}`);
   }
   async disconnect() {
@@ -158,6 +162,19 @@ describe('CallSession', () => {
       cameraOn: true,
       video: true,
       connectedAt: null,
+    });
+  });
+
+  it('joins with the mic or camera off when chosen before the call', async () => {
+    const { session, room } = setup();
+    await session.start({ mic: false, camera: false });
+    expect(room.localParticipant.setMicrophoneEnabled).not.toHaveBeenCalled();
+    expect(room.localParticipant.setCameraEnabled).not.toHaveBeenCalled();
+    expect(session.getState()).toMatchObject({
+      phase: 'waiting',
+      micOn: false,
+      cameraOn: false,
+      video: true,
     });
   });
 
@@ -301,7 +318,7 @@ describe('CallSession', () => {
     room.failConnect = true;
     await session.start();
     expect(session.getState()).toMatchObject({ phase: 'ended', endReason: 'failed' });
-    expect(session.getState().error).toMatch(/internet connection/);
+    expect(session.getState().error).toMatch(/Could not join the call/);
     expect(api.reportLeft).toHaveBeenCalledTimes(1);
   });
 

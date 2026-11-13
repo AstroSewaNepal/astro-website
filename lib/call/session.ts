@@ -160,6 +160,8 @@ export class CallSession {
   private room: CallRoom | null = null;
   /** A token was issued: the other person was rung and the chat shows a call message, so leaving must be reported. */
   private minted = false;
+  /** room.connect() succeeded. A failing connect also fires Disconnected; that one is a failed join, not a drop. */
+  private connected = false;
   private endTimer: ReturnType<typeof setTimeout> | null = null;
   private ending = false;
   private readonly detachers: Array<() => void> = [];
@@ -212,8 +214,11 @@ export class CallSession {
 
   // ---- Actions ----
 
-  /** Joins the call. Call it from a tap: browsers (iOS Safari) only allow sound and camera after one. */
-  async start(): Promise<void> {
+  /**
+   * Joins the call. Call it from a tap: browsers (iOS Safari) only allow sound and camera after one. `mic` and
+   * `camera` are the before-call choices (camera only applies to video calls).
+   */
+  async start(choices: { mic?: boolean; camera?: boolean } = {}): Promise<void> {
     if (this.state.phase !== 'idle') return;
     this.set({ phase: 'connecting' });
 
@@ -237,6 +242,7 @@ export class CallSession {
       this.room = room;
       this.listen(room);
       await room.connect(details.liveKitUrl, details.token);
+      this.connected = true;
     } catch {
       await this.finish('failed', CONNECT_PROBLEM);
       return;
@@ -251,14 +257,16 @@ export class CallSession {
       audioBlocked: !this.room.canPlaybackAudio,
     });
 
-    try {
-      await this.room.localParticipant.setMicrophoneEnabled(true);
-      this.set({ micOn: true });
-    } catch {
-      await this.finish('failed', MIC_PROBLEM);
-      return;
+    if (choices.mic !== false) {
+      try {
+        await this.room.localParticipant.setMicrophoneEnabled(true);
+        this.set({ micOn: true });
+      } catch {
+        await this.finish('failed', MIC_PROBLEM);
+        return;
+      }
     }
-    if (this.opts.callType === 'video') await this.turnCameraOn();
+    if (this.opts.callType === 'video' && choices.camera !== false) await this.turnCameraOn();
   }
 
   async toggleMic(): Promise<void> {
@@ -411,7 +419,7 @@ export class CallSession {
     });
 
     on(ROOM_EVENTS.Disconnected, ((reason?: number) => {
-      if (this.ending) return;
+      if (this.ending || !this.connected) return;
       void this.finish(
         reason === DISCONNECT_DUPLICATE_IDENTITY ? 'other-device' : 'connection-lost',
         null,

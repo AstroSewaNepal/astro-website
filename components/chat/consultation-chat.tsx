@@ -48,6 +48,8 @@ import { useBackendClient } from '@/hooks/use-backend-client';
 import { useChatLive } from '@/hooks/use-chat-live';
 import { useLongPress } from '@/hooks/use-long-press';
 import { usePhoneFullScreen } from '@/hooks/use-phone-full-screen';
+import { CallIcon, VideoCallIcon } from '@/components/call/call-icons';
+import { useCalls } from '@/components/call/call-provider';
 import { settingsPaths } from '@/lib/account/settings';
 import { consultationsPath } from '@/lib/booking/consultations';
 import { CHAT_IMAGE_ACCEPT } from '@/lib/chat/image';
@@ -239,6 +241,19 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
     }
   };
 
+  // Voice and video calls (the app's chat header buttons), during the session only.
+  const calls = useCalls();
+  const canCall = phase === 'active' && !sessionOver && !blocked && !!booking.data;
+  const startCall = (callType: 'audio' | 'video') => {
+    if (!booking.data) return;
+    calls.openCall({
+      bookingId,
+      callType,
+      partner: { name: partner.name, photo: partner.photo },
+      endsAt: new Date(booking.data.scheduledEndAt).getTime(),
+    });
+  };
+
   // Phones: full screen above the keyboard, like the app's chat screen (no site header, footer or tabs).
   const panel = useRef<HTMLElement>(null);
   usePhoneFullScreen(panel);
@@ -286,6 +301,28 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
             </p>
           ) : null}
         </div>
+        {canCall ? (
+          <div className="flex shrink-0 items-center gap-1">
+            <button
+              type="button"
+              onClick={() => startCall('audio')}
+              disabled={calls.busy}
+              aria-label="Voice call"
+              className="flex h-10 w-10 items-center justify-center rounded-lg text-[#720A0B] hover:bg-[#efe4d2] disabled:text-[#B6ACA6] focus-visible:outline-2 focus-visible:outline-[#611508]"
+            >
+              <CallIcon className="h-6 w-6" />
+            </button>
+            <button
+              type="button"
+              onClick={() => startCall('video')}
+              disabled={calls.busy}
+              aria-label="Video call"
+              className="flex h-10 w-10 items-center justify-center rounded-lg text-[#720A0B] hover:bg-[#efe4d2] disabled:text-[#B6ACA6] focus-visible:outline-2 focus-visible:outline-[#611508]"
+            >
+              <VideoCallIcon className="h-6 w-6" />
+            </button>
+          </div>
+        ) : null}
         {astrologerId ? (
           // Not modal: a modal menu that opens a dialog can leave the page unclickable (Radix).
           <DropdownMenu modal={false}>
