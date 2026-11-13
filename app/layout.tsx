@@ -6,6 +6,7 @@ import { SessionProvider } from 'next-auth/react';
 import './globals.css';
 import clsx from 'clsx';
 
+import { CallProvider } from '@/components/call/call-provider';
 import { SiteChrome } from '@/components/layout/site-chrome';
 import { env } from '@/lib/env';
 
@@ -244,7 +245,10 @@ export default function RootLayout({
           }}
         />
         <SessionProvider>
-          <SiteChrome>{children}</SiteChrome>
+          {/* Above every layout so a call survives moving to any page (call-provider.tsx). */}
+          <CallProvider>
+            <SiteChrome>{children}</SiteChrome>
+          </CallProvider>
         </SessionProvider>
       </body>
     </html>

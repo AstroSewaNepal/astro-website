@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { Loader2, RefreshCw, X } from 'lucide-react';
 
@@ -13,7 +14,7 @@ import {
   VideoCallIcon,
 } from '@/components/call/call-icons';
 import type { CallRequest } from '@/components/call/call-provider';
-import { CallScreen, Photo } from '@/components/call/call-screen';
+import { CallScreen, Photo, type CallLayout } from '@/components/call/call-screen';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { callApi, callStartError } from '@/lib/call/api';
 import { createLiveKitRoom } from '@/lib/call/livekit-room';
@@ -39,10 +40,18 @@ type Stage =
 const QUIET_ENDS = new Set<CallEndReason>(['hangup', 'other-left', 'time-up']);
 const QUIET_END_MS = 1_800;
 
+/** Room kept free around the small call window. */
+const MINI_MARGIN = 8;
+
 /**
  * The call over the page: the before-call screen (camera and mic check with a preview, choices, Join), then the
- * call. Phones: full screen. Desktop: beside the chat when the booking's chat page is open (Figma desktop call), a
- * centred panel elsewhere. The same elements stay mounted whichever way it is placed.
+ * call. Placement:
+ * - docked: desktop with the booking's chat page open, beside the chat (Figma desktop call);
+ * - full: phones full screen, desktop a centred panel;
+ * - mini: a small window in a corner that can be dragged anywhere, so the person keeps using the site. A call goes
+ *   mini when the page changes under it (desktop leaving the chat, the phone's back button) or on Minimize; a tap
+ *   on it opens it full again.
+ * The same elements stay mounted whichever way it is placed, so the call never restarts.
  */
 export default function CallOverlay({
   request,
@@ -122,7 +131,7 @@ export default function CallOverlay({
     void session.start({ mic, camera: isVideo && camera });
   };
 
-  // Leaving the logged-in area (or logging out) unmounts this: hang up.
+  // Logging out unmounts this: hang up.
   const session = stage.kind === 'call' ? stage.session : null;
   useEffect(() => () => void session?.end(), [session]);
   const callState = useCallState(session);
@@ -143,15 +152,50 @@ export default function CallOverlay({
   const dockRect = useElementRect(desktop ? dock : null);
   const docked = dockRect !== null;
 
-  // Keep the page behind still while the call covers it (beside the chat, the chat stays usable).
+  // Full or mini when not docked. Moving to another page during the call makes it small, so the page can be used.
+  const [view, setView] = useState<'full' | 'mini'>('full');
+  const pathname = usePathname();
+  const [seenPath, setSeenPath] = useState(pathname);
+  if (seenPath !== pathname) {
+    setSeenPath(pathname);
+    if (session) setView('mini');
+  }
+  const layout: CallLayout = docked
+    ? 'docked'
+    : // The before-call screen and endings that need reading are always full.
+      !session || (callState?.phase === 'ended' && !quietEnd) || view === 'full'
+      ? 'full'
+      : 'mini';
+  const minimize = useCallback(() => setView('mini'), []);
+  const expand = useCallback(() => setView('full'), []);
+
+  // Keep the page behind still while the call covers it (docked or mini, the page stays usable).
   useEffect(() => {
-    if (docked) return;
+    if (layout !== 'full') return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = previous;
     };
-  }, [docked]);
+  }, [layout]);
+
+  // Escape makes a full call small again (desktop).
+  useEffect(() => {
+    if (layout !== 'full' || !session) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') minimize();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [layout, session, minimize]);
+
+  const mini = layout === 'mini';
+  const miniVideo = mini && !!callState?.video && callState.other.cameraOn;
+  const drag = useMiniDrag(mini, () => {
+    // A tap is a user gesture: let the browser play their voice if it held it back.
+    if (callState?.audioBlocked) void session?.startAudio();
+    expand();
+  });
 
   const closeLobby = () => {
     stopMedia(previewStream.current);
@@ -163,9 +207,16 @@ export default function CallOverlay({
     <div
       className={clsx(
         'font-app',
-        docked
-          ? 'fixed z-30'
-          : 'fixed inset-0 z-[70] flex items-center justify-center bg-black/60 lg:p-8',
+        layout === 'docked' && 'fixed z-30',
+        layout === 'full' &&
+          'fixed inset-0 z-[70] flex items-center justify-center bg-black/60 lg:p-8',
+        mini && [
+          'fixed z-[60] cursor-grab touch-none select-none',
+          miniVideo ? 'h-[188px] w-[132px] lg:h-[300px] lg:w-[220px]' : 'h-[68px] w-[300px]',
+          // Above the phone's bottom tabs until it is dragged.
+          !drag.offset &&
+            'bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 lg:bottom-6 lg:right-6',
+        ],
       )}
       style={
         dockRect
@@ -175,18 +226,23 @@ export default function CallOverlay({
               width: dockRect.width,
               height: dockRect.height,
             }
-          : undefined
+          : mini && drag.offset
+            ? { right: drag.offset.right, bottom: drag.offset.bottom }
+            : undefined
       }
+      {...(mini ? drag.handlers : {})}
     >
       <section
         role="dialog"
-        aria-modal={!docked}
+        aria-modal={layout === 'full'}
         aria-label={`${isVideo ? 'Video' : 'Voice'} call with ${request.partner.name}`}
         className={clsx(
           'flex flex-col overflow-hidden bg-[#16110f] text-white',
-          docked
-            ? 'h-full w-full rounded-2xl shadow-[0_4px_16px_rgba(92,56,23,0.08)]'
-            : 'h-[100dvh] w-full lg:h-[min(760px,calc(100dvh-4rem))] lg:max-w-[1100px] lg:rounded-2xl lg:shadow-2xl',
+          layout === 'docked' &&
+            'h-full w-full rounded-2xl shadow-[0_4px_16px_rgba(92,56,23,0.08)]',
+          layout === 'full' &&
+            'h-[100dvh] w-full lg:h-[min(760px,calc(100dvh-4rem))] lg:max-w-[1100px] lg:rounded-2xl lg:shadow-2xl',
+          mini && 'h-full w-full rounded-2xl shadow-2xl ring-1 ring-white/15',
         )}
       >
         {stage.kind !== 'call' ? (
@@ -204,9 +260,22 @@ export default function CallOverlay({
             />
           </>
         ) : callState?.phase === 'ended' ? (
-          <Ended state={callState} request={request} onClose={onClose} onAgain={onAgain} />
+          <Ended
+            state={callState}
+            request={request}
+            compact={mini}
+            onClose={onClose}
+            onAgain={onAgain}
+          />
         ) : callState ? (
-          <CallScreen session={stage.session} state={callState} request={request} docked={docked} />
+          <CallScreen
+            session={stage.session}
+            state={callState}
+            request={request}
+            layout={layout}
+            onMinimize={minimize}
+            onExpand={expand}
+          />
         ) : null}
       </section>
     </div>
@@ -235,6 +304,71 @@ function useMediaQuery(query: string): boolean {
     () => false,
   );
 }
+
+type Offset = { right: number; bottom: number };
+
+/**
+ * Dragging the small call window. It keeps its distance from the bottom-right corner (null until first dragged:
+ * the default corner). A press that doesn't move is a tap. Buttons inside keep their own clicks.
+ */
+function useMiniDrag(active: boolean, onTap: () => void) {
+  const [offset, setOffset] = useState<Offset | null>(null);
+  const start = useRef<{
+    x: number;
+    y: number;
+    from: Offset;
+    width: number;
+    height: number;
+    moved: boolean;
+  } | null>(null);
+
+  const handlers = {
+    onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!active || e.button !== 0 || (e.target as HTMLElement).closest('button')) return;
+      const box = e.currentTarget.getBoundingClientRect();
+      const view = viewport();
+      start.current = {
+        x: e.clientX,
+        y: e.clientY,
+        from: { right: view.width - box.right, bottom: view.height - box.bottom },
+        width: box.width,
+        height: box.height,
+        moved: false,
+      };
+      e.currentTarget.setPointerCapture(e.pointerId);
+    },
+    onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => {
+      const s = start.current;
+      if (!s) return;
+      const dx = e.clientX - s.x;
+      const dy = e.clientY - s.y;
+      if (!s.moved && Math.hypot(dx, dy) < 6) return;
+      s.moved = true;
+      const view = viewport();
+      const clamp = (v: number, max: number) =>
+        Math.min(Math.max(v, MINI_MARGIN), max - MINI_MARGIN);
+      setOffset({
+        right: clamp(s.from.right - dx, view.width - s.width),
+        bottom: clamp(s.from.bottom - dy, view.height - s.height),
+      });
+    },
+    onPointerUp: () => {
+      const s = start.current;
+      start.current = null;
+      if (s && !s.moved) onTap();
+    },
+    onPointerCancel: () => {
+      start.current = null;
+    },
+  };
+  return { offset, handlers };
+}
+
+/** What fixed right/bottom measure from: the window without its scrollbar. */
+const viewport = () => ({
+  width: document.documentElement.clientWidth,
+  height: document.documentElement.clientHeight,
+});
 
 type Rect = { top: number; left: number; width: number; height: number };
 
@@ -472,17 +606,30 @@ const END_TEXT: Record<CallEndReason, string> = {
 function Ended({
   state,
   request,
+  compact,
   onClose,
   onAgain,
 }: {
   state: CallState;
   request: CallRequest;
+  /** In the small window (plain endings only; the others open full). */
+  compact: boolean;
   onClose: () => void;
   onAgain: () => void;
 }) {
   const reason = state.endReason ?? 'hangup';
   const quiet = QUIET_ENDS.has(reason) && !state.error;
   const canRetry = reason === 'connection-lost' || reason === 'failed';
+  if (compact) {
+    return (
+      <p
+        role="status"
+        className="flex flex-1 items-center justify-center px-3 text-center text-[14px] font-medium"
+      >
+        {state.error ?? END_TEXT[reason]}
+      </p>
+    );
+  }
   return (
     <div className="relative flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
       <Photo photo={request.partner.photo} name={request.partner.name} size="lg" />

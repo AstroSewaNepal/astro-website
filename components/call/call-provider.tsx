@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useSession } from 'next-auth/react';
 
 import type { CallType } from '@/lib/call/session';
 
@@ -34,8 +35,9 @@ const Calls = createContext<CallsContext | null>(null);
 const CallOverlay = dynamic(() => import('@/components/call/call-overlay'), { ssr: false });
 
 /**
- * Holds the one call of the logged-in area, above the pages: moving between pages keeps the call (the app keeps its
- * call above its screens too). Pages ask for a call with useCalls().openCall.
+ * Holds the one call of the site, above every page layout (root layout): moving to any page keeps the call, including
+ * the public pages a client browses (Astro Connect, profiles) that have their own layout. The app keeps its call
+ * above its screens too. Pages ask for a call with useCalls().openCall.
  */
 export function CallProvider({ children }: { children: React.ReactNode }) {
   const [request, setRequest] = useState<CallRequest | null>(null);
@@ -47,21 +49,24 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     setRequest(current => current ?? next);
   }, []);
   const close = useCallback(() => setRequest(null), []);
+  // Logged out: no call (the overlay unmounts and hangs up).
+  const { status } = useSession();
+  const active = status === 'unauthenticated' ? null : request;
   const value = useMemo(
     () => ({
       openCall,
-      busy: request !== null,
-      activeBookingId: request?.bookingId ?? null,
+      busy: active !== null,
+      activeBookingId: active?.bookingId ?? null,
       registerDock: setDock,
     }),
-    [openCall, request],
+    [openCall, active],
   );
 
   return (
     <Calls.Provider value={value}>
       {children}
-      {request ? (
-        <CallOverlay key={attempt} request={request} dock={dock} onClose={close} onAgain={again} />
+      {active ? (
+        <CallOverlay key={attempt} request={active} dock={dock} onClose={close} onAgain={again} />
       ) : null}
     </Calls.Provider>
   );
@@ -69,6 +74,6 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
 
 export function useCalls(): CallsContext {
   const calls = useContext(Calls);
-  if (!calls) throw new Error('useCalls needs a CallProvider (the logged-in area layout)');
+  if (!calls) throw new Error('useCalls needs a CallProvider (root layout)');
   return calls;
 }
