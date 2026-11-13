@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import clsx from 'clsx';
 
 import { AstroChakraImage } from '@/components/images';
 import { type SignInError, signInErrorMessage } from '@/lib/auth/google-signin';
+import { noteOutsideTrip } from '@/lib/navigation/outside-trip';
 
 export type SignInRole = 'client' | 'astrologer';
 
@@ -69,6 +70,14 @@ export function SignInPanel({
   const [role, setRole] = useState<SignInRole>(initialRole);
   const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  // Back from Google can restore this page as it was (back/forward cache): the button works again.
+  useEffect(() => {
+    const onShow = (event: PageTransitionEvent) => {
+      if (event.persisted) setSubmitting(false);
+    };
+    window.addEventListener('pageshow', onShow);
+    return () => window.removeEventListener('pageshow', onShow);
+  }, []);
   // The message belongs to the attempt it came from; picking another tab is a new attempt.
   const [shownError, setShownError] = useState(error);
 
@@ -120,7 +129,15 @@ export function SignInPanel({
       </div>
 
       {/* A plain form post: /login/google/start sets the state cookie and sends the browser on to Google. */}
-      <form method="post" action="/login/google/start" onSubmit={() => setSubmitting(true)}>
+      <form
+        method="post"
+        action="/login/google/start"
+        onSubmit={() => {
+          setSubmitting(true);
+          // Back after signing in skips Google's pages (lib/navigation/outside-trip.ts).
+          noteOutsideTrip('login');
+        }}
+      >
         <input type="hidden" name="role" value={BACKEND_ROLE[role]} />
         {callbackUrl ? <input type="hidden" name="callbackUrl" value={callbackUrl} /> : null}
         <button
@@ -147,6 +164,8 @@ export function SignInPanel({
       <label className="mt-6 flex cursor-pointer items-start gap-3 font-mukta text-[15px] text-[#4a1a1a]">
         <input
           type="checkbox"
+          // Back to this page: browsers would tick it again from memory while the button still reads "not agreed".
+          autoComplete="off"
           checked={agreed}
           onChange={e => setAgreed(e.target.checked)}
           className="mt-1 h-[18px] w-[18px] shrink-0 accent-[#611508]"
