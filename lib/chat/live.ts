@@ -1,7 +1,7 @@
 // Messages that came in after the history was loaded, and own messages still on their way. Kept apart from the
 // history query so a live message never needs a refetch of every loaded page.
 
-import type { ChatItem } from '@/lib/chat/messages';
+import { newerCopy, sameContent, type ChatItem } from '@/lib/chat/messages';
 
 /** A photo on its way: shown from the device until the server has it. */
 export type OutgoingImage = {
@@ -33,10 +33,16 @@ export type Outgoing = {
 export type LiveState = {
   arrived: ChatItem[];
   outbox: Outgoing[];
+  /**
+   * Updates to messages already shown (the socket's message_edited: a call message going from started to ongoing to
+   * ended). Applied to loaded messages only; one on an older page that isn't loaded shows when that page loads.
+   */
+  edits: Record<string, ChatItem>;
 };
 
 export type LiveAction =
   | { type: 'arrived'; items: ChatItem[] }
+  | { type: 'edited'; item: ChatItem }
   | { type: 'queued'; message: Outgoing }
   | { type: 'sent'; localId: string; item: ChatItem }
   | { type: 'uploaded'; localId: string; uploaded: Uploaded }
@@ -44,19 +50,28 @@ export type LiveAction =
   | { type: 'retry'; localId: string; at: Date }
   | { type: 'discard'; localId: string };
 
-export const emptyLive: LiveState = { arrived: [], outbox: [] };
+export const emptyLive: LiveState = { arrived: [], outbox: [], edits: {} };
 
 /** A timed-out send counts as delivered when the server has an own message with its text from this long before. */
 const UNCERTAIN_MATCH_MS = 2 * 60_000;
 
+/** New messages at the end; a newer copy of one already here (a resync after missed updates) replaces it. */
 function addArrived(arrived: ChatItem[], items: ChatItem[]): ChatItem[] {
-  const known = new Set(arrived.map(m => m.id));
-  const fresh = items.filter(m => {
-    if (known.has(m.id)) return false;
-    known.add(m.id);
-    return true;
-  });
-  return fresh.length ? [...arrived, ...fresh] : arrived;
+  let next = arrived;
+  const at = new Map(arrived.map((m, i) => [m.id, i]));
+  for (const item of items) {
+    const i = at.get(item.id);
+    if (i === undefined) {
+      at.set(item.id, next.length);
+      next = [...next, item];
+      continue;
+    }
+    const shown = newerCopy(next[i], item);
+    if (shown === next[i] || sameContent(shown, next[i])) continue;
+    next = next.slice();
+    next[i] = shown;
+  }
+  return next;
 }
 
 export function liveReducer(state: LiveState, action: LiveAction): LiveState {
@@ -83,12 +98,19 @@ export function liveReducer(state: LiveState, action: LiveAction): LiveState {
       });
       return arrived === state.arrived && outbox.length === state.outbox.length
         ? state
-        : { arrived, outbox };
+        : { ...state, arrived, outbox };
+    }
+    case 'edited': {
+      const known = state.edits[action.item.id];
+      const shown = known ? newerCopy(known, action.item) : action.item;
+      if (known && (shown === known || sameContent(shown, known))) return state;
+      return { ...state, edits: { ...state.edits, [action.item.id]: shown } };
     }
     case 'queued':
       return { ...state, outbox: [...state.outbox, action.message] };
     case 'sent':
       return {
+        ...state,
         arrived: addArrived(state.arrived, [{ ...action.item, mine: true }]),
         outbox: state.outbox.filter(o => o.localId !== action.localId),
       };
@@ -132,13 +154,16 @@ export function liveReducer(state: LiveState, action: LiveAction): LiveState {
  * after a refetch), then own messages that aren't confirmed yet, in the order they were written.
  */
 export function timeline(history: ChatItem[], live: LiveState): ChatItem[] {
-  const seen = new Set<string>();
-  const confirmed: ChatItem[] = [];
+  const byId = new Map<string, ChatItem>();
   for (const m of [...history, ...live.arrived]) {
-    if (seen.has(m.id)) continue;
-    seen.add(m.id);
-    confirmed.push(m);
+    const known = byId.get(m.id);
+    byId.set(m.id, known ? newerCopy(known, m) : m);
   }
+  for (const [id, edit] of Object.entries(live.edits)) {
+    const known = byId.get(id);
+    if (known) byId.set(id, newerCopy(known, { ...edit, mine: known.mine }));
+  }
+  const confirmed = [...byId.values()];
   confirmed.sort((a, b) => a.at.getTime() - b.at.getTime());
   const pending = live.outbox.map<ChatItem>(o => ({
     id: o.localId,

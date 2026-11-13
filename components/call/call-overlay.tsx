@@ -190,7 +190,8 @@ export default function CallOverlay({
   }, [layout, session, minimize]);
 
   const mini = layout === 'mini';
-  const miniVideo = mini && !!callState?.video && callState.other.cameraOn;
+  // Video calls keep a video tile (their video or photo, mine in its corner, like the app's PiP); voice calls a card.
+  const miniVideo = mini && !!callState?.video;
   const drag = useMiniDrag(mini, () => {
     // A tap is a user gesture: let the browser play their voice if it held it back.
     if (callState?.audioBlocked) void session?.startAudio();
@@ -212,7 +213,7 @@ export default function CallOverlay({
           'fixed inset-0 z-[70] flex items-center justify-center bg-black/60 lg:p-8',
         mini && [
           'fixed z-[60] cursor-grab touch-none select-none',
-          miniVideo ? 'h-[188px] w-[132px] lg:h-[300px] lg:w-[220px]' : 'h-[68px] w-[300px]',
+          miniVideo ? 'h-[230px] w-[156px] lg:h-[400px] lg:w-[290px]' : 'h-[68px] w-[300px]',
           // Above the phone's bottom tabs until it is dragged.
           !drag.offset &&
             'bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 lg:bottom-6 lg:right-6',

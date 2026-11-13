@@ -64,6 +64,7 @@ import {
 } from '@/lib/chat/session';
 import type { ChatStatus } from '@/lib/chat/socket';
 import {
+  callBubbleText,
   chatPartner,
   dayChip,
   dayStarts,
@@ -72,6 +73,7 @@ import {
   messagesPath,
   messageTime,
   type ChatBooking,
+  type ChatCallInfo,
   type ChatItem,
   type ChatMessagesPage,
 } from '@/lib/chat/messages';
@@ -255,6 +257,10 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
       endsAt: new Date(booking.data.scheduledEndAt).getTime(),
     });
   };
+  // A call message's Join: this booking's call, still open, while no call is open in this tab (one chat holds the
+  // messages of every booking with the astrologer, so an older booking's call never offers it).
+  const canJoinCall = (call: ChatCallInfo) =>
+    canCall && !callBusy && call.status !== 'ended' && call.bookingId === bookingId;
 
   // Phones: full screen above the keyboard, like the app's chat screen (no site header, footer or tabs).
   const panel = useRef<HTMLElement>(null);
@@ -460,6 +466,8 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
             onDiscard={chat.discard}
             onOpenImage={viewer.open}
             onReport={astrologerId ? reportMessage : undefined}
+            canJoinCall={canJoinCall}
+            onJoinCall={startCall}
           />
         )}
 
@@ -802,6 +810,8 @@ function MessageList({
   onDiscard,
   onOpenImage,
   onReport,
+  canJoinCall,
+  onJoinCall,
 }: {
   items: ChatItem[];
   partner: { name: string; photo: string | null };
@@ -814,6 +824,8 @@ function MessageList({
   onOpenImage: (url: string) => void;
   /** Report one of the other person's messages; missing while the booking isn't known. */
   onReport?: (item: ChatItem) => void;
+  canJoinCall: (call: ChatCallInfo) => boolean;
+  onJoinCall: (callType: ChatCallInfo['callType']) => void;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
   const starts = useMemo(() => dayStarts(items), [items]);
@@ -911,6 +923,8 @@ function MessageList({
               onDiscard={onDiscard}
               onOpenImage={onOpenImage}
               onReport={onReport}
+              canJoinCall={canJoinCall}
+              onJoinCall={onJoinCall}
             />
           </div>
         ))
@@ -947,6 +961,8 @@ function Bubble({
   onDiscard,
   onOpenImage,
   onReport,
+  canJoinCall,
+  onJoinCall,
 }: {
   item: ChatItem;
   partner: { name: string; photo: string | null };
@@ -954,11 +970,13 @@ function Bubble({
   onDiscard: (item: ChatItem) => void;
   onOpenImage: (url: string) => void;
   onReport?: (item: ChatItem) => void;
+  canJoinCall: (call: ChatCallInfo) => boolean;
+  onJoinCall: (callType: ChatCallInfo['callType']) => void;
 }) {
   const failed = item.status === 'failed';
   // The other person's messages have actions (copy, report): a hover button on computers, a long press on touch
-  // screens (the app's long-press report).
-  const hasActions = !item.mine && !item.status && !!onReport;
+  // screens (the app's long-press report). Call messages are written by the server: nothing to copy or report.
+  const hasActions = !item.mine && !item.status && !!onReport && !item.call;
   const [menuOpen, setMenuOpen] = useState(false);
   const press = useLongPress(() => setMenuOpen(true), hasActions);
   return (
@@ -980,8 +998,16 @@ function Bubble({
             failed && 'opacity-60',
           )}
         >
-          {/* A photo whose URL was refused (lib/chat/messages.ts safeImageUrl) still shows as a photo that won't load. */}
-          {item.image || item.mediaId ? (
+          {item.call ? (
+            <CallMessage
+              call={item.call}
+              mine={item.mine}
+              partnerName={partner.name}
+              canJoin={canJoinCall(item.call)}
+              onJoin={onJoinCall}
+            />
+          ) : /* A photo whose URL was refused (lib/chat/messages.ts safeImageUrl) still shows as a photo that won't load. */
+          item.image || item.mediaId ? (
             <ChatPhoto
               src={item.image}
               fallback={item.fullImage ?? null}
@@ -990,7 +1016,7 @@ function Bubble({
               onOpen={onOpenImage}
             />
           ) : null}
-          {item.text ? (
+          {item.text && !item.call ? (
             <p className="whitespace-pre-wrap break-words text-[15px] font-medium leading-snug lg:text-[16px]">
               {item.text}
             </p>
@@ -1061,6 +1087,82 @@ function Bubble({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * A call message inside its bubble, on the side of whoever started the call: the call icon, what happened, and Join
+ * while the call is open (Rejoin for the caller, who may have closed the call screen).
+ */
+function CallMessage({
+  call,
+  mine,
+  partnerName,
+  canJoin,
+  onJoin,
+}: {
+  call: ChatCallInfo;
+  mine: boolean;
+  partnerName: string;
+  canJoin: boolean;
+  onJoin: (callType: ChatCallInfo['callType']) => void;
+}) {
+  const { title, detail, missed } = callBubbleText(call, mine, partnerName);
+  const open = call.status !== 'ended';
+  const Icon = call.callType === 'audio' ? CallIcon : VideoCallIcon;
+  return (
+    <div className="flex min-w-[200px] flex-col gap-2.5">
+      <div className="flex items-center gap-3">
+        <span
+          className={clsx(
+            'flex h-10 w-10 shrink-0 items-center justify-center rounded-full',
+            mine
+              ? 'bg-white/15 text-[#F8F3DF]'
+              : missed
+                ? 'bg-[#FF3B3B]/10 text-[#D92D20]'
+                : open
+                  ? 'bg-[#720A0B] text-white'
+                  : 'bg-[#efe4d2] text-[#720A0B]',
+          )}
+        >
+          <Icon className="h-5 w-5" />
+        </span>
+        <div className="min-w-0">
+          <p
+            className={clsx(
+              'text-[15px] font-semibold leading-snug lg:text-[16px]',
+              missed && 'text-[#D92D20]',
+            )}
+          >
+            {title}
+          </p>
+          {detail ? (
+            <p
+              className={clsx(
+                'text-[13px] leading-snug',
+                mine ? 'text-white/85' : 'text-[#5c4a3d]',
+                call.status === 'ongoing' && 'flex items-center gap-1.5',
+              )}
+            >
+              {call.status === 'ongoing' ? (
+                <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-[#15B763]" aria-hidden />
+              ) : null}
+              {detail}
+            </p>
+          ) : null}
+        </div>
+      </div>
+      {canJoin ? (
+        <button
+          type="button"
+          onClick={() => onJoin(call.callType)}
+          className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#15B763] px-5 text-[15px] font-semibold text-white hover:bg-[#12a157] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#15B763]"
+        >
+          <Icon className="h-4 w-4" />
+          {mine ? 'Rejoin' : 'Join'}
+        </button>
       ) : null}
     </div>
   );

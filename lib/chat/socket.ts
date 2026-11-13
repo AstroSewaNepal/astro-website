@@ -20,6 +20,8 @@ export type ChatConnectionEvents = {
   status: (status: ChatStatus) => void;
   /** A message from the other person (or from this user on another device). */
   message: (message: BackendChatMessage) => void;
+  /** A message changed (a call message's status, an edit): the whole message as it is now. */
+  edited: (message: BackendChatMessage) => void;
   partnerTyping: (typing: boolean) => void;
   /** Someone ended the booking (End Chat, or the app's timer): who did, when the server says. */
   ended: (endedByUserId: string | null) => void;
@@ -226,6 +228,11 @@ export function connectChat({
     const sender = typeof message.sender === 'object' ? message.sender?._id : message.sender;
     if (fromPartner(sender)) setPartnerTyping(false);
     events.message(message);
+  });
+
+  socket.on('message_edited', (message: BackendChatMessage & { chat?: unknown }) => {
+    if (!message?._id || !forThisChat(message.chat)) return;
+    events.edited(message);
   });
 
   const onTypingEvent =

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  callBubbleText,
+  newerCopy,
   safeImageUrl,
   chatPartner,
   chatPath,
@@ -141,5 +143,66 @@ describe('chat messages', () => {
       chatPartner({ ...base, astrologer: { fullName: 'Rohan', isPendingDeletion: true } }),
     ).toEqual({ name: 'Astro Sewa Astrologer', photo: null });
     expect(chatPartner(undefined).name).toBe('Astrologer');
+  });
+
+  it('reads call messages', () => {
+    const base = { _id: 'c1', createdAt: '2026-11-13T09:00:00Z', sender: { _id: 'u1' } };
+    const call = (c: Record<string, unknown>, kind = 'call') =>
+      toChatItem({ ...base, kind, message: 'x', call: c }, 'u1');
+    expect(
+      call({ callType: 'audio', status: 'ended', connectionSchedule: 'b1', answeredAt: '2026', durationSec: 42 }).call,
+    ).toEqual({ callType: 'audio', status: 'ended', bookingId: 'b1', answered: true, durationSec: 42 });
+    expect(call({ callType: 'video', status: 'started' }).call).toEqual({
+      callType: 'video',
+      status: 'started',
+      bookingId: '',
+      answered: false,
+    });
+    // Not a call message, or a status this page doesn't know: a plain bubble with the text.
+    expect(call({ status: 'started' }, 'text').call).toBeUndefined();
+    expect(call({ status: 'ringing' }).call).toBeUndefined();
+    expect(toChatItem({ ...base, message: 'hi' }, 'u1').call).toBeUndefined();
+  });
+
+  it('words call bubbles for the caller and the other person', () => {
+    const c = (status: 'started' | 'ongoing' | 'ended', extra = {}) => ({
+      callType: 'video' as const,
+      status,
+      bookingId: 'b1',
+      answered: false,
+      ...extra,
+    });
+    expect(callBubbleText(c('started'), true, 'Rowisee')).toEqual({
+      title: 'Video call',
+      detail: 'Waiting for Rowisee to join',
+      missed: false,
+    });
+    expect(callBubbleText(c('started'), false, 'Rowisee').detail).toBe('Waiting for you to join');
+    expect(callBubbleText(c('ongoing', { answered: true }), false, 'R').detail).toBe('Call in progress');
+    expect(callBubbleText(c('ended'), true, 'R')).toEqual({ title: 'Video call', detail: 'No answer', missed: false });
+    expect(callBubbleText({ ...c('ended'), callType: 'audio' }, false, 'R')).toEqual({
+      title: 'Missed voice call',
+      detail: null,
+      missed: true,
+    });
+    expect(callBubbleText(c('ended', { answered: true, durationSec: 42 }), true, 'R').detail).toBe('42 sec');
+    expect(callBubbleText(c('ended', { answered: true, durationSec: 250 }), true, 'R').detail).toBe('4 min');
+    expect(callBubbleText(c('ended', { answered: true }), true, 'R').detail).toBe('Ended');
+  });
+
+  it('keeps the furthest status of a call message, the latest copy of anything else', () => {
+    const at = new Date(0);
+    const call = (status: 'started' | 'ongoing' | 'ended') => ({
+      id: 'c1',
+      text: status,
+      image: null,
+      at,
+      mine: false,
+      call: { callType: 'video' as const, status, bookingId: 'b', answered: status !== 'started' },
+    });
+    expect(newerCopy(call('ongoing'), call('started')).text).toBe('ongoing');
+    expect(newerCopy(call('started'), call('ended')).text).toBe('ended');
+    const text = (t: string) => ({ id: 'm', text: t, image: null, at, mine: false });
+    expect(newerCopy(text('old'), text('edited')).text).toBe('edited');
   });
 });

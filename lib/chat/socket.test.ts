@@ -102,6 +102,7 @@ function setup(
   const events = {
     status: vi.fn(),
     message: vi.fn(),
+    edited: vi.fn(),
     partnerTyping: vi.fn(),
     ended: vi.fn(),
     resync: vi.fn(),
@@ -351,6 +352,18 @@ describe('connectChat', () => {
     expect(events.message).toHaveBeenCalledTimes(1);
     expect(events.message).toHaveBeenCalledWith(m);
     expect(events.partnerTyping).toHaveBeenLastCalledWith(false);
+  });
+
+  it('passes on updated messages for this chat (call messages changing status)', async () => {
+    const { socket, events } = setup();
+    await flush();
+    const m = { _id: 'c1', chat: CHAT, kind: 'call', call: { status: 'ongoing' }, createdAt: 'x' };
+    socket().fire('message_edited', m);
+    socket().fire('message_edited', { ...m, chat: 'chat-2' });
+    socket().fire('message_edited', null);
+    expect(events.edited).toHaveBeenCalledTimes(1);
+    expect(events.edited).toHaveBeenCalledWith(m);
+    expect(events.message).not.toHaveBeenCalled();
   });
 
   it('reports the end of the booking', async () => {
