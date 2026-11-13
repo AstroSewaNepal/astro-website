@@ -78,8 +78,10 @@ export function CallScreen({
   const controlsVisible = !videoLayout || controlsShown;
 
   const status = statusText(state, request.partner.name);
-  // The small window without their video: a one-line card (photo, name, status, buttons).
-  const miniCard = mini && !theirVideo;
+  // The small window: a video call is a tile (their video, or their photo while their camera is off; mine in the
+  // corner, like the app's PiP), a voice call a one-line card (photo, name, status, buttons).
+  const miniCard = mini && !videoLayout;
+  const miniTile = mini && videoLayout;
 
   const minimizeButton = (
     <button
@@ -153,10 +155,14 @@ export function CallScreen({
         playsInline
         muted
         className={clsx(
-          'absolute right-3 z-10 h-[150px] w-[105px] rounded-xl object-cover shadow-lg lg:h-[170px] lg:w-[130px]',
-          docked ? 'top-3' : 'top-[calc(max(0.75rem,env(safe-area-inset-top))+4.25rem)]',
+          'absolute z-10 object-cover shadow-lg',
+          miniTile
+            ? 'right-2 top-2 h-[72px] w-[52px] rounded-lg ring-1 ring-white/40 lg:h-[120px] lg:w-[86px]'
+            : 'right-3 h-[150px] w-[105px] rounded-xl lg:h-[170px] lg:w-[130px]',
+          !miniTile &&
+            (docked ? 'top-3' : 'top-[calc(max(0.75rem,env(safe-area-inset-top))+4.25rem)]'),
           state.facing === 'user' && '-scale-x-100',
-          (!myVideo || !videoLayout || mini) && 'invisible',
+          (!myVideo || !videoLayout) && 'invisible',
         )}
       />
 
@@ -166,10 +172,24 @@ export function CallScreen({
           'relative z-[1] flex min-h-0 min-w-0 flex-1',
           miniCard
             ? 'items-center gap-3 pl-3'
-            : 'flex-col items-center justify-center gap-2 px-6 text-center',
+            : miniTile
+              ? 'flex-col items-center justify-center gap-1.5 px-2 pb-12 text-center'
+              : 'flex-col items-center justify-center gap-2 px-6 text-center',
         )}
       >
-        {theirVideo ? null : miniCard ? (
+        {theirVideo ? null : miniTile ? (
+          <>
+            <Photo photo={request.partner.photo} name={request.partner.name} size="sm" />
+            <p className="w-full truncate text-[13px] font-semibold lg:text-[15px]">
+              {request.partner.name}
+            </p>
+            <p className="text-[12px] text-white/75 lg:text-[13px]">
+              {state.audioBlocked
+                ? 'Tap to hear'
+                : (status ?? (state.phase === 'in-call' ? 'Camera off' : null))}
+            </p>
+          </>
+        ) : miniCard ? (
           <>
             <Photo photo={request.partner.photo} name={request.partner.name} size="sm" />
             <div className="min-w-0 flex-1">

@@ -129,4 +129,33 @@ describe('timeline', () => {
     expect(list.map(m => m.id)).toEqual(['a', 'b', 'c', 'l1']);
     expect(list[3]).toMatchObject({ mine: true, status: 'sending' });
   });
+
+  it('shows updates to loaded messages and ignores updates to ones not loaded', () => {
+    const callItem = (status: 'started' | 'ongoing' | 'ended', mine = false): ChatItem => ({
+      ...item('c1', 3, mine, status),
+      call: { callType: 'video', status, bookingId: 'b1', answered: status !== 'started' },
+    });
+    let live = liveReducer(emptyLive, { type: 'arrived', items: [callItem('started', true)] });
+    live = liveReducer(live, { type: 'edited', item: callItem('ongoing') });
+    live = liveReducer(live, { type: 'edited', item: item('far', 0, false, 'edited text') });
+    const list = timeline([item('a', 1)], live);
+    expect(list.map(m => m.id)).toEqual(['a', 'c1']);
+    // The update keeps whose message it is.
+    expect(list[1]).toMatchObject({ text: 'ongoing', mine: true });
+    // A late, older copy (a stale history page) never moves a call back.
+    expect(timeline([callItem('started')], live)[0].text).toBe('ongoing');
+    // The same update twice changes nothing.
+    expect(liveReducer(live, { type: 'edited', item: callItem('ongoing') })).toBe(live);
+  });
+
+  it('takes a newer copy from a resync of a message already here', () => {
+    const callItem = (status: 'started' | 'ended'): ChatItem => ({
+      ...item('c1', 3, false, status),
+      call: { callType: 'audio', status, bookingId: 'b1', answered: false },
+    });
+    const live = liveReducer(emptyLive, { type: 'arrived', items: [callItem('started')] });
+    const synced = liveReducer(live, { type: 'arrived', items: [callItem('ended')] });
+    expect(synced.arrived.map(m => m.text)).toEqual(['ended']);
+    expect(liveReducer(synced, { type: 'arrived', items: [callItem('started')] })).toBe(synced);
+  });
 });

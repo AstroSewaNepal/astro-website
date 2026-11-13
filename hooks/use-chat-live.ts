@@ -118,6 +118,7 @@ export function useChatLive({
           events: {
             status: setStatus,
             message: m => dispatch({ type: 'arrived', items: [toChatItem(m, myId)] }),
+            edited: m => dispatch({ type: 'edited', item: toChatItem(m, myId) }),
             partnerTyping: setPartnerTyping,
             // Step 3 shows the ended state from the refetched booking.
             // The refetched booking (now COMPLETED) moves the page to its ended state.
