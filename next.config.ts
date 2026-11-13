@@ -30,7 +30,9 @@ const contentSecurityPolicy = [
   `frame-src 'self' ${vercelLive}`,
   "object-src 'none'",
   "base-uri 'self'",
-  "form-action 'self' https://accounts.google.com",
+  // "Continue with Google" posts to /login/google/start, which redirects through the backend (/auth/google/url) to
+  // Google. Chrome checks form-action on every redirect of a form post, so the backend must be listed too.
+  `form-action 'self' ${backendOrigin} https://accounts.google.com`,
   "frame-ancestors 'none'",
 ]
   .map((directive) => directive.replace(/\s+/g, ' ').trim())
