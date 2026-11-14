@@ -276,6 +276,37 @@ describe('CallSession', () => {
     expect(room.listenerCount()).toBe(0);
   });
 
+  it('the page closing reports the leave first, with keepalive, and only once', async () => {
+    const { session, room, api, calls } = setup();
+    await session.start();
+    session.leavePage();
+    // Sent before anything is awaited: once the page is gone, nothing after an await would run.
+    expect(api.reportLeft).toHaveBeenCalledWith('booking-1', { keepalive: true });
+    expect(calls.at(-1)).toBe('left after 0 disconnect(s)');
+    await vi.advanceTimersByTimeAsync(0);
+    session.leavePage();
+    await session.end();
+    expect(room.disconnects).toBe(1);
+    expect(api.reportLeft).toHaveBeenCalledTimes(1);
+    expect(session.getState()).toMatchObject({ phase: 'ended', endReason: 'hangup' });
+  });
+
+  it('the page closing before a token was issued reports nothing', async () => {
+    const { session, api } = setup({
+      api: {
+        // Still on its way when the page closes.
+        mintToken: vi.fn(
+          () => new Promise<{ token: string; roomName: string; liveKitUrl: string }>(() => {}),
+        ),
+      },
+    });
+    void session.start();
+    session.leavePage();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(api.reportLeft).not.toHaveBeenCalled();
+    expect(session.getState().phase).toBe('ended');
+  });
+
   it('a refused token ends with the reason and creates no room', async () => {
     const { session, createRoom, api } = setup({
       api: {

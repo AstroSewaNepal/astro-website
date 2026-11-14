@@ -53,6 +53,11 @@ export type BackendClientDeps = {
 
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
+export type RequestOptions = {
+  /** Let the request finish after the page closes (small JSON bodies only: browsers cap keepalive at 64 KB). */
+  keepalive?: boolean;
+};
+
 export function createBackendClient({
   baseUrl,
   getToken,
@@ -63,7 +68,13 @@ export function createBackendClient({
 }: BackendClientDeps) {
   const root = baseUrl.replace(/\/+$/, '');
 
-  const send = (method: Method, path: string, token: string | null, body?: unknown) => {
+  const send = (
+    method: Method,
+    path: string,
+    token: string | null,
+    body?: unknown,
+    options?: RequestOptions,
+  ) => {
     const headers: Record<string, string> = { accept: 'application/json', 'x-timezone': timeZone };
     if (token) headers.Authorization = `Bearer ${token}`;
     if (body !== undefined && !(body instanceof FormData))
@@ -72,6 +83,7 @@ export function createBackendClient({
       method,
       headers,
       body: body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body),
+      ...(options?.keepalive && { keepalive: true }),
     });
   };
 
@@ -79,9 +91,10 @@ export function createBackendClient({
     method: Method,
     path: string,
     body?: unknown,
+    options?: RequestOptions,
   ): Promise<BackendResult<T>> {
     const token = await getToken();
-    let res = await send(method, path, token, body);
+    let res = await send(method, path, token, body, options);
 
     // One retry with a refreshed token. A 401 alone never logs the user out (the app's "401 -> wipe tokens" chain
     // logged people out on unrelated 401s); only a refused refresh does.
@@ -90,7 +103,7 @@ export function createBackendClient({
       if (!next) {
         onAuthLost();
       } else if (next !== token) {
-        res = await send(method, path, next, body);
+        res = await send(method, path, next, body, options);
       }
     }
 
@@ -111,8 +124,8 @@ export function createBackendClient({
   return {
     request,
     get: async <T>(path: string) => (await request<T>('GET', path)).data,
-    post: async <T>(path: string, body?: unknown) =>
-      (await request<T>('POST', path, body ?? {})).data,
+    post: async <T>(path: string, body?: unknown, options?: RequestOptions) =>
+      (await request<T>('POST', path, body ?? {}, options)).data,
     put: async <T>(path: string, body?: unknown) =>
       (await request<T>('PUT', path, body ?? {})).data,
     patch: async <T>(path: string, body?: unknown) =>

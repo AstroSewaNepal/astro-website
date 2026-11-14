@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
-import { Loader2, RefreshCw, X } from 'lucide-react';
+import { Loader2, MonitorSmartphone, RefreshCw, X } from 'lucide-react';
 
 import {
   CallIcon,
@@ -29,6 +29,8 @@ import {
   type MediaProblem,
 } from '@/lib/call/media-check';
 import { CallSession, type CallEndReason, type CallState } from '@/lib/call/session';
+import { takeCallLock } from '@/lib/call/tab-lock';
+import { keepScreenOn } from '@/lib/call/wake-lock';
 
 type Stage =
   | { kind: 'checking' }
@@ -58,11 +60,14 @@ export default function CallOverlay({
   dock,
   onClose,
   onAgain,
+  onTimeUp,
 }: {
   request: CallRequest;
   dock: HTMLElement | null;
   onClose: () => void;
   onAgain: () => void;
+  /** The session's time ran out during the call (the provider may open the review). */
+  onTimeUp: (request: CallRequest) => void;
 }) {
   const backend = useBackendClient();
   const [stage, setStage] = useState<Stage>({ kind: 'checking' });
@@ -75,8 +80,35 @@ export default function CallOverlay({
   // Bumped by "Try again".
   const [attempt, setAttempt] = useState(0);
 
-  // Checks right away: the tap on the chat's call button just happened, so Safari shows its prompt.
+  // One call per browser: the lock is held from the before-call screen until the call ends or this closes.
+  const [lock, setLock] = useState<'pending' | 'held' | 'taken'>('pending');
+  const [lockAttempt, setLockAttempt] = useState(0);
+  const releaseLock = useRef(() => {});
   useEffect(() => {
+    let current = true;
+    // A tick later, so React's development double mount lets go before the real one asks.
+    const t = setTimeout(() => {
+      void takeCallLock().then(taken => {
+        if (!current) return taken?.release();
+        if (taken) releaseLock.current = taken.release;
+        setLock(taken ? 'held' : 'taken');
+      });
+    }, 0);
+    return () => {
+      current = false;
+      clearTimeout(t);
+      releaseLock.current();
+      releaseLock.current = () => {};
+    };
+  }, [lockAttempt]);
+  const retryLock = () => {
+    setLock('pending');
+    setLockAttempt(n => n + 1);
+  };
+
+  // Checks as soon as the lock is ours: the tap on the chat's call button just happened, so Safari shows its prompt.
+  useEffect(() => {
+    if (lock !== 'held') return;
     let current = true;
     getCallMedia(request.callType).then(
       media => {
@@ -100,7 +132,7 @@ export default function CallOverlay({
     return () => {
       current = false;
     };
-  }, [request.callType, attempt]);
+  }, [request.callType, attempt, lock]);
   useEffect(() => () => stopMedia(previewStream.current), []);
   const retry = () => {
     setStage({ kind: 'checking' });
@@ -135,6 +167,41 @@ export default function CallOverlay({
   const session = stage.kind === 'call' ? stage.session : null;
   useEffect(() => () => void session?.end(), [session]);
   const callState = useCallState(session);
+  const inCall = !!session && callState?.phase !== 'ended';
+
+  // Ended (even with its message still on screen): another tab may start a call now.
+  useEffect(() => {
+    if (callState?.phase === 'ended') releaseLock.current();
+  }, [callState?.phase]);
+
+  // During the call: the screen stays on, closing or reloading the tab asks first (the browser's own "Leave site?"),
+  // and a page that goes away anyway leaves the room at once instead of after LiveKit's timeout.
+  useEffect(() => {
+    if (!inCall || !session) return;
+    const stopWake = keepScreenOn();
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      // Older browsers need a value to show the prompt; the text itself is never shown.
+      e.returnValue = '';
+    };
+    const onPageHide = () => session.leavePage();
+    window.addEventListener('beforeunload', onBeforeUnload);
+    window.addEventListener('pagehide', onPageHide);
+    return () => {
+      stopWake();
+      window.removeEventListener('beforeunload', onBeforeUnload);
+      window.removeEventListener('pagehide', onPageHide);
+    };
+  }, [inCall, session]);
+
+  // Time up: the provider decides whether the review opens from here (chat page not on screen).
+  const timeUp = callState?.endReason === 'time-up';
+  const timeUpSeen = useRef(false);
+  useEffect(() => {
+    if (!timeUp || timeUpSeen.current) return;
+    timeUpSeen.current = true;
+    onTimeUp(request);
+  }, [timeUp, onTimeUp, request]);
 
   // A plain ending says "Call ended" for a moment and closes; problems stay until the person closes them.
   const quietEnd =
@@ -246,7 +313,12 @@ export default function CallOverlay({
           mini && 'h-full w-full rounded-2xl shadow-2xl ring-1 ring-white/15',
         )}
       >
-        {stage.kind !== 'call' ? (
+        {lock === 'taken' ? (
+          <>
+            <LobbyHeader request={request} onCancel={closeLobby} />
+            <OtherTab onClose={closeLobby} onRetry={retryLock} />
+          </>
+        ) : stage.kind !== 'call' ? (
           <>
             <LobbyHeader request={request} onCancel={closeLobby} />
             <Lobby
@@ -556,6 +628,38 @@ function Lobby({
         </button>
       </div>
     </>
+  );
+}
+
+/** Another tab of this browser has a call open (the same account can only be in a call once). */
+function OtherTab({ onClose, onRetry }: { onClose: () => void; onRetry: () => void }) {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-5 overflow-y-auto px-6 py-8 text-center">
+      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
+        <MonitorSmartphone className="h-8 w-8 text-[#F8F3DF]" aria-hidden />
+      </span>
+      <h2 className="text-[20px] font-semibold">A call is open in another tab</h2>
+      <p className="max-w-md text-[15px] text-white/85">
+        You can be in one call at a time. Go back to the other AstroSewa tab or window, or end the
+        call there and try again.
+      </p>
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={onClose}
+          className="h-12 rounded-full bg-white/10 px-6 text-[16px] font-semibold hover:bg-white/20"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="inline-flex h-12 items-center gap-2 rounded-full bg-[#F8F3DF] px-6 text-[16px] font-semibold text-[#611508]"
+        >
+          <RefreshCw className="h-4 w-4" aria-hidden /> Try again
+        </button>
+      </div>
+    </div>
   );
 }
 

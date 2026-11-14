@@ -120,7 +120,8 @@ export type CallApi = {
     bookingId: string,
     callType: CallType,
   ): Promise<{ token: string; roomName: string; liveKitUrl: string }>;
-  reportLeft(bookingId: string): Promise<unknown>;
+  /** `keepalive` when the page is closing, so the request outlives it. */
+  reportLeft(bookingId: string, options?: { keepalive?: boolean }): Promise<unknown>;
 };
 
 export type CallMediaElements = {
@@ -160,6 +161,8 @@ export class CallSession {
   private room: CallRoom | null = null;
   /** A token was issued: the other person was rung and the chat shows a call message, so leaving must be reported. */
   private minted = false;
+  /** The leave was already reported (leavePage sends it before disconnecting). */
+  private leftReported = false;
   /** room.connect() succeeded. A failing connect also fires Disconnected; that one is a failed join, not a drop. */
   private connected = false;
   private endTimer: ReturnType<typeof setTimeout> | null = null;
@@ -320,6 +323,22 @@ export class CallSession {
   /** Hang up. Safe to call more than once and from anywhere (timer, button, page leaving). */
   end(): Promise<void> {
     return this.finish('hangup', null);
+  }
+
+  /**
+   * The page is going away (pagehide: tab closed, reloaded, or left for another site). Leaves at once, and reports
+   * the leave first with keepalive: once the page is gone nothing after an await runs, so finish() would never get to
+   * it. The backend re-checks the room 30 s after a leave report, so sending it before disconnecting is fine.
+   */
+  leavePage(): void {
+    if (this.ending) return;
+    if (this.minted) {
+      this.leftReported = true;
+      void this.opts.api
+        .reportLeft(this.opts.bookingId, { keepalive: true })
+        .catch(() => undefined);
+    }
+    void this.finish('hangup', null);
   }
 
   // ---- Inside ----
@@ -502,7 +521,8 @@ export class CallSession {
       for (const detach of this.detachers.splice(0)) detach();
     }
     // After disconnecting, so the server sees this person gone (chat call message -> ended / missed).
-    if (this.minted) await this.opts.api.reportLeft(this.opts.bookingId).catch(() => undefined);
+    if (this.minted && !this.leftReported)
+      await this.opts.api.reportLeft(this.opts.bookingId).catch(() => undefined);
   }
 
   private set(patch: Partial<CallState>): void {
