@@ -88,6 +88,12 @@ export function NotificationsPage({ kind }: { kind: PrivateKind }) {
     }
   }, [unread, unreadShown, list.isPending, queryClient]);
 
+  // The other way round: this page loaded rows newer than the bell's last check (e.g. opened by a link, so the header
+  // didn't re-check). More unread here than the bell counts = the bell is behind: re-check now, not at its next minute.
+  useEffect(() => {
+    if (!list.isPending && unreadShown > unread) announceNotificationsChanged();
+  }, [unread, unreadShown, list.isPending]);
+
   /** Changes the cached rows in place, so the list doesn't jump while the server catches up. */
   const editCache = (edit: (n: UserNotification) => UserNotification | null) =>
     queryClient.setQueryData<ListData>(QUERY_KEY, data =>
