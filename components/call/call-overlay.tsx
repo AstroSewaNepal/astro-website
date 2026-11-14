@@ -610,7 +610,7 @@ function Lobby({
         />
         {isVideo ? (
           <LobbyToggle
-            label={camera ? 'Camera off' : 'Camera on'}
+            label="Camera"
             pressed={!camera}
             disabled={!ready || cameraProblem !== null}
             onClick={onCamera}

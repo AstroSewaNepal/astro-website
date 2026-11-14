@@ -15,6 +15,9 @@
  * The outside pages are then only "forward" of us, and nothing offers Forward in an installed web app. Coming back
  * to the tagged page without finishing (Back on Google or eSewa) just drops the trip. When the count can't be
  * trusted, nothing happens and Back works as before.
+ *
+ * The pages passed through on the way are hidden behind the site's paper background: steps 2 and 3 load whole pages,
+ * and showing them drew the page, then a white screen, then the page again.
  */
 
 export type OutsideTripKind = 'payment' | 'login';
@@ -34,6 +37,12 @@ export const LANDING_MAX_AGE_MS = 15_000;
 export const HISTORY_CAP = 50;
 /** Where a payment comes back to. Signing in can end anywhere (the page it was for, home, an error on /login). */
 export const PAYMENT_LANDING = '/payment/return';
+/** The style that hides a page passed through on the way (removed again if the page stays). */
+export const HIDE_ID = 'astro-outside-trip-hide';
+/** If the jump hasn't left the page by then (it should take well under a second), the page shows itself again. */
+export const HIDE_MAX_MS = 5000;
+/** The page swapped for the landing page waits this long at most to draw once (see land in the script). */
+export const PAINT_WAIT_MS = 250;
 
 /**
  * Call right before sending the browser to the other site. Adds a tagged copy of this page to the history: that
@@ -64,9 +73,33 @@ const key = JSON.stringify;
  *   see again.
  * - The page that jump lands on: swap in the landing page, also when restored from the back/forward cache (scripts
  *   don't run again then; pageshow does).
- * Every new page load uses up the trip.
+ * Every new page load uses up the trip. Each of those moves (except stepping back within a restored page, which stays
+ * on screen) hides the page first: the paper background (`paper`, the texture's URL, laid out like SiteChrome's) with
+ * nothing on it, so passing through looks like one page load. The page left for the other site also hides itself
+ * when the browser keeps it in the back/forward cache.
  */
-export const OUTSIDE_TRIP_SCRIPT = `(function () {
+export function outsideTripScript(paper: string): string {
+  const hideCss =
+    `html{background:#fff url(${JSON.stringify(paper)}) 0 0/1728px auto!important}` +
+    'body{visibility:hidden!important}';
+  return `(function () {
+  var unhide = function () {
+    try {
+      var style = window.document.getElementById(${key(HIDE_ID)});
+      if (style) style.parentNode.removeChild(style);
+    } catch (e) {}
+  };
+  var hide = function () {
+    try {
+      var d = window.document;
+      if (d.getElementById(${key(HIDE_ID)})) return;
+      var style = d.createElement('style');
+      style.id = ${key(HIDE_ID)};
+      style.textContent = ${key(hideCss)};
+      (d.head || d.documentElement).appendChild(style);
+      window.setTimeout(unhide, ${HIDE_MAX_MS});
+    } catch (e) {}
+  };
   try {
     var s = window.sessionStorage;
     var read = function (k) {
@@ -80,26 +113,49 @@ export const OUTSIDE_TRIP_SCRIPT = `(function () {
       var state = window.history.state;
       return state && typeof state === 'object' ? state[${key(TAG_KEY)}] : undefined;
     };
-    var land = function () {
+    var land = function (restored) {
       var landing = read(${key(LANDING_KEY)});
       if (!landing) return false;
       s.removeItem(${key(LANDING_KEY)});
       if (!fresh(landing.at, ${LANDING_MAX_AGE_MS}) || typeof landing.url !== 'string') return false;
       if (landing.url === window.location.href) return false;
-      window.location.replace(landing.url);
+      hide();
+      var go = function () {
+        if (go.done) return;
+        go.done = true;
+        window.location.replace(landing.url);
+      };
+      if (restored) return go(), true;
+      // Draw the paper once first: the browser keeps the last frame drawn on screen until the next page draws, and
+      // without one it shows white meanwhile. Never waits long (a frame may not come while styles still load).
+      window.requestAnimationFrame(function () {
+        window.setTimeout(go, 0);
+      });
+      window.setTimeout(go, ${PAINT_WAIT_MS});
       return true;
     };
-    var backUnfinished = function () {
+    var backUnfinished = function (restored) {
       var trip = read(${key(TRIP_KEY)});
       if (!trip || tag() !== trip.token) return false;
       s.removeItem(${key(TRIP_KEY)});
+      // A restored page owns the entry below too: the step back keeps it on screen.
+      if (!restored) hide();
       window.history.back();
       return true;
     };
-    window.addEventListener('pageshow', function (event) {
-      if (event.persisted && !land()) backUnfinished();
+    // Leaving for the other site: a page kept in the back/forward cache comes back hidden, so the jump back doesn't
+    // show it again for a moment (pageshow below shows it if it stays).
+    window.addEventListener('pagehide', function (event) {
+      var trip = event.persisted && read(${key(TRIP_KEY)});
+      if (trip && tag() === trip.token) hide();
     });
-    if (land() || backUnfinished()) return;
+    window.addEventListener('pageshow', function (event) {
+      if (!event.persisted) return;
+      // Restored from the back/forward cache: never leave a page hidden from an earlier jump.
+      unhide();
+      if (!land(true)) backUnfinished(true);
+    });
+    if (land(false) || backUnfinished(false)) return;
     var trip = read(${key(TRIP_KEY)});
     s.removeItem(${key(TRIP_KEY)});
     if (!trip) return;
@@ -111,8 +167,10 @@ export const OUTSIDE_TRIP_SCRIPT = `(function () {
     if (!(steps > 0)) return;
     if (trip.kind === 'login') steps += 1;
     s.setItem(${key(LANDING_KEY)}, JSON.stringify({ url: window.location.href, at: Date.now() }));
+    hide();
     window.history.go(-steps);
   } catch (e) {
     // Never in the way of the page.
   }
 })();`;
+}

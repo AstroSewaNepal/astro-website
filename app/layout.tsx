@@ -7,9 +7,10 @@ import './globals.css';
 import clsx from 'clsx';
 
 import { CallProvider } from '@/components/call/call-provider';
+import paper from '@/components/images/background.webp';
 import { SiteChrome } from '@/components/layout/site-chrome';
 import { env } from '@/lib/env';
-import { OUTSIDE_TRIP_SCRIPT } from '@/lib/navigation/outside-trip';
+import { outsideTripScript } from '@/lib/navigation/outside-trip';
 
 const tiroDevanagari = Tiro_Devanagari_Sanskrit({
   variable: '--font-tiro-devanagari',
@@ -174,7 +175,7 @@ export default function RootLayout({
       <head>
         {/* Before anything is drawn: Back skips eSewa, HBL and Google pages after paying or signing in
             (lib/navigation/outside-trip.ts). */}
-        <script dangerouslySetInnerHTML={{ __html: OUTSIDE_TRIP_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: outsideTripScript(paper.src) }} />
       </head>
       <body
         className={clsx(
