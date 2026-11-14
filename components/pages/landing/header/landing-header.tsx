@@ -20,6 +20,7 @@ import { zodiacEnglishDetailHref } from '@/lib/constants/zodiac-sign-nav';
 import { horoscopeEn, type HoroscopeMessages, useHoroscopeLocaleOptional } from '@/lib/i18n';
 import { HOROSCOPE_SIGNS } from '@/lib/types/horoscope';
 import { AccountMenu } from '@/components/account/account-menu';
+import { NotificationBell } from '@/components/notifications/notification-bell';
 import { isAccountPage } from '@/lib/account/nav';
 import { accountKind } from '@/lib/auth/account';
 
@@ -334,12 +335,15 @@ function LandingHeaderClient() {
               <AstroSewaLogo className="max-w-[84px] text-[#611508] md:max-w-[100px] lg:max-w-[188px] w-full mt-1" />
             </Link>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-2 sm:gap-4">
             <div className="hidden lg:block">{languageControl}</div>
             {status === 'authenticated' &&
             session?.user &&
             (signedInKind === 'client' || signedInKind === 'astrologer') ? (
-              <AccountMenu kind={signedInKind} user={session.user} />
+              <>
+                <AccountMenu kind={signedInKind} user={session.user} />
+                <NotificationBell kind={signedInKind} />
+              </>
             ) : status === 'authenticated' && session?.user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
