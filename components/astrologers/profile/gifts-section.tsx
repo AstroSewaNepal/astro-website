@@ -7,7 +7,10 @@ import { GiftImage, GiftSendSheet } from '@/components/astrologers/gift-send-she
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { availableGifts, type Gift, giftPriceLabel } from '@/lib/astrologers/gifts';
 
-/** The app's GiftsSection: one sliding row of gifts priced for the buyer's country; tap one to send it. */
+/**
+ * The app's GiftsSection: one sliding row of gifts priced for the buyer's country; tap one to send it. The scrollbar stays
+ * (like Recommended Astrologers): a mouse has no other way to slide the row.
+ */
 export function GiftsSection({
   astrologerId,
   astrologerName,
@@ -31,7 +34,7 @@ export function GiftsSection({
   return (
     <section>
       <h2 className="mb-3 text-[18px] font-semibold text-[#4a1a1a]">Send a Gift</h2>
-      <ul className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] lg:mx-0 lg:px-0 [&::-webkit-scrollbar]:hidden">
+      <ul className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
         {list.map(gift => (
           <li key={gift._id} className="shrink-0">
             <button
