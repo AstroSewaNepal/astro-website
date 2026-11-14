@@ -23,6 +23,7 @@ import {
 import clsx from 'clsx';
 
 import { useBackendClient } from '@/hooks/use-backend-client';
+import { useUnreadNotifications } from '@/hooks/use-unread-notifications';
 import type { PrivateKind } from '@/lib/account/nav';
 import {
   announceNotificationsChanged,
@@ -63,15 +64,29 @@ export function NotificationsPage({ kind }: { kind: PrivateKind }) {
     },
     initialPageParam: 1,
     getNextPageParam: last => last.next,
-    // New ones can arrive while the page is open.
     staleTime: 0,
     refetchOnWindowFocus: true,
-    refetchInterval: 60_000,
   });
+
 
   const items = useMemo(() => (list.data?.pages ?? []).flatMap(p => p.items), [list.data]);
   const groups = useMemo(() => groupNotificationsByDay(items), [items]);
-  const anyUnread = items.some(n => !n.readAt);
+  const unreadShown = items.filter(n => !n.readAt).length;
+  const anyUnread = unreadShown > 0;
+
+  // New ones arriving while the page is open: the header bell already checks the count once a minute, so the list
+  // reloads when that count RISES past what it shows, instead of polling on its own (one request a minute per tab,
+  // not two). Only rises: reading/deleting here lowers the list first and the bell a moment later, which must not
+  // reload (it would bring back rows the server hasn't marked yet).
+  const unread = useUnreadNotifications();
+  const lastUnread = useRef(unread);
+  useEffect(() => {
+    const rose = unread > lastUnread.current;
+    lastUnread.current = unread;
+    if (rose && !list.isPending && unread > unreadShown) {
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    }
+  }, [unread, unreadShown, list.isPending, queryClient]);
 
   /** Changes the cached rows in place, so the list doesn't jump while the server catches up. */
   const editCache = (edit: (n: UserNotification) => UserNotification | null) =>
