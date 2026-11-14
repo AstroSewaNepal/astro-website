@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
+import { useSession } from 'next-auth/react';
 import { Maximize2, Minimize2, Smartphone, UserRound, Volume2, WifiOff, X } from 'lucide-react';
 
 import {
@@ -66,6 +67,7 @@ export function CallScreen({
   const videoLayout = state.video;
   const theirVideo = videoLayout && state.other.cameraOn;
   const myVideo = state.cameraOn;
+  const me = useSession().data?.user;
 
   // Video calls: a tap shows the controls, which hide again after a while (app). Voice calls keep them.
   const [controlsShown, setControlsShown] = useState(true);
@@ -87,6 +89,13 @@ export function CallScreen({
   // corner, like the app's PiP), a voice call a one-line card (photo, name, status, buttons).
   const miniCard = mini && !videoLayout;
   const miniTile = mini && videoLayout;
+  const myTile = clsx(
+    'absolute z-10 overflow-hidden shadow-lg',
+    miniTile
+      ? 'right-2 top-2 h-[72px] w-[52px] rounded-lg ring-1 ring-white/40 lg:h-[120px] lg:w-[86px]'
+      : 'right-3 h-[150px] w-[105px] rounded-xl lg:h-[170px] lg:w-[130px]',
+    !miniTile && (docked ? 'top-3' : 'top-[calc(max(0.75rem,env(safe-area-inset-top))+4.25rem)]'),
+  );
 
   const minimizeButton = (
     <button
@@ -153,23 +162,25 @@ export function CallScreen({
         </header>
       )}
 
-      {/* Me, top right (Figma); mirrored for the front camera like a selfie view. */}
+      {/* Me, top right (Figma); mirrored for the front camera like a selfie view. With my camera off the tile stays,
+          showing my photo or initial in a circle (the app's ConsultationVideoView camera-off look). */}
       <video
         ref={localVideo}
         autoPlay
         playsInline
         muted
         className={clsx(
-          'absolute z-10 object-cover shadow-lg',
-          miniTile
-            ? 'right-2 top-2 h-[72px] w-[52px] rounded-lg ring-1 ring-white/40 lg:h-[120px] lg:w-[86px]'
-            : 'right-3 h-[150px] w-[105px] rounded-xl lg:h-[170px] lg:w-[130px]',
-          !miniTile &&
-            (docked ? 'top-3' : 'top-[calc(max(0.75rem,env(safe-area-inset-top))+4.25rem)]'),
+          myTile,
+          'object-cover',
           state.facing === 'user' && '-scale-x-100',
           (!myVideo || !videoLayout) && 'invisible',
         )}
       />
+      {videoLayout && !myVideo ? (
+        <div className={clsx(myTile, 'flex items-center justify-center bg-[#1C1C1E]')} aria-hidden>
+          <MyAvatar photo={me?.image ?? null} name={me?.name ?? ''} small={miniTile} />
+        </div>
+      ) : null}
 
       {/* Middle: who and how long, whenever their video isn't filling the screen. */}
       <div
@@ -522,6 +533,28 @@ function Backdrop({ photo }: { photo: string | null }) {
       <img src={photo} alt="" className="h-full w-full scale-125 object-cover blur-2xl" />
       <div className="absolute inset-0 bg-black/55" />
     </div>
+  );
+}
+
+/** My camera-off circle in my own tile: photo, else my initial (the app's avatarCircle: 72 px, #3A3B3C). */
+function MyAvatar({ photo, name, small }: { photo: string | null; name: string; small: boolean }) {
+  const box = small
+    ? 'h-8 w-8 text-[14px] lg:h-12 lg:w-12 lg:text-[20px]'
+    : 'h-[72px] w-[72px] text-[30px]';
+  return (
+    <span
+      className={clsx(
+        box,
+        'flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#3A3B3C] font-bold',
+      )}
+    >
+      {photo ? (
+        // eslint-disable-next-line @next/next/no-img-element -- backend media URLs (images.unoptimized on the Worker)
+        <img src={photo} alt="" className="h-full w-full object-cover" />
+      ) : (
+        (name.trim().charAt(0) || 'Y').toUpperCase()
+      )}
+    </span>
   );
 }
 
