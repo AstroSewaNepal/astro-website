@@ -600,7 +600,7 @@ function Lobby({
         )}
       </div>
 
-      <div className="flex items-start justify-center gap-6 bg-black/40 px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
+      <div className="flex items-start justify-center gap-4 bg-black/40 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 sm:gap-6 sm:px-6">
         <LobbyToggle
           label={mic ? 'Mute' : 'Unmute'}
           pressed={!mic}
@@ -621,7 +621,7 @@ function Lobby({
           type="button"
           onClick={onJoin}
           disabled={!ready}
-          className="mt-0.5 flex h-14 items-center gap-2 rounded-full bg-[#15B763] px-7 text-[17px] font-semibold text-white hover:bg-[#12a157] disabled:opacity-50"
+          className="mt-0.5 flex h-14 shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-[#15B763] px-6 text-[17px] font-semibold text-white hover:bg-[#12a157] disabled:opacity-50 sm:px-7"
         >
           {isVideo ? <VideoCallIcon className="h-5 w-5" /> : <CallIcon className="h-5 w-5" />}
           Join call
