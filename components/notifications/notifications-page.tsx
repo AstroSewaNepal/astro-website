@@ -8,20 +8,10 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import {
-  Bell,
-  BellOff,
-  CalendarCheck,
-  Check,
-  Loader2,
-  Phone,
-  Radio,
-  Trash2,
-  UsersRound,
-  Video,
-} from 'lucide-react';
+import { BellOff, Check, Loader2, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 
+import { NotificationTypeIcon } from '@/components/notifications/notification-type-icon';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useUnreadNotifications } from '@/hooks/use-unread-notifications';
 import type { PrivateKind } from '@/lib/account/nav';
@@ -29,7 +19,6 @@ import {
   announceNotificationsChanged,
   groupNotificationsByDay,
   nextNotificationsPage,
-  type NotificationIcon,
   notificationHref,
   notificationIcon,
   notificationsPath,
@@ -67,7 +56,6 @@ export function NotificationsPage({ kind }: { kind: PrivateKind }) {
     staleTime: 0,
     refetchOnWindowFocus: true,
   });
-
 
   const items = useMemo(() => (list.data?.pages ?? []).flatMap(p => p.items), [list.data]);
   const groups = useMemo(() => groupNotificationsByDay(items), [items]);
@@ -170,7 +158,11 @@ export function NotificationsPage({ kind }: { kind: PrivateKind }) {
       ) : list.isError && items.length === 0 ? (
         <div className="py-16 text-center font-app text-[17px] text-[#4a1a1a]">
           <p>We could not load your notifications.</p>
-          <button type="button" onClick={() => list.refetch()} className="mt-2 text-primary underline">
+          <button
+            type="button"
+            onClick={() => list.refetch()}
+            className="mt-2 text-primary underline"
+          >
             Try again
           </button>
         </div>
@@ -207,39 +199,14 @@ export function NotificationsPage({ kind }: { kind: PrivateKind }) {
           ))}
           <div ref={end} />
           {isFetchingNextPage ? (
-            <Loader2 className="mx-auto my-6 h-6 w-6 animate-spin text-primary" aria-label="Loading" />
+            <Loader2
+              className="mx-auto my-6 h-6 w-6 animate-spin text-primary"
+              aria-label="Loading"
+            />
           ) : null}
         </>
       )}
     </div>
-  );
-}
-
-function RowIcon({ icon, video }: { icon: NotificationIcon; video: boolean }) {
-  const className = 'h-5 w-5';
-  const glyph =
-    icon === 'booking' ? (
-      <CalendarCheck className={className} />
-    ) : icon === 'call' ? (
-      video ? (
-        <Video className={className} />
-      ) : (
-        <Phone className={className} />
-      )
-    ) : icon === 'live' ? (
-      <Radio className={className} />
-    ) : icon === 'queue' ? (
-      <UsersRound className={className} />
-    ) : (
-      <Bell className={className} />
-    );
-  return (
-    <span
-      aria-hidden
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-white lg:h-12 lg:w-12"
-    >
-      {glyph}
-    </span>
   );
 }
 
@@ -261,7 +228,7 @@ function NotificationRow({
   return (
     <li className="flex items-start gap-2 border-b border-dashed border-[#BE7B71]/60 py-3 font-app last:border-b-0">
       <Link href={href} onClick={onOpen} className="flex min-w-0 flex-1 items-start gap-3 lg:gap-4">
-        <RowIcon icon={icon} video={n.data?.callType !== 'audio'} />
+        <NotificationTypeIcon icon={icon} video={n.data?.callType !== 'audio'} />
         <span className="min-w-0 flex-1">
           <span className="flex items-baseline justify-between gap-2">
             <span
@@ -271,7 +238,10 @@ function NotificationRow({
               )}
             >
               {unread ? (
-                <span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-[#d92d20] align-middle" aria-hidden />
+                <span
+                  className="mr-1.5 inline-block h-2 w-2 rounded-full bg-[#d92d20] align-middle"
+                  aria-hidden
+                />
               ) : null}
               {n.title}
               {unread ? <span className="sr-only"> (unread)</span> : null}
@@ -280,7 +250,9 @@ function NotificationRow({
               {notificationTime(n.createdAt)}
             </span>
           </span>
-          <span className="mt-0.5 block text-[14px] leading-snug text-[#6d5a50] lg:text-[15px]">{n.body}</span>
+          <span className="mt-0.5 block text-[14px] leading-snug text-[#6d5a50] lg:text-[15px]">
+            {n.body}
+          </span>
         </span>
       </Link>
       <span className="flex shrink-0 items-center gap-1.5 pt-0.5">
