@@ -7,6 +7,7 @@ import { AccountShell } from '@/components/account/account-shell';
 import { ClientHome } from '@/components/account/client-home';
 import { ComingSoon } from '@/components/account/coming-soon';
 import { LoginRedirect } from '@/components/account/login-redirect';
+import { HomeScreenBanner } from '@/components/pwa/home-screen-banner';
 import { accountPageTitle, type PrivateKind } from '@/lib/account/nav';
 import { accountHome, accountKind } from '@/lib/auth/account';
 import { QueryProvider } from '@/providers/query-provider';
@@ -64,10 +65,13 @@ export function accountPlaceholder(kind: PrivateKind) {
       const firstName = session?.user?.name?.split(' ')[0];
       if (kind === 'client') return <ClientHome firstName={firstName} />;
       return (
-        <ComingSoon
-          title={firstName ? `Namaste, ${firstName}` : 'Namaste'}
-          note="Your bookings, earnings and availability will show here."
-        />
+        <div className="flex flex-col gap-4">
+          <HomeScreenBanner kind="astrologer" />
+          <ComingSoon
+            title={firstName ? `Namaste, ${firstName}` : 'Namaste'}
+            note="Your bookings, earnings and availability will show here."
+          />
+        </div>
       );
     }
     return <ComingSoon title={title} />;

@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { ChevronLeft, LogOut, Pencil } from 'lucide-react';
+import { ChevronLeft, Pencil } from 'lucide-react';
 import clsx from 'clsx';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -120,21 +119,7 @@ export function AccountMenu({ kind, user }: { kind: PrivateKind; user: AccountUs
             </ul>
           ))}
 
-          {/* Clients sign out from Settings, like the app. Astrologers keep this until their Settings page (with
-              Sign out) is built: their side is still a placeholder. */}
-          {kind === 'astrologer' ? (
-            <div className="mt-5 border-t border-dashed border-[#611508]/30 pt-2">
-              <button
-                type="button"
-                // Also ends the backend session (auth.ts events.signOut).
-                onClick={() => signOut({ redirectTo: '/' })}
-                className="flex w-full items-center gap-4 py-3 font-app text-[17px] text-red-700"
-              >
-                <LogOut className="h-[22px] w-[22px]" strokeWidth={1.75} aria-hidden />
-                Log out
-              </button>
-            </div>
-          ) : null}
+          {/* Sign out lives in Settings (both kinds), like the app. */}
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>

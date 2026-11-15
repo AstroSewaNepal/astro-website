@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { UsersRound } from 'lucide-react';
 
 import type { Astrologer } from '@/components/pages/landing/talk-to-our-astrologer/types';
+import { HomeScreenBanner } from '@/components/pwa/home-screen-banner';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { profilePath } from '@/lib/astrologers/list';
 import { tierLabel, tierStyle } from '@/lib/astrologers/profile';
@@ -58,6 +59,9 @@ export function ClientHome({ firstName }: { firstName?: string }) {
       <h1 className="text-[28px] font-normal text-primary lg:text-[34px]">
         {firstName ? `Namaste, ${firstName}` : 'Namaste'}
       </h1>
+
+      {/* Where the app shows its location banner: under the greeting, above Online Astrologers. */}
+      <HomeScreenBanner kind="client" />
 
       <section>
         <div className="mb-3 flex items-center justify-between gap-3">
