@@ -124,20 +124,27 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
   return (
     <div
       ref={root}
-      className="fixed inset-0 z-[60] flex flex-col bg-black lg:static lg:z-auto lg:h-auto lg:flex-row lg:items-stretch lg:justify-center lg:gap-5 lg:bg-transparent"
+      className="fixed inset-0 z-[60] flex flex-col bg-black lg:static lg:z-auto lg:grid lg:h-auto lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-5 lg:bg-transparent xl:grid-cols-[minmax(0,1fr)_380px]"
     >
-      {/* The player: the whole screen on phones, a portrait card on desktop. */}
-      <div className="relative flex min-h-0 flex-1 lg:flex-none lg:py-2">
+      {/* Left: the player (the whole screen on phones; a landscape card on desktop), then the info row. */}
+      <div className="relative flex min-h-0 flex-1 flex-col lg:flex-none">
         <div
-          className="relative flex h-full w-full flex-col overflow-hidden bg-black lg:aspect-[9/16] lg:h-[min(calc(100vh-150px),820px)] lg:w-auto lg:rounded-2xl"
+          className="relative flex h-full w-full flex-col overflow-hidden bg-black lg:aspect-[4/3] lg:h-auto lg:max-h-[calc(100vh-260px)] lg:min-h-[360px] lg:rounded-2xl"
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
           <Stage session={session} state={state} room={current} me={me} />
 
-          {/* Header over the video (both layouts). */}
+          {/* Phone: the app's header over the video. Desktop: only the call pills and the close button up there. */}
           {current ? (
-            <LiveHeader room={current} state={state} me={me} onClose={() => setLeaveOpen(true)} />
+            <>
+              <div className="lg:hidden">
+                <LiveHeader room={current} state={state} me={me} onClose={() => setLeaveOpen(true)} />
+              </div>
+              <div className="hidden lg:block">
+                <CallPills state={state} me={me} name={current.astrologerName ?? 'Astrologer'} onClose={() => setLeaveOpen(true)} />
+              </div>
+            </>
           ) : null}
 
           {/* Phone: chat feed left, actions right, composer along the bottom (over the video). */}
@@ -153,6 +160,16 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
             </div>
           </div>
 
+          {/* Desktop: up/down inside the player's right edge (arrow keys work too). */}
+          <div className="absolute right-3 top-1/2 hidden -translate-y-1/2 flex-col gap-2 lg:flex">
+            <ArrowButton label="Previous stream" disabled={!prev} onClick={() => go(prev)}>
+              <ChevronUp className="h-6 w-6" aria-hidden />
+            </ArrowButton>
+            <ArrowButton label="Next stream" disabled={!next} onClick={() => go(next)}>
+              <ChevronDown className="h-6 w-6" aria-hidden />
+            </ArrowButton>
+          </div>
+
           {/* Loading / ended states on top of everything. */}
           {!current && !notLive ? (
             <Centered>
@@ -164,29 +181,68 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
           ) : null}
         </div>
 
-        {/* Desktop: Shorts-style up/down arrows beside the player. */}
-        <div className="absolute right-[-56px] top-1/2 hidden -translate-y-1/2 flex-col gap-3 lg:flex">
-          <ArrowButton label="Previous stream" disabled={!prev} onClick={() => go(prev)}>
-            <ChevronUp className="h-6 w-6" aria-hidden />
-          </ArrowButton>
-          <ArrowButton label="Next stream" disabled={!next} onClick={() => go(next)}>
-            <ChevronDown className="h-6 w-6" aria-hidden />
-          </ArrowButton>
-        </div>
+        {/* Desktop: who is live, their price, follow, like and share, like a video page. */}
+        {current ? (
+          <div className="hidden items-center gap-3 py-3 lg:flex">
+            <Link href={`/astrologer-profile/${encodeURIComponent(current.astrologerId)}`} className="relative shrink-0" aria-label={`${current.astrologerName ?? 'Astrologer'}'s profile`}>
+              <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary">
+                <Avatar url={current.astrologerAvatar} name={current.astrologerName ?? 'Astrologer'} size={46} />
+              </span>
+              <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 rounded border border-white bg-primary px-1.5 font-app text-[10px] font-bold leading-[14px] text-white">
+                Live
+              </span>
+            </Link>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-app text-[19px] font-semibold text-[#4a1a1a]">{current.astrologerName ?? 'Astrologer'}</p>
+              <p className="truncate font-app text-[14px] text-[#6d6d6d]">
+                {state?.queue?.price ? `${formatCallSlotPrice(state.queue.price)} / 10 min · ` : ''}
+                {compactCount(state?.viewerCount ?? current.viewerCount)} watching
+              </p>
+            </div>
+            <FollowButton astrologerId={current.astrologerId} large />
+            {session && state ? <Actions session={session} state={state} room={current} row /> : null}
+          </div>
+        ) : null}
+
+        {/* Desktop: the other streams, one click away. */}
+        {others.length ? (
+          <div className="hidden lg:block">
+            <p className="mb-2 font-app text-[15px] font-semibold text-[#4a1a1a]">Others live now</p>
+            <ul className="flex gap-3 overflow-x-auto pb-2 [scrollbar-width:thin]">
+              {others.map(r => (
+                <li key={r.roomId} className="shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => go(r)}
+                    className="flex w-[220px] items-center gap-3 rounded-lg border border-[#BE7B71] bg-[#FFFAE6] p-2 text-left hover:bg-[#fff5d6]"
+                  >
+                    <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-primary">
+                      <Avatar url={r.astrologerAvatar} name={r.astrologerName ?? 'Astrologer'} size={40} />
+                      <span className="absolute -bottom-1.5 rounded border border-white bg-primary px-1 font-app text-[9px] font-bold leading-[12px] text-white">Live</span>
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-app text-[15px] font-semibold text-primary">{r.astrologerName ?? 'Astrologer'}</span>
+                      <span className="block font-app text-[13px] text-[#1C1C1C]">{r.viewerCount} watching</span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </div>
 
-      {/* Desktop: the chat beside the player. */}
-      <aside className="hidden min-h-0 w-[380px] flex-col rounded-2xl border border-[#BE7B71]/60 bg-[#FFFAE6] lg:ml-14 lg:flex lg:h-[min(calc(100vh-150px),820px)] lg:self-center xl:w-[420px]">
+      {/* Desktop: the chat beside the player, light like the rest of the site. */}
+      <aside className="hidden min-h-0 flex-col overflow-hidden rounded-2xl border border-[#BE7B71]/60 bg-[#FFFAE6] lg:flex lg:h-[min(calc(100vh-260px),720px)] lg:min-h-[360px]">
         <div className="flex items-center justify-between border-b border-[#BE7B71]/40 px-4 py-3">
           <h2 className="font-app text-[17px] font-semibold text-[#4a1a1a]">Live chat</h2>
           {state ? <span className="font-app text-[13px] text-[#6d6d6d]">{compactCount(state.viewerCount)} watching</span> : null}
         </div>
-        <div className="min-h-0 flex-1 bg-[#2b2320] p-3">
-          {state ? <LiveChatFeed items={feedItems(state.messages, state.gifts, astrologerId)} className="h-full" /> : null}
+        <div className="min-h-0 flex-1 p-3">
+          {state ? <LiveChatFeed items={feedItems(state.messages, state.gifts, astrologerId)} className="h-full" tone="light" /> : null}
         </div>
-        <div className="flex items-center gap-3 border-t border-[#BE7B71]/40 p-3">
-          <LiveComposer onSend={text => session?.sendChat(text) ?? false} disabled={!state || ended} className="flex-1" />
-          {session && state ? <Actions session={session} state={state} room={current} row /> : null}
+        <div className="border-t border-[#BE7B71]/40 p-3">
+          <LiveComposer onSend={text => session?.sendChat(text) ?? false} disabled={!state || ended} tone="light" />
         </div>
       </aside>
 
@@ -229,9 +285,18 @@ function Stage({ session, state, room, me }: { session: LiveSession | null; stat
   const name = room?.astrologerName ?? 'Astrologer';
 
   return (
-    <div className="absolute inset-0 flex flex-col">
-      <div className={clsx('relative min-h-0 bg-black', split ? 'flex-1 border-b border-white/20' : 'h-full')}>
-        <video ref={hostVideo} autoPlay playsInline muted className={clsx('h-full w-full object-cover', !hostOn && 'invisible')} />
+    <div className="absolute inset-0 flex flex-col lg:flex-row">
+      {/* Desktop backdrop: the astrologer's photo blurred behind the fitted video (a phone camera is portrait). */}
+      <div className="pointer-events-none absolute inset-0 hidden overflow-hidden lg:block" aria-hidden>
+        {room?.astrologerAvatar ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={room.astrologerAvatar} alt="" className="h-full w-full scale-125 object-cover opacity-50 blur-2xl" />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-[#4a1a1a] via-[#2b1010] to-black" />
+        )}
+      </div>
+      <div className={clsx('relative min-h-0 bg-black lg:bg-transparent', split ? 'flex-1 border-b border-white/20 lg:border-b-0 lg:border-r' : 'h-full lg:w-full')}>
+        <video ref={hostVideo} autoPlay playsInline muted className={clsx('h-full w-full object-cover lg:object-contain', !hostOn && 'invisible')} />
         {!hostOn ? (
           <Centered>
             <Avatar url={room?.astrologerAvatar} name={name} size={84} />
@@ -241,9 +306,9 @@ function Stage({ session, state, room, me }: { session: LiveSession | null; stat
           </Centered>
         ) : null}
       </div>
-      <div className={clsx('relative min-h-0 bg-black', split ? 'flex-1' : 'hidden')}>
-        <video ref={callerVideo} autoPlay playsInline muted className={clsx('h-full w-full object-cover', (mine || !state?.callerCameraOn) && 'hidden')} />
-        <video ref={selfVideo} autoPlay playsInline muted className={clsx('h-full w-full -scale-x-100 object-cover', (!mine || !state?.cameraOn) && 'hidden')} />
+      <div className={clsx('relative min-h-0 bg-black lg:bg-transparent', split ? 'flex-1' : 'hidden')}>
+        <video ref={callerVideo} autoPlay playsInline muted className={clsx('h-full w-full object-cover lg:object-contain', (mine || !state?.callerCameraOn) && 'hidden')} />
+        <video ref={selfVideo} autoPlay playsInline muted className={clsx('h-full w-full -scale-x-100 object-cover lg:object-contain', (!mine || !state?.cameraOn) && 'hidden')} />
         {split && !(mine ? state?.cameraOn : state?.callerCameraOn) ? (
           <Centered>
             <p className="font-app text-[14px] text-white/80">{mine ? 'Your camera is off' : `${call?.callerName ?? 'The caller'} has turned off the camera`}</p>
@@ -332,7 +397,34 @@ function LiveHeader({ room, state, me, onClose }: { room: LiveRoomSummary; state
   );
 }
 
-function FollowButton({ astrologerId }: { astrologerId: string }) {
+function CallPills({ state, me, name, onClose }: { state: LiveState | null; me: Me; name: string; onClose: () => void }) {
+  const call = state?.call ?? null;
+  const mine = !!call && call.callerId === me.id;
+  const banner = callBannerText(call?.mode ?? null, mine ? name : (call?.callerName ?? null), mine ? 'caller' : 'viewer');
+  return (
+    <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
+      <div className="flex flex-col gap-2">
+        {banner ? (
+          <div className="flex w-fit max-w-full items-center gap-2 rounded-full border border-white/10 bg-black/55 px-3 py-1.5">
+            <span className="h-2 w-2 shrink-0 rounded-full bg-[#FF3B30]" aria-hidden />
+            <span className="truncate font-app text-[12px] font-semibold text-white">{banner}</span>
+          </div>
+        ) : null}
+        {call?.kickAt ? <CountdownPill endsAt={call.kickAt} /> : null}
+      </div>
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close"
+        className="pointer-events-auto flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black/50 text-white"
+      >
+        <X className="h-4 w-4" strokeWidth={2.5} aria-hidden />
+      </button>
+    </div>
+  );
+}
+
+function FollowButton({ astrologerId, large = false }: { astrologerId: string; large?: boolean }) {
   const backend = useBackendClient();
   const queryClient = useQueryClient();
   const statusKey = ['follow', 'status', astrologerId];
@@ -356,8 +448,13 @@ function FollowButton({ astrologerId }: { astrologerId: string }) {
       disabled={status.isPending || toggle.isPending}
       aria-pressed={following}
       className={clsx(
-        'shrink-0 rounded-full px-3.5 py-1.5 font-app text-[12px] font-bold text-white disabled:opacity-70',
-        following ? 'bg-black/35' : 'bg-primary',
+        'shrink-0 rounded-full font-app font-bold disabled:opacity-70',
+        large ? 'h-[42px] px-6 text-[15px]' : 'px-3.5 py-1.5 text-[12px]',
+        following
+          ? large
+            ? 'border border-[#BE7B71] text-primary'
+            : 'bg-black/35 text-white'
+          : 'bg-primary text-white',
       )}
     >
       {following ? 'Following' : 'Follow'}
@@ -408,7 +505,7 @@ function Actions({ session, state, room, row = false }: { session: LiveSession; 
       // Share sheet closed: nothing to do.
     }
   };
-  const item = 'flex flex-col items-center gap-0.5 font-app text-[11px] font-semibold text-white lg:text-[#4a1a1a]';
+  const item = clsx('flex flex-col items-center gap-0.5 font-app text-[11px] font-semibold', row ? 'text-[#4a1a1a]' : 'text-white');
   const circle = 'flex h-11 w-11 items-center justify-center rounded-full border-2 border-[#8B5E3C] bg-[#F5F0E8] text-[#8B5E3C] disabled:opacity-70';
   return (
     <div className={clsx('flex items-end', row ? 'flex-row gap-3' : 'flex-col gap-2')}>
