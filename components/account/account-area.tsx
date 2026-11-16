@@ -8,6 +8,7 @@ import { ClientHome } from '@/components/account/client-home';
 import { ComingSoon } from '@/components/account/coming-soon';
 import { LoginRedirect } from '@/components/account/login-redirect';
 import { HomeScreenBanner } from '@/components/pwa/home-screen-banner';
+import { PushBanner } from '@/components/pwa/push-banner';
 import { accountPageTitle, type PrivateKind } from '@/lib/account/nav';
 import { accountHome, accountKind } from '@/lib/auth/account';
 import { QueryProvider } from '@/providers/query-provider';
@@ -67,6 +68,7 @@ export function accountPlaceholder(kind: PrivateKind) {
       return (
         <div className="flex flex-col gap-4">
           <HomeScreenBanner kind="astrologer" />
+          <PushBanner kind="astrologer" />
           <ComingSoon
             title={firstName ? `Namaste, ${firstName}` : 'Namaste'}
             note="Your bookings, earnings and availability will show here."

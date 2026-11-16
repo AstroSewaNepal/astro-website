@@ -7,6 +7,7 @@ import { UsersRound } from 'lucide-react';
 
 import type { Astrologer } from '@/components/pages/landing/talk-to-our-astrologer/types';
 import { HomeScreenBanner } from '@/components/pwa/home-screen-banner';
+import { PushBanner } from '@/components/pwa/push-banner';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { profilePath } from '@/lib/astrologers/list';
 import { tierLabel, tierStyle } from '@/lib/astrologers/profile';
@@ -62,6 +63,7 @@ export function ClientHome({ firstName }: { firstName?: string }) {
 
       {/* Where the app shows its location banner: under the greeting, above Online Astrologers. */}
       <HomeScreenBanner kind="client" />
+      <PushBanner kind="client" />
 
       <section>
         <div className="mb-3 flex items-center justify-between gap-3">
