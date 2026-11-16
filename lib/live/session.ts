@@ -233,7 +233,7 @@ type Role = 'host' | 'viewer' | 'caller' | string;
 export class LiveSession {
   private state: LiveState;
   private readonly listeners = new Set<() => void>();
-  private readonly opts: LiveSessionOptions;
+  private readonly opts: LiveSessionOptions & { countryCode?: string | null };
   private readonly now: () => number;
 
   private room: LiveRoom | null = null;
@@ -257,9 +257,12 @@ export class LiveSession {
   private endingCall = false;
   private callerToken: { callType: LiveCallType; kickAt: string; queueId: string } | null = null;
   private statusInFlight = false;
+  /** When a room message last set the call / my queue place: an older status answer can't undo it. */
+  private callMessageAt = 0;
+  private meMessageAt = 0;
 
   constructor(opts: LiveSessionOptions) {
-    this.opts = opts;
+    this.opts = { ...opts };
     this.now = opts.now ?? Date.now;
     this.state = {
       phase: 'idle',
@@ -317,6 +320,7 @@ export class LiveSession {
     this.set({ phase: 'loading' });
 
     let status: LiveQueueStatus;
+    const askedAt = this.now();
     try {
       status = await this.opts.api.queueStatus(this.opts.roomId, this.opts.countryCode);
     } catch (error) {
@@ -324,7 +328,7 @@ export class LiveSession {
       return;
     }
     if (this.ending) return;
-    this.applyStatus(status);
+    this.applyStatus(status, askedAt);
 
     let token: { token: string; liveKitUrl: string };
     try {
@@ -377,6 +381,14 @@ export class LiveSession {
       .catch(() => undefined);
   }
 
+  /** The buyer's country arrived (or changed): the next status poll prices the call slot for it. */
+  setCountry(countryCode: string | null | undefined): void {
+    const next = countryCode ?? null;
+    if ((this.opts.countryCode ?? null) === next) return;
+    this.opts.countryCode = next;
+    if (this.live()) void this.refreshStatus();
+  }
+
   /** Lets sound play. Call from a tap when `audioBlocked`. */
   async startAudio(): Promise<void> {
     if (!this.room) return;
@@ -416,9 +428,10 @@ export class LiveSession {
   async refreshStatus(): Promise<void> {
     if (!this.live() || this.statusInFlight) return;
     this.statusInFlight = true;
+    const askedAt = this.now();
     try {
       const status = await this.opts.api.queueStatus(this.opts.roomId, this.opts.countryCode);
-      if (!this.ending) this.applyStatus(status);
+      if (!this.ending) this.applyStatus(status, askedAt);
     } catch (error) {
       if (!this.ending && classifyLiveError(error) === 'not-live') await this.finish('room-ended', null);
     } finally {
@@ -802,6 +815,7 @@ export class LiveSession {
           });
         return;
       case 'queue:your-turn-prompt':
+        this.meMessageAt = this.now();
         this.set({
           me: {
             status: 'called',
@@ -817,6 +831,7 @@ export class LiveSession {
         return;
       case 'call-mode:active':
         if (message.callerId === myId && !this.amCaller()) return; // my own accept on another device: status will say
+        this.callMessageAt = this.now();
         if (message.callerId !== myId)
           this.set({
             call: {
@@ -830,6 +845,7 @@ export class LiveSession {
         this.syncParticipants();
         return;
       case 'call-mode:cleared':
+        this.callMessageAt = this.now();
         if (this.amCaller()) {
           if (this.state.phase === 'in-call') await this.callEndedByServer();
           else this.backToWatching(this.state.me?.queueId ?? null);
@@ -841,6 +857,7 @@ export class LiveSession {
         return;
       case 'queue:no-show':
         if (message.userId === myId) {
+          this.meMessageAt = this.now();
           this.set({ me: null, notice: this.notice(TURN_EXPIRED_NOTICE) });
           void this.refreshStatus();
         }
@@ -854,7 +871,8 @@ export class LiveSession {
     }
   }
 
-  private applyStatus(status: LiveQueueStatus): void {
+  /** `askedAt`: when the request left, so an answer older than the latest room message doesn't undo it. */
+  private applyStatus(status: LiveQueueStatus, askedAt: number): void {
     const entry = status.userEntry;
     const me: LiveMyQueue | null =
       entry && (entry.status === 'waiting' || entry.status === 'called' || entry.status === 'active')
@@ -888,7 +906,8 @@ export class LiveSession {
     const inMyCall = this.state.phase === 'in-call' || this.state.phase === 'joining-call' || this.endingCall;
     this.set({
       queue,
-      ...(inMyCall ? {} : { me, call }),
+      ...(inMyCall || askedAt < this.meMessageAt ? {} : { me }),
+      ...(inMyCall || askedAt < this.callMessageAt ? {} : { call }),
     });
     if (!inMyCall && this.state.phase === 'watching' && me?.status === 'active' && !this.myVideo)
       this.set({ resumeNeeded: true });

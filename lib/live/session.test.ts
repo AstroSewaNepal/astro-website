@@ -512,6 +512,36 @@ describe('call modes for a passive viewer (subscribe-side only)', () => {
   });
 });
 
+describe('a status answer older than a room message', () => {
+  it('cannot clear a call that call-mode:active just announced', async () => {
+    const { session, room, api } = await watching({ now: () => Date.now() });
+    let release: (() => void) | null = null;
+    (api.queueStatus as ReturnType<typeof vi.fn>).mockImplementationOnce(
+      () => new Promise(resolve => { release = () => resolve(status()); }),
+    );
+    void session.refreshStatus(); // leaves before the call starts...
+    await vi.advanceTimersByTimeAsync(50);
+    room.message({ type: 'call-mode:active', callType: 'private_audio', callerId: 'c1', callerName: 'Soni', kickAt: iso(NOW + 600 * SEC) });
+    release!(); // ...and answers after it, without an active caller
+    await flush();
+    expect(session.getState().call?.mode).toBe('private_audio');
+  });
+
+  it('cannot undo a your-turn prompt either', async () => {
+    const { session, room, api } = await watching({ now: () => Date.now(), status: { userEntry: { queueId: 'q1', position: 1, status: 'waiting', callType: 'public_video' } } });
+    let release: (() => void) | null = null;
+    (api.queueStatus as ReturnType<typeof vi.fn>).mockImplementationOnce(
+      () => new Promise(resolve => { release = () => resolve(status({ userEntry: { queueId: 'q1', position: 1, status: 'waiting', callType: 'public_video' } })); }),
+    );
+    void session.refreshStatus();
+    await vi.advanceTimersByTimeAsync(50);
+    room.message({ type: 'queue:your-turn-prompt', queueId: 'q1', callType: 'public_video', expiresAt: iso(NOW + 60 * SEC) });
+    release!();
+    await flush();
+    expect(session.getState().me?.status).toBe('called');
+  });
+});
+
 describe('the paid queue', () => {
   it('your turn arrives as a data message, position from queue:update, no-show clears me with a notice', async () => {
     const { session, room } = await watching({ status: { userEntry: { queueId: 'q1', position: 3, status: 'waiting', callType: 'public_video' } } });
