@@ -7,6 +7,7 @@ import { AccountShell } from '@/components/account/account-shell';
 import { ClientHome } from '@/components/account/client-home';
 import { ComingSoon } from '@/components/account/coming-soon';
 import { LoginRedirect } from '@/components/account/login-redirect';
+import { SessionResync } from '@/components/account/session-resync';
 import { HomeScreenBanner } from '@/components/pwa/home-screen-banner';
 import { OpenOnTop } from '@/components/pwa/open-on-top';
 import { PushBanner } from '@/components/pwa/push-banner';
@@ -35,6 +36,7 @@ export async function AccountArea({
   return (
     <QueryProvider>
       <AccountShell kind={kind}>{children}</AccountShell>
+      <SessionResync />
       {/* A push tap that opened a new window (doc 09 step 4). */}
       <Suspense fallback={null}>
         <OpenOnTop home={ACCOUNT_HOME[kind]} />
