@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { notificationOpenTarget, readOpenParams } from './open';
+import { notificationOpenTarget, openOnTopTarget, readOpenParams } from './open';
 
 const ID = '0123456789abcdef01234567';
 const params = (q: Record<string, string>) => new URLSearchParams(q);
@@ -49,7 +49,29 @@ describe('notificationOpenTarget', () => {
     );
   });
 
+  it('new window: lands on home, which opens the page on top', () => {
+    expect(
+      notificationOpenTarget(params({ type: 'chat_message', connectionScheduleId: ID, fresh: '1' }), ['USER']),
+    ).toBe(`/client?then=${encodeURIComponent(`/client/consultations/${ID}`)}`);
+  });
+
+  it('new window whose page is home: just home', () => {
+    expect(notificationOpenTarget(params({ type: 'connection_schedule', fresh: '1' }), ['ASTROLOGER'])).toBe(
+      '/astrologer',
+    );
+  });
+
   it('admin login is treated as logged out', () => {
     expect(notificationOpenTarget(params({ type: 'chat_message' }), ['SUPER_ADMIN'])).toMatch(/^\/login\?/);
+  });
+});
+
+describe('openOnTopTarget', () => {
+  it('same-site paths only', () => {
+    expect(openOnTopTarget(`/client/consultations/${ID}`)).toBe(`/client/consultations/${ID}`);
+    expect(openOnTopTarget('https://evil.test/x')).toBeNull();
+    expect(openOnTopTarget('//evil.test')).toBeNull();
+    expect(openOnTopTarget('/notification-open?type=x')).toBeNull();
+    expect(openOnTopTarget(null)).toBeNull();
   });
 });

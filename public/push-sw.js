@@ -70,6 +70,8 @@ self.addEventListener('notificationclick', event => {
           // Not controlled by this worker (opened before it was installed): open a new window below.
         }
       }
+      // A new window has no history: `fresh` makes the route land on home first, so Back doesn't close the window.
+      url.searchParams.set('fresh', '1');
       await self.clients.openWindow(url.href);
     })(),
   );

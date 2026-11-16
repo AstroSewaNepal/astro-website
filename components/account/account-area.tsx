@@ -8,9 +8,10 @@ import { ClientHome } from '@/components/account/client-home';
 import { ComingSoon } from '@/components/account/coming-soon';
 import { LoginRedirect } from '@/components/account/login-redirect';
 import { HomeScreenBanner } from '@/components/pwa/home-screen-banner';
+import { OpenOnTop } from '@/components/pwa/open-on-top';
 import { PushBanner } from '@/components/pwa/push-banner';
 import { accountPageTitle, type PrivateKind } from '@/lib/account/nav';
-import { accountHome, accountKind } from '@/lib/auth/account';
+import { ACCOUNT_HOME, accountHome, accountKind } from '@/lib/auth/account';
 import { QueryProvider } from '@/providers/query-provider';
 
 /** Shared layout of /client and /astrologer: the page renders only for a logged-in account of that kind. */
@@ -34,6 +35,10 @@ export async function AccountArea({
   return (
     <QueryProvider>
       <AccountShell kind={kind}>{children}</AccountShell>
+      {/* A push tap that opened a new window (doc 09 step 4). */}
+      <Suspense fallback={null}>
+        <OpenOnTop home={ACCOUNT_HOME[kind]} />
+      </Suspense>
     </QueryProvider>
   );
 }
