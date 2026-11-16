@@ -21,6 +21,7 @@ import { callBannerText, countdownTone, feedItems, formatCountdown, neighbours, 
 
 type Me = { id: string; name: string };
 
+
 /**
  * One astrologer's live stream (the app's LiveViewerScreen + swipe feed). Phone: full screen, the app's layout
  * (video behind, host pill on top, chat and actions over the bottom). Desktop: a Shorts-style portrait player with
@@ -121,31 +122,93 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
   const notLive = rooms.isSuccess && !current;
   const others = list.filter(r => r.astrologerId !== astrologerId);
 
+  const info = current ? (
+    <div className="flex items-center gap-3">
+      <Link href={`/astrologer-profile/${encodeURIComponent(current.astrologerId)}`} className="relative shrink-0" aria-label={`${current.astrologerName ?? 'Astrologer'}'s profile`}>
+        <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary">
+          <Avatar url={current.astrologerAvatar} name={current.astrologerName ?? 'Astrologer'} size={46} />
+        </span>
+        <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 rounded border border-white bg-primary px-1.5 font-app text-[10px] font-bold leading-[14px] text-white">
+          Live
+        </span>
+      </Link>
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-app text-[18px] font-semibold text-[#4a1a1a]">{current.astrologerName ?? 'Astrologer'}</p>
+        <p className="truncate font-app text-[13px] text-[#6d6d6d]">
+          {state?.queue?.price ? `${formatCallSlotPrice(state.queue.price)} / 10 min · ` : ''}
+          {compactCount(state?.viewerCount ?? current.viewerCount)} watching
+        </p>
+      </div>
+      <FollowButton astrologerId={current.astrologerId} large />
+    </div>
+  ) : null;
+
+  const othersStrip = others.length ? (
+    <div className="hidden lg:block">
+      <p className="mb-2 font-app text-[15px] font-semibold text-[#4a1a1a]">Others live now</p>
+      <ul className="flex gap-3 overflow-x-auto pb-2 [scrollbar-width:thin]">
+        {others.map(r => (
+          <li key={r.roomId} className="shrink-0">
+            <button
+              type="button"
+              onClick={() => go(r)}
+              className="flex w-[220px] items-center gap-3 rounded-lg border border-[#BE7B71] bg-[#FFFAE6] p-2 text-left hover:bg-[#fff5d6]"
+            >
+              <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-primary">
+                <Avatar url={r.astrologerAvatar} name={r.astrologerName ?? 'Astrologer'} size={40} />
+                <span className="absolute -bottom-1.5 rounded border border-white bg-primary px-1 font-app text-[9px] font-bold leading-[12px] text-white">Live</span>
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-app text-[15px] font-semibold text-primary">{r.astrologerName ?? 'Astrologer'}</span>
+                <span className="block font-app text-[13px] text-[#1C1C1C]">{r.viewerCount} watching</span>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : null;
+
+  // Desktop column height: the player and the chat column share it (video as tall as the screen allows).
+  const tall = 'lg:h-[max(440px,calc(100vh-250px))]';
+
   return (
     <div
       ref={root}
-      className="fixed inset-0 z-[60] flex flex-col bg-black lg:static lg:z-auto lg:grid lg:h-auto lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-5 lg:bg-transparent xl:grid-cols-[minmax(0,1fr)_380px]"
+      className="fixed inset-0 z-[60] flex flex-col bg-black lg:static lg:z-auto lg:grid lg:h-auto lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-5 lg:bg-transparent xl:grid-cols-[minmax(0,1fr)_400px]"
     >
-      {/* Left: the player (the whole screen on phones; a landscape card on desktop), then the info row. */}
+      {/* Left: the player (the whole screen on phones). */}
       <div className="relative flex min-h-0 flex-1 flex-col lg:flex-none">
         <div
-          className="relative flex h-full w-full flex-col overflow-hidden bg-black lg:aspect-[4/3] lg:h-auto lg:max-h-[calc(100vh-260px)] lg:min-h-[360px] lg:rounded-2xl"
+          className={clsx('relative flex h-full w-full flex-col overflow-hidden bg-black lg:rounded-2xl', tall)}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
-          <Stage session={session} state={state} room={current} me={me} />
+          <div className="relative min-h-0 flex-1">
+            <Stage session={session} state={state} room={current} me={me} />
 
-          {/* Phone: the app's header over the video. Desktop: only the call pills and the close button up there. */}
-          {current ? (
-            <>
-              <div className="lg:hidden">
-                <LiveHeader room={current} state={state} me={me} onClose={() => setLeaveOpen(true)} />
-              </div>
-              <div className="hidden lg:block">
-                <CallPills state={state} me={me} name={current.astrologerName ?? 'Astrologer'} onClose={() => setLeaveOpen(true)} />
-              </div>
-            </>
-          ) : null}
+            {/* Phone: the app's header over the video. Desktop: only the call pills and the close button up there. */}
+            {current ? (
+              <>
+                <div className="lg:hidden">
+                  <LiveHeader room={current} state={state} me={me} onClose={() => setLeaveOpen(true)} />
+                </div>
+                <div className="hidden lg:block">
+                  <CallPills state={state} me={me} name={current.astrologerName ?? 'Astrologer'} onClose={() => setLeaveOpen(true)} />
+                </div>
+              </>
+            ) : null}
+
+            {/* Desktop: up/down at the video's right edge (arrow keys work too). */}
+            <div className="absolute right-3 top-1/2 hidden -translate-y-1/2 flex-col gap-2 lg:flex">
+              <ArrowButton label="Previous stream" disabled={!prev} onClick={() => go(prev)}>
+                <ChevronUp className="h-6 w-6" aria-hidden />
+              </ArrowButton>
+              <ArrowButton label="Next stream" disabled={!next} onClick={() => go(next)}>
+                <ChevronDown className="h-6 w-6" aria-hidden />
+              </ArrowButton>
+            </div>
+          </div>
 
           {/* Phone: chat feed left, actions right, composer along the bottom (over the video). */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col gap-2 p-3 pb-[max(12px,env(safe-area-inset-bottom))] lg:hidden">
@@ -160,16 +223,6 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
             </div>
           </div>
 
-          {/* Desktop: up/down inside the player's right edge (arrow keys work too). */}
-          <div className="absolute right-3 top-1/2 hidden -translate-y-1/2 flex-col gap-2 lg:flex">
-            <ArrowButton label="Previous stream" disabled={!prev} onClick={() => go(prev)}>
-              <ChevronUp className="h-6 w-6" aria-hidden />
-            </ArrowButton>
-            <ArrowButton label="Next stream" disabled={!next} onClick={() => go(next)}>
-              <ChevronDown className="h-6 w-6" aria-hidden />
-            </ArrowButton>
-          </div>
-
           {/* Loading / ended states on top of everything. */}
           {!current && !notLive ? (
             <Centered>
@@ -181,70 +234,30 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
           ) : null}
         </div>
 
-        {/* Desktop: who is live, their price, follow, like and share, like a video page. */}
-        {current ? (
-          <div className="hidden items-center gap-3 py-3 lg:flex">
-            <Link href={`/astrologer-profile/${encodeURIComponent(current.astrologerId)}`} className="relative shrink-0" aria-label={`${current.astrologerName ?? 'Astrologer'}'s profile`}>
-              <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary">
-                <Avatar url={current.astrologerAvatar} name={current.astrologerName ?? 'Astrologer'} size={46} />
-              </span>
-              <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 rounded border border-white bg-primary px-1.5 font-app text-[10px] font-bold leading-[14px] text-white">
-                Live
-              </span>
-            </Link>
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-app text-[19px] font-semibold text-[#4a1a1a]">{current.astrologerName ?? 'Astrologer'}</p>
-              <p className="truncate font-app text-[14px] text-[#6d6d6d]">
-                {state?.queue?.price ? `${formatCallSlotPrice(state.queue.price)} / 10 min · ` : ''}
-                {compactCount(state?.viewerCount ?? current.viewerCount)} watching
-              </p>
-            </div>
-            <FollowButton astrologerId={current.astrologerId} large />
-            {session && state ? <Actions session={session} state={state} room={current} row /> : null}
-          </div>
-        ) : null}
-
-        {/* Desktop: the other streams, one click away. */}
-        {others.length ? (
-          <div className="hidden lg:block">
-            <p className="mb-2 font-app text-[15px] font-semibold text-[#4a1a1a]">Others live now</p>
-            <ul className="flex gap-3 overflow-x-auto pb-2 [scrollbar-width:thin]">
-              {others.map(r => (
-                <li key={r.roomId} className="shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => go(r)}
-                    className="flex w-[220px] items-center gap-3 rounded-lg border border-[#BE7B71] bg-[#FFFAE6] p-2 text-left hover:bg-[#fff5d6]"
-                  >
-                    <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-primary">
-                      <Avatar url={r.astrologerAvatar} name={r.astrologerName ?? 'Astrologer'} size={40} />
-                      <span className="absolute -bottom-1.5 rounded border border-white bg-primary px-1 font-app text-[9px] font-bold leading-[12px] text-white">Live</span>
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-app text-[15px] font-semibold text-primary">{r.astrologerName ?? 'Astrologer'}</span>
-                      <span className="block font-app text-[13px] text-[#1C1C1C]">{r.viewerCount} watching</span>
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
       </div>
 
-      {/* Desktop: the chat beside the player, light like the rest of the site. */}
-      <aside className="hidden min-h-0 flex-col overflow-hidden rounded-2xl border border-[#BE7B71]/60 bg-[#FFFAE6] lg:flex lg:h-[min(calc(100vh-260px),720px)] lg:min-h-[360px]">
-        <div className="flex items-center justify-between border-b border-[#BE7B71]/40 px-4 py-3">
-          <h2 className="font-app text-[17px] font-semibold text-[#4a1a1a]">Live chat</h2>
-          {state ? <span className="font-app text-[13px] text-[#6d6d6d]">{compactCount(state.viewerCount)} watching</span> : null}
-        </div>
-        <div className="min-h-0 flex-1 p-3">
-          {state ? <LiveChatFeed items={feedItems(state.messages, state.gifts, astrologerId)} className="h-full" tone="light" /> : null}
-        </div>
-        <div className="border-t border-[#BE7B71]/40 p-3">
-          <LiveComposer onSend={text => session?.sendChat(text) ?? false} disabled={!state || ended} tone="light" />
-        </div>
-      </aside>
+      {/* Desktop: who is live above the chat, both in the right column (the player keeps the height for video). */}
+      <div className={clsx('hidden min-h-0 flex-col gap-3 lg:flex', tall)}>
+          <div className="rounded-2xl border border-[#BE7B71]/60 bg-[#FFFAE6] px-4 py-3">
+            <div className="flex items-center gap-3">
+              <div className="min-w-0 flex-1">{info}</div>
+              {session && state ? <Actions session={session} state={state} room={current} row /> : null}
+            </div>
+          </div>
+          <aside className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[#BE7B71]/60 bg-[#FFFAE6]">
+            <div className="flex items-center justify-between border-b border-[#BE7B71]/40 px-4 py-2.5">
+              <h2 className="font-app text-[16px] font-semibold text-[#4a1a1a]">Live chat</h2>
+              {state ? <span className="font-app text-[13px] text-[#6d6d6d]">{compactCount(state.viewerCount)} watching</span> : null}
+            </div>
+            <div className="min-h-0 flex-1 p-3">
+              {state ? <LiveChatFeed items={feedItems(state.messages, state.gifts, astrologerId)} className="h-full" tone="light" /> : null}
+            </div>
+            <div className="border-t border-[#BE7B71]/40 p-3">
+              <LiveComposer onSend={text => session?.sendChat(text) ?? false} disabled={!state || ended} tone="light" />
+            </div>
+          </aside>
+      </div>
+      <div className="hidden lg:col-span-2 lg:block">{othersStrip}</div>
 
       <LeaveDialog
         open={leaveOpen}
