@@ -8,6 +8,7 @@ import {
   getJwtExpiry,
   refreshBackendTokens,
   revokeBackendSession,
+  setBackendPushToken,
 } from '@/lib/auth/backend-tokens';
 import { isSignUpRole, type SignInError } from '@/lib/auth/google-signin';
 import { openHandoff, sealHandoff } from '@/lib/auth/reactivation';
@@ -245,6 +246,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (email) token.email = email;
         }
       }
+      // Push on/off for this login (doc 09 step 4). The browser sends its own Firebase token; the backend gets it with
+      // this login's refresh token, which never leaves the cookie. The cookie remembers it, so a new login (fresh
+      // cookie) registers again and an unchanged token isn't sent twice.
+      const push = ask && 'push' in ask ? ask.push : undefined;
+      if (
+        (push === null || isPushToken(push)) &&
+        typeof token.backendRefreshToken === 'string' &&
+        (push ?? undefined) !== token.pushToken
+      ) {
+        if (await setBackendPushToken(token.backendRefreshToken, push)) {
+          if (push) token.pushToken = push;
+          else delete token.pushToken;
+        }
+      }
       return token;
     },
     session({ session, token }) {
@@ -258,6 +273,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           (token.backendAccessTokenExpires as number | null) ?? null;
       }
       if (token.error === 'RefreshFailed') session.error = 'RefreshFailed';
+      // This browser's own push token (not a secret): lets the page see whether this login has push on.
+      if (typeof token.pushToken === 'string') session.pushToken = token.pushToken;
       session.user.roles = (token.roles as string[]) ?? [];
       return session;
     },
@@ -293,7 +310,15 @@ export type ProfileUpdate = {
   profile: { name?: string; image?: string | null; syncEmail?: true };
 };
 
-type SessionUpdate = RefreshRequest | ProfileUpdate;
+/** Push on (this browser's Firebase token) or off (null) for this login. */
+export type PushUpdate = { push: string | null };
+
+type SessionUpdate = RefreshRequest | ProfileUpdate | PushUpdate;
+
+/** Firebase push tokens are URL-safe text with colons; anything else from the browser is refused. */
+function isPushToken(value: unknown): value is string {
+  return typeof value === 'string' && value.length <= 4096 && /^[\w:-]{20,}$/.test(value);
+}
 
 declare module 'next-auth' {
   interface Session {
@@ -303,6 +328,8 @@ declare module 'next-auth' {
     backendAccessTokenExpires?: number | null;
     /** Set when the refresh token was refused: the user must log in again. */
     error?: 'RefreshFailed';
+    /** This browser's push token when this login has push on (doc 09 step 4). */
+    pushToken?: string;
   }
   interface User {
     backendAccessToken?: string;

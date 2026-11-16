@@ -6,16 +6,19 @@ import clsx from 'clsx';
 
 import TransparentBellIcon from '@/components/icons/bell';
 import { NotificationToasts } from '@/components/notifications/notification-toasts';
+import { usePushSync } from '@/hooks/use-push';
 import { useUnreadNotifications } from '@/hooks/use-unread-notifications';
 import type { PrivateKind } from '@/lib/account/nav';
 import { notificationsPagePath, unreadBadge } from '@/lib/notifications/list';
 
 /**
  * Header bell (Figma: maroon circle right of Profile) with the unread count; opens the notifications page. New
- * notifications also pop up as toasts.
+ * notifications also pop up as toasts. Mounted on every page while a client/astrologer is logged in, so it also keeps
+ * this browser's web push registered (usePushSync).
  */
 export function NotificationBell({ kind }: { kind: PrivateKind }) {
   const count = useUnreadNotifications();
+  usePushSync();
   const badge = unreadBadge(count);
   const href = notificationsPagePath(kind);
   const here = usePathname() === href;

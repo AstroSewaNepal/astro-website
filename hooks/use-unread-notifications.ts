@@ -5,6 +5,7 @@ import { useSyncExternalStore } from 'react';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { NOTIFICATIONS_CHANGED_EVENT, type UserNotification } from '@/lib/notifications/list';
 import { MAX_TOASTS, pickToasts, readToasted, rememberToasted } from '@/lib/notifications/toasts';
+import { PUSH_MESSAGE } from '@/lib/push/browser';
 
 const REFRESH_MS = 60_000;
 
@@ -64,12 +65,20 @@ function startPolling() {
     if (document.visibilityState === 'visible') void refresh();
   };
   const onChanged = () => void refresh();
+  // A web push arrived (public/push-sw.js): its row is already saved, so the bell and toast update now, not on the
+  // next minute tick.
+  const worker = 'serviceWorker' in navigator ? navigator.serviceWorker : null;
+  const onWorkerMessage = (event: MessageEvent) => {
+    if ((event.data as { type?: unknown } | null)?.type === PUSH_MESSAGE) void refresh();
+  };
   document.addEventListener('visibilitychange', onVisible);
   window.addEventListener(NOTIFICATIONS_CHANGED_EVENT, onChanged);
+  worker?.addEventListener('message', onWorkerMessage);
   return () => {
     window.clearInterval(timer);
     document.removeEventListener('visibilitychange', onVisible);
     window.removeEventListener(NOTIFICATIONS_CHANGED_EVENT, onChanged);
+    worker?.removeEventListener('message', onWorkerMessage);
     count = 0; // the next account starts from its own count
     baselined = false;
   };

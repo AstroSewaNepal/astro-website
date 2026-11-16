@@ -49,8 +49,9 @@ export async function refreshBackendTokens(refreshToken: string): Promise<Backen
 }
 
 /**
- * Ends a backend session (the refresh token stops working). `deviceType: 'WEB'` keeps the push token the user's phone
- * app registered; the website never registers one. Best effort: a dead or refused token is already logged out.
+ * Ends a backend session (the refresh token stops working), which also stops this browser's pushes (the push token
+ * lives on the session). `deviceType: 'WEB'` keeps the old users.fcmToken, which is the phone app's. Best effort: a
+ * dead or refused token is already logged out.
  */
 export async function revokeBackendSession(refreshToken: string): Promise<void> {
   const apiRoot = tryGetPublicBackendBaseUrl();
@@ -64,6 +65,32 @@ export async function revokeBackendSession(refreshToken: string): Promise<void> 
     });
   } catch {
     // network failure: the token still expires on its own
+  }
+}
+
+/**
+ * Puts this browser's Firebase push token on its login session (null takes it off). Bearer = the refresh token, like
+ * logout; it does not rotate it. True when the backend saved it.
+ */
+export async function setBackendPushToken(
+  refreshToken: string,
+  pushToken: string | null,
+): Promise<boolean> {
+  const apiRoot = tryGetPublicBackendBaseUrl();
+  if (!apiRoot) return false;
+  try {
+    const res = await fetch(`${apiRoot}/auth/push-token`, {
+      method: pushToken ? 'PUT' : 'DELETE',
+      headers: {
+        Authorization: `Bearer ${refreshToken}`,
+        ...(pushToken ? { 'Content-Type': 'application/json' } : {}),
+      },
+      body: pushToken ? JSON.stringify({ pushToken }) : undefined,
+      cache: 'no-store',
+    });
+    return res.ok;
+  } catch {
+    return false;
   }
 }
 
