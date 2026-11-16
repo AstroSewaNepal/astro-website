@@ -51,6 +51,7 @@ export const PAINT_WAIT_MS = 250;
  */
 export function noteOutsideTrip(kind: OutsideTripKind): void {
   try {
+    if (kind === 'login' && skipsLoginTrip(window.navigator?.userAgent ?? '')) return;
     const token = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
     const state: unknown = window.history.state;
     const tagged = { ...(state && typeof state === 'object' ? state : {}), [TAG_KEY]: token };
@@ -60,6 +61,15 @@ export function noteOutsideTrip(kind: OutsideTripKind): void {
   } catch {
     // Storage blocked (private mode): Back just works as before.
   }
+}
+
+/**
+ * Desktop Firefox after Google sign-in: the jump back left people on the page they signed in from, still showing
+ * "Sign in", instead of their account home (2026-11-16, not reproduced with a stand-in for Google; mobile Firefox and
+ * other browsers were fine). There a sign-in just lands on the account home; Back may show Google's page again.
+ */
+export function skipsLoginTrip(userAgent: string): boolean {
+  return /Firefox\//.test(userAgent) && !/Android|Mobile|Tablet/i.test(userAgent);
 }
 
 const key = JSON.stringify;

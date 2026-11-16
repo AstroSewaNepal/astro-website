@@ -5,6 +5,7 @@ import {
   HIDE_MAX_MS,
   LANDING_KEY,
   noteOutsideTrip,
+  skipsLoginTrip,
   outsideTripScript,
   PAINT_WAIT_MS,
   TAG_KEY,
@@ -323,6 +324,22 @@ describe('noteOutsideTrip', () => {
     expect(history.state).toEqual({ __NA: true, [TAG_KEY]: saved.token });
   });
 
+  it('desktop Firefox notes no sign-in trip (lands on the account home), but still notes payments', () => {
+    const storage = new Map<string, string>();
+    const history = { length: 2, state: null as unknown, pushState: vi.fn() };
+    vi.stubGlobal('window', {
+      history,
+      location: { href: 'https://site.test/login' },
+      navigator: { userAgent: FIREFOX_DESKTOP },
+      sessionStorage: { setItem: (k: string, v: string) => storage.set(k, v) },
+    });
+    noteOutsideTrip('login');
+    expect(history.pushState).not.toHaveBeenCalled();
+    expect(storage.has(TRIP_KEY)).toBe(false);
+    noteOutsideTrip('payment');
+    expect(storage.has(TRIP_KEY)).toBe(true);
+  });
+
   it('never throws (storage blocked)', () => {
     vi.stubGlobal('window', {
       history: { state: null, length: 1, pushState: () => {} },
@@ -332,5 +349,16 @@ describe('noteOutsideTrip', () => {
       },
     });
     expect(() => noteOutsideTrip('login')).not.toThrow();
+  });
+});
+
+const FIREFOX_DESKTOP = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0';
+
+describe('skipsLoginTrip', () => {
+  it('only desktop Firefox', () => {
+    expect(skipsLoginTrip(FIREFOX_DESKTOP)).toBe(true);
+    expect(skipsLoginTrip('Mozilla/5.0 (Android 14; Mobile; rv:140.0) Gecko/140.0 Firefox/140.0')).toBe(false);
+    expect(skipsLoginTrip('Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/140.0 Mobile/15E148 Safari/605.1.15')).toBe(false);
+    expect(skipsLoginTrip('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0')).toBe(false);
   });
 });
