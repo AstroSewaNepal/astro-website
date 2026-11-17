@@ -53,6 +53,7 @@ const AstrologerCard = memo(function AstrologerCard({
         originalLabel: 'Price unavailable',
         discountedLabel: 'Price unavailable',
         showStrikeThrough: false,
+        per: '',
       };
     }
 
@@ -62,12 +63,16 @@ const AstrologerCard = memo(function AstrologerCard({
       lowestPackage.discountedPrice?.value,
     );
     const showStrikeThrough = (lowestPackage.discountPercent ?? 0) > 0;
+    // The app's card: "NPR 465 / 15m" (price of the cheapest package and its length), "Free" when it costs nothing.
+    const minutes = lowestPackage.consultationMinutes;
+    const isFree = lowestPackage.discountedPrice?.value === 0;
 
     return {
       hasPackage: true,
       originalLabel,
-      discountedLabel,
-      showStrikeThrough,
+      discountedLabel: isFree ? 'Free' : discountedLabel,
+      showStrikeThrough: showStrikeThrough && !isFree,
+      per: minutes && !isFree ? ` / ${minutes}m` : '',
     };
   }, [astrologer.packages]);
 
@@ -179,16 +184,24 @@ const AstrologerCard = memo(function AstrologerCard({
             </div>
           </div>
 
-          <div className="mt-1.5 flex flex-wrap items-baseline justify-center gap-x-1 gap-y-0.5 text-center sm:mt-3 lg:mt-5">
-            {pricing.hasPackage && pricing.showStrikeThrough ? (
-              <span className="font-mukta text-[10px] text-[#8a8583] line-through sm:text-sm lg:text-base">
-                {pricing.originalLabel}/min
+          {/* No packages: no price line, like the app's card. */}
+          {pricing.hasPackage ? (
+            <div className="mt-1.5 flex flex-wrap items-baseline justify-center gap-x-1 gap-y-0.5 text-center sm:mt-3 lg:mt-5">
+              {pricing.showStrikeThrough ? (
+                <span className="font-mukta text-[10px] text-[#8a8583] line-through sm:text-sm lg:text-base">
+                  {pricing.originalLabel}
+                </span>
+              ) : null}
+              <span className="font-mukta text-[16px] font-bold leading-none text-primary sm:text-[24px] lg:text-[32px]">
+                {pricing.discountedLabel}
+                {pricing.per ? (
+                  <span className="text-[11px] font-semibold sm:text-sm lg:text-base">
+                    {pricing.per}
+                  </span>
+                ) : null}
               </span>
-            ) : null}
-            <span className="font-mukta text-[16px] font-bold leading-none text-primary sm:text-[24px] lg:text-[32px]">
-              {pricing.hasPackage ? `${pricing.discountedLabel}/min` : pricing.discountedLabel}
-            </span>
-          </div>
+            </div>
+          ) : null}
         </div>
 
         <div className="mt-auto grid grid-cols-2 gap-1 pt-2 sm:gap-2.5 sm:pt-4 lg:gap-3 lg:pt-5">
