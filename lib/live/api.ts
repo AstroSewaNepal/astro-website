@@ -60,8 +60,6 @@ export type LiveApi = {
   resumeCall(roomId: string): Promise<LiveCallerToken>;
   /** I end my call early. */
   completeCall(roomId: string): Promise<unknown>;
-  /** Leave the queue while waiting or called. */
-  leaveQueue(roomId: string): Promise<unknown>;
   likeStatus(roomId: string): Promise<{ likeCount: number; hasLiked: boolean }>;
   like(roomId: string): Promise<{ likeCount: number; hasLiked: boolean }>;
 };
@@ -79,7 +77,6 @@ export function liveApi(backend: BackendClient): LiveApi {
     acceptTurn: roomId => backend.post<LiveCallerToken>('/live/queue/accept', { roomId }),
     resumeCall: roomId => backend.post<LiveCallerToken>('/live/queue/resume', { roomId }),
     completeCall: roomId => backend.post('/live/queue/complete', { roomId }),
-    leaveQueue: roomId => backend.post('/live/queue/leave', { roomId }),
     likeStatus: roomId =>
       backend.get<{ likeCount: number; hasLiked: boolean }>(`/live/rooms/${encodeURIComponent(roomId)}/reactions`),
     like: roomId =>

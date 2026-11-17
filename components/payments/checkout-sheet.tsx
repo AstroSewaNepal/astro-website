@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Loader2, X } from 'lucide-react';
+import { ArrowLeft, Loader2, X } from 'lucide-react';
 import clsx from 'clsx';
 
 import { useBackendClient } from '@/hooks/use-backend-client';
@@ -12,6 +12,7 @@ import { useBuyerCountry } from '@/hooks/use-buyer-country';
 import {
   type Gateway,
   type Purchase,
+  type PurchaseStatus,
   localGatewaysTake,
   readStarted,
   startRequest,
@@ -33,6 +34,9 @@ export function CheckoutSheet({
   currency,
   backHref,
   onClose,
+  onBack,
+  note,
+  onFonepaySettled,
 }: {
   /** null = closed */
   purchase: Purchase | null;
@@ -43,6 +47,15 @@ export function CheckoutSheet({
   /** Where "Try again" goes after a failed payment */
   backHref: string;
   onClose: () => void;
+  /** A back arrow in the header (a step before this one, like the live call type). */
+  onBack?: () => void;
+  /** A line under the price, before the gateways. */
+  note?: string;
+  /**
+   * The Fonepay QR settled: the caller shows the verdict itself and the buyer stays on this page (a live stream
+   * keeps playing). Without it the buyer goes to the return page.
+   */
+  onFonepaySettled?: (pidx: string, status: PurchaseStatus) => void;
 }) {
   const backend = useBackendClient();
   const router = useRouter();
@@ -79,6 +92,7 @@ export function CheckoutSheet({
         title,
         backHref,
         startedAt: Date.now(),
+        ...(purchase!.kind === 'live-call' ? { roomId: purchase!.roomId } : {}),
       });
       if ('redirect' in started) {
         // Same tab: the gateway sends the browser back to /payment/return, and Back from there skips its pages.
@@ -119,7 +133,19 @@ export function CheckoutSheet({
           className="fixed inset-x-0 bottom-0 z-[91] flex max-h-[92dvh] flex-col rounded-t-[24px] bg-[#F8F3DF] px-4 pt-5 pb-[max(1rem,env(safe-area-inset-bottom))] font-app shadow-xl outline-none sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:w-[440px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[24px]"
         >
           <div className="flex items-center justify-between">
-            <span className="w-6" />
+            {onBack && !qr ? (
+              <button
+                type="button"
+                onClick={onBack}
+                disabled={busy}
+                aria-label="Back"
+                className="flex h-6 w-6 items-center justify-center text-primary disabled:opacity-50"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </button>
+            ) : (
+              <span className="w-6" />
+            )}
             <DialogPrimitive.Title className="font-raleway text-[22px] font-semibold text-primary">
               {qr ? 'Pay with Fonepay' : 'Payment Options'}
             </DialogPrimitive.Title>
@@ -135,12 +161,23 @@ export function CheckoutSheet({
             {title} · <b className="text-primary">{priceLabel}</b>
           </p>
 
+          {note && !qr ? (
+            <p className="mt-2 text-center text-[14px] text-[#6d6d6d]">{note}</p>
+          ) : null}
+
           {qr ? (
             <FonepayPanel
               payment={qr}
-              onSettled={() =>
-                router.push(`/payment/return?type=fonepay&pidx=${encodeURIComponent(qr.pidx)}`)
-              }
+              onSettled={status => {
+                if (onFonepaySettled) {
+                  setChoice(null);
+                  setQr(null);
+                  start.reset();
+                  onFonepaySettled(qr.pidx, status);
+                  return;
+                }
+                router.push(`/payment/return?type=fonepay&pidx=${encodeURIComponent(qr.pidx)}`);
+              }}
             />
           ) : (
             <div className="mt-4 flex min-h-0 flex-col gap-4 overflow-y-auto">

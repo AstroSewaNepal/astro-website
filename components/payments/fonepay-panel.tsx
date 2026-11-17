@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import QRCode from 'qrcode';
@@ -8,6 +8,7 @@ import QRCode from 'qrcode';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import {
   type FonepayBank,
+  type PurchaseStatus,
   bankAppLink,
   outcomeOf,
   readStatus,
@@ -40,8 +41,8 @@ export function FonepayPanel({
   onSettled,
 }: {
   payment: { pidx: string; qrMessage: string; websocketUrl: string | null };
-  /** Paid, failed or expired: the return page shows the verdict. */
-  onSettled: () => void;
+  /** Paid, failed or expired (called once): the caller shows the verdict. */
+  onSettled: (status: PurchaseStatus) => void;
 }) {
   const backend = useBackendClient();
   const device = useDevice();
@@ -64,9 +65,13 @@ export function FonepayPanel({
     refetchIntervalInBackground: false,
     retry: false,
   });
-  const settled = status.data ? outcomeOf(status.data) !== 'waiting' : false;
+  const settled = status.data && outcomeOf(status.data) !== 'waiting' ? status.data : null;
+  // Once per payment, whatever the caller's callback identity does between renders.
+  const reported = useRef(false);
   useEffect(() => {
-    if (settled) onSettled();
+    if (!settled || reported.current) return;
+    reported.current = true;
+    onSettled(settled);
   }, [settled, onSettled]);
 
   // Fonepay's own socket: re-check right away when it reports a result.

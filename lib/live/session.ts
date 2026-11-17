@@ -439,18 +439,6 @@ export class LiveSession {
     }
   }
 
-  /** Leave the paid queue while waiting or called. */
-  async leaveQueue(): Promise<void> {
-    if (!this.state.me || this.state.me.status === 'active') return;
-    try {
-      await this.opts.api.leaveQueue(this.opts.roomId);
-      this.set({ me: null });
-      await this.refreshStatus();
-    } catch (error) {
-      this.set({ error: this.describe(error, 'Could not leave the queue.') });
-    }
-  }
-
   /**
    * Join Now (my turn). Order matters for the host (see the file comment): camera + mic first, then accept, then
    * publish on this same connection. A blocked camera never takes the slot.

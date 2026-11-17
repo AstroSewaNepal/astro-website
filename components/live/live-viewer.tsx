@@ -6,15 +6,19 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { Check, ChevronDown, ChevronUp, Heart, Loader2, Lock, Share2, Volume2, X } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Heart, Loader2, Lock, Phone, Share2, Volume2, X } from 'lucide-react';
 
+import { useCalls } from '@/components/call/call-provider';
+import { LiveCallSheet } from '@/components/live/live-call-sheet';
 import { LiveChatFeed, LiveComposer } from '@/components/live/live-chat';
 import { LIVE_ROOMS_KEY } from '@/components/live/live-feed';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useBuyerCountry } from '@/hooks/use-buyer-country';
+import { useLiveCallStandby } from '@/hooks/use-live-call-standby';
 import { useLiveSession } from '@/hooks/use-live-session';
 import { usePhoneFullScreen } from '@/hooks/use-phone-full-screen';
 import { liveApi, type LiveRoomSummary } from '@/lib/live/api';
+import { callDisabledReason, myQueueText, type LiveCallResult } from '@/lib/live/call-slot';
 import { compactCount, formatCallSlotPrice, LIVE_FEED_POLL_MS, livePath, stableRooms } from '@/lib/live/feed';
 import type { LiveSession, LiveState } from '@/lib/live/session';
 import { callBannerText, countdownTone, feedItems, formatCountdown, neighbours, swipeDirection, type SwipePoint } from '@/lib/live/ui';
@@ -114,6 +118,37 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
     void session?.end();
     router.push('/live');
   };
+
+  // The paid call (step 4): who may book, a payment waiting for a spot, and what to say afterwards.
+  const { busy: inConsultation } = useCalls();
+  const [callOpen, setCallOpen] = useState(false);
+  const [toast, setToast] = useState<LiveToastMessage | null>(null);
+  const showToast = useCallback((next: Omit<LiveToastMessage, 'id'>) => setToast({ ...next, id: Date.now() }), []);
+  const standby = useLiveCallStandby(current?.roomId ?? null, !!state?.me, () => {
+    showToast({ tone: 'good', title: "You're in the queue!", text: "We'll tell you when it's your turn." });
+    void session?.refreshStatus();
+  });
+  const disabledReason = callDisabledReason({
+    queue: state?.queue ?? null,
+    me: state?.me ?? null,
+    awaitingSlot: !!standby,
+    inConsultation,
+  });
+  // Changing stream closes the sheet (it belongs to the stream it was opened on).
+  const [callRoom, setCallRoom] = useState(current?.roomId ?? null);
+  if ((current?.roomId ?? null) !== callRoom) {
+    setCallRoom(current?.roomId ?? null);
+    setCallOpen(false);
+  }
+  // One toast at a time: a payment result here, else the session's one-off notice (your turn expired, removed...).
+  const shownToast: LiveToastMessage | null =
+    toast ?? (state?.notice ? { id: -state.notice.id, tone: 'info', title: state.notice.text, text: '' } : null);
+  const dismissToast = useCallback(() => {
+    if (toast) setToast(null);
+    else session?.clearNotice();
+  }, [toast, session]);
+  const onCallResult = useCallback((r: LiveCallResult) => showToast(r), [showToast]);
+  const openCall = useCallback(() => setCallOpen(true), []);
 
   const root = useRef<HTMLDivElement>(null);
   usePhoneFullScreen(root);
@@ -216,8 +251,11 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
               <div className="pointer-events-auto min-w-0 flex-1">
                 {state ? <LiveChatFeed items={feedItems(state.messages, state.gifts, astrologerId)} className="max-h-[38vh]" /> : null}
               </div>
-              <div className="pointer-events-auto">{session && state ? <Actions session={session} state={state} room={current} /> : null}</div>
+              <div className="pointer-events-auto">
+                {session && state ? <Actions session={session} state={state} room={current} callOff={!!disabledReason} onCall={openCall} /> : null}
+              </div>
             </div>
+            {state && !ended ? <QueueLine state={state} reason={disabledReason} awaiting={!!standby} onOpen={openCall} /> : null}
             <div className="pointer-events-auto">
               <LiveComposer onSend={text => session?.sendChat(text) ?? false} disabled={!state || ended} />
             </div>
@@ -239,10 +277,18 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
       {/* Desktop: who is live above the chat, both in the right column (the player keeps the height for video). */}
       <div className={clsx('hidden min-h-0 flex-col gap-3 lg:flex', tall)}>
           <div className="rounded-2xl border border-[#BE7B71]/60 bg-[#FFFAE6] px-4 py-3">
-            <div className="flex items-center gap-3">
-              <div className="min-w-0 flex-1">{info}</div>
-              {session && state ? <Actions session={session} state={state} room={current} row /> : null}
-            </div>
+            {info}
+            {/* The buttons row: heart, share, call (gift joins it in step 6). */}
+            {session && state ? (
+              <div className="mt-3 flex justify-center border-t border-[#BE7B71]/40 pt-3">
+                <Actions session={session} state={state} room={current} callOff={!!disabledReason} onCall={openCall} row />
+              </div>
+            ) : null}
+            {state && !ended ? (
+              <div className="mt-2">
+                <QueueLine state={state} reason={disabledReason} awaiting={!!standby} onOpen={openCall} light />
+              </div>
+            ) : null}
           </div>
           <aside className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[#BE7B71]/60 bg-[#FFFAE6]">
             <div className="flex items-center justify-between border-b border-[#BE7B71]/40 px-4 py-2.5">
@@ -269,7 +315,96 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
           go(r);
         }}
       />
+
+      {session && state && current && !ended ? (
+        <LiveCallSheet
+          open={callOpen}
+          onOpenChange={setCallOpen}
+          room={{
+            roomId: current.roomId,
+            roomName: current.roomName,
+            astrologerId: current.astrologerId,
+            astrologerName: current.astrologerName ?? 'Astrologer',
+          }}
+          session={session}
+          state={state}
+          disabledReason={disabledReason}
+          onResult={onCallResult}
+        />
+      ) : null}
+      {shownToast ? <LiveToast key={shownToast.id} toast={shownToast} onDismiss={dismissToast} /> : null}
     </div>
+  );
+}
+
+type LiveToastMessage = { id: number; tone: 'good' | 'info' | 'bad'; title: string; text: string };
+
+/** The app's live toast: one line or two over the stream, gone after a few seconds or a tap. */
+function LiveToast({ toast, onDismiss }: { toast: LiveToastMessage; onDismiss: () => void }) {
+  const { id, tone } = toast;
+  useEffect(() => {
+    const timer = setTimeout(onDismiss, tone === 'bad' ? 8000 : 5000);
+    return () => clearTimeout(timer);
+  }, [id, tone, onDismiss]);
+  return (
+    <div className="pointer-events-none fixed inset-x-0 top-[max(72px,calc(env(safe-area-inset-top)+64px))] z-[95] flex justify-center px-4">
+      <button
+        type="button"
+        role="status"
+        aria-live="polite"
+        onClick={onDismiss}
+        className={clsx(
+          'pointer-events-auto flex w-full max-w-[420px] flex-col gap-0.5 rounded-2xl px-4 py-3 text-left font-app shadow-lg',
+          toast.tone === 'good' ? 'bg-[#1f5130] text-white' : toast.tone === 'bad' ? 'bg-[#7a1f1a] text-white' : 'bg-[#2b1b14]/95 text-white',
+        )}
+      >
+        <span className="text-[15px] font-semibold">{toast.title}</span>
+        {toast.text ? <span className="text-[13px] text-white/85">{toast.text}</span> : null}
+      </button>
+    </div>
+  );
+}
+
+/**
+ * The app's bottom queue notice: my place in the queue, or why Call is off, or the standing "calls are open" line.
+ * Tapping it opens the call sheet (my place in the queue).
+ */
+function QueueLine({
+  state,
+  reason,
+  awaiting,
+  onOpen,
+  light = false,
+}: {
+  state: LiveState;
+  reason: string | null;
+  awaiting: boolean;
+  onOpen: () => void;
+  light?: boolean;
+}) {
+  // While I'm in my own call the call screen speaks for itself (step 5).
+  if (state.phase === 'in-call' || state.phase === 'joining-call') return null;
+  const mine = myQueueText(state.me);
+  const text = mine ?? reason ?? (state.queue?.canPay ? 'Live calls are open — tap Call to book your slot' : null);
+  if (!text) return null;
+  const highlight = !!mine || awaiting;
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className={clsx(
+        'w-full truncate rounded-full px-3 py-1.5 text-left font-app text-[12px] font-semibold',
+        light
+          ? highlight
+            ? 'bg-primary text-white'
+            : 'bg-[#F1DBD7] text-[#4a1a1a]'
+          : highlight
+            ? 'pointer-events-auto bg-primary/90 text-white'
+            : 'pointer-events-auto bg-black/50 text-white',
+      )}
+    >
+      {text}
+    </button>
   );
 }
 
@@ -498,9 +633,24 @@ function CountdownPill({ endsAt }: { endsAt: number }) {
   );
 }
 
-// ---- Actions (heart, share; gift and call come with steps 4 and 6) ----
+// ---- Actions (heart, share, call; gift comes with step 6) ----
 
-function Actions({ session, state, room, row = false }: { session: LiveSession; state: LiveState; room: LiveRoomSummary | null; row?: boolean }) {
+function Actions({
+  session,
+  state,
+  room,
+  callOff,
+  onCall,
+  row = false,
+}: {
+  session: LiveSession;
+  state: LiveState;
+  room: LiveRoomSummary | null;
+  /** Call can't be booked now: greyed out, still tappable (the sheet says why), like the app. */
+  callOff: boolean;
+  onCall: () => void;
+  row?: boolean;
+}) {
   const [shared, setShared] = useState(false);
   const share = async () => {
     if (!room) return;
@@ -521,7 +671,7 @@ function Actions({ session, state, room, row = false }: { session: LiveSession; 
   const item = clsx('flex flex-col items-center gap-0.5 font-app text-[11px] font-semibold', row ? 'text-[#4a1a1a]' : 'text-white');
   const circle = 'flex h-11 w-11 items-center justify-center rounded-full border-2 border-[#8B5E3C] bg-[#F5F0E8] text-[#8B5E3C] disabled:opacity-70';
   return (
-    <div className={clsx('flex items-end', row ? 'flex-row gap-3' : 'flex-col gap-2')}>
+    <div className={clsx('flex items-end', row ? 'flex-row gap-8' : 'flex-col gap-2')}>
       <button type="button" onClick={() => void session.like()} disabled={state.hasLiked} className={item} aria-pressed={state.hasLiked} aria-label="Like">
         <span className={circle}>
           <Heart className={clsx('h-6 w-6', state.hasLiked && 'fill-[#FF3B30] text-[#FF3B30]')} aria-hidden />
@@ -532,6 +682,15 @@ function Actions({ session, state, room, row = false }: { session: LiveSession; 
         <span className={circle}>{shared ? <Check className="h-6 w-6" aria-hidden /> : <Share2 className="h-6 w-6" aria-hidden />}</span>
         {shared ? 'Copied' : 'Share'}
       </button>
+      {/* The call screen has its own controls (step 5). */}
+      {state.phase !== 'in-call' && state.phase !== 'joining-call' ? (
+        <button type="button" onClick={onCall} className={clsx(item, callOff && !state.me && 'opacity-60')} aria-label={state.me ? 'Your live call' : 'Call Now'}>
+          <span className={circle}>
+            <Phone className="h-6 w-6" aria-hidden />
+          </span>
+          {state.me ? 'Queue' : 'Call'}
+        </button>
+      ) : null}
     </div>
   );
 }

@@ -2,6 +2,8 @@
 // read the server's verdict afterwards. Every purchase here is finished by the server once it is paid (packages
 // too, via the packages/initiate routes), so a closed tab or another device never loses what was bought.
 
+import type { LiveCallType } from '@/lib/live/messages';
+
 export type Gateway = 'esewa' | 'fonepay' | 'card';
 
 /** What is being bought. Times are local `YYYY-MM-DDTHH:mm:00` in `timezone`, as for POST /connection-schedule. */
@@ -15,7 +17,17 @@ export type Purchase =
       timezone: string;
     }
   | { kind: 'plan'; planId: string; astrologerId: string }
-  | { kind: 'gift'; giftId: string; astrologerId: string };
+  | { kind: 'gift'; giftId: string; astrologerId: string }
+  | {
+      /** A 10-minute call slot in a live stream's paid queue (doc 10). */
+      kind: 'live-call';
+      astrologerId: string;
+      roomId: string;
+      roomName: string;
+      callType: LiveCallType;
+      /** The price the viewer was shown (queue status callSlotPrice.amount); the server refuses any other. */
+      amount: number;
+    };
 
 export type StartRequest = { path: string; body: Record<string, unknown> };
 
@@ -74,6 +86,26 @@ export function startRequest(
           serverDelivery: true,
         },
       };
+    case 'live-call': {
+      // One body for all three gateways (InitiateLiveCallSlotPaymentDto). The server seats the buyer in the queue
+      // once paid (serverDelivery), and the gateway comes back to this stream's viewer (returnContext).
+      const { roomName, callType, astrologerId, amount } = purchase;
+      return {
+        path:
+          gateway === 'card'
+            ? '/subscription/payments/hbl/live-calls/initiate'
+            : `/live/payments/${gateway}/initiate`,
+        body: {
+          roomName,
+          callType,
+          astrologerId,
+          amount,
+          ...country,
+          returnContext: 'viewer',
+          serverDelivery: true,
+        },
+      };
+    }
   }
 }
 
@@ -144,6 +176,8 @@ export type PurchaseStatus = {
   fulfilment: {
     status: 'running' | 'done' | 'failed' | 'awaiting-slot';
     resultId: string | null;
+    /** Live calls: the queue position the buyer got. */
+    reference: string | null;
     message: string | null;
   } | null;
   failureReason: FailureReason | null;
@@ -159,6 +193,7 @@ export function readStatus(body: unknown): PurchaseStatus {
       ? {
           status: (text(f.status) as NonNullable<PurchaseStatus['fulfilment']>['status']) ?? 'running',
           resultId: text(f.resultId),
+          reference: text(f.reference),
           message: text(f.message),
         }
       : null,
@@ -168,9 +203,10 @@ export function readStatus(body: unknown): PurchaseStatus {
 
 /**
  * done: paid and delivered · processing: paid, the server is still finishing it · deliveryFailed: paid but it
- * couldn't be delivered (support refunds) · notPaid: cancelled, failed or expired · waiting: not settled yet.
+ * couldn't be delivered (support refunds) · awaitingSlot: a paid live call whose queue was full, seated by the
+ * server when a spot opens · notPaid: cancelled, failed or expired · waiting: not settled yet.
  */
-export type Outcome = 'done' | 'processing' | 'deliveryFailed' | 'notPaid' | 'waiting';
+export type Outcome = 'done' | 'processing' | 'awaitingSlot' | 'deliveryFailed' | 'notPaid' | 'waiting';
 
 const NOT_PAID = new Set(['Expired', 'User canceled', 'Refunded', 'Partially Refunded']);
 
@@ -178,6 +214,7 @@ export function outcomeOf(s: PurchaseStatus): Outcome {
   if (s.status === 'Completed') {
     if (s.fulfilment?.status === 'done') return 'done';
     if (s.fulfilment?.status === 'failed') return 'deliveryFailed';
+    if (s.fulfilment?.status === 'awaiting-slot') return 'awaitingSlot';
     return 'processing';
   }
   if (NOT_PAID.has(s.status)) return 'notPaid';

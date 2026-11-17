@@ -223,9 +223,6 @@ function setup(over: { api?: Partial<LiveApi>; status?: Partial<LiveQueueStatus>
     completeCall: vi.fn(async () => {
       log.push('complete');
     }),
-    leaveQueue: vi.fn(async () => {
-      log.push('leave queue');
-    }),
     likeStatus: vi.fn(async () => ({ likeCount: 7, hasLiked: false })),
     like: vi.fn(async () => ({ likeCount: 8, hasLiked: true })),
     ...over.api,
@@ -562,14 +559,6 @@ describe('the paid queue', () => {
     const { session, room } = await watching();
     room.message({ type: 'queue:open-changed', isQueueOpen: false });
     expect(session.getState().queue).toMatchObject({ isQueueOpen: false, canPay: false });
-  });
-
-  it('leaveQueue() only while waiting or called', async () => {
-    const { session, api, setStatus } = await watching({ status: { userEntry: { queueId: 'q1', position: 3, status: 'waiting', callType: 'public_video' } } });
-    setStatus({});
-    await session.leaveQueue();
-    expect(api.leaveQueue).toHaveBeenCalledTimes(1);
-    expect(session.getState().me).toBeNull();
   });
 });
 

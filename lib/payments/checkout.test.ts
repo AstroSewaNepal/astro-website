@@ -12,7 +12,7 @@ import {
   statusPath,
   type Purchase,
 } from './checkout';
-import { parsePending } from './pending';
+import { awaitingLiveCall, parsePending } from './pending';
 
 const pkg: Purchase = {
   kind: 'package',
@@ -67,6 +67,35 @@ describe('startRequest', () => {
     });
     expect(startRequest(gift, 'card', 'NP').path).toBe('/subscription/payments/hbl/gifts/initiate');
   });
+
+  it('starts live calls with one body on every gateway, seated by the server', () => {
+    const call: Purchase = {
+      kind: 'live-call',
+      astrologerId: 'a1',
+      roomId: 'r1',
+      roomName: 'live_a1',
+      callType: 'private_audio',
+      amount: 150,
+    };
+    const body = {
+      roomName: 'live_a1',
+      callType: 'private_audio',
+      astrologerId: 'a1',
+      amount: 150,
+      countryCode: 'NP',
+      returnContext: 'viewer',
+      serverDelivery: true,
+    };
+    expect(startRequest(call, 'esewa', 'NP')).toEqual({ path: '/live/payments/esewa/initiate', body });
+    expect(startRequest(call, 'fonepay', 'NP')).toEqual({ path: '/live/payments/fonepay/initiate', body });
+    expect(startRequest(call, 'card', 'NP')).toEqual({
+      path: '/subscription/payments/hbl/live-calls/initiate',
+      body,
+    });
+    // The DTO has no roomId (the server finds the room by name): it must not be sent.
+    expect(startRequest(call, 'card', null).body).not.toHaveProperty('roomId');
+    expect(startRequest(call, 'card', null).body).not.toHaveProperty('countryCode');
+  });
 });
 
 describe('readStarted', () => {
@@ -117,6 +146,7 @@ describe('status', () => {
     expect(s('Completed', 'running')).toBe('processing');
     expect(s('Completed')).toBe('processing');
     expect(s('Completed', 'failed')).toBe('deliveryFailed');
+    expect(s('Completed', 'awaiting-slot')).toBe('awaitingSlot');
     expect(s('User canceled')).toBe('notPaid');
     expect(s('Expired')).toBe('notPaid');
     expect(s('Pending')).toBe('waiting');
@@ -201,5 +231,30 @@ describe('parsePending', () => {
     ).toEqual(['u1']);
     expect(parsePending('{not json', now)).toEqual([]);
     expect(parsePending(null, now)).toEqual([]);
+  });
+
+  it('keeps live calls with their room, and finds the one waiting for a spot', () => {
+    const call = { ...row, pidx: 'c1', kind: 'live-call', roomId: 'r1', backHref: '/live/a1' };
+    const list = parsePending(
+      JSON.stringify([
+        { ...call, pidx: 'c2', roomId: 'r2', awaitingSlot: true },
+        { ...call, awaitingSlot: true },
+        { ...call, pidx: 'c0', awaitingSlot: false },
+        { ...call, pidx: 'bad', awaitingSlot: 'yes' },
+      ]),
+      now,
+    );
+    expect(list.map(p => p.pidx)).toEqual(['c2', 'c1', 'c0']);
+    expect(awaitingLiveCall(list, 'r1')?.pidx).toBe('c1');
+    expect(awaitingLiveCall(list, 'r9')).toBeNull();
+  });
+});
+
+describe('readStatus', () => {
+  it('reads the live call queue position', () => {
+    expect(
+      readStatus({ status: 'Completed', purpose: 'live-call', fulfilment: { status: 'done', reference: '2' } })
+        .fulfilment,
+    ).toEqual({ status: 'done', resultId: null, reference: '2', message: null });
   });
 });
