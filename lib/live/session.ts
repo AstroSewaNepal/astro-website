@@ -5,6 +5,8 @@
 // token (the host sees a participant leave, a new one join and new tracks), which is the top suspect for the host
 // app's native crash when callers rotate. Here one plain object owns one Room for the whole visit:
 // - one connect per visit (a lost connection ends the session; "Rejoin" is a new session);
+// - while joining a call every wait is followed by "is this still my call?": a slot that ended meanwhile is left
+//   quietly, with nothing of ours left published;
 // - viewer -> caller happens on the SAME connection: on queue/accept the backend upgrades this participant's
 //   publish permission, we wait for it and publish two tracks we prepared BEFORE accepting (a blocked camera never
 //   takes the slot); the end unpublishes our own tracks first, then tells the server;
@@ -26,7 +28,7 @@ import {
   type LiveDataMessage,
   type LiveGift,
 } from '@/lib/live/messages';
-import { classifyLiveError, type LiveApi, type LiveQueueStatus } from '@/lib/live/api';
+import { classifyLiveError, liveRequestRefused, type LiveApi, type LiveQueueStatus } from '@/lib/live/api';
 
 export type LivePhase =
   | 'idle'
@@ -216,13 +218,25 @@ export type LiveSessionOptions = {
   now?: () => number;
   /** How often to re-read the queue status (the app: 15 s). 0 = never. */
   statusPollMs?: number;
+  /**
+   * One call per browser (lib/call/tab-lock.ts, shared with consultation calls): asked before the camera opens,
+   * held until my call ends. Resolves null while another tab or another call holds it.
+   */
+  takeCallLock?: () => Promise<LiveCallLock | null>;
 };
+
+export type LiveCallLock = { release: () => void };
+const NO_CALL_LOCK: LiveCallLock = { release: () => {} };
 
 const CONNECT_PROBLEM = 'Could not join the live stream. Check your internet connection and try again.';
 const MEDIA_PROBLEM =
   'Camera and microphone access are needed for the call. Allow them for this site and tap Join Now again.';
 const ACCEPT_PROBLEM = 'Could not join the call.';
 const PUBLISH_PROBLEM = 'The call could not start. Tap Rejoin to try again.';
+const OTHER_CALL_PROBLEM = 'Another call is open on this device. End it first, then join your live call.';
+const END_PROBLEM = 'The call could not be closed. Check your internet connection.';
+const JOINED_NOTICE = "You're live with the astrologer. Your consultation has started.";
+const COMPLETE_RETRY_MS = 1_000;
 const DEFAULT_POLL_MS = 15_000;
 const PERMISSION_WAIT_MS = 5_000;
 const KICKED_NOTICE = 'You were removed from this live stream.';
@@ -253,6 +267,8 @@ export class LiveSession {
 
   private myVideo: LiveLocalTrack | null = null;
   private myAudio: LiveLocalTrack | null = null;
+  private callLock: LiveCallLock | null = null;
+  private flipping = false;
   /** Set while I take my tracks down myself (End Call), so the server's follow-up isn't a second ending. */
   private endingCall = false;
   private callerToken: { callType: LiveCallType; kickAt: string; queueId: string } | null = null;
@@ -440,28 +456,28 @@ export class LiveSession {
   }
 
   /**
-   * Join Now (my turn). Order matters for the host (see the file comment): camera + mic first, then accept, then
-   * publish on this same connection. A blocked camera never takes the slot.
+   * Join Now (my turn). Order matters for the host (see the file comment): the call lock, camera + mic, then accept,
+   * then publish on this same connection. A blocked camera or a call open in another tab never takes the slot.
    */
   async acceptTurn(): Promise<void> {
-    if (this.state.me?.status !== 'called' || !this.room || !this.live()) return;
+    // Only from plain watching: a second tap while the first is still joining does nothing.
+    if (this.state.me?.status !== 'called' || this.state.phase !== 'watching' || !this.room) return;
     this.set({ phase: 'joining-call', error: null });
-
-    const tracks = await this.prepareTracks();
-    if (!tracks) return;
+    if (!(await this.holdCallLock()) || !(await this.prepareTracks())) return;
+    // The turn ran out while the browser was asking for the camera: the room already said so.
+    if (this.state.me?.status !== 'called') return this.abortJoin(null);
 
     let caller: { callType: LiveCallType; kickAt: string; queueId: string };
     try {
       caller = await this.opts.api.acceptTurn(this.opts.roomId);
     } catch (error) {
-      this.stopMyTracks();
-      if (this.ending) return;
-      this.set({ phase: 'watching', error: this.describe(error, ACCEPT_PROBLEM) });
-      void this.refreshStatus();
+      this.abortJoin(this.describe(error, ACCEPT_PROBLEM));
+      if (!this.ending) void this.refreshStatus();
       return;
     }
-    if (this.ending) return this.stopMyTracks();
+    if (this.ending) return this.abortJoin(null);
     this.callerToken = caller;
+    this.meMessageAt = this.callMessageAt = this.now();
     this.set({
       me: { status: 'active', position: null, callType: caller.callType, queueId: caller.queueId, turnExpiresAt: null },
       call: { mode: caller.callType, callerId: this.opts.me.id, callerName: this.opts.me.name, kickAt: ms(caller.kickAt) },
@@ -471,10 +487,9 @@ export class LiveSession {
 
   /** My slot is active but I'm not publishing (page reloaded, or publishing failed): try again from a tap. */
   async resumeCall(): Promise<void> {
-    if (this.state.me?.status !== 'active' || !this.room || !this.live() || this.myVideo) return;
+    if (this.state.me?.status !== 'active' || this.state.phase !== 'watching' || !this.room) return;
     this.set({ phase: 'joining-call', error: null, resumeNeeded: false });
-    const tracks = await this.prepareTracks();
-    if (!tracks) return;
+    if (!(await this.holdCallLock()) || !(await this.prepareTracks())) return;
     await this.publishMyTracks();
   }
 
@@ -505,30 +520,40 @@ export class LiveSession {
   /** Front/back camera on phones: the same track restarts, nothing is republished. */
   async flipCamera(): Promise<void> {
     const track = this.myVideo;
-    if (!track?.restartTrack || this.state.phase !== 'in-call') return;
+    if (!track?.restartTrack || this.state.phase !== 'in-call' || this.flipping) return;
     const facing = this.state.facing === 'user' ? 'environment' : 'user';
+    this.flipping = true;
     try {
       await track.restartTrack({ facingMode: facing });
       this.set({ facing });
     } catch {
       // One camera, or the other one is busy.
+    } finally {
+      this.flipping = false;
     }
   }
 
-  /** End my call early: my tracks come down first (clean for the host), then the server is told. */
+  /**
+   * End my call early: my tracks come down first (clean for the host), then the server is told. The review is asked
+   * only once the server has closed the slot (it refuses a review of a slot that is still open).
+   */
   async endCall(): Promise<void> {
     if (this.state.phase !== 'in-call' || this.endingCall) return;
     this.endingCall = true;
     const queueId = this.state.me?.queueId ?? null;
+    let closed = false;
     try {
       await this.unpublishMyTracks();
-      this.backToWatching(queueId);
-      await this.opts.api.completeCall(this.opts.roomId);
-    } catch (error) {
-      if (!this.ending) this.set({ error: this.describe(error, 'Could not end the call.') });
+      if (!this.ending) this.backToWatching(null);
+      closed = await this.completeOnServer();
     } finally {
       this.endingCall = false;
     }
+    if (this.ending) return;
+    // A status answer that left before the slot closed must not bring the call back.
+    this.meMessageAt = this.callMessageAt = this.now();
+    if (closed) this.set({ reviewFor: queueId ?? this.state.reviewFor });
+    else this.set({ error: END_PROBLEM });
     void this.refreshStatus();
   }
 
@@ -551,56 +576,117 @@ export class LiveSession {
 
   // ---- Inside: my call ----
 
-  private async prepareTracks(): Promise<LiveLocalTrack[] | null> {
+  /** Still my call: the slot is mine and the session is not closing. Asked again after every wait while joining. */
+  private mine(): boolean {
+    return !this.ending && this.state.me?.status === 'active';
+  }
+
+  /** One call per browser (shared with consultation calls): false when another tab or call holds it. */
+  private async holdCallLock(): Promise<boolean> {
+    if (this.callLock) return true;
+    let lock: LiveCallLock | null = NO_CALL_LOCK;
+    if (this.opts.takeCallLock) lock = await this.opts.takeCallLock().catch(() => NO_CALL_LOCK);
+    if (this.ending || this.state.phase !== 'joining-call') {
+      lock?.release();
+      return false;
+    }
+    if (!lock) {
+      this.abortJoin(OTHER_CALL_PROBLEM);
+      return false;
+    }
+    this.callLock = lock;
+    return true;
+  }
+
+  private releaseCallLock(): void {
+    this.callLock?.release();
+    this.callLock = null;
+  }
+
+  /** Camera + mic, opened before anything is sent to the server. False (and back to watching) when it can't be had. */
+  private async prepareTracks(): Promise<boolean> {
     let tracks: LiveLocalTrack[];
     try {
       tracks = await this.opts.createTracks({ facingMode: this.state.facing });
     } catch {
-      if (!this.ending) this.set({ phase: 'watching', error: MEDIA_PROBLEM, resumeNeeded: this.state.me?.status === 'active' });
-      return null;
+      this.abortJoin(MEDIA_PROBLEM);
+      return false;
     }
-    if (this.ending) {
+    if (this.ending || this.state.phase !== 'joining-call') {
       for (const t of tracks) t.stop();
-      return null;
+      this.abortJoin(null);
+      return false;
     }
     this.myVideo = tracks.find(t => t.kind === 'video') ?? null;
     this.myAudio = tracks.find(t => t.kind === 'audio') ?? null;
     if (!this.myVideo || !this.myAudio) {
-      this.stopMyTracks();
-      this.set({ phase: 'watching', error: MEDIA_PROBLEM, resumeNeeded: this.state.me?.status === 'active' });
-      return null;
+      for (const t of tracks) t.stop();
+      this.abortJoin(MEDIA_PROBLEM);
+      return false;
     }
-    return tracks;
+    return true;
+  }
+
+  /**
+   * A join that did not become a call: nothing of mine stays open. With my slot still active on the server the
+   * person gets "Rejoin your call"; otherwise they are simply watching again.
+   */
+  private abortJoin(error: string | null): void {
+    this.stopMyTracks();
+    this.releaseCallLock();
+    if (this.ending) return;
+    this.set({
+      ...(this.state.phase === 'joining-call' ? { phase: 'watching' as const } : {}),
+      error,
+      resumeNeeded: this.state.me?.status === 'active',
+    });
   }
 
   /** Waits for the server's permission upgrade, then publishes camera and mic on this connection. */
   private async publishMyTracks(): Promise<void> {
     const room = this.room;
-    if (!room) return this.stopMyTracks();
+    const video = this.myVideo;
+    const audio = this.myAudio;
+    if (!room || !video || !audio) return this.abortJoin(null);
     let allowed = await this.waitForPublishPermission();
-    if (!allowed && !this.ending) {
+    if (!allowed && this.mine()) {
       // The permission message was missed: queue/resume makes the server apply it again.
       await this.opts.api.resumeCall(this.opts.roomId).catch(() => undefined);
       allowed = await this.waitForPublishPermission();
     }
-    if (this.ending) return this.stopMyTracks();
-    if (!allowed) {
-      this.stopMyTracks();
-      this.set({ phase: 'watching', error: PUBLISH_PROBLEM, resumeNeeded: true });
-      return;
-    }
+    // The slot ended while we waited (the host ended it, the time ran out): nothing was published, nothing to say.
+    if (!this.mine()) return this.abortJoin(null);
+    if (!allowed) return this.abortJoin(PUBLISH_PROBLEM);
+
+    let failed = false;
+    let audioTried = false;
     try {
-      await room.localParticipant.publishTrack(this.myVideo!);
-      await room.localParticipant.publishTrack(this.myAudio!);
+      await room.localParticipant.publishTrack(video);
+      if (this.mine()) {
+        audioTried = true;
+        await room.localParticipant.publishTrack(audio);
+      }
     } catch {
-      await this.unpublishMyTracks().catch(() => undefined);
-      if (!this.ending) this.set({ phase: 'watching', error: PUBLISH_PROBLEM, resumeNeeded: true });
+      failed = true;
+    }
+    if (failed || !this.mine()) {
+      // Whatever went up comes down again (a track that was never sent is only stopped); the words are only for a
+      // call that is still mine.
+      const stillMine = this.mine();
+      await this.unpublishMyTracks(video, audioTried ? audio : null);
+      this.abortJoin(failed && stillMine && this.mine() ? PUBLISH_PROBLEM : null);
       return;
     }
-    if (this.ending) return;
     const selfVideo = this.elements.selfVideo;
-    if (selfVideo && this.myVideo) this.myVideo.attach(selfVideo);
-    this.set({ phase: 'in-call', micOn: true, cameraOn: true, resumeNeeded: false, error: null });
+    if (selfVideo) video.attach(selfVideo);
+    this.set({
+      phase: 'in-call',
+      micOn: true,
+      cameraOn: true,
+      resumeNeeded: false,
+      error: null,
+      notice: this.notice(JOINED_NOTICE),
+    });
     this.applyPolicy();
   }
 
@@ -622,12 +708,14 @@ export class LiveSession {
     });
   }
 
-  private async unpublishMyTracks(): Promise<void> {
+  /** Takes my tracks off the room and stops them. Safe for tracks that never went up or were already taken down. */
+  private async unpublishMyTracks(
+    video: LiveLocalTrack | null = this.myVideo,
+    audio: LiveLocalTrack | null = this.myAudio,
+  ): Promise<void> {
     const room = this.room;
-    const video = this.myVideo;
-    const audio = this.myAudio;
-    this.myVideo = null;
-    this.myAudio = null;
+    if (this.myVideo === video) this.myVideo = null;
+    if (this.myAudio === audio) this.myAudio = null;
     const selfVideo = this.elements.selfVideo;
     if (video && selfVideo) video.detach(selfVideo);
     if (room) {
@@ -647,9 +735,27 @@ export class LiveSession {
     this.myAudio = null;
   }
 
+  /** queue/complete, tried twice: a slot left open keeps the host waiting for a caller who is gone. */
+  private async completeOnServer(): Promise<boolean> {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        await this.opts.api.completeCall(this.opts.roomId);
+        return true;
+      } catch (error) {
+        // Refused = the slot is not open any more (the time ran out or the host ended it at the same moment).
+        if (liveRequestRefused(error)) return true;
+        if (this.ending) return false;
+        if (attempt === 0) await new Promise(resolve => setTimeout(resolve, COMPLETE_RETRY_MS));
+      }
+    }
+    return false;
+  }
+
   /** My call is over (I ended it, the host did, or the 10 minutes passed): keep watching, ask for the review. */
   private backToWatching(queueId: string | null): void {
     this.callerToken = null;
+    this.releaseCallLock();
+    this.meMessageAt = this.callMessageAt = this.now();
     this.set({
       phase: this.state.phase === 'reconnecting' ? 'reconnecting' : 'watching',
       me: null,
@@ -657,6 +763,7 @@ export class LiveSession {
       micOn: false,
       cameraOn: false,
       resumeNeeded: false,
+      error: null,
       reviewFor: queueId ?? this.state.reviewFor,
     });
     this.applyPolicy();
@@ -846,7 +953,8 @@ export class LiveSession {
       case 'queue:no-show':
         if (message.userId === myId) {
           this.meMessageAt = this.now();
-          this.set({ me: null, notice: this.notice(TURN_EXPIRED_NOTICE) });
+          // A problem from a join attempt (camera blocked...) has nothing left to say once the turn is gone.
+          this.set({ me: null, error: null, notice: this.notice(TURN_EXPIRED_NOTICE) });
           void this.refreshStatus();
         }
         return;
@@ -897,7 +1005,7 @@ export class LiveSession {
       ...(inMyCall || askedAt < this.meMessageAt ? {} : { me }),
       ...(inMyCall || askedAt < this.callMessageAt ? {} : { call }),
     });
-    if (!inMyCall && this.state.phase === 'watching' && me?.status === 'active' && !this.myVideo)
+    if (!inMyCall && this.state.phase === 'watching' && this.amCaller() && !this.myVideo)
       this.set({ resumeNeeded: true });
     this.applyPolicy();
     this.syncParticipants();
@@ -1059,6 +1167,7 @@ export class LiveSession {
     const queueId = this.state.me?.queueId ?? null;
     // My tracks first, so the host sees a clean unpublish before the participant goes.
     await this.unpublishMyTracks().catch(() => undefined);
+    this.releaseCallLock();
     this.swapTrack('host', null);
     this.swapTrack('caller', null);
     for (const [track, el] of this.audioElements) {

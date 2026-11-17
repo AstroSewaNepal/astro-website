@@ -8,17 +8,31 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { Check, ChevronDown, ChevronUp, Heart, Loader2, Lock, Phone, Share2, Volume2, X } from 'lucide-react';
 
+import { ReviewDialog } from '@/components/booking/review-dialog';
 import { useCalls } from '@/components/call/call-provider';
 import { LiveCallSheet } from '@/components/live/live-call-sheet';
 import { LiveChatFeed, LiveComposer } from '@/components/live/live-chat';
 import { LIVE_ROOMS_KEY } from '@/components/live/live-feed';
+import {
+  LiveCallControls,
+  LiveEndCallDialog,
+  LiveResumeCall,
+  LiveTurnDialog,
+  useLiveCallGuards,
+} from '@/components/live/live-my-call';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useBuyerCountry } from '@/hooks/use-buyer-country';
 import { useLiveCallStandby } from '@/hooks/use-live-call-standby';
 import { useLiveSession } from '@/hooks/use-live-session';
 import { usePhoneFullScreen } from '@/hooks/use-phone-full-screen';
 import { liveApi, type LiveRoomSummary } from '@/lib/live/api';
-import { callDisabledReason, myQueueText, type LiveCallResult } from '@/lib/live/call-slot';
+import {
+  callDisabledReason,
+  errorPlace,
+  JOIN_BLOCKED_IN_CONSULTATION,
+  myQueueText,
+  type LiveCallResult,
+} from '@/lib/live/call-slot';
 import { compactCount, formatCallSlotPrice, LIVE_FEED_POLL_MS, livePath, stableRooms } from '@/lib/live/feed';
 import type { LiveSession, LiveState } from '@/lib/live/session';
 import { callBannerText, countdownTone, feedItems, formatCountdown, neighbours, swipeDirection, type SwipePoint } from '@/lib/live/ui';
@@ -79,11 +93,19 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
     again,
   );
 
-  const go = useCallback((target: LiveRoomSummary | null) => {
-    if (!target) return;
-    setAstrologerId(target.astrologerId);
-    window.history.replaceState(window.history.state, '', livePath(target.astrologerId));
-  }, []);
+  // My own call (step 5): while I am the caller, or joining, this stream is not left by a swipe, an arrow or a tap
+  // on another room; the call has to be ended first.
+  const inMyCall = state?.phase === 'in-call' || state?.phase === 'joining-call';
+  useLiveCallGuards(inMyCall);
+
+  const go = useCallback(
+    (target: LiveRoomSummary | null) => {
+      if (!target || inMyCall) return;
+      setAstrologerId(target.astrologerId);
+      window.history.replaceState(window.history.state, '', livePath(target.astrologerId));
+    },
+    [inMyCall],
+  );
 
   // Arrow keys on desktop (not while typing).
   useEffect(() => {
@@ -107,17 +129,21 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
     const start = touchStart.current;
     touchStart.current = null;
     const t = e.changedTouches[0];
-    if (!start || !t || state?.phase === 'in-call' || state?.phase === 'joining-call') return;
+    if (!start || !t || inMyCall) return;
     const dir = swipeDirection(start, { x: t.clientX, y: t.clientY, t: Date.now() });
     if (dir === 'up') go(next);
     if (dir === 'down') go(prev);
   };
 
   const [leaveOpen, setLeaveOpen] = useState(false);
+  const [endCallOpen, setEndCallOpen] = useState(false);
+  const askLeave = () => (state?.phase === 'in-call' ? setEndCallOpen(true) : inMyCall ? undefined : setLeaveOpen(true));
   const leave = () => {
     void session?.end();
     router.push('/live');
   };
+
+  const ended = state?.phase === 'ended';
 
   // The paid call (step 4): who may book, a payment waiting for a spot, and what to say afterwards.
   const { busy: inConsultation } = useCalls();
@@ -140,20 +166,46 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
     setCallRoom(current?.roomId ?? null);
     setCallOpen(false);
   }
+  // My turn (step 5): the "It's your turn" window opens by itself once per turn; "Not now" closes it and the queue
+  // line opens it again while the 60 seconds run.
+  const turnKey = state?.me?.status === 'called' ? `${state.me.queueId}:${state.me.turnExpiresAt}` : null;
+  const [turn, setTurn] = useState<{ key: string | null; open: boolean }>({ key: null, open: false });
+  if (turnKey !== turn.key) {
+    setTurn({ key: turnKey, open: turnKey !== null });
+    // The turn window takes over from the call sheet (which only showed my place).
+    if (turnKey !== null) setCallOpen(false);
+  }
+  const setTurnOpen = useCallback((open: boolean) => setTurn(t => ({ ...t, open })), []);
+  const called = turnKey !== null;
+  const openCall = useCallback(() => {
+    if (called) setTurnOpen(true);
+    else setCallOpen(true);
+  }, [called, setTurnOpen]);
+  // The end-call question only makes sense during the call.
+  if (endCallOpen && state?.phase !== 'in-call') setEndCallOpen(false);
+  const resumeShown = !!state && state.phase === 'watching' && state.resumeNeeded;
+  const errorAt = errorPlace({ turnOpen: turn.open, called, resumeShown });
+
   // One toast at a time: a payment result here, else the session's one-off notice (your turn expired, removed...).
+  // A problem that has no window of its own (the call could not be closed...) is a toast too.
+  const errorToast = state?.error && errorAt === 'toast' && !ended ? state.error : null;
   const shownToast: LiveToastMessage | null =
-    toast ?? (state?.notice ? { id: -state.notice.id, tone: 'info', title: state.notice.text, text: '' } : null);
+    toast ??
+    (errorToast
+      ? { id: ERROR_TOAST_ID, tone: 'bad', title: errorToast, text: '' }
+      : state?.notice
+        ? { id: -state.notice.id, tone: 'info', title: state.notice.text, text: '' }
+        : null);
   const dismissToast = useCallback(() => {
     if (toast) setToast(null);
+    else if (errorToast) session?.clearError();
     else session?.clearNotice();
-  }, [toast, session]);
+  }, [toast, errorToast, session]);
   const onCallResult = useCallback((r: LiveCallResult) => showToast(r), [showToast]);
-  const openCall = useCallback(() => setCallOpen(true), []);
 
   const root = useRef<HTMLDivElement>(null);
   usePhoneFullScreen(root);
 
-  const ended = state?.phase === 'ended';
   const notLive = rooms.isSuccess && !current;
   const others = list.filter(r => r.astrologerId !== astrologerId);
 
@@ -226,20 +278,20 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
             {current ? (
               <>
                 <div className="lg:hidden">
-                  <LiveHeader room={current} state={state} me={me} onClose={() => setLeaveOpen(true)} />
+                  <LiveHeader room={current} state={state} me={me} onClose={askLeave} />
                 </div>
                 <div className="hidden lg:block">
-                  <CallPills state={state} me={me} name={current.astrologerName ?? 'Astrologer'} onClose={() => setLeaveOpen(true)} />
+                  <CallPills state={state} me={me} name={current.astrologerName ?? 'Astrologer'} onClose={askLeave} />
                 </div>
               </>
             ) : null}
 
             {/* Desktop: up/down at the video's right edge (arrow keys work too). */}
             <div className="absolute right-3 top-1/2 hidden -translate-y-1/2 flex-col gap-2 lg:flex">
-              <ArrowButton label="Previous stream" disabled={!prev} onClick={() => go(prev)}>
+              <ArrowButton label="Previous stream" disabled={!prev || inMyCall} onClick={() => go(prev)}>
                 <ChevronUp className="h-6 w-6" aria-hidden />
               </ArrowButton>
-              <ArrowButton label="Next stream" disabled={!next} onClick={() => go(next)}>
+              <ArrowButton label="Next stream" disabled={!next || inMyCall} onClick={() => go(next)}>
                 <ChevronDown className="h-6 w-6" aria-hidden />
               </ArrowButton>
             </div>
@@ -252,7 +304,9 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
                 {state ? <LiveChatFeed items={feedItems(state.messages, state.gifts, astrologerId)} className="max-h-[38vh]" /> : null}
               </div>
               <div className="pointer-events-auto">
-                {session && state ? <Actions session={session} state={state} room={current} callOff={!!disabledReason} onCall={openCall} /> : null}
+                {session && state ? (
+                  <Actions session={session} state={state} room={current} callOff={!!disabledReason} onCall={openCall} onEndCall={() => setEndCallOpen(true)} />
+                ) : null}
               </div>
             </div>
             {state && !ended ? <QueueLine state={state} reason={disabledReason} awaiting={!!standby} onOpen={openCall} /> : null}
@@ -281,7 +335,7 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
             {/* The buttons row: heart, share, call (gift joins it in step 6). */}
             {session && state ? (
               <div className="mt-3 flex justify-center border-t border-[#BE7B71]/40 pt-3">
-                <Actions session={session} state={state} room={current} callOff={!!disabledReason} onCall={openCall} row />
+                <Actions session={session} state={state} room={current} callOff={!!disabledReason} onCall={openCall} onEndCall={() => setEndCallOpen(true)} row />
               </div>
             ) : null}
             {state && !ended ? (
@@ -332,10 +386,45 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
           onResult={onCallResult}
         />
       ) : null}
+      {session && state && !ended ? (
+        <>
+          <LiveTurnDialog
+            open={turn.open}
+            onOpenChange={setTurnOpen}
+            session={session}
+            state={state}
+            blockedReason={inConsultation ? JOIN_BLOCKED_IN_CONSULTATION : null}
+          />
+          <LiveEndCallDialog
+            open={endCallOpen}
+            onOpenChange={setEndCallOpen}
+            onConfirm={() => {
+              setEndCallOpen(false);
+              void session.endCall();
+            }}
+          />
+        </>
+      ) : null}
+      {/* After my call: the review, once per call (also when the stream ended during it). */}
+      {session && state?.reviewFor && current ? (
+        <ReviewDialog
+          astrologerId={current.astrologerId}
+          liveQueueId={state.reviewFor}
+          astrologerName={current.astrologerName ?? 'Astrologer'}
+          photo={current.astrologerAvatar ?? null}
+          onClose={() => session.clearReview()}
+          onDone={() => {
+            session.clearReview();
+            showToast({ tone: 'good', title: 'Thank you!', text: 'Your rating was submitted.' });
+          }}
+        />
+      ) : null}
       {shownToast ? <LiveToast key={shownToast.id} toast={shownToast} onDismiss={dismissToast} /> : null}
     </div>
   );
 }
+
+const ERROR_TOAST_ID = -1_000_000;
 
 type LiveToastMessage = { id: number; tone: 'good' | 'info' | 'bad'; title: string; text: string };
 
@@ -456,7 +545,13 @@ function Stage({ session, state, room, me }: { session: LiveSession | null; stat
       </div>
       <div className={clsx('relative min-h-0 bg-black lg:bg-transparent', split ? 'flex-1' : 'hidden')}>
         <video ref={callerVideo} autoPlay playsInline muted className={clsx('h-full w-full object-cover lg:object-contain', (mine || !state?.callerCameraOn) && 'hidden')} />
-        <video ref={selfVideo} autoPlay playsInline muted className={clsx('h-full w-full -scale-x-100 object-cover lg:object-contain', (!mine || !state?.cameraOn) && 'hidden')} />
+        <video
+          ref={selfVideo}
+          autoPlay
+          playsInline
+          muted
+          className={clsx('h-full w-full object-cover lg:object-contain', state?.facing !== 'environment' && '-scale-x-100', (!mine || !state?.cameraOn) && 'hidden')}
+        />
         {split && !(mine ? state?.cameraOn : state?.callerCameraOn) ? (
           <Centered>
             <p className="font-app text-[14px] text-white/80">{mine ? 'Your camera is off' : `${call?.callerName ?? 'The caller'} has turned off the camera`}</p>
@@ -484,6 +579,8 @@ function Stage({ session, state, room, me }: { session: LiveSession | null; stat
           </button>
         </Centered>
       ) : null}
+
+      {session && state ? <LiveResumeCall session={session} state={state} /> : null}
 
       {state?.phase === 'reconnecting' ? (
         <div className="absolute left-1/2 top-24 -translate-x-1/2 rounded-full bg-black/60 px-4 py-1.5 font-app text-[13px] text-white">
@@ -641,6 +738,7 @@ function Actions({
   room,
   callOff,
   onCall,
+  onEndCall,
   row = false,
 }: {
   session: LiveSession;
@@ -649,6 +747,7 @@ function Actions({
   /** Call can't be booked now: greyed out, still tappable (the sheet says why), like the app. */
   callOff: boolean;
   onCall: () => void;
+  onEndCall: () => void;
   row?: boolean;
 }) {
   const [shared, setShared] = useState(false);
@@ -678,11 +777,15 @@ function Actions({
         </span>
         {compactCount(state.likeCount)}
       </button>
-      <button type="button" onClick={() => void share()} className={item} aria-label="Share">
-        <span className={circle}>{shared ? <Check className="h-6 w-6" aria-hidden /> : <Share2 className="h-6 w-6" aria-hidden />}</span>
-        {shared ? 'Copied' : 'Share'}
-      </button>
-      {/* The call screen has its own controls (step 5). */}
+      {/* In my call the column is for the call's buttons. */}
+      {state.phase !== 'in-call' ? (
+        <button type="button" onClick={() => void share()} className={item} aria-label="Share">
+          <span className={circle}>{shared ? <Check className="h-6 w-6" aria-hidden /> : <Share2 className="h-6 w-6" aria-hidden />}</span>
+          {shared ? 'Copied' : 'Share'}
+        </button>
+      ) : null}
+      {/* In my call: its own buttons instead of Call (the app's in-call column). */}
+      {state.phase === 'in-call' ? <LiveCallControls session={session} state={state} onEnd={onEndCall} row={row} /> : null}
       {state.phase !== 'in-call' && state.phase !== 'joining-call' ? (
         <button type="button" onClick={onCall} className={clsx(item, callOff && !state.me && 'opacity-60')} aria-label={state.me ? 'Your live call' : 'Call Now'}>
           <span className={circle}>

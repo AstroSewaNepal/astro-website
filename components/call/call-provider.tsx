@@ -25,6 +25,12 @@ type CallsContext = {
   openCall: (request: CallRequest) => void;
   /** A call (or its before-call screen) is open. */
   busy: boolean;
+  /**
+   * This person is the caller in a live stream right now (or joining): no consultation call may start next to it.
+   * The live page sets it (call from an effect; returns the cleanup).
+   */
+  liveCall: boolean;
+  holdLiveCall: () => () => void;
   /** The booking whose call is open, if any. */
   activeBookingId: string | null;
   /**
@@ -56,7 +62,19 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
   // "Call again" after a dropped call starts over with a fresh before-call screen.
   const [attempt, setAttempt] = useState(0);
   const again = useCallback(() => setAttempt(n => n + 1), []);
+  // A live call in this tab (the live page holds it while its viewer is the caller): one publishing call at a time.
+  const [liveCall, setLiveCall] = useState(false);
+  const liveCallNow = useRef(false);
+  const holdLiveCall = useCallback(() => {
+    liveCallNow.current = true;
+    setLiveCall(true);
+    return () => {
+      liveCallNow.current = false;
+      setLiveCall(false);
+    };
+  }, []);
   const openCall = useCallback((next: CallRequest) => {
+    if (liveCallNow.current) return;
     setRequest(current => current ?? next);
   }, []);
   const close = useCallback(() => setRequest(null), []);
@@ -88,11 +106,13 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     () => ({
       openCall,
       busy: active !== null,
+      liveCall,
+      holdLiveCall,
       activeBookingId: active?.bookingId ?? null,
       registerDock: setDock,
       chatShown,
     }),
-    [openCall, active, chatShown],
+    [openCall, active, chatShown, liveCall, holdLiveCall],
   );
 
   return (

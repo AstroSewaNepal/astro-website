@@ -22,6 +22,7 @@ import {
 export function ReviewDialog({
   astrologerId,
   bookingId,
+  liveQueueId,
   astrologerName,
   photo,
   onClose,
@@ -30,7 +31,10 @@ export function ReviewDialog({
   waiting = false,
 }: {
   astrologerId: string;
-  bookingId: string;
+  /** The booking being reviewed, or... */
+  bookingId?: string;
+  /** ...the live call slot (a call taken in a live stream). */
+  liveQueueId?: string;
   astrologerName: string;
   photo: string | null;
   onClose: () => void;
@@ -58,7 +62,7 @@ export function ReviewDialog({
     mutationFn: () =>
       backend.post(
         '/ratings',
-        reviewPayload({ astrologerId, bookingId, topics: list, stars, message, hideProfile }),
+        reviewPayload({ astrologerId, bookingId, liveQueueId, topics: list, stars, message, hideProfile }),
       ),
     onSuccess: () => {
       // The card turns into View Profile once the list knows about the review.

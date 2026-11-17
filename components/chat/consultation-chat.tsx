@@ -246,13 +246,16 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
   // Voice and video calls (the app's chat header buttons), during the session only.
   const {
     openCall,
-    busy: callBusy,
+    busy: consultationCallOpen,
+    liveCall,
     activeBookingId: callBookingId,
     registerDock,
     chatShown,
   } = useCalls();
   // While this page is up it ends the session and asks for the review itself when the time runs out mid-call.
   useEffect(() => chatShown(bookingId), [chatShown, bookingId]);
+  // One call at a time: another consultation call, or this person's live call in a stream (the app's guard).
+  const callBusy = consultationCallOpen || liveCall;
   const callHere = callBookingId === bookingId;
   // Hidden while this booking's call is open: the call is on screen, and the name gets the room.
   const canCall = phase === 'active' && !sessionOver && !blocked && !!booking.data && !callHere;

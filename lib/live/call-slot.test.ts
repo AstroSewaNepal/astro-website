@@ -6,8 +6,10 @@ import {
   IN_CONSULTATION_REASON,
   callDisabledReason,
   callTypeTitle,
+  errorPlace,
   liveCallResult,
   myQueueText,
+  turnTimeText,
 } from '@/lib/live/call-slot';
 import type { LiveMyQueue, LiveQueueInfo } from '@/lib/live/session';
 import { outcomeOf, readStatus } from '@/lib/payments/checkout';
@@ -96,5 +98,20 @@ describe('liveCallResult', () => {
     expect(failed.tone).toBe('bad');
     expect(failed.text).toMatch(/^You have been removed from this stream\. Please contact support/);
     expect(verdict('User canceled', null)).toMatchObject({ tone: 'bad', title: 'Payment not completed' });
+  });
+});
+
+describe('the "It\'s your turn" window', () => {
+  it('counts down like the app, then says the time expired', () => {
+    expect(turnTimeText(60)).toBe('1:00');
+    expect(turnTimeText(9)).toBe('0:09');
+    expect(turnTimeText(0)).toBe('Time expired');
+    expect(turnTimeText(-3)).toBe('Time expired');
+  });
+
+  it('shows a problem where the person is looking', () => {
+    expect(errorPlace({ turnOpen: true, called: true, resumeShown: false })).toBe('turn');
+    expect(errorPlace({ turnOpen: true, called: false, resumeShown: true })).toBe('resume');
+    expect(errorPlace({ turnOpen: false, called: true, resumeShown: false })).toBe('toast');
   });
 });

@@ -107,3 +107,22 @@ export function liveCallResult(outcome: Outcome, status: PurchaseStatus, astrolo
       return { tone: 'bad', title: 'Payment not completed', text: NOT_PAID_MESSAGE };
   }
 }
+
+export const JOIN_BLOCKED_IN_CONSULTATION = "You're in a consultation call. End it to join your live call.";
+
+/** The countdown in the "It's your turn" window (the app's JoinCallModal): "0:42", then "Time expired". */
+export function turnTimeText(secondsLeft: number): string {
+  if (secondsLeft <= 0) return 'Time expired';
+  const s = Math.floor(secondsLeft);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+/**
+ * Where a problem the session reports is shown: inside the "It's your turn" window while it is open, in the
+ * "Rejoin your call" panel while that is up, and as a toast otherwise (a call that could not be closed...).
+ */
+export function errorPlace(input: { turnOpen: boolean; called: boolean; resumeShown: boolean }): 'turn' | 'resume' | 'toast' {
+  if (input.turnOpen && input.called) return 'turn';
+  if (input.resumeShown) return 'resume';
+  return 'toast';
+}

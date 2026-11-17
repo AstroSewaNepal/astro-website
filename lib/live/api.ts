@@ -99,6 +99,11 @@ export function classifyLiveError(error: unknown): LiveRefusal {
   return 'other';
 }
 
+/** The server answered and said no (4xx): asking again will not change it. A network failure or a 5xx is not this. */
+export function liveRequestRefused(error: unknown): boolean {
+  return error instanceof BackendError && error.status >= 400 && error.status < 500 && error.status !== 429;
+}
+
 /** A refused request, in words for the person. */
 export function liveErrorText(error: unknown, fallback: string): string {
   if (error instanceof BackendError) {

@@ -4,6 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from 'react';
 
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { createLiveKitLiveRoom, createLiveKitTracks } from '@/lib/call/livekit-room';
+import { takeCallLock } from '@/lib/call/tab-lock';
 import { liveApi, liveErrorText } from '@/lib/live/api';
 import { LiveSession, type LiveState } from '@/lib/live/session';
 
@@ -94,6 +95,7 @@ export function useLiveSession(
       createRoom: createLiveKitLiveRoom,
       createTracks: createLiveKitTracks,
       describeError: liveErrorText,
+      takeCallLock,
     });
     current.open(session);
     // Leaving the page (close, reload, another site): leave the room at once instead of after LiveKit's timeout.
