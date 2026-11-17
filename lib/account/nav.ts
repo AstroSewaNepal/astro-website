@@ -56,7 +56,7 @@ const home = (href: string): AccountNavItem => ({ label: 'Home', href, icon: Hou
 
 const c = {
   astroConnect: { label: 'Astro Connect', href: '/astrologers', icon: Sparkles },
-  live: { label: 'Live', href: '/live', icon: Radio, soon: true },
+  live: { label: 'Live', href: '/live', icon: Radio },
   remedies: { label: 'Remedies', href: '/remedies', icon: Gem, soon: true },
   consultations: { label: 'My Consultations', href: '/client/consultations', icon: History },
   following: { label: 'My Following', href: '/client/following', icon: UsersRound },
@@ -126,7 +126,7 @@ export function isAccountPage(pathname: string | null): boolean {
  * Guests see them in the plain site layout.
  */
 // /payment: the return page after a gateway (logged-in clients only).
-const CLIENT_SHELL_PAGES = ['/astrologers', '/astrologer-profile', '/payment'];
+const CLIENT_SHELL_PAGES = ['/astrologers', '/astrologer-profile', '/payment', '/live'];
 
 export function isClientShellPage(pathname: string | null): boolean {
   if (!pathname) return false;
@@ -142,6 +142,8 @@ const PARENT_PAGES: {
   parent: (match: RegExpMatchArray, search: URLSearchParams) => string;
 }[] = [
   { pattern: /^\/astrologer-profile\/[^/]+$/, parent: () => '/astrologers' },
+  // A stream is opened from the live list.
+  { pattern: /^\/live\/[^/]+$/, parent: () => '/live' },
   {
     pattern: /^(\/astrologer-profile\/[^/]+)\/schedule$/,
     // Booking from a plan and moving a booking both start on My Consultations.

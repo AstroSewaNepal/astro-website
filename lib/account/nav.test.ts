@@ -8,6 +8,7 @@ describe('parentPage', () => {
   });
   it('sends a profile back to the Astro Connect list', () => {
     expect(parentPage('/astrologer-profile/abc')).toBe('/astrologers');
+    expect(parentPage('/live/abc')).toBe('/live');
   });
   it('sends packages to the profile and schedule to the packages', () => {
     expect(parentPage('/astrologer-profile/abc/packages')).toBe('/astrologer-profile/abc');
@@ -28,6 +29,7 @@ describe('parentPage', () => {
 
 it('knows the public pages clients see in their shell', () => {
   expect(isClientShellPage('/astrologers')).toBe(true);
+  expect(isClientShellPage('/live/abc')).toBe(true);
   expect(isClientShellPage('/astrologer-profile/abc')).toBe(true);
   expect(isClientShellPage('/payment/return')).toBe(true);
   expect(isClientShellPage('/astrologer')).toBe(false);
