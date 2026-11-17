@@ -8,6 +8,7 @@ import { CheckCircle2, Clock, Loader2, XCircle } from 'lucide-react';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { BackendError } from '@/lib/backend/client';
 import { planSchedulePath } from '@/lib/booking/packages';
+import { livePath } from '@/lib/live/feed';
 import {
   type Gateway,
   type Outcome,
@@ -18,7 +19,7 @@ import {
   returnedPayment,
   statusPath,
 } from '@/lib/payments/checkout';
-import { type PendingPayment, recallPayment } from '@/lib/payments/pending';
+import { type PendingPayment, markPayment, recallPayment } from '@/lib/payments/pending';
 import {
   WAITING_PACKAGES_PATH,
   type WaitingPackage,
@@ -56,8 +57,13 @@ function usePending(pidx: string | null): PendingPayment | null {
 export function PaymentReturn({ query }: { query: string }) {
   const backend = useBackendClient();
   const queryClient = useQueryClient();
-  const payment = useMemo(() => returnedPayment(new URLSearchParams(query)), [query]);
+  const params = useMemo(() => new URLSearchParams(query), [query]);
+  const payment = useMemo(() => returnedPayment(params), [params]);
   const pending = usePending(payment?.pidx ?? null);
+  // Live calls come back with the stream's astrologer (backend liveReturnTarget), even without this browser's note.
+  const liveAstrologerId = /^[A-Za-z0-9_-]{1,64}$/.test(params.get('astrologerId') ?? '')
+    ? params.get('astrologerId')
+    : null;
   // Stops asking after a while (the server's sweepers carry on); "Check Again" starts a new round.
   const [round, setRound] = useState(0);
   const [gaveUp, setGaveUp] = useState(false);
@@ -70,9 +76,16 @@ export function PaymentReturn({ query }: { query: string }) {
     queryKey: ['payments', 'return', payment?.gateway, payment?.pidx],
     queryFn: async () => {
       const s = readStatus(await backend.bare.get(statusPath(payment!.gateway, payment!.pidx)));
+      const outcome = outcomeOf(s);
       // What was bought shows up in these lists now.
-      if (outcomeOf(s) === 'done')
+      if (outcome === 'done')
         void queryClient.invalidateQueries({ queryKey: ['consultations'] });
+      // A paid live call not seated yet (queue full, or still being added): its stream's page says so instead of
+      // offering to pay again.
+      if (s.purpose === 'live-call' && outcome !== 'waiting')
+        markPayment(payment!.pidx, {
+          awaitingSlot: outcome === 'awaitingSlot' || outcome === 'processing',
+        });
       return s;
     },
     enabled: !!payment,
@@ -117,6 +130,7 @@ export function PaymentReturn({ query }: { query: string }) {
       gateway={payment.gateway}
       pidx={payment.pidx}
       pending={pending}
+      liveAstrologerId={liveAstrologerId}
       onCheckAgain={() => {
         setGaveUp(false);
         setRound(r => r + 1);
@@ -132,6 +146,7 @@ function Verdict({
   gateway,
   pidx,
   pending,
+  liveAstrologerId,
   onCheckAgain,
 }: {
   outcome: Outcome | 'verifying';
@@ -139,16 +154,26 @@ function Verdict({
   gateway: Gateway;
   pidx: string;
   pending: PendingPayment | null;
+  liveAstrologerId: string | null;
   onCheckAgain: () => void;
 }) {
   const kind = status.purpose ?? pending?.kind ?? null;
   const via = GATEWAY_LABEL[gateway];
-  const astrologerId = pending?.astrologerId ?? null;
+  const astrologerId = pending?.astrologerId ?? liveAstrologerId ?? null;
   const tryAgain =
-    pending?.backHref ?? (astrologerId ? `/astrologer-profile/${astrologerId}` : '/astrologers');
+    pending?.backHref ??
+    (kind === 'live-call' && astrologerId
+      ? livePath(astrologerId)
+      : astrologerId
+        ? `/astrologer-profile/${astrologerId}`
+        : '/astrologers');
   const reason = status.fulfilment?.message
     ? `${status.fulfilment.message.replace(/\.?$/, '.')}`
     : '';
+  // A live call: always a way back to the stream it was bought in.
+  const backToStream = astrologerId
+    ? { href: livePath(astrologerId), label: 'Back to the live stream' }
+    : { href: '/live', label: 'Live Astrologers' };
 
   switch (outcome) {
     case 'verifying':
@@ -158,11 +183,39 @@ function Verdict({
         <Result
           icon="wait"
           title="Payment received"
-          text={`Your ${via} payment went through. We're finishing your purchase; it will show up in a moment.`}
+          text={
+            kind === 'live-call'
+              ? `Your ${via} payment went through. We're adding you to the queue.`
+              : `Your ${via} payment went through. We're finishing your purchase; it will show up in a moment.`
+          }
+          actions={kind === 'live-call' ? [backToStream] : []}
+        />
+      );
+    case 'awaitingSlot':
+      // Only live calls wait for a spot. The server seats the buyer once one frees (or refunds if the stream ends).
+      return (
+        <Result
+          icon="wait-stopped"
+          title="Payment confirmed — queue is full"
+          text={`Your ${via} payment went through. You'll be added to the queue automatically as soon as a spot opens. If the stream ends first, we'll email you about your refund.`}
+          actions={[backToStream]}
         />
       );
     case 'done': {
       const resultId = status.fulfilment?.resultId ?? null;
+      if (kind === 'live-call') {
+        const position = Number(status.fulfilment?.reference);
+        return (
+          <Result
+            icon="good"
+            title="You're in the queue"
+            text={`Your ${via} payment went through${
+              Number.isFinite(position) && position > 0 ? ` and you are #${position} in line` : ''
+            }. Stay on the stream: you'll get a Join prompt when it's your turn.`}
+            actions={[backToStream]}
+          />
+        );
+      }
       if (kind === 'package') {
         return (
           <Result
@@ -219,8 +272,8 @@ function Verdict({
       return (
         <Result
           icon="bad"
-          title="Payment received, purchase not completed"
-          text={`Your ${via} payment went through, but your purchase couldn't be completed${reason ? `: ${reason}` : '.'} Please contact support; your payment is safe.`}
+          title={kind === 'live-call' ? 'Payment received, not added to the queue' : 'Payment received, purchase not completed'}
+          text={`Your ${via} payment went through, but ${kind === 'live-call' ? "you couldn't be added to the queue" : "your purchase couldn't be completed"}${reason ? `: ${reason}` : '.'} Please contact support; your payment is safe.`}
           actions={[
             { href: '/client/support', label: 'Customer Support' },
             { href: '/client/payments', label: 'My Payments', quiet: true },

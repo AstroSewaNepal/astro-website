@@ -10,10 +10,11 @@ export function allRated(topics: RatingTopic[], stars: Record<string, number>): 
   return topics.length > 0 && topics.every(t => (stars[t._id] ?? 0) >= 1 && stars[t._id] <= 5);
 }
 
-/** POST /ratings body for a booking. */
+/** POST /ratings body: for a booking, or for a live call slot (exactly one of the two, the backend insists). */
 export function reviewPayload(input: {
   astrologerId: string;
-  bookingId: string;
+  bookingId?: string;
+  liveQueueId?: string;
   topics: RatingTopic[];
   stars: Record<string, number>;
   message: string;
@@ -21,7 +22,7 @@ export function reviewPayload(input: {
 }) {
   return {
     astrologer: input.astrologerId,
-    connectionScheduleId: input.bookingId,
+    ...(input.liveQueueId ? { liveQueueId: input.liveQueueId } : { connectionScheduleId: input.bookingId }),
     topicRatings: input.topics.map(t => ({ topicId: t._id, rating: input.stars[t._id] })),
     message: input.message.trim().slice(0, REVIEW_MESSAGE_MAX),
     hideProfileInformation: input.hideProfile,

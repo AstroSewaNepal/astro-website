@@ -197,7 +197,15 @@ function status(over: Partial<LiveQueueStatus> = {}): LiveQueueStatus {
   };
 }
 
-function setup(over: { api?: Partial<LiveApi>; status?: Partial<LiveQueueStatus>; now?: () => number } = {}) {
+type SetupOver = {
+  api?: Partial<LiveApi>;
+  status?: Partial<LiveQueueStatus>;
+  now?: () => number;
+  /** Give the session a call lock: free to take, or held by another tab. */
+  lock?: 'free' | 'taken';
+};
+
+function setup(over: SetupOver = {}) {
   const room = new FakeRoom();
   const log = room.log;
   const tracks = { video: new FakeLocalTrack('video'), audio: new FakeLocalTrack('audio') };
@@ -223,9 +231,6 @@ function setup(over: { api?: Partial<LiveApi>; status?: Partial<LiveQueueStatus>
     completeCall: vi.fn(async () => {
       log.push('complete');
     }),
-    leaveQueue: vi.fn(async () => {
-      log.push('leave queue');
-    }),
     likeStatus: vi.fn(async () => ({ likeCount: 7, hasLiked: false })),
     like: vi.fn(async () => ({ likeCount: 8, hasLiked: true })),
     ...over.api,
@@ -245,6 +250,21 @@ function setup(over: { api?: Partial<LiveApi>; status?: Partial<LiveQueueStatus>
     createTracks,
     describeError: (e, fallback) => (e instanceof Error && e.message ? `${e.message}.` : fallback),
     now: over.now ?? (() => Date.now()),
+    ...(over.lock
+      ? {
+          takeCallLock: async () => {
+            if (over.lock === 'taken') return null;
+            log.push('lock');
+            let held = true;
+            return {
+              release: () => {
+                if (held) log.push('unlock');
+                held = false;
+              },
+            };
+          },
+        }
+      : {}),
   });
   const setStatus = (next: Partial<LiveQueueStatus>) => {
     statusAnswer = status(next);
@@ -563,18 +583,10 @@ describe('the paid queue', () => {
     room.message({ type: 'queue:open-changed', isQueueOpen: false });
     expect(session.getState().queue).toMatchObject({ isQueueOpen: false, canPay: false });
   });
-
-  it('leaveQueue() only while waiting or called', async () => {
-    const { session, api, setStatus } = await watching({ status: { userEntry: { queueId: 'q1', position: 3, status: 'waiting', callType: 'public_video' } } });
-    setStatus({});
-    await session.leaveQueue();
-    expect(api.leaveQueue).toHaveBeenCalledTimes(1);
-    expect(session.getState().me).toBeNull();
-  });
 });
 
-async function called() {
-  const w = await watching();
+async function called(over?: SetupOver) {
+  const w = await watching(over);
   w.room.message({ type: 'queue:your-turn-prompt', queueId: 'q1', callType: 'public_video', expiresAt: iso(NOW + 60 * SEC) });
   return w;
 }
@@ -654,8 +666,8 @@ describe('Join Now (my call), the order the host sees', () => {
   });
 });
 
-async function inCall() {
-  const w = await called();
+async function inCall(over?: SetupOver) {
+  const w = await called(over);
   const joining = w.session.acceptTurn();
   await flush();
   w.room.grantPublish();
@@ -733,6 +745,197 @@ describe('in my call', () => {
     const { session, room } = await inCall();
     room.message({ type: 'call-mode:active', callType: 'public_video', callerId: 'me', kickAt: iso(NOW + 600 * SEC) });
     expect(session.getState().phase).toBe('in-call');
+  });
+});
+
+describe('joining a call safely', () => {
+  const calls = (log: string[]) => log.filter(l => l !== 'status');
+
+  it('takes the one-call lock before the camera, and gives it back when the call ends', async () => {
+    const { session, room, log } = await called({ lock: 'free' });
+    const joining = session.acceptTurn();
+    await flush();
+    room.grantPublish();
+    await joining;
+    expect(calls(log).slice(-5)).toEqual(['lock', 'create tracks', 'accept', 'publish video', 'publish audio']);
+    await session.endCall();
+    expect(calls(log).slice(-4)).toEqual(['unpublish video', 'unpublish audio', 'unlock', 'complete']);
+  });
+
+  it('a call open in another tab: no camera, no accept, the turn is kept', async () => {
+    const { session, api, createTracks } = await called({ lock: 'taken' });
+    await session.acceptTurn();
+    expect(createTracks).not.toHaveBeenCalled();
+    expect(api.acceptTurn).not.toHaveBeenCalled();
+    expect(session.getState()).toMatchObject({ phase: 'watching', resumeNeeded: false });
+    expect(session.getState().me?.status).toBe('called');
+    expect(session.getState().error).toMatch(/Another call is open/);
+  });
+
+  it('a second Join Now tap while the first is joining does nothing', async () => {
+    const { session, room, api, createTracks } = await called();
+    const first = session.acceptTurn();
+    const second = session.acceptTurn();
+    await flush();
+    room.grantPublish();
+    await Promise.all([first, second]);
+    expect(createTracks).toHaveBeenCalledTimes(1);
+    expect(api.acceptTurn).toHaveBeenCalledTimes(1);
+    expect(room.published).toHaveLength(2);
+  });
+
+  it('the turn runs out while the browser asks for the camera: no accept, camera closed, lock back', async () => {
+    const { session, room, api, createTracks, tracks, log } = await called({ lock: 'free' });
+    let open: (t: LiveLocalTrack[]) => void = () => {};
+    createTracks.mockImplementationOnce(() => new Promise<LiveLocalTrack[]>(resolve => (open = resolve)));
+    const joining = session.acceptTurn();
+    await flush();
+    room.message({ type: 'queue:no-show', userId: 'me' });
+    open([tracks.video, tracks.audio]);
+    await joining;
+    expect(api.acceptTurn).not.toHaveBeenCalled();
+    expect(tracks.video.stopped && tracks.audio.stopped).toBe(true);
+    expect(log).toContain('unlock');
+    expect(session.getState()).toMatchObject({ phase: 'watching', me: null, error: null, resumeNeeded: false });
+  });
+
+  it('the host ends the call while I wait for the permission: nothing is published, no error', async () => {
+    const { session, room, tracks, log } = await called({ lock: 'free' });
+    const joining = session.acceptTurn();
+    await flush();
+    room.message({ type: 'call-mode:cleared' });
+    room.grantPublish();
+    await joining;
+    expect(room.published).toHaveLength(0);
+    expect(tracks.video.stopped && tracks.audio.stopped).toBe(true);
+    expect(log).toContain('unlock');
+    expect(session.getState()).toMatchObject({ phase: 'watching', me: null, call: null, error: null, resumeNeeded: false });
+  });
+
+  it('the call ends between my two tracks: the camera comes down again, the mic never goes up', async () => {
+    const { session, room, tracks } = await called();
+    room.localParticipant.publishTrack.mockImplementationOnce(async (track: LiveLocalTrack) => {
+      room.published.push(track as FakeLocalTrack);
+      room.log.push(`publish ${track.kind}`);
+      room.message({ type: 'call-mode:cleared' });
+    });
+    const joining = session.acceptTurn();
+    await flush();
+    room.grantPublish();
+    await joining;
+    expect(calls(room.log).slice(-2)).toEqual(['publish video', 'unpublish video']);
+    expect(room.published).toHaveLength(1);
+    expect(tracks.audio.stopped).toBe(true);
+    expect(session.getState()).toMatchObject({ phase: 'watching', me: null, error: null, resumeNeeded: false });
+  });
+
+  it('publishing fails: what went up comes down, Rejoin is offered and works on the same connection', async () => {
+    const { session, room, tracks, createTracks, log } = await called({ lock: 'free' });
+    room.localParticipant.publishTrack
+      .mockImplementationOnce(async (track: LiveLocalTrack) => {
+        room.published.push(track as FakeLocalTrack);
+        room.log.push(`publish ${track.kind}`);
+      })
+      .mockRejectedValueOnce(new Error('negotiation failed'));
+    const joining = session.acceptTurn();
+    await flush();
+    room.grantPublish();
+    await joining;
+    expect(calls(log).slice(-4)).toEqual(['publish video', 'unpublish video', 'unpublish audio', 'unlock']);
+    expect(tracks.video.stopped && tracks.audio.stopped).toBe(true);
+    const s = session.getState();
+    expect(s).toMatchObject({ phase: 'watching', resumeNeeded: true });
+    expect(s.me?.status).toBe('active');
+    expect(s.error).toMatch(/could not start/);
+
+    const again = { video: new FakeLocalTrack('video'), audio: new FakeLocalTrack('audio') };
+    createTracks.mockResolvedValueOnce([again.video, again.audio]);
+    await session.resumeCall();
+    expect(calls(log).slice(-3)).toEqual(['lock', 'publish video', 'publish audio']);
+    expect(room.published.slice(-2)).toEqual([again.video, again.audio]);
+    expect(session.getState()).toMatchObject({ phase: 'in-call', resumeNeeded: false, error: null });
+    expect(room.connectedTo).toHaveLength(1);
+  });
+
+  it('a second Rejoin tap does nothing either', async () => {
+    const { session, room, createTracks } = await watching({
+      status: { userEntry: { queueId: 'q1', position: 0, status: 'active', callType: 'public_audio' } },
+    });
+    room.localParticipant.permissions = { canPublish: true };
+    await Promise.all([session.resumeCall(), session.resumeCall()]);
+    expect(createTracks).toHaveBeenCalledTimes(1);
+    expect(room.published).toHaveLength(2);
+  });
+
+  it('leaving the page gives the lock back', async () => {
+    const { session, log } = await inCall({ lock: 'free' });
+    await session.end();
+    expect(calls(log).slice(-4)).toEqual(['unpublish video', 'unpublish audio', 'unlock', 'disconnect']);
+  });
+
+  it('says once that the call has started', async () => {
+    const { session } = await inCall();
+    expect(session.getState().notice?.text).toMatch(/You're live with the astrologer/);
+  });
+});
+
+describe('End Call and the server', () => {
+  it('asks for the review only after the server closed the slot', async () => {
+    let close: () => void = () => {};
+    const { session, api } = await inCall();
+    (api.completeCall as ReturnType<typeof vi.fn>).mockImplementationOnce(() => new Promise<void>(resolve => (close = resolve)));
+    const ending = session.endCall();
+    await flush();
+    expect(session.getState()).toMatchObject({ phase: 'watching', me: null, reviewFor: null });
+    close();
+    await ending;
+    expect(session.getState().reviewFor).toBe('q1');
+  });
+
+  it('a network failure is tried once more', async () => {
+    const { session, api } = await inCall();
+    (api.completeCall as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new TypeError('Failed to fetch'));
+    const ending = session.endCall();
+    await vi.advanceTimersByTimeAsync(1 * SEC);
+    await ending;
+    expect(api.completeCall).toHaveBeenCalledTimes(2);
+    expect(session.getState()).toMatchObject({ reviewFor: 'q1', error: null });
+  });
+
+  it('a slot the server already closed counts as ended', async () => {
+    const { session, api } = await inCall();
+    (api.completeCall as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new BackendError('You are not in an active live call slot.', 400));
+    await session.endCall();
+    expect(api.completeCall).toHaveBeenCalledTimes(1);
+    expect(session.getState()).toMatchObject({ reviewFor: 'q1', error: null });
+  });
+
+  it('the server never hears it: no review, the problem is said, and the status brings Rejoin back', async () => {
+    const { session, api, setStatus } = await inCall();
+    (api.completeCall as ReturnType<typeof vi.fn>).mockRejectedValue(new TypeError('Failed to fetch'));
+    setStatus({ userEntry: { queueId: 'q1', position: 0, status: 'active', callType: 'public_video' } });
+    const ending = session.endCall();
+    await vi.advanceTimersByTimeAsync(1 * SEC);
+    await ending;
+    await flush();
+    const s = session.getState();
+    expect(s.reviewFor).toBeNull();
+    expect(s.error).toMatch(/could not be closed/);
+    expect(s).toMatchObject({ phase: 'watching', resumeNeeded: true });
+  });
+
+  it('a status answer that left before the slot closed cannot bring the call back', async () => {
+    let t = NOW;
+    const { session, api, room } = await inCall({ now: () => t });
+    let answer: (s: LiveQueueStatus) => void = () => {};
+    (api.queueStatus as ReturnType<typeof vi.fn>).mockImplementationOnce(() => new Promise<LiveQueueStatus>(resolve => (answer = resolve)));
+    void session.refreshStatus();
+    t += 500;
+    room.message({ type: 'call-mode:cleared' });
+    await flush();
+    answer(status({ userEntry: { queueId: 'q1', position: 0, status: 'active', callType: 'public_video' } }));
+    await flush();
+    expect(session.getState()).toMatchObject({ phase: 'watching', me: null, resumeNeeded: false });
   });
 });
 
