@@ -21,6 +21,7 @@ function formatHttpError(status: number, body: unknown): string {
 
 /**
  * Parse JSON as {@link ResultEnvelope}; on non-OK HTTP, throw with server message when present.
+ * Thrown messages are shown to visitors, so the request (`GET <url>`) only goes to the console.
  */
 export async function parseVedastroResponse<T>(
   response: Response,
@@ -30,7 +31,8 @@ export async function parseVedastroResponse<T>(
   try {
     body = (await response.json()) as ResultEnvelope<T>;
   } catch {
-    throw new Error(`Invalid JSON from ${apiLabel}`);
+    console.warn(`Invalid JSON from ${apiLabel}`);
+    throw new Error('Something went wrong. Please try again.');
   }
 
   if (!response.ok) {
@@ -38,7 +40,8 @@ export async function parseVedastroResponse<T>(
       body.errors?.map((e: ApiErrorItem) => e.message).join('; ') ??
       body.message ??
       formatHttpError(response.status, body);
-    throw new Error(`${apiLabel}: ${msg}`);
+    console.warn(`${apiLabel}: ${msg}`);
+    throw new Error(msg);
   }
 
   if (!body.success) {
@@ -46,7 +49,8 @@ export async function parseVedastroResponse<T>(
       body.errors?.map((e: ApiErrorItem) => e.message).join('; ') ??
       body.message ??
       'Request failed';
-    throw new Error(`${apiLabel}: ${msg}`);
+    console.warn(`${apiLabel}: ${msg}`);
+    throw new Error(msg);
   }
 
   return body;
