@@ -14,7 +14,7 @@ export type PendingPayment = {
   /** Where the purchase was started, for "Try again". A path on this site. */
   backHref: string;
   startedAt: number;
-  /** Live calls: the stream's room, so its viewer page can find the payment. */
+  /** Live calls and gifts sent from a stream: the stream's room (its viewer page finds a waiting call by it). */
   roomId?: string;
   /** Live calls: paid but not in the queue yet (it was full, or the server is still at it); the server seats the buyer. */
   awaitingSlot?: boolean;

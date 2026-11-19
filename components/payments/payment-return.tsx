@@ -64,6 +64,8 @@ export function PaymentReturn({ query }: { query: string }) {
   const liveAstrologerId = /^[A-Za-z0-9_-]{1,64}$/.test(params.get('astrologerId') ?? '')
     ? params.get('astrologerId')
     : null;
+  // Gifts and live calls bought inside a stream come back with screen=live-viewer (backend PaymentReturnService).
+  const fromStream = params.get('screen') === 'live-viewer';
   // Stops asking after a while (the server's sweepers carry on); "Check Again" starts a new round.
   const [round, setRound] = useState(0);
   const [gaveUp, setGaveUp] = useState(false);
@@ -131,6 +133,7 @@ export function PaymentReturn({ query }: { query: string }) {
       pidx={payment.pidx}
       pending={pending}
       liveAstrologerId={liveAstrologerId}
+      fromStream={fromStream}
       onCheckAgain={() => {
         setGaveUp(false);
         setRound(r => r + 1);
@@ -147,6 +150,7 @@ function Verdict({
   pidx,
   pending,
   liveAstrologerId,
+  fromStream,
   onCheckAgain,
 }: {
   outcome: Outcome | 'verifying';
@@ -155,14 +159,17 @@ function Verdict({
   pidx: string;
   pending: PendingPayment | null;
   liveAstrologerId: string | null;
+  fromStream: boolean;
   onCheckAgain: () => void;
 }) {
   const kind = status.purpose ?? pending?.kind ?? null;
   const via = GATEWAY_LABEL[gateway];
   const astrologerId = pending?.astrologerId ?? liveAstrologerId ?? null;
+  // Bought inside a live stream (a call, or a gift sent from it): the way back is the stream.
+  const inStream = kind === 'live-call' || (kind === 'gift' && (fromStream || !!pending?.roomId));
   const tryAgain =
     pending?.backHref ??
-    (kind === 'live-call' && astrologerId
+    (inStream && astrologerId
       ? livePath(astrologerId)
       : astrologerId
         ? `/astrologer-profile/${astrologerId}`
@@ -188,7 +195,7 @@ function Verdict({
               ? `Your ${via} payment went through. We're adding you to the queue.`
               : `Your ${via} payment went through. We're finishing your purchase; it will show up in a moment.`
           }
-          actions={kind === 'live-call' ? [backToStream] : []}
+          actions={inStream ? [backToStream] : []}
         />
       );
     case 'awaitingSlot':
@@ -249,12 +256,16 @@ function Verdict({
             icon="good"
             title="Gift sent!"
             text={`${pending?.title ?? 'Your gift'} was sent. Thank you for your support.`}
-            actions={[
-              {
-                href: astrologerId ? `/astrologer-profile/${astrologerId}` : '/astrologers',
-                label: astrologerId ? 'Back to Profile' : 'Astro Connect',
-              },
-            ]}
+            actions={
+              inStream
+                ? [backToStream]
+                : [
+                    {
+                      href: astrologerId ? `/astrologer-profile/${astrologerId}` : '/astrologers',
+                      label: astrologerId ? 'Back to Profile' : 'Astro Connect',
+                    },
+                  ]
+            }
           />
         );
       }

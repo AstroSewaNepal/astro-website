@@ -5,6 +5,7 @@ import {
   localGatewaysTake,
   notPaidMessage,
   outcomeOf,
+  purchaseRoomId,
   readStarted,
   readStatus,
   returnedPayment,
@@ -66,6 +67,20 @@ describe('startRequest', () => {
       body: { giftId: 'g1', astrologerId: 'a1', countryCode: 'NP', serverDelivery: true },
     });
     expect(startRequest(gift, 'card', 'NP').path).toBe('/subscription/payments/hbl/gifts/initiate');
+  });
+
+  it('tells every gift route which live room a stream gift belongs to', () => {
+    const gift: Purchase = { kind: 'gift', giftId: 'g1', astrologerId: 'a1', live: { roomName: 'live-a1', roomId: 'r1' } };
+    const room = { returnContext: 'live', roomName: 'live-a1', roomId: 'r1' };
+    expect(startRequest(gift, 'esewa', 'NP').body).toEqual({ giftId: 'g1', astrologerId: 'a1', countryCode: 'NP', ...room, serverDelivery: true });
+    expect(startRequest(gift, 'fonepay', null).body).toEqual({ giftId: 'g1', astrologerId: 'a1', ...room, serverDelivery: true });
+    // The card route has no serverDelivery flag (it always delivers itself).
+    expect(startRequest(gift, 'card', 'US')).toEqual({
+      path: '/subscription/payments/hbl/gifts/initiate',
+      body: { giftId: 'g1', astrologerId: 'a1', countryCode: 'US', ...room },
+    });
+    expect(purchaseRoomId(gift)).toBe('r1');
+    expect(purchaseRoomId({ kind: 'gift', giftId: 'g1', astrologerId: 'a1' })).toBeUndefined();
   });
 
   it('starts live calls with one body on every gateway, seated by the server', () => {

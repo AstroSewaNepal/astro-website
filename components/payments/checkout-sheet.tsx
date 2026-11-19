@@ -14,6 +14,7 @@ import {
   type Purchase,
   type PurchaseStatus,
   localGatewaysTake,
+  purchaseRoomId,
   readStarted,
   startRequest,
 } from '@/lib/payments/checkout';
@@ -92,7 +93,7 @@ export function CheckoutSheet({
         title,
         backHref,
         startedAt: Date.now(),
-        ...(purchase!.kind === 'live-call' ? { roomId: purchase!.roomId } : {}),
+        ...(purchaseRoomId(purchase!) ? { roomId: purchaseRoomId(purchase!) } : {}),
       });
       if ('redirect' in started) {
         // Same tab: the gateway sends the browser back to /payment/return, and Back from there skips its pages.

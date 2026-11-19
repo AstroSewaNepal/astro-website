@@ -17,7 +17,13 @@ export type Purchase =
       timezone: string;
     }
   | { kind: 'plan'; planId: string; astrologerId: string }
-  | { kind: 'gift'; giftId: string; astrologerId: string }
+  | {
+      kind: 'gift';
+      giftId: string;
+      astrologerId: string;
+      /** Sent from a live stream (doc 10): the server shows it in that room and the gateway comes back to it. */
+      live?: { roomName: string; roomId: string };
+    }
   | {
       /** A 10-minute call slot in a live stream's paid queue (doc 10). */
       kind: 'live-call';
@@ -70,22 +76,11 @@ export function startRequest(
           serverDelivery: true,
         },
       };
-    case 'gift':
-      if (gateway === 'card') {
-        return {
-          path: '/subscription/payments/hbl/gifts/initiate',
-          body: { giftId: purchase.giftId, astrologerId: purchase.astrologerId, ...country },
-        };
-      }
-      return {
-        path: `/gifts/payments/${gateway}/initiate`,
-        body: {
-          giftId: purchase.giftId,
-          astrologerId: purchase.astrologerId,
-          ...country,
-          serverDelivery: true,
-        },
-      };
+    case 'gift': {
+      const gift = { giftId: purchase.giftId, astrologerId: purchase.astrologerId, ...country, ...liveGiftFields(purchase.live) };
+      if (gateway === 'card') return { path: '/subscription/payments/hbl/gifts/initiate', body: gift };
+      return { path: `/gifts/payments/${gateway}/initiate`, body: { ...gift, serverDelivery: true } };
+    }
     case 'live-call': {
       // One body for all three gateways (InitiateLiveCallSlotPaymentDto). The server seats the buyer in the queue
       // once paid (serverDelivery), and the gateway comes back to this stream's viewer (returnContext).
@@ -107,6 +102,21 @@ export function startRequest(
       };
     }
   }
+}
+
+/**
+ * A gift from a live stream, for every gift route (eSewa, Fonepay, card, free): the server announces it in the room
+ * (`gift:sent`) and returns eSewa/card buyers to that stream.
+ */
+export function liveGiftFields(live: { roomName: string; roomId: string } | undefined): Record<string, string> {
+  return live ? { returnContext: 'live', roomName: live.roomName, roomId: live.roomId } : {};
+}
+
+/** The live room a purchase belongs to (a live call, or a gift sent from a stream), for the pending note. */
+export function purchaseRoomId(purchase: Purchase): string | undefined {
+  if (purchase.kind === 'live-call') return purchase.roomId;
+  if (purchase.kind === 'gift') return purchase.live?.roomId;
+  return undefined;
 }
 
 /** Where to send the browser (eSewa, card), or the QR to show (Fonepay). */

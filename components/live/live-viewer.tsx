@@ -6,12 +6,14 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { Check, ChevronDown, ChevronUp, Heart, Loader2, Lock, Phone, Share2, Volume2, X } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Gift, Heart, Loader2, Lock, Phone, Share2, Volume2, X } from 'lucide-react';
 
 import { ReviewDialog } from '@/components/booking/review-dialog';
 import { useCalls } from '@/components/call/call-provider';
 import { LiveCallSheet } from '@/components/live/live-call-sheet';
 import { LiveChatFeed, LiveComposer } from '@/components/live/live-chat';
+import { LiveGiftFloats } from '@/components/live/live-gift-floats';
+import { LiveGiftSheet } from '@/components/live/live-gift-sheet';
 import { LIVE_ROOMS_KEY } from '@/components/live/live-feed';
 import {
   LiveCallControls,
@@ -161,10 +163,12 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
     inConsultation,
   });
   // Changing stream closes the sheet (it belongs to the stream it was opened on).
+  const [giftOpen, setGiftOpen] = useState(false);
   const [callRoom, setCallRoom] = useState(current?.roomId ?? null);
   if ((current?.roomId ?? null) !== callRoom) {
     setCallRoom(current?.roomId ?? null);
     setCallOpen(false);
+    setGiftOpen(false);
   }
   // My turn (step 5): the "It's your turn" window opens by itself once per turn; "Not now" closes it and the queue
   // line opens it again while the 60 seconds run.
@@ -172,8 +176,11 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
   const [turn, setTurn] = useState<{ key: string | null; open: boolean }>({ key: null, open: false });
   if (turnKey !== turn.key) {
     setTurn({ key: turnKey, open: turnKey !== null });
-    // The turn window takes over from the call sheet (which only showed my place).
-    if (turnKey !== null) setCallOpen(false);
+    // The turn window takes over from the call and gift sheets.
+    if (turnKey !== null) {
+      setCallOpen(false);
+      setGiftOpen(false);
+    }
   }
   const setTurnOpen = useCallback((open: boolean) => setTurn(t => ({ ...t, open })), []);
   const called = turnKey !== null;
@@ -183,6 +190,8 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
   }, [called, setTurnOpen]);
   // The end-call question only makes sense during the call.
   if (endCallOpen && state?.phase !== 'in-call') setEndCallOpen(false);
+  // Gifts are for viewers who are not on the call themselves (the app's rule).
+  if (giftOpen && (inMyCall || ended)) setGiftOpen(false);
   const resumeShown = !!state && state.phase === 'watching' && state.resumeNeeded;
   const errorAt = errorPlace({ turnOpen: turn.open, called, resumeShown });
 
@@ -273,6 +282,7 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
         >
           <div className="relative min-h-0 flex-1">
             <Stage session={session} state={state} room={current} me={me} />
+            {state ? <LiveGiftFloats key={current?.roomId ?? 'none'} gifts={state.gifts} /> : null}
 
             {/* Phone: the app's header over the video. Desktop: only the call pills and the close button up there. */}
             {current ? (
@@ -305,7 +315,7 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
               </div>
               <div className="pointer-events-auto">
                 {session && state ? (
-                  <Actions session={session} state={state} room={current} callOff={!!disabledReason} onCall={openCall} onEndCall={() => setEndCallOpen(true)} />
+                  <Actions session={session} state={state} room={current} callOff={!!disabledReason} onCall={openCall} onGift={() => setGiftOpen(true)} onEndCall={() => setEndCallOpen(true)} />
                 ) : null}
               </div>
             </div>
@@ -332,10 +342,10 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
       <div className={clsx('hidden min-h-0 flex-col gap-3 lg:flex', tall)}>
           <div className="rounded-2xl border border-[#BE7B71]/60 bg-[#FFFAE6] px-4 py-3">
             {info}
-            {/* The buttons row: heart, share, call (gift joins it in step 6). */}
+            {/* The buttons row: heart, share, gift, call. */}
             {session && state ? (
               <div className="mt-3 flex justify-center border-t border-[#BE7B71]/40 pt-3">
-                <Actions session={session} state={state} room={current} callOff={!!disabledReason} onCall={openCall} onEndCall={() => setEndCallOpen(true)} row />
+                <Actions session={session} state={state} room={current} callOff={!!disabledReason} onCall={openCall} onGift={() => setGiftOpen(true)} onEndCall={() => setEndCallOpen(true)} row />
               </div>
             ) : null}
             {state && !ended ? (
@@ -384,6 +394,21 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
           state={state}
           disabledReason={disabledReason}
           onResult={onCallResult}
+        />
+      ) : null}
+      {session && state && current && !ended ? (
+        <LiveGiftSheet
+          open={giftOpen}
+          onOpenChange={setGiftOpen}
+          room={{
+            roomId: current.roomId,
+            roomName: current.roomName,
+            astrologerId: current.astrologerId,
+            astrologerName: current.astrologerName ?? 'Astrologer',
+          }}
+          session={session}
+          countryCode={countryCode}
+          onResult={showToast}
         />
       ) : null}
       {session && state && !ended ? (
@@ -738,6 +763,7 @@ function Actions({
   room,
   callOff,
   onCall,
+  onGift,
   onEndCall,
   row = false,
 }: {
@@ -747,6 +773,7 @@ function Actions({
   /** Call can't be booked now: greyed out, still tappable (the sheet says why), like the app. */
   callOff: boolean;
   onCall: () => void;
+  onGift: () => void;
   onEndCall: () => void;
   row?: boolean;
 }) {
@@ -786,6 +813,15 @@ function Actions({
       ) : null}
       {/* In my call: its own buttons instead of Call (the app's in-call column). */}
       {state.phase === 'in-call' ? <LiveCallControls session={session} state={state} onEnd={onEndCall} row={row} /> : null}
+      {/* Gift: viewers not on the call themselves (the app's rule). */}
+      {state.phase !== 'in-call' && state.phase !== 'joining-call' ? (
+        <button type="button" onClick={onGift} className={item} aria-label="Send a gift">
+          <span className={circle}>
+            <Gift className="h-6 w-6" aria-hidden />
+          </span>
+          Gift
+        </button>
+      ) : null}
       {state.phase !== 'in-call' && state.phase !== 'joining-call' ? (
         <button type="button" onClick={onCall} className={clsx(item, callOff && !state.me && 'opacity-60')} aria-label={state.me ? 'Your live call' : 'Call Now'}>
           <span className={circle}>

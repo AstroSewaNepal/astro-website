@@ -557,6 +557,17 @@ export class LiveSession {
     void this.refreshStatus();
   }
 
+  /**
+   * My own gift sent while watching (free, or Fonepay in page): shown at once, like the app's local inject, in case
+   * the server's `gift:sent` is missed in a connection blip. Same id as that broadcast, so it never doubles.
+   */
+  showOwnGift(gift: { giftTitle: string; sentAt: string; giftImageUrl?: string }): void {
+    if (this.state.phase === 'ended') return;
+    const { id, name } = this.opts.me;
+    const own = giftFromMessage({ type: 'gift:sent', senderId: id, senderName: name, ...gift });
+    this.set({ gifts: mergeGifts(this.state.gifts, [own]) });
+  }
+
   clearReview(): void {
     this.set({ reviewFor: null });
   }

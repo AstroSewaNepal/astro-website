@@ -457,6 +457,19 @@ describe('watching', () => {
     expect(session.getState().likeCount).toBe(42);
   });
 
+  it('my own gift shows at once and the server broadcast of it does not double it', async () => {
+    const { session, room } = await watching();
+    session.showOwnGift({ giftTitle: 'Lotus', sentAt: iso(NOW), giftImageUrl: 'https://cdn/lotus.png' });
+    expect(session.getState().gifts).toEqual([
+      { id: `gift-me-${iso(NOW)}`, senderName: 'Nibar Lc', giftTitle: 'Lotus', sentAt: iso(NOW), giftImageUrl: 'https://cdn/lotus.png', origin: 'live' },
+    ]);
+    room.message({ type: 'gift:sent', giftTitle: 'Lotus', senderName: 'Nibar Lc', senderId: 'me', sentAt: iso(NOW) });
+    expect(session.getState().gifts).toHaveLength(1);
+    await session.end();
+    session.showOwnGift({ giftTitle: 'Rose', sentAt: iso(NOW + 1) });
+    expect(session.getState().gifts).toHaveLength(1);
+  });
+
   it('polls the queue status every 15 s and stops after the end', async () => {
     const { session, api } = await watching();
     expect(api.queueStatus).toHaveBeenCalledTimes(1);
