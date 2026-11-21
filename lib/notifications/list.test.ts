@@ -38,10 +38,11 @@ describe('notificationHref', () => {
     ).toBe('/client/consultations');
   });
 
-  it('live + queue open the astrologer profile until the web live room exists', () => {
+  it('live + queue open that astrologer\'s stream', () => {
     expect(notificationHref({ type: 'astro_went_live', data: { astrologerId: ASTRO } }, 'client')).toBe(
-      `/astrologer-profile/${ASTRO}`,
+      `/live/${ASTRO}`,
     );
+    expect(notificationHref({ type: 'live_queue', data: { astrologerId: ASTRO } }, 'client')).toBe(`/live/${ASTRO}`);
     expect(notificationHref({ type: 'live_queue', data: {} }, 'client')).toBe('/client');
   });
 

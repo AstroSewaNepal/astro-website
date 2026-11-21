@@ -1,5 +1,6 @@
 import { ACCOUNT_HOME } from '@/lib/auth/account';
 import type { PrivateKind } from '@/lib/account/nav';
+import { livePath } from '@/lib/live/feed';
 
 /** One saved notification (backend `GET /notifications`): the pushes the app gets, kept 90 days. */
 export type UserNotification = {
@@ -43,8 +44,8 @@ const id = (value: string | undefined) => (value && ID.test(value) ? value : nul
 
 /**
  * Where a tap goes, copied from the app's getNavigationUrl (doc 09). The astrologer side has no consultations/chat
- * pages yet (doc 17), so those go to the astrologer home like the app's booking taps. The web has no live room yet
- * (doc 10): live taps open that astrologer's profile.
+ * pages yet (doc 17), so those go to the astrologer home like the app's booking taps. Live + queue open that
+ * astrologer's stream (`/live/<id>`); guests hit login first via /notification-open.
  */
 export function notificationHref(n: Pick<UserNotification, 'type' | 'data'>, kind: PrivateKind): string {
   const data = n.data ?? {};
@@ -61,7 +62,7 @@ export function notificationHref(n: Pick<UserNotification, 'type' | 'data'>, kin
     case 'live_queue':
     case 'astro_went_live': {
       const astrologer = id(data.astrologerId);
-      return astrologer ? `/astrologer-profile/${astrologer}` : home;
+      return astrologer ? livePath(astrologer) : home;
     }
     default:
       return home;

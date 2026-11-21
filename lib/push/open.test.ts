@@ -22,9 +22,9 @@ describe('notificationOpenTarget', () => {
     ).toBe(`/client/consultations/${ID}`);
   });
 
-  it('sends a live push to the astrologer profile', () => {
+  it('sends a live push to that astrologer\'s stream', () => {
     expect(notificationOpenTarget(params({ type: 'astro_went_live', astrologerId: ID }), ['USER'])).toBe(
-      `/astrologer-profile/${ID}`,
+      `/live/${ID}`,
     );
   });
 
