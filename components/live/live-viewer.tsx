@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, type TouchEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
@@ -35,6 +35,8 @@ import {
   myQueueText,
   type LiveCallResult,
 } from '@/lib/live/call-slot';
+import { liveGiftResult } from '@/lib/live/gifts';
+import { takeLiveReturnNote } from '@/lib/live/return-note';
 import { compactCount, formatCallSlotPrice, LIVE_FEED_POLL_MS, livePath, stableRooms } from '@/lib/live/feed';
 import type { LiveSession, LiveState } from '@/lib/live/session';
 import { callBannerText, countdownTone, feedItems, formatCountdown, neighbours, swipeDirection, type SwipePoint } from '@/lib/live/ui';
@@ -212,6 +214,39 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
   }, [toast, errorToast, session]);
   const onCallResult = useCallback((r: LiveCallResult) => showToast(r), [showToast]);
 
+  // Back from paying on eSewa or the card page (the return page sent us straight here): say how it went, and let my
+  // own gift fly, which the room announced while I was away (lib/live/return-note). Once per session.
+  const returnFor = useRef<LiveSession | null>(null);
+  const hostName = current?.astrologerName ?? null;
+  useEffect(() => {
+    if (!session || !current || returnFor.current === session) return;
+    returnFor.current = session;
+    const note = takeLiveReturnNote(current.astrologerId);
+    if (!note) return;
+    // The note lives in this tab's sessionStorage, so it can only be read after mount; it is read once.
+    if (note.kind === 'gift') {
+      session.expectOwnGift({ giftTitle: note.giftTitle, since: note.since });
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      showToast(
+        note.giftTitle
+          ? liveGiftResult('done', note.giftTitle, hostName ?? 'the astrologer')
+          : { tone: 'good', title: 'Gift sent!', text: `Your gift was sent to ${hostName ?? 'the astrologer'}.` },
+      );
+    } else {
+      showToast({
+        tone: 'good',
+        title: "You're in the queue!",
+        text: `${note.position ? `You are #${note.position} in line. ` : ''}We'll tell you when it's your turn.`,
+      });
+    }
+  }, [session, current, hostName, showToast]);
+  const roomGifts = state?.gifts;
+  const ownGiftFloat = state?.ownGiftFloat ?? null;
+  const floatGifts = useMemo(
+    () => (ownGiftFloat ? [...(roomGifts ?? []), ownGiftFloat] : (roomGifts ?? [])),
+    [roomGifts, ownGiftFloat],
+  );
+
   const root = useRef<HTMLDivElement>(null);
   usePhoneFullScreen(root);
 
@@ -282,7 +317,7 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
         >
           <div className="relative min-h-0 flex-1">
             <Stage session={session} state={state} room={current} me={me} />
-            {state ? <LiveGiftFloats key={current?.roomId ?? 'none'} gifts={state.gifts} /> : null}
+            {state ? <LiveGiftFloats key={current?.roomId ?? 'none'} gifts={floatGifts} /> : null}
 
             {/* Phone: the app's header over the video. Desktop: only the call pills and the close button up there. */}
             {current ? (

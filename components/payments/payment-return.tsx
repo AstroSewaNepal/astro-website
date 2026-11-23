@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CheckCircle2, Clock, Loader2, XCircle } from 'lucide-react';
 
@@ -9,6 +10,7 @@ import { useBackendClient } from '@/hooks/use-backend-client';
 import { BackendError } from '@/lib/backend/client';
 import { planSchedulePath } from '@/lib/booking/packages';
 import { livePath } from '@/lib/live/feed';
+import { type LiveReturnNote, leaveLiveReturnNote } from '@/lib/live/return-note';
 import {
   type Gateway,
   type Outcome,
@@ -210,6 +212,18 @@ function Verdict({
       );
     case 'done': {
       const resultId = status.fulfilment?.resultId ?? null;
+      // Bought inside a stream and done: straight back to it, like the app (the stream says what happened). Only
+      // problems and waits stay on this page.
+      if (inStream && astrologerId && (kind === 'live-call' || kind === 'gift')) {
+        const position = Number(status.fulfilment?.reference);
+        return (
+          <BackToStream
+            astrologerId={astrologerId}
+            gift={kind === 'gift' ? { title: pending?.title ?? null, startedAt: pending?.startedAt ?? null } : null}
+            position={Number.isFinite(position) && position > 0 ? position : null}
+          />
+        );
+      }
       if (kind === 'live-call') {
         const position = Number(status.fulfilment?.reference);
         return (
@@ -313,6 +327,34 @@ function Verdict({
         />
       );
   }
+}
+
+/** Leaves the stream its note (lib/live/return-note) and goes back to it, replacing this page in the history. */
+function BackToStream({
+  astrologerId,
+  gift,
+  position,
+}: {
+  astrologerId: string;
+  /** A gift: its title and when paying started, from this browser's note of the payment (null without one). */
+  gift: { title: string | null; startedAt: number | null } | null;
+  /** A live call: the queue place the buyer got. */
+  position: number | null;
+}) {
+  const router = useRouter();
+  const giftTitle = gift?.title ?? null;
+  const startedAt = gift?.startedAt ?? null;
+  const isGift = gift !== null;
+  useEffect(() => {
+    const at = Date.now();
+    const note: LiveReturnNote = isGift
+      ? // No note of the payment in this browser: any gift of mine from the last half hour.
+        { kind: 'gift', astrologerId, giftTitle, since: startedAt ?? at - 30 * 60_000, at }
+      : { kind: 'live-call', astrologerId, position, at };
+    leaveLiveReturnNote(note);
+    router.replace(livePath(astrologerId));
+  }, [astrologerId, isGift, giftTitle, startedAt, position, router]);
+  return <Result icon="wait" title="Payment confirmed" text="Taking you back to the live stream..." />;
 }
 
 /**

@@ -1,4 +1,5 @@
-export type AstrologerStatus = 'ONLINE' | 'OFFLINE' | string;
+// The backend sends AVAILABLE, BUSY or OFFLINE (lib/astrologers/status.ts).
+export type AstrologerStatus = 'AVAILABLE' | 'BUSY' | 'OFFLINE' | string;
 
 export interface ProfilePictureThumbnail {
   url?: string | null;
