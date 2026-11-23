@@ -32,7 +32,37 @@ export function giftsToFly(gifts: LiveGift[], here: ReadonlySet<string>): LiveGi
   return gifts.filter(g => g.origin === 'live' && !flown.has(g.id) && !here.has(g.id));
 }
 
-export type FloatPath = { x: number; swayAmp: number; swayFreq: number; swayPhase: number; drift: number; rotAmp: number; rotPhase: number; scale: number; rise: number };
+/**
+ * A gift I paid for away from the stream (eSewa, card: the tab went to the gateway and back). The server announced
+ * it while I was gone, so here it is only a history copy, which never flies. This is what the stream knows to find it
+ * again: the title I bought (null when this browser has no note of the payment) and when I started paying.
+ */
+export type OwnGiftExpected = { giftTitle: string | null; since: number };
+
+/** The server's clock may be a little behind this browser's. */
+const OWN_GIFT_SKEW_MS = 2 * 60_000;
+
+const sameTitle = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
+
+/** My gift in the list that matches what I paid for (the app's ids carry the sender: `gift-<senderId>-<sentAt>`); the newest if several. */
+export function findOwnGift(gifts: LiveGift[], myId: string, expected: OwnGiftExpected): LiveGift | null {
+  const prefix = `gift-${myId}-`;
+  let best: LiveGift | null = null;
+  let bestAt = -Infinity;
+  for (const g of gifts) {
+    if (!g.id.startsWith(prefix)) continue;
+    if (expected.giftTitle && !sameTitle(g.giftTitle, expected.giftTitle)) continue;
+    const at = Date.parse(g.sentAt);
+    if (!Number.isFinite(at) || at < expected.since - OWN_GIFT_SKEW_MS) continue;
+    if (at > bestAt) {
+      best = g;
+      bestAt = at;
+    }
+  }
+  return best;
+}
+
+export type FloatPath ={ x: number; swayAmp: number; swayFreq: number; swayPhase: number; drift: number; rotAmp: number; rotPhase: number; scale: number; rise: number };
 
 /** A random path per gift, so no two trace the same line (the app's numbers). `spread` and `rise` are in px. */
 export function floatPath(spread: number, rise: number, rand: () => number = Math.random): FloatPath {

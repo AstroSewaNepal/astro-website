@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { floatKeyframes, floatPath, giftsToFly, hasFlown, liveGiftResult, markFlown, resetFlown } from './gifts';
+import { findOwnGift, floatKeyframes, floatPath, giftsToFly, hasFlown, liveGiftResult, markFlown, resetFlown } from './gifts';
 import type { LiveGift } from './messages';
 
 const gift = (id: string, origin: LiveGift['origin'] = 'live'): LiveGift => ({
@@ -54,5 +54,39 @@ describe('liveGiftResult', () => {
     expect(liveGiftResult('processing', 'Rose', 'Rowisee').tone).toBe('info');
     expect(liveGiftResult('deliveryFailed', 'Rose', 'Rowisee').tone).toBe('bad');
     expect(liveGiftResult('notPaid', 'Rose', 'Rowisee').title).toBe('Payment not completed');
+  });
+});
+
+describe('findOwnGift', () => {
+  const at = (iso: string) => Date.parse(iso);
+  const g = (sender: string, sentAt: string, giftTitle = 'Cycle'): LiveGift => ({
+    id: `gift-${sender}-${sentAt}`,
+    senderName: 'Nibar',
+    giftTitle,
+    sentAt,
+    origin: 'history',
+  });
+
+  it('finds my gift with that title sent after I started paying, the newest if several', () => {
+    const list = [
+      g('me', '2026-11-21T06:00:00.000Z'),
+      g('me', '2026-11-21T06:05:00.000Z'),
+      g('me', '2026-11-21T06:06:00.000Z', 'Rose'),
+      g('other', '2026-11-21T06:07:00.000Z'),
+    ];
+    expect(findOwnGift(list, 'me', { giftTitle: 'Cycle', since: at('2026-11-21T06:04:00.000Z') })?.sentAt).toBe('2026-11-21T06:05:00.000Z');
+    expect(findOwnGift(list, 'me', { giftTitle: null, since: at('2026-11-21T06:04:00.000Z') })?.giftTitle).toBe('Rose');
+  });
+
+  it('allows the server clock two minutes behind, not more', () => {
+    const list = [g('me', '2026-11-21T06:00:00.000Z')];
+    expect(findOwnGift(list, 'me', { giftTitle: 'Cycle', since: at('2026-11-21T06:01:59.000Z') })).not.toBeNull();
+    expect(findOwnGift(list, 'me', { giftTitle: 'Cycle', since: at('2026-11-21T06:02:01.000Z') })).toBeNull();
+  });
+
+  it("never takes someone else's gift or another title", () => {
+    const since = at('2026-11-21T05:00:00.000Z');
+    expect(findOwnGift([g('meow', '2026-11-21T06:00:00.000Z')], 'me', { giftTitle: null, since })).toBeNull();
+    expect(findOwnGift([g('me', '2026-11-21T06:00:00.000Z', 'Rose')], 'me', { giftTitle: 'Cycle', since })).toBeNull();
   });
 });

@@ -7,6 +7,7 @@ import { encodeLiveMessage, type LiveDataMessage } from '@/lib/live/messages';
 import {
   LIVE_ROOM_EVENTS,
   LiveSession,
+  OWN_GIFT_WAIT_MS,
   type LiveLocalTrack,
   type LiveRemoteParticipant,
   type LiveRemotePublication,
@@ -469,6 +470,83 @@ describe('watching', () => {
     session.showOwnGift({ giftTitle: 'Rose', sentAt: iso(NOW + 1) });
     expect(session.getState().gifts).toHaveLength(1);
   });
+
+describe('my own gift paid away from the stream (eSewa, card)', () => {
+  const myGift = (sentAt: number, giftTitle = 'Cycle', sender = 'me') => ({
+    id: `gift-${sender}-${iso(sentAt)}`,
+    name: 'Nibar',
+    giftTitle,
+    sentAt: iso(sentAt),
+  });
+  const history = (...gifts: ReturnType<typeof myGift>[]) => JSON.stringify({ liveChat: { gifts } });
+
+  it('flies the history copy of my gift once it shows up, and only that one', async () => {
+    const { session, room } = setup();
+    room.metadata = history(myGift(NOW - 10 * 60 * SEC), myGift(NOW - 20 * SEC, 'Rose'), myGift(NOW - 10 * SEC, 'Cycle', 'other'));
+    session.expectOwnGift({ giftTitle: 'Cycle', since: NOW - 60 * SEC });
+    await session.start();
+    await flush();
+    expect(session.getState().gifts.map(g => g.origin)).toEqual(['history', 'history', 'history']);
+
+    // The host's app writes my gift into the history a moment later.
+    room.fire(LIVE_ROOM_EVENTS.RoomMetadataChanged, history(myGift(NOW - 5 * SEC)));
+    const mine = session.getState().gifts.find(g => g.id === `gift-me-${iso(NOW - 5 * SEC)}`);
+    expect(mine?.origin).toBe('live');
+    expect(session.getState().gifts.filter(g => g.origin === 'live')).toHaveLength(1);
+    // A later history write doesn't take the float back, and nothing extra flies.
+    room.fire(LIVE_ROOM_EVENTS.RoomMetadataChanged, history(myGift(NOW - 5 * SEC)));
+    await vi.advanceTimersByTimeAsync(10 * SEC);
+    expect(session.getState().gifts.find(g => g.id === mine?.id)?.origin).toBe('live');
+    expect(session.getState().ownGiftFloat).toBeNull();
+  });
+
+  it('finds it in the history the stream opens with', async () => {
+    const { session, room } = setup();
+    room.metadata = history(myGift(NOW - 5 * SEC));
+    session.expectOwnGift({ giftTitle: 'cycle ', since: NOW - 60 * SEC });
+    await session.start();
+    expect(session.getState().gifts[0].origin).toBe('live');
+  });
+
+  it('without a title, takes my newest gift since paying started', async () => {
+    const { session, room } = setup();
+    room.metadata = history(myGift(NOW - 30 * SEC, 'Rose'), myGift(NOW - 5 * SEC, 'Lotus'));
+    session.expectOwnGift({ giftTitle: null, since: NOW - 60 * SEC });
+    await session.start();
+    expect(session.getState().gifts.map(g => `${g.giftTitle}:${g.origin}`)).toEqual(['Rose:history', 'Lotus:live']);
+  });
+
+  it('a broadcast of my gift that arrives after I am back just flies, once', async () => {
+    const { session, room } = await watching();
+    session.expectOwnGift({ giftTitle: 'Cycle', since: NOW - 60 * SEC });
+    room.message({ type: 'gift:sent', giftTitle: 'Cycle', senderName: 'Nibar Lc', senderId: 'me', sentAt: iso(NOW) });
+    expect(session.getState().gifts).toHaveLength(1);
+    await vi.advanceTimersByTimeAsync(10 * SEC);
+    expect(session.getState().ownGiftFloat).toBeNull();
+  });
+
+  it('flies anyway, without a chat line, when the history never shows it', async () => {
+    const { session } = await watching();
+    session.expectOwnGift({ giftTitle: 'Cycle', since: NOW - 60 * SEC });
+    await vi.advanceTimersByTimeAsync(OWN_GIFT_WAIT_MS - 1);
+    expect(session.getState().ownGiftFloat).toBeNull();
+    await vi.advanceTimersByTimeAsync(1);
+    expect(session.getState().ownGiftFloat).toMatchObject({ giftTitle: 'Cycle', senderName: 'Nibar Lc', origin: 'live' });
+    expect(session.getState().gifts).toEqual([]);
+  });
+
+  it('waits for the stream to be joined before counting, and forgets it on leaving', async () => {
+    const { session } = setup();
+    session.expectOwnGift({ giftTitle: 'Cycle', since: NOW - 60 * SEC });
+    await vi.advanceTimersByTimeAsync(OWN_GIFT_WAIT_MS * 2);
+    expect(session.getState().ownGiftFloat).toBeNull();
+    await session.start();
+    await flush();
+    await session.end();
+    await vi.advanceTimersByTimeAsync(OWN_GIFT_WAIT_MS * 2);
+    expect(session.getState().ownGiftFloat).toBeNull();
+  });
+});
 
   it('polls the queue status every 15 s and stops after the end', async () => {
     const { session, api } = await watching();

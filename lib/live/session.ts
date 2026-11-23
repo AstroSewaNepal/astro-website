@@ -28,6 +28,7 @@ import {
   type LiveDataMessage,
   type LiveGift,
 } from '@/lib/live/messages';
+import { findOwnGift, type OwnGiftExpected } from '@/lib/live/gifts';
 import { classifyLiveError, liveRequestRefused, type LiveApi, type LiveQueueStatus } from '@/lib/live/api';
 
 export type LivePhase =
@@ -99,6 +100,11 @@ export type LiveState = {
   audioBlocked: boolean;
   messages: LiveChatMessage[];
   gifts: LiveGift[];
+  /**
+   * My own gift paid away from the stream that the room's history never showed (see expectOwnGift): flies once,
+   * no chat line. Null otherwise.
+   */
+  ownGiftFloat: LiveGift | null;
   queue: LiveQueueInfo | null;
   me: LiveMyQueue | null;
   call: LiveActiveCall | null;
@@ -239,6 +245,8 @@ const JOINED_NOTICE = "You're live with the astrologer. Your consultation has st
 const COMPLETE_RETRY_MS = 1_000;
 const DEFAULT_POLL_MS = 15_000;
 const PERMISSION_WAIT_MS = 5_000;
+/** How long after joining the stream my own gift may take to show up in the room's history before it flies anyway. */
+export const OWN_GIFT_WAIT_MS = 5_000;
 const KICKED_NOTICE = 'You were removed from this live stream.';
 const TURN_EXPIRED_NOTICE = 'Your turn expired. Pay again if you want to rejoin the queue.';
 
@@ -273,6 +281,9 @@ export class LiveSession {
   private endingCall = false;
   private callerToken: { callType: LiveCallType; kickAt: string; queueId: string } | null = null;
   private statusInFlight = false;
+  /** A gift I paid for away from the stream, still to be found (expectOwnGift). */
+  private ownGift: OwnGiftExpected | null = null;
+  private ownGiftTimer: ReturnType<typeof setTimeout> | null = null;
   /** When a room message last set the call / my queue place: an older status answer can't undo it. */
   private callMessageAt = 0;
   private meMessageAt = 0;
@@ -292,6 +303,7 @@ export class LiveSession {
       audioBlocked: false,
       messages: [],
       gifts: [],
+      ownGiftFloat: null,
       queue: null,
       me: null,
       call: null,
@@ -383,6 +395,7 @@ export class LiveSession {
       audioBlocked: !this.room.canPlaybackAudio,
       resumeNeeded: this.callerToken !== null,
     });
+    this.armOwnGiftFallback();
     if (this.callerToken) {
       const c = this.callerToken;
       this.set({
@@ -566,6 +579,53 @@ export class LiveSession {
     const { id, name } = this.opts.me;
     const own = giftFromMessage({ type: 'gift:sent', senderId: id, senderName: name, ...gift });
     this.set({ gifts: mergeGifts(this.state.gifts, [own]) });
+  }
+
+  /**
+   * I just came back from paying for a gift away from the stream (eSewa, card). The server announced it while I was
+   * gone, so my copy comes from the room's history and would not fly. The matching gift flies once, here only
+   * (everyone else saw it fly already). If the history doesn't have it a few seconds after joining (the host's app
+   * writes it), the float plays anyway, without a chat line. Safe to call before the stream is joined.
+   */
+  expectOwnGift(expected: OwnGiftExpected): void {
+    if (this.ending || this.state.phase === 'ended') return;
+    this.ownGift = expected;
+    this.claimOwnGift();
+    this.armOwnGiftFallback();
+  }
+
+  private claimOwnGift(): void {
+    if (!this.ownGift) return;
+    const gift = findOwnGift(this.state.gifts, this.opts.me.id, this.ownGift);
+    if (!gift) return;
+    this.forgetOwnGift();
+    if (gift.origin === 'history')
+      this.set({ gifts: this.state.gifts.map(g => (g.id === gift.id ? { ...g, origin: 'live' as const } : g)) });
+  }
+
+  private armOwnGiftFallback(): void {
+    if (!this.ownGift || this.ownGiftTimer || this.state.phase !== 'watching') return;
+    this.ownGiftTimer = setTimeout(() => {
+      this.ownGiftTimer = null;
+      const expected = this.ownGift;
+      if (!expected || this.ending) return;
+      this.ownGift = null;
+      this.set({
+        ownGiftFloat: {
+          id: `own-gift-${expected.since}`,
+          senderName: this.opts.me.name,
+          giftTitle: expected.giftTitle ?? 'Gift',
+          sentAt: new Date(this.now()).toISOString(),
+          origin: 'live',
+        },
+      });
+    }, OWN_GIFT_WAIT_MS);
+  }
+
+  private forgetOwnGift(): void {
+    this.ownGift = null;
+    if (this.ownGiftTimer) clearTimeout(this.ownGiftTimer);
+    this.ownGiftTimer = null;
   }
 
   clearReview(): void {
@@ -899,6 +959,7 @@ export class LiveSession {
         return;
       case 'gift:sent':
         this.set({ gifts: mergeGifts(this.state.gifts, [giftFromMessage(message)]) });
+        this.claimOwnGift();
         return;
       case 'react:sync':
         this.set({ likeCount: message.likeCount });
@@ -1026,7 +1087,10 @@ export class LiveSession {
     const history = parseRoomHistory(metadata);
     if (history.messages.length)
       this.set({ messages: dedupeMessages([...history.messages, ...this.state.messages]) });
-    if (history.gifts.length) this.set({ gifts: mergeGifts(this.state.gifts, history.gifts) });
+    if (history.gifts.length) {
+      this.set({ gifts: mergeGifts(this.state.gifts, history.gifts) });
+      this.claimOwnGift();
+    }
   }
 
   private addMessage(message: LiveChatMessage): void {
@@ -1171,6 +1235,7 @@ export class LiveSession {
   private async finish(reason: LiveEndReason, error: string | null): Promise<void> {
     if (this.ending) return;
     this.ending = true;
+    this.forgetOwnGift();
     if (this.pollTimer) clearInterval(this.pollTimer);
     this.pollTimer = null;
 
