@@ -40,6 +40,7 @@ import {
 } from '@/lib/astrologers/profile';
 import { BackendError } from '@/lib/backend/client';
 import { packagesPath } from '@/lib/booking/packages';
+import { isAstrologerOnline } from '@/lib/astrologers/status';
 
 const card = 'rounded-[20px] border border-[#e3c9b5] bg-[#fbf6ee] p-5';
 
@@ -149,7 +150,7 @@ function HeaderCard({
     astrologer.user?.profilePicture?.url || astrologer.user?.profilePicture?.thumbnail?.url;
   const tier = tierLabel(astrologer.tier?.name);
   const badge = tierStyle(astrologer.tier?.name);
-  const online = astrologer.status === 'ONLINE';
+  const online = isAstrologerOnline(astrologer.status);
   const rows = [
     {
       key: 'languages',

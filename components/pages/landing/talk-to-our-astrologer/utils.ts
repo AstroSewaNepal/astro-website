@@ -1,3 +1,5 @@
+import { isAstrologerOnline as isOnline } from '@/lib/astrologers/status';
+
 import type { Astrologer, AstrologerPackage, AstrologerTag } from './types';
 
 const MAX_LANGUAGES = 3;
@@ -98,7 +100,7 @@ export function getAstrologerName(astrologer: Astrologer): string {
 }
 
 export function isAstrologerOnline(astrologer: Astrologer): boolean {
-  return astrologer.status === 'ONLINE';
+  return isOnline(astrologer.status);
 }
 
 export function sortTopAstrologers(astrologers: Astrologer[]): Astrologer[] {

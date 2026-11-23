@@ -11,6 +11,7 @@ import { PushBanner } from '@/components/pwa/push-banner';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { profilePath } from '@/lib/astrologers/list';
 import { tierLabel, tierStyle } from '@/lib/astrologers/profile';
+import { isAstrologerOnline } from '@/lib/astrologers/status';
 
 // Home shows no prices, so like the app it asks for Nepal right away instead of waiting for the buyer's country.
 const HOME_COUNTRY = 'NP';
@@ -90,7 +91,7 @@ export function ClientHome({ firstName }: { firstName?: string }) {
                   astrologer={a}
                   className="flex flex-col items-center gap-2 text-center"
                 >
-                  <Avatar astrologer={a} size={72} online={a.status === 'ONLINE'} />
+                  <Avatar astrologer={a} size={72} online={isAstrologerOnline(a.status)} />
                   <span className="line-clamp-1 w-full font-app text-[14px] text-[#4a1a1a]">
                     {name(a)}
                   </span>

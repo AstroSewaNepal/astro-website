@@ -11,6 +11,7 @@ import {
   getLowestPackage,
 } from '@/components/pages/landing/talk-to-our-astrologer/utils';
 import { tagNames, tierLabel, tierStyle } from '@/lib/astrologers/profile';
+import { isAstrologerOnline } from '@/lib/astrologers/status';
 
 const slideRow =
   'min-w-0 flex-1 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden';
@@ -54,7 +55,7 @@ export function AstrologerAppCard({
                 name.charAt(0).toUpperCase()
               )}
             </span>
-            {astrologer.status === 'ONLINE' ? (
+            {isAstrologerOnline(astrologer.status) ? (
               <span
                 className="absolute right-0.5 top-0.5 h-4 w-4 rounded-full border-2 border-[#fbf6ee] bg-[#34C759]"
                 aria-label="Online"
