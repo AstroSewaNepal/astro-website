@@ -33,16 +33,36 @@ import Services from '@/components/pages/landing/services';
 import DownloadApp from '@/components/pages/landing/download-app';
 import SectionDivider from '@/components/ui/section-divider';
 
+// Refresh at least every 5 minutes (like the Ghost fetches), so a page built while the blog was unreachable fills
+// itself in once it's back.
+export const revalidate = 300;
+
+// The blog server being down must not fail the whole site build (or a request): the page shows "No posts found."
+// instead, like /puja-bidhi.
 async function getBlogTags() {
-  const tags = await ghostClient.tags.browse({
-    fields: ['name', 'slug'],
-    limit: 'all',
-    order: 'name asc',
-  });
-  return tags.map(t => ({ name: t.name ?? '', slug: t.slug ?? '' })).filter(t => t.name);
+  try {
+    const tags = await ghostClient.tags.browse({
+      fields: ['name', 'slug'],
+      limit: 'all',
+      order: 'name asc',
+    });
+    return tags.map(t => ({ name: t.name ?? '', slug: t.slug ?? '' })).filter(t => t.name);
+  } catch (error) {
+    console.error('Error fetching blog tags:', error);
+    return [];
+  }
 }
 
 async function getBlogPosts() {
+  try {
+    return await browseBlogPosts();
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    return [];
+  }
+}
+
+async function browseBlogPosts() {
   const posts = await ghostClient.posts.browse({
     include: ['tags', 'authors'],
     fields: [
