@@ -1,23 +1,44 @@
 import type { Metadata } from 'next';
 
-import DownloadApp from '@/components/pages/landing/download-app';
+import { RemedyDetail } from '@/components/remedies/remedy-detail';
+import { coverImage, type Remedy } from '@/lib/remedies/catalogue';
+import { descriptionText } from '@/lib/remedies/description';
+import { tryGetPublicBackendBaseUrl } from '@/lib/utils/url';
 
-import OpenInApp from './open-in-app';
+type Props = { params: Promise<{ id: string }> };
 
-export const metadata: Metadata = {
-  title: 'Remedy | Astro Sewa',
-  robots: { index: false },
-};
+/**
+ * A product of the remedies shop (doc 11), and the link the app shares (`/remedy/:id`). It used to hand the link to
+ * the app; Android opens the app itself through its verified app links, so a browser that lands here shows the product.
+ */
+async function loadRemedy(id: string): Promise<Remedy | null> {
+  const api = tryGetPublicBackendBaseUrl();
+  if (!api || !/^[A-Za-z0-9_-]{1,64}$/.test(id)) return null;
+  try {
+    const res = await fetch(`${api}/astrologers/remedies/${id}`, { next: { revalidate: 300 } });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { data?: Remedy | null };
+    return json.data ?? null;
+  } catch {
+    return null;
+  }
+}
 
-export default async function RemedyLinkPage({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
+  const remedy = await loadRemedy(id);
+  if (!remedy || remedy.isActive === false) return { title: 'Remedy', robots: { index: false } };
+  const description = descriptionText(remedy.description) || remedy.subtitle || undefined;
+  const image = coverImage(remedy.media);
+  return {
+    title: remedy.name,
+    description,
+    alternates: { canonical: `/remedy/${id}` },
+    openGraph: { title: remedy.name, description, images: image ? [image] : undefined },
+  };
+}
 
-  return (
-    <main className="pt-2 md:pt-4">
-      <div className="container mx-auto px-6 lg:px-0">
-        <OpenInApp path={`remedy/${encodeURIComponent(id)}`} />
-        <DownloadApp className="border-none !pb-0" paddingClassName="py-4 md:py-6 lg:py-8" />
-      </div>
-    </main>
-  );
+export default async function RemedyPage({ params }: Props) {
+  const { id } = await params;
+  return <RemedyDetail remedyId={id} />;
 }

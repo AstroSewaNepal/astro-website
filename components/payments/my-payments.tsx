@@ -39,12 +39,12 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 /** The app's My Payments: every payment (consultations, remedies, gifts, live calls), searchable and filterable. */
-export function MyPayments() {
+export function MyPayments({ initialType = 'all' }: { initialType?: TransactionFilter }) {
   const backend = useBackendClient();
   const [searchText, setSearchText] = useState('');
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState<SortFilter<TransactionFilter>>({
-    sort: 'all',
+    sort: initialType,
     from: '',
     to: '',
   });

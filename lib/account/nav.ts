@@ -57,7 +57,7 @@ const home = (href: string): AccountNavItem => ({ label: 'Home', href, icon: Hou
 const c = {
   astroConnect: { label: 'Astro Connect', href: '/astrologers', icon: Sparkles },
   live: { label: 'Live', href: '/live', icon: Radio },
-  remedies: { label: 'Remedies', href: '/remedies', icon: Gem, soon: true },
+  remedies: { label: 'Remedies', href: '/remedies', icon: Gem },
   consultations: { label: 'My Consultations', href: '/client/consultations', icon: History },
   following: { label: 'My Following', href: '/client/following', icon: UsersRound },
   payments: { label: 'My Payments', href: '/client/payments', icon: Wallet },
@@ -126,7 +126,14 @@ export function isAccountPage(pathname: string | null): boolean {
  * Guests see them in the plain site layout.
  */
 // /payment: the return page after a gateway (logged-in clients only).
-const CLIENT_SHELL_PAGES = ['/astrologers', '/astrologer-profile', '/payment', '/live'];
+const CLIENT_SHELL_PAGES = [
+  '/astrologers',
+  '/astrologer-profile',
+  '/payment',
+  '/live',
+  '/remedies',
+  '/remedy',
+];
 
 export function isClientShellPage(pathname: string | null): boolean {
   if (!pathname) return false;
@@ -144,6 +151,10 @@ const PARENT_PAGES: {
   { pattern: /^\/astrologer-profile\/[^/]+$/, parent: () => '/astrologers' },
   // A stream is opened from the live list.
   { pattern: /^\/live\/[^/]+$/, parent: () => '/live' },
+  // The shop: a category, a product and the cart all belong under Remedies.
+  { pattern: /^\/remedies\/[^/]+$/, parent: () => '/remedies' },
+  { pattern: /^\/remedy\/[^/]+$/, parent: () => '/remedies' },
+  { pattern: /^\/client\/cart$/, parent: () => '/remedies' },
   {
     pattern: /^(\/astrologer-profile\/[^/]+)\/schedule$/,
     // Booking from a plan and moving a booking both start on My Consultations.
@@ -154,7 +165,8 @@ const PARENT_PAGES: {
 
 /** Pages that draw their own back control (the chat), so the shell's back link would only take room from them. */
 export function hasOwnBack(pathname: string): boolean {
-  return /^\/client\/consultations\/[^/]+$/.test(pathname);
+  // The product page links back to its category itself.
+  return /^\/client\/consultations\/[^/]+$/.test(pathname) || /^\/remedy\/[^/]+$/.test(pathname);
 }
 
 /**

@@ -5,6 +5,7 @@ import {
   localGatewaysTake,
   notPaidMessage,
   outcomeOf,
+  purchaseAstrologerId,
   purchaseRoomId,
   readStarted,
   readStatus,
@@ -70,10 +71,26 @@ describe('startRequest', () => {
   });
 
   it('tells every gift route which live room a stream gift belongs to', () => {
-    const gift: Purchase = { kind: 'gift', giftId: 'g1', astrologerId: 'a1', live: { roomName: 'live-a1', roomId: 'r1' } };
+    const gift: Purchase = {
+      kind: 'gift',
+      giftId: 'g1',
+      astrologerId: 'a1',
+      live: { roomName: 'live-a1', roomId: 'r1' },
+    };
     const room = { returnContext: 'live', roomName: 'live-a1', roomId: 'r1' };
-    expect(startRequest(gift, 'esewa', 'NP').body).toEqual({ giftId: 'g1', astrologerId: 'a1', countryCode: 'NP', ...room, serverDelivery: true });
-    expect(startRequest(gift, 'fonepay', null).body).toEqual({ giftId: 'g1', astrologerId: 'a1', ...room, serverDelivery: true });
+    expect(startRequest(gift, 'esewa', 'NP').body).toEqual({
+      giftId: 'g1',
+      astrologerId: 'a1',
+      countryCode: 'NP',
+      ...room,
+      serverDelivery: true,
+    });
+    expect(startRequest(gift, 'fonepay', null).body).toEqual({
+      giftId: 'g1',
+      astrologerId: 'a1',
+      ...room,
+      serverDelivery: true,
+    });
     // The card route has no serverDelivery flag (it always delivers itself).
     expect(startRequest(gift, 'card', 'US')).toEqual({
       path: '/subscription/payments/hbl/gifts/initiate',
@@ -101,8 +118,14 @@ describe('startRequest', () => {
       returnContext: 'viewer',
       serverDelivery: true,
     };
-    expect(startRequest(call, 'esewa', 'NP')).toEqual({ path: '/live/payments/esewa/initiate', body });
-    expect(startRequest(call, 'fonepay', 'NP')).toEqual({ path: '/live/payments/fonepay/initiate', body });
+    expect(startRequest(call, 'esewa', 'NP')).toEqual({
+      path: '/live/payments/esewa/initiate',
+      body,
+    });
+    expect(startRequest(call, 'fonepay', 'NP')).toEqual({
+      path: '/live/payments/fonepay/initiate',
+      body,
+    });
     expect(startRequest(call, 'card', 'NP')).toEqual({
       path: '/subscription/payments/hbl/live-calls/initiate',
       body,
@@ -187,9 +210,9 @@ describe('returnedPayment', () => {
       pidx: 'abc-123',
       gateway: 'esewa',
     });
-    expect(q('screen=astro-connect%2Fastrologer-profile%2Fa1&status=Completed&pidx=uuid_1')).toEqual(
-      { pidx: 'uuid_1', gateway: 'esewa' },
-    );
+    expect(
+      q('screen=astro-connect%2Fastrologer-profile%2Fa1&status=Completed&pidx=uuid_1'),
+    ).toEqual({ pidx: 'uuid_1', gateway: 'esewa' });
     expect(q('type=hbl&outcome=success&pidx=17918934071472270')).toEqual({
       pidx: '17918934071472270',
       gateway: 'card',
@@ -268,8 +291,53 @@ describe('parsePending', () => {
 describe('readStatus', () => {
   it('reads the live call queue position', () => {
     expect(
-      readStatus({ status: 'Completed', purpose: 'live-call', fulfilment: { status: 'done', reference: '2' } })
-        .fulfilment,
+      readStatus({
+        status: 'Completed',
+        purpose: 'live-call',
+        fulfilment: { status: 'done', reference: '2' },
+      }).fulfilment,
     ).toEqual({ status: 'done', resultId: null, reference: '2', message: null });
+  });
+});
+
+describe('remedy orders', () => {
+  const remedy: Purchase = {
+    kind: 'remedy',
+    details: { deliveryType: 'physical', shippingAddress: 'Lakeside, Pokhara' },
+  };
+
+  it('pays the server cart: card without an order id, eSewa/Fonepay with a fresh one and serverDelivery', () => {
+    expect(startRequest(remedy, 'card', 'NP')).toEqual({
+      path: '/subscription/payments/hbl/remedies/initiate',
+      body: { deliveryType: 'physical', shippingAddress: 'Lakeside, Pokhara' },
+    });
+    const esewa = startRequest(remedy, 'esewa', 'NP');
+    expect(esewa.path).toBe('/remedies/payments/esewa/initiate');
+    expect(esewa.body).toMatchObject({
+      purchaseOrderName: 'Remedy Order',
+      deliveryType: 'physical',
+      shippingAddress: 'Lakeside, Pokhara',
+      serverDelivery: true,
+    });
+    expect(esewa.body).not.toHaveProperty('countryCode');
+    expect(String(esewa.body.purchaseOrderId)).toMatch(/^REM_/);
+    const again = startRequest(remedy, 'fonepay', 'NP');
+    expect(again.path).toBe('/remedies/payments/fonepay/initiate');
+    expect(again.body.purchaseOrderId).not.toBe(esewa.body.purchaseOrderId);
+  });
+
+  it('has no astrologer and keeps its pending note', () => {
+    expect(purchaseAstrologerId(remedy)).toBe('');
+    expect(purchaseAstrologerId(pkg)).toBe('a1');
+    const row = {
+      pidx: 'r1',
+      gateway: 'card',
+      kind: 'remedy',
+      astrologerId: '',
+      title: 'Remedy order',
+      backHref: '/client/cart',
+      startedAt: 1000,
+    };
+    expect(parsePending(JSON.stringify([row]), 2000).map(p => p.pidx)).toEqual(['r1']);
   });
 });

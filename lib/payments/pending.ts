@@ -8,6 +8,7 @@ export type PendingPayment = {
   pidx: string;
   gateway: Gateway;
   kind: Purchase['kind'];
+  /** '' for a remedy order. */
   astrologerId: string;
   /** "Rose", "3 Months plan", "30 min consultation" */
   title: string;
@@ -32,7 +33,11 @@ function valid(v: unknown): v is PendingPayment {
   return (
     typeof p.pidx === 'string' &&
     (p.gateway === 'esewa' || p.gateway === 'fonepay' || p.gateway === 'card') &&
-    (p.kind === 'package' || p.kind === 'plan' || p.kind === 'gift' || p.kind === 'live-call') &&
+    (p.kind === 'package' ||
+      p.kind === 'plan' ||
+      p.kind === 'gift' ||
+      p.kind === 'live-call' ||
+      p.kind === 'remedy') &&
     typeof p.astrologerId === 'string' &&
     typeof p.title === 'string' &&
     isPath(p.backHref) &&
@@ -109,7 +114,9 @@ export function markPayment(pidx: string, change: Pick<PendingPayment, 'awaiting
  * A pure function of the stored list (see parsePending), for the viewer page.
  */
 export function awaitingLiveCall(list: PendingPayment[], roomId: string): PendingPayment | null {
-  return list.find(p => p.kind === 'live-call' && p.roomId === roomId && p.awaitingSlot === true) ?? null;
+  return (
+    list.find(p => p.kind === 'live-call' && p.roomId === roomId && p.awaitingSlot === true) ?? null
+  );
 }
 
 /** The stored list as text (a stable snapshot for useSyncExternalStore; parse it with parsePending). */
