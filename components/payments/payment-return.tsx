@@ -22,6 +22,8 @@ import {
   statusPath,
 } from '@/lib/payments/checkout';
 import { type PendingPayment, markPayment, recallPayment } from '@/lib/payments/pending';
+import { CART_QUERY_KEY } from '@/lib/remedies/cart';
+import { ORDERS_PATH, REMEDIES_PATH } from '@/lib/remedies/catalogue';
 import {
   WAITING_PACKAGES_PATH,
   type WaitingPackage,
@@ -82,8 +84,12 @@ export function PaymentReturn({ query }: { query: string }) {
       const s = readStatus(await backend.bare.get(statusPath(payment!.gateway, payment!.pidx)));
       const outcome = outcomeOf(s);
       // What was bought shows up in these lists now.
-      if (outcome === 'done')
+      if (outcome === 'done') {
         void queryClient.invalidateQueries({ queryKey: ['consultations'] });
+        // A remedy order empties the cart on the server.
+        void queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY });
+        void queryClient.invalidateQueries({ queryKey: ['payments', 'history'] });
+      }
       // A paid live call not seated yet (queue full, or still being added): its stream's page says so instead of
       // offering to pay again.
       if (s.purpose === 'live-call' && outcome !== 'waiting')
@@ -219,7 +225,11 @@ function Verdict({
         return (
           <BackToStream
             astrologerId={astrologerId}
-            gift={kind === 'gift' ? { title: pending?.title ?? null, startedAt: pending?.startedAt ?? null } : null}
+            gift={
+              kind === 'gift'
+                ? { title: pending?.title ?? null, startedAt: pending?.startedAt ?? null }
+                : null
+            }
             position={Number.isFinite(position) && position > 0 ? position : null}
           />
         );
@@ -264,6 +274,22 @@ function Verdict({
           />
         );
       }
+      if (kind === 'remedy') {
+        const tracking = status.fulfilment?.reference;
+        return (
+          <Result
+            icon="good"
+            title="Order placed"
+            text={`Your ${via} payment went through and your order is placed.${
+              tracking ? ` Tracking number: ${tracking}.` : ''
+            } We'll email you updates.`}
+            actions={[
+              { href: ORDERS_PATH, label: 'My Orders' },
+              { href: REMEDIES_PATH, label: 'Continue Shopping', quiet: true },
+            ]}
+          />
+        );
+      }
       if (kind === 'gift') {
         return (
           <Result
@@ -297,7 +323,11 @@ function Verdict({
       return (
         <Result
           icon="bad"
-          title={kind === 'live-call' ? 'Payment received, not added to the queue' : 'Payment received, purchase not completed'}
+          title={
+            kind === 'live-call'
+              ? 'Payment received, not added to the queue'
+              : 'Payment received, purchase not completed'
+          }
           text={`Your ${via} payment went through, but ${kind === 'live-call' ? "you couldn't be added to the queue" : "your purchase couldn't be completed"}${reason ? `: ${reason}` : '.'} Please contact support; your payment is safe.`}
           actions={[
             { href: '/client/support', label: 'Customer Support' },
@@ -354,7 +384,9 @@ function BackToStream({
     leaveLiveReturnNote(note);
     router.replace(livePath(astrologerId));
   }, [astrologerId, isGift, giftTitle, startedAt, position, router]);
-  return <Result icon="wait" title="Payment confirmed" text="Taking you back to the live stream..." />;
+  return (
+    <Result icon="wait" title="Payment confirmed" text="Taking you back to the live stream..." />
+  );
 }
 
 /**

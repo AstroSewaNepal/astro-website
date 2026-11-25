@@ -26,6 +26,8 @@ export type ReportTarget = {
   reportedUserId: string;
   contentSnapshot?: string;
   chatId?: string;
+  /** Live reports (stream, comment): the LiveKit room. */
+  roomName?: string;
 };
 
 /** The app's ReportSheet list, in its order and words. */
@@ -87,4 +89,18 @@ export function blockConfirmText(name: string | undefined) {
     message:
       "You won't be able to chat or join each other's live streams, and you won't see each other's comments or reviews. You can unblock anytime from Settings > Security > Blocked users.",
   };
+}
+
+/**
+ * Live comments from people either side blocked (GET /blocks/ids), hidden on the device: the live chat goes straight
+ * through LiveKit, so the backend can't filter it (the app's LiveChatOverlay does the same).
+ */
+export function withoutBlockedComments<T extends { kind: string; senderId?: string }>(
+  items: T[],
+  blockedIds: ReadonlySet<string>,
+): T[] {
+  if (blockedIds.size === 0) return items;
+  return items.filter(
+    item => item.kind !== 'comment' || !item.senderId || !blockedIds.has(item.senderId),
+  );
 }

@@ -1,9 +1,6 @@
 import type { AllDoshaResult } from '@/lib/vedastro/dosha-types';
 import type { FreeKundaliBundle } from '@/lib/vedastro/fetch-free-kundali-bundle';
-import {
-  getPublicBackendBaseCandidates,
-  resolveKundaliMatchingBundleUrl,
-} from '@/lib/utils/url';
+import { getPublicBackendBaseCandidates, resolveKundaliMatchingBundleUrl } from '@/lib/utils/url';
 
 export type MatchReportPayload = {
   KutaScore?: number;
@@ -66,9 +63,7 @@ export async function fetchKundaliMatchingBundle(
       if (!contentType.includes('application/json')) {
         const text = await response.text();
         const preview = text.slice(0, 120).replace(/\s+/g, ' ').trim();
-        attemptErrors.push(
-          `Non-JSON from ${url} (${response.status}): ${preview || 'empty'}`,
-        );
+        attemptErrors.push(`Non-JSON from ${url} (${response.status}): ${preview || 'empty'}`);
         continue;
       }
 
@@ -81,24 +76,18 @@ export async function fetchKundaliMatchingBundle(
 
       if (!response.ok || json.success === false || !json.data) {
         const msg =
-          json.message ||
-          json.errors?.[0]?.message ||
-          `Request failed (${response.status})`;
+          json.message || json.errors?.[0]?.message || `Request failed (${response.status})`;
         attemptErrors.push(msg);
         continue;
       }
 
       return json.data;
     } catch (error) {
-      attemptErrors.push(
-        error instanceof Error ? error.message : 'Network error',
-      );
+      attemptErrors.push(error instanceof Error ? error.message : 'Network error');
     }
   }
 
-  throw new Error(
-    attemptErrors[attemptErrors.length - 1] ?? 'Failed to generate kundali matching',
-  );
+  throw new Error(attemptErrors[attemptErrors.length - 1] ?? 'Failed to generate kundali matching');
 }
 
 /** Stored on session after form submit (same pattern as free kundali). */
@@ -130,6 +119,8 @@ export type StoredKundaliMatchingResult = {
   womanDoshas: AllDoshaResult;
   manLagnaSvg: string;
   womanLagnaSvg: string;
+  /** Set when it is (also) saved in the client's Astro Reports. */
+  savedId?: string;
 };
 
 export function bundleToStoredResult(

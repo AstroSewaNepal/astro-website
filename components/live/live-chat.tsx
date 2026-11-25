@@ -1,17 +1,37 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useSession } from 'next-auth/react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import clsx from 'clsx';
-import { Gift, MessageCircle, SendHorizontal } from 'lucide-react';
+import { Ban, Flag, Gift, MessageCircle, SendHorizontal } from 'lucide-react';
 
+import { BlockDialog } from '@/components/moderation/block-dialog';
+import { ReportDialog } from '@/components/moderation/report-dialog';
 import { MAX_CHAT_TEXT_LENGTH } from '@/lib/live/messages';
 import type { LiveFeedItem } from '@/lib/live/ui';
+
+type Comment = Extract<LiveFeedItem, { kind: 'comment' }>;
 
 /** Over the video (phone) the bubbles are dark; on the desktop chat panel they sit on a light card. */
 export type ChatTone = 'dark' | 'light';
 
 /** The app's LiveCommentsFeed: bubbles with the sender's initial, newest at the bottom, gift lines with a gold border. */
-export function LiveChatFeed({ items, className, tone = 'dark' }: { items: LiveFeedItem[]; className?: string; tone?: ChatTone }) {
+export function LiveChatFeed({
+  items,
+  className,
+  tone = 'dark',
+  roomName,
+}: {
+  items: LiveFeedItem[];
+  className?: string;
+  tone?: ChatTone;
+  /** Set when comments can be reported/blocked (the app's long-press on a comment). */
+  roomName?: string;
+}) {
+  const { data: session } = useSession();
+  const me = session?.user?.id;
+  const [action, setAction] = useState<{ kind: 'report' | 'block'; comment: Comment } | null>(null);
   const list = useRef<HTMLDivElement>(null);
   const atBottom = useRef(true);
   const onScroll = () => {
@@ -56,26 +76,100 @@ export function LiveChatFeed({ items, className, tone = 'dark' }: { items: LiveF
             </span>
           </div>
         ) : (
-          <div key={item.id} className={clsx('flex max-w-full items-start gap-2', i === 0 && 'mt-auto')}>
-            <span className="mt-0.5 flex h-[25px] w-[25px] shrink-0 items-center justify-center rounded-full bg-primary font-app text-[12px] font-bold text-white">
-              {item.name.charAt(0).toUpperCase()}
-            </span>
-            <div className={clsx('min-w-0 rounded-2xl px-3 py-1', dark ? 'bg-black/45' : 'bg-white/70')}>
-              <div className="flex items-center gap-1.5">
-                <span className={clsx('truncate font-app text-[12px] font-bold', dark ? 'text-white/85' : 'text-[#6d3b2a]')}>{item.name}</span>
-                {item.isHost ? (
-                  <span className="rounded-full bg-primary px-1.5 font-app text-[9px] font-bold tracking-wide text-white">
-                    Host
-                  </span>
-                ) : null}
-              </div>
-              <div className={clsx('my-px h-px', dark ? 'bg-white/20' : 'bg-[#BE7B71]/40')} />
-              <p className={clsx('break-words font-app text-[13px] leading-[17px]', dark ? 'text-white' : 'text-[#1C1C1C]')}>{item.text}</p>
-            </div>
-          </div>
+          <CommentLine
+            key={item.id}
+            item={item}
+            first={i === 0}
+            dark={dark}
+            // Logged in, someone else's comment (the app's rule: no actions on your own).
+            onAction={roomName && me && item.senderId && item.senderId !== me ? kind => setAction({ kind, comment: item }) : undefined}
+          />
         ),
       )}
+      {action?.kind === 'report' && roomName ? (
+        <ReportDialog
+          title="Report comment"
+          target={{
+            targetType: 'LIVE_COMMENT',
+            targetId: action.comment.id,
+            reportedUserId: action.comment.senderId,
+            contentSnapshot: action.comment.text,
+            roomName,
+          }}
+          onClose={() => setAction(null)}
+        />
+      ) : null}
+      {action?.kind === 'block' ? (
+        <BlockDialog
+          user={{ id: action.comment.senderId, name: action.comment.name }}
+          open
+          onOpenChange={open => {
+            if (!open) setAction(null);
+          }}
+        />
+      ) : null}
     </div>
+  );
+}
+
+/** One comment bubble; with `onAction` it opens Report / Block (the app's long-press sheet). */
+function CommentLine({
+  item,
+  first,
+  dark,
+  onAction,
+}: {
+  item: Comment;
+  first: boolean;
+  dark: boolean;
+  onAction?: (kind: 'report' | 'block') => void;
+}) {
+  const bubble = (
+    <>
+      <span className="mt-0.5 flex h-[25px] w-[25px] shrink-0 items-center justify-center rounded-full bg-primary font-app text-[12px] font-bold text-white">
+        {item.name.charAt(0).toUpperCase()}
+      </span>
+      <div className={clsx('min-w-0 rounded-2xl px-3 py-1 text-left', dark ? 'bg-black/45' : 'bg-white/70')}>
+        <div className="flex items-center gap-1.5">
+          <span className={clsx('truncate font-app text-[12px] font-bold', dark ? 'text-white/85' : 'text-[#6d3b2a]')}>{item.name}</span>
+          {item.isHost ? (
+            <span className="rounded-full bg-primary px-1.5 font-app text-[9px] font-bold tracking-wide text-white">
+              Host
+            </span>
+          ) : null}
+        </div>
+        <div className={clsx('my-px h-px', dark ? 'bg-white/20' : 'bg-[#BE7B71]/40')} />
+        <p className={clsx('break-words font-app text-[13px] leading-[17px]', dark ? 'text-white' : 'text-[#1C1C1C]')}>{item.text}</p>
+      </div>
+    </>
+  );
+  const rowClass = clsx('flex max-w-full items-start gap-2', first && 'mt-auto');
+  if (!onAction) return <div className={rowClass}>{bubble}</div>;
+  const menuItem =
+    'flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 font-app text-[15px] text-primary outline-none data-[highlighted]:bg-primary/10';
+  return (
+    <DropdownMenu.Root modal={false}>
+      <DropdownMenu.Trigger className={clsx(rowClass, 'w-fit cursor-pointer outline-none')} aria-label={`Options for ${item.name}'s comment`}>
+        {bubble}
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="start"
+          sideOffset={4}
+          className="z-[95] min-w-[170px] rounded-xl border border-[#720A0B]/30 bg-[#FAF6E3] p-1.5 shadow-lg"
+        >
+          <DropdownMenu.Item onSelect={() => onAction('report')} className={menuItem}>
+            <Flag className="h-4 w-4" aria-hidden />
+            Report comment
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator className="my-1 border-t border-dashed border-[#720A0B]/30" />
+          <DropdownMenu.Item onSelect={() => onAction('block')} className={clsx(menuItem, 'text-[#B5655F]')}>
+            <Ban className="h-4 w-4" aria-hidden />
+            Block {item.name}
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }
 

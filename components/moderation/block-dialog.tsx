@@ -24,6 +24,8 @@ export function BlockDialog({
     mutationFn: () => backend.post(`/blocks/${encodeURIComponent(user.id)}`),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: BLOCKS_KEY });
+      // The backend hides blocked people's reviews (the app refetches them too).
+      void queryClient.invalidateQueries({ queryKey: ['astrologers', 'reviews'] });
       onOpenChange(false);
       onBlocked?.();
     },

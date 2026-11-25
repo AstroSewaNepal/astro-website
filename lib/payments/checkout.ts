@@ -3,6 +3,7 @@
 // too, via the packages/initiate routes), so a closed tab or another device never loses what was bought.
 
 import type { LiveCallType } from '@/lib/live/messages';
+import type { RemedyCheckout } from '@/lib/remedies/cart';
 
 export type Gateway = 'esewa' | 'fonepay' | 'card';
 
@@ -33,7 +34,17 @@ export type Purchase =
       callType: LiveCallType;
       /** The price the viewer was shown (queue status callSlotPrice.amount); the server refuses any other. */
       amount: number;
+    }
+  | {
+      /** The buyer's remedy cart (doc 11): the server prices it and places the order once paid. */
+      kind: 'remedy';
+      details: RemedyCheckout;
     };
+
+/** The astrologer a purchase is for ('' for a remedy order: a cart can hold several sellers). */
+export function purchaseAstrologerId(purchase: Purchase): string {
+  return purchase.kind === 'remedy' ? '' : purchase.astrologerId;
+}
 
 export type StartRequest = { path: string; body: Record<string, unknown> };
 
@@ -77,9 +88,18 @@ export function startRequest(
         },
       };
     case 'gift': {
-      const gift = { giftId: purchase.giftId, astrologerId: purchase.astrologerId, ...country, ...liveGiftFields(purchase.live) };
-      if (gateway === 'card') return { path: '/subscription/payments/hbl/gifts/initiate', body: gift };
-      return { path: `/gifts/payments/${gateway}/initiate`, body: { ...gift, serverDelivery: true } };
+      const gift = {
+        giftId: purchase.giftId,
+        astrologerId: purchase.astrologerId,
+        ...country,
+        ...liveGiftFields(purchase.live),
+      };
+      if (gateway === 'card')
+        return { path: '/subscription/payments/hbl/gifts/initiate', body: gift };
+      return {
+        path: `/gifts/payments/${gateway}/initiate`,
+        body: { ...gift, serverDelivery: true },
+      };
     }
     case 'live-call': {
       // One body for all three gateways (InitiateLiveCallSlotPaymentDto). The server seats the buyer in the queue
@@ -101,6 +121,24 @@ export function startRequest(
         },
       };
     }
+    case 'remedy':
+      // Priced from the server's cart (when each item was added), so no country here. eSewa refuses an order id
+      // it has seen, and Fonepay hands back the old QR (and old amount) for one: a fresh id per attempt.
+      if (gateway === 'card') {
+        return {
+          path: '/subscription/payments/hbl/remedies/initiate',
+          body: { ...purchase.details },
+        };
+      }
+      return {
+        path: `/remedies/payments/${gateway}/initiate`,
+        body: {
+          purchaseOrderId: newOrderId('REM'),
+          purchaseOrderName: 'Remedy Order',
+          ...purchase.details,
+          serverDelivery: true,
+        },
+      };
   }
 }
 
@@ -108,7 +146,9 @@ export function startRequest(
  * A gift from a live stream, for every gift route (eSewa, Fonepay, card, free): the server announces it in the room
  * (`gift:sent`) and returns eSewa/card buyers to that stream.
  */
-export function liveGiftFields(live: { roomName: string; roomId: string } | undefined): Record<string, string> {
+export function liveGiftFields(
+  live: { roomName: string; roomId: string } | undefined,
+): Record<string, string> {
   return live ? { returnContext: 'live', roomName: live.roomName, roomId: live.roomId } : {};
 }
 
@@ -182,11 +222,11 @@ export type FailureReason =
 
 export type PurchaseStatus = {
   status: PaymentState | string;
-  purpose: Purchase['kind'] | 'remedy' | 'live-call' | null;
+  purpose: Purchase['kind'] | null;
   fulfilment: {
     status: 'running' | 'done' | 'failed' | 'awaiting-slot';
     resultId: string | null;
-    /** Live calls: the queue position the buyer got. */
+    /** Live calls: the queue position the buyer got. Remedies: the order's tracking number. */
     reference: string | null;
     message: string | null;
   } | null;
@@ -201,7 +241,8 @@ export function readStatus(body: unknown): PurchaseStatus {
     purpose: (text(raw.purpose) as PurchaseStatus['purpose']) ?? null,
     fulfilment: f
       ? {
-          status: (text(f.status) as NonNullable<PurchaseStatus['fulfilment']>['status']) ?? 'running',
+          status:
+            (text(f.status) as NonNullable<PurchaseStatus['fulfilment']>['status']) ?? 'running',
           resultId: text(f.resultId),
           reference: text(f.reference),
           message: text(f.message),
@@ -216,7 +257,13 @@ export function readStatus(body: unknown): PurchaseStatus {
  * couldn't be delivered (support refunds) · awaitingSlot: a paid live call whose queue was full, seated by the
  * server when a spot opens · notPaid: cancelled, failed or expired · waiting: not settled yet.
  */
-export type Outcome = 'done' | 'processing' | 'awaitingSlot' | 'deliveryFailed' | 'notPaid' | 'waiting';
+export type Outcome =
+  | 'done'
+  | 'processing'
+  | 'awaitingSlot'
+  | 'deliveryFailed'
+  | 'notPaid'
+  | 'waiting';
 
 const NOT_PAID = new Set(['Expired', 'User canceled', 'Refunded', 'Partially Refunded']);
 
@@ -260,7 +307,9 @@ export function localGatewaysTake(currency: string | null | undefined): boolean 
  * `pidx` (gifts); cards say `type=hbl`. Fonepay never redirects, our own QR screen links here with `type=fonepay`.
  * Everything in the URL is only a hint: the page asks the server what really happened.
  */
-export function returnedPayment(params: URLSearchParams): { pidx: string; gateway: Gateway } | null {
+export function returnedPayment(
+  params: URLSearchParams,
+): { pidx: string; gateway: Gateway } | null {
   const pidx = params.get('pidx') || params.get('transaction_uuid');
   if (!pidx || !/^[A-Za-z0-9_-]{4,100}$/.test(pidx)) return null;
   const type = params.get('type');

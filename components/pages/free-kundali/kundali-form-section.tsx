@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import clsx from 'clsx';
 import {
   EMPTY_BIRTH_TIME,
@@ -23,6 +24,17 @@ import { ServiceReport } from '@/components/images/services';
 import { fetchFreeKundaliBundle } from '@/lib/vedastro/fetch-free-kundali-bundle';
 import { FreeKundaliGoogleSignIn } from '@/components/pages/free-kundali/free-kundali-google-sign-in';
 import DatePickerDropdown from '@/components/pages/free-kundali/date-picker-dropdown';
+import { useBackendClient } from '@/hooks/use-backend-client';
+import {
+  REPORT_API,
+  reportPath,
+  type KundaliSaveBody,
+  type PersonPrefill,
+  type SaveResponse,
+} from '@/lib/astro-reports/reports';
+import { accountKind } from '@/lib/auth/account';
+import type { FreeKundaliBundle } from '@/lib/vedastro/fetch-free-kundali-bundle';
+import type { StoredKundaliResult } from '@/lib/vedastro/stored-kundali-result';
 
 const fieldIconClass = 'w-5 h-5 md:w-6 md:h-6 shrink-0 text-primary';
 const cardShell = clsx(
@@ -135,22 +147,34 @@ export type KundaliFormSectionProps = {
   defaultFullName?: string;
   /** Set when redirected back from a failed OAuth attempt. */
   oauthError?: boolean;
+  /** Editing a saved Astro Report: the form starts from it and saves over it; `onSaved` drops cached copies. */
+  edit?: { id: string; prefill: PersonPrefill; onSaved?: () => void };
 };
 
 const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
   defaultFullName,
   oauthError = false,
+  edit,
 }) => {
   const router = useRouter();
+  const backend = useBackendClient();
+  const { data: session } = useSession();
+  // Logged-in clients get every kundali saved to their Astro Reports, as in the app.
+  const saveToAccount = accountKind(session?.user?.roles) === 'client';
+  const prefill = edit?.prefill;
   const [unknownBirthTime, setUnknownBirthTime] = useState(false);
-  const [birthTimeParts, setBirthTimeParts] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
+  const [birthTimeParts, setBirthTimeParts] = useState<BirthTimeParts>(
+    prefill?.time ?? EMPTY_BIRTH_TIME,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStage, setSubmitStage] = useState<'idle' | 'generating' | 'almost-complete'>('idle');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>(EMPTY_ERRORS);
-  const [dateOfBirthValue, setDateOfBirthValue] = useState<string>('');
+  const [dateOfBirthValue, setDateOfBirthValue] = useState<string>(prefill?.dateOfBirth ?? '');
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [birthPlaceValue, setBirthPlaceValue] = useState('');
+  const [birthPlaceValue, setBirthPlaceValue] = useState(prefill?.birthPlace ?? '');
   const [selectedBirthCity, setSelectedBirthCity] = useState<CitySearchResult | null>(null);
+  // The saved report's coordinates and offset, used until the place is typed again.
+  const [savedGeo, setSavedGeo] = useState(prefill?.geo ?? null);
 
   const nameRegex = /^[A-Za-z ]+$/;
   const placeRegex = /^[A-Za-z\s,.'-]+$/;
@@ -245,6 +269,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
         lon = geo.lon;
         offset = geo.timezoneOffset;
         location = geo.displayName;
+      } else if (savedGeo) {
+        ({ lat, lon, offset, location } = savedGeo);
       } else {
         const selectedGeo = await geocodePlace(birthPlace);
         lat = selectedGeo.lat;
@@ -252,33 +278,52 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
         offset = getLocalOffset(parsedDate!);
       }
 
-      const query = new URLSearchParams({
+      const body: KundaliSaveBody = {
         lat,
         lon,
         date: parsedDate!,
         time: parsedTime!,
         offset,
         location,
-      });
+      };
 
-      const bundle = await fetchFreeKundaliBundle(query);
-      if (typeof window !== 'undefined') {
-        window.sessionStorage.setItem(
-          'freeKundaliResult',
-          JSON.stringify({
-            fullName,
-            birthPlace,
-            dateOfBirth: parsedDate,
-            birthTime: parsedTime,
-            gender,
-            latitude: lat,
-            longitude: lon,
-            payload: { calculator: 'AllTimeData', payload: bundle.panchanga },
-            planetRows: bundle.planetRows,
-            doshas: bundle.doshas,
-          }),
-        );
+      if (edit) {
+        await backend.patch<SaveResponse<FreeKundaliBundle>>(`${REPORT_API.kundali}/${edit.id}`, {
+          ...body,
+          fullName,
+          gender,
+        });
+        edit.onSaved?.();
+        router.push(reportPath('kundali', edit.id));
+        return;
       }
+
+      let bundle: FreeKundaliBundle;
+      let savedId: string | undefined;
+      if (saveToAccount) {
+        const saved = await backend.post<SaveResponse<FreeKundaliBundle>>(
+          `${REPORT_API.kundali}/save`,
+          { ...body, fullName, gender },
+        );
+        bundle = saved.bundle;
+        savedId = saved.savedId;
+      } else {
+        bundle = await fetchFreeKundaliBundle(new URLSearchParams(body));
+      }
+      const stored: StoredKundaliResult = {
+        fullName,
+        birthPlace,
+        dateOfBirth: parsedDate!,
+        birthTime: parsedTime!,
+        gender,
+        latitude: lat,
+        longitude: lon,
+        payload: { calculator: 'AllTimeData', payload: bundle.panchanga },
+        planetRows: bundle.planetRows,
+        doshas: bundle.doshas,
+        savedId,
+      };
+      window.sessionStorage.setItem('freeKundaliResult', JSON.stringify(stored));
       router.push('/free-kundali/result');
     } catch (submitError) {
       if (
@@ -307,6 +352,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
             {/* Right Card - Mobile Only */}
             <div
               className={clsx(
+                edit && '!hidden',
                 'w-[calc(100%+2rem)] md:w-[calc(100%+4rem)] h-[392px] box-border rounded-[40px] border border-primary bg-primary text-[#f7e9dd] p-4',
                 'flex flex-col items-center justify-center text-center gap-4 shadow-[0_12px_34px_rgba(74,20,15,0.14)]',
                 'lg:hidden mt-6',
@@ -329,15 +375,20 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
 
             {/* Mobile Title */}
             <h2 className="md:hidden text-left w-full self-start font-sahitya text-primary text-[22px] sm:text-[28px] leading-[32px] font-bold mt-10 mb-4">
-              Generate Your Free Kundali
+              {edit ? 'Edit Kundali' : 'Generate Your Free Kundali'}
             </h2>
 
             {/* Tablet + Desktop Title */}
             <h2 className="hidden md:block font-sahitya text-left text-primary text-[28px] leading-[38px] tracking-[0] font-bold mt-6 mb-8 lg:mb-8">
-              Generate Your Free Kundali
+              {edit ? 'Edit Kundali' : 'Generate Your Free Kundali'}
             </h2>
 
-            <div className="flex flex-col lg:grid lg:grid-cols-2 lg:w-full gap-6 lg:gap-6">
+            <div
+              className={clsx(
+                'flex flex-col lg:w-full gap-6 lg:gap-6',
+                !edit && 'lg:grid lg:grid-cols-2',
+              )}
+            >
               {/* FORM */}
               <form
                 onSubmit={onSubmit}
@@ -382,7 +433,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                         id="kundali-full-name"
                         name="fullName"
                         type="text"
-                        defaultValue={defaultFullName}
+                        defaultValue={prefill?.fullName ?? defaultFullName}
                         placeholder="Enter name"
                         onInput={event => {
                           event.currentTarget.value = event.currentTarget.value.replace(
@@ -445,6 +496,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                       onChange={nextValue => {
                         setBirthPlaceValue(nextValue);
                         setSelectedBirthCity(null);
+                        setSavedGeo(null);
                         setFieldErrors(prev => ({ ...prev, birthPlace: undefined }));
                       }}
                       onCitySelect={city => {
@@ -486,7 +538,7 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                       <select
                         id="kundali-gender"
                         name="gender"
-                        defaultValue=""
+                        defaultValue={prefill?.gender ?? ''}
                         className="flex-1 min-w-0 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] outline-none cursor-pointer pr-10 appearance-none"
                       >
                         <option value="" disabled className="text-[#464646]">
@@ -534,7 +586,9 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                     ? submitStage === 'generating'
                       ? 'Generating your kundali…'
                       : 'Almost complete...'
-                    : 'Generate Now'}
+                    : edit
+                      ? 'Update'
+                      : 'Generate Now'}
                 </button>
 
                 {fieldErrors.general ? (
@@ -550,7 +604,8 @@ const KundaliFormSection: React.FC<KundaliFormSectionProps> = ({
                   cardShell,
                   'border border-primary bg-primary text-[#f7e9dd]',
                   'flex flex-col items-center justify-between text-center gap-6 shadow-[0_12px_34px_rgba(74,20,15,0.14)]',
-                  'w-full hidden lg:flex',
+                  'w-full hidden',
+                  !edit && 'lg:flex',
                 )}
               >
                 <div className="flex-1 flex flex-col items-center justify-center gap-6">

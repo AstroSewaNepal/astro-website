@@ -1,31 +1,14 @@
 'use client';
 
 import React, { useState, useSyncExternalStore } from 'react';
+import Link from 'next/link';
 import {
   NorthIndianOpenChartWithPlanets,
   OPEN_CHART_FRAME_CLASS,
 } from '@/components/pages/free-kundali/north-indian-open-chart';
 import DoshaRemediesSection from '@/components/pages/free-kundali/dosha-remedies-section';
-import {
-  DOSHA_DISPLAY_ORDER,
-  type AllDoshaResult,
-  type DoshaStrength,
-} from '@/lib/vedastro/dosha-types';
-
-type StoredKundaliResult = {
-  fullName: string;
-  birthPlace: string;
-  dateOfBirth: string;
-  birthTime: string;
-  gender?: string;
-  latitude?: string;
-  longitude?: string;
-  payload: unknown;
-  /** Cached sidereal planet table rows (from VedAstro AllPlanetData). */
-  planetRows?: string[][];
-  /** Seven-dosha engine output from GET /vedastro/dosha. */
-  doshas?: AllDoshaResult;
-};
+import { DOSHA_DISPLAY_ORDER, type DoshaStrength } from '@/lib/vedastro/dosha-types';
+import type { StoredKundaliResult } from '@/lib/vedastro/stored-kundali-result';
 
 function toTitleCase(value: string | undefined): string {
   if (!value) return '-';
@@ -344,12 +327,20 @@ function freeKundaliTabButtonClass(active: boolean): string {
   } hover:bg-[#720A0B] hover:text-white`;
 }
 
-const KundaliResultSection: React.FC = () => {
-  const result = useSyncExternalStore(
+type KundaliResultSectionProps = {
+  /** A saved report from Astro Reports; without it the page shows what the form just made (sessionStorage). */
+  result?: StoredKundaliResult | null;
+};
+
+const KundaliResultSection: React.FC<KundaliResultSectionProps> = ({ result: given }) => {
+  const stored = useSyncExternalStore(
     subscribeFreeKundaliResult,
     readFreeKundaliResult,
     () => null,
   );
+  const result = given ?? stored;
+  // Fresh from the form and saved to the account (logged-in clients): point at where it can be found again.
+  const justSaved = !given && !!result?.savedId;
   const [activeTab, setActiveTab] = useState<'basic' | 'dosha' | 'planets' | 'lagna'>('basic');
 
   const planetHouseLines =
@@ -419,6 +410,15 @@ const KundaliResultSection: React.FC = () => {
         <p className="mt-2 font-mukta text-[#141414] text-base md:text-[22px] leading-snug">
           Discover your detailed Janam Kundli instantly
         </p>
+        {justSaved ? (
+          <p className="mt-3 font-mukta text-base text-[#141414]">
+            Saved to your{' '}
+            <Link href="/client/reports" className="font-semibold text-primary underline">
+              Astro Reports
+            </Link>
+            .
+          </p>
+        ) : null}
         {result?.planetRows && result.planetRows.length > 0 ? (
           <div className={`mt-4 rotate-0 opacity-100 ${OPEN_CHART_FRAME_CLASS}`}>
             <NorthIndianOpenChartWithPlanets

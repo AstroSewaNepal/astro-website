@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { Check, ChevronDown, ChevronUp, Gift, Heart, Loader2, Lock, Phone, Share2, Volume2, X } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, EllipsisVertical, Gift, Heart, Loader2, Lock, Phone, Share2, Volume2, X } from 'lucide-react';
 
 import { ReviewDialog } from '@/components/booking/review-dialog';
 import { useCalls } from '@/components/call/call-provider';
@@ -15,6 +15,7 @@ import { LiveChatFeed, LiveComposer } from '@/components/live/live-chat';
 import { LiveGiftFloats } from '@/components/live/live-gift-floats';
 import { LiveGiftSheet } from '@/components/live/live-gift-sheet';
 import { LIVE_ROOMS_KEY } from '@/components/live/live-feed';
+import { ModerationMenu } from '@/components/moderation/moderation-menu';
 import {
   LiveCallControls,
   LiveEndCallDialog,
@@ -37,6 +38,7 @@ import {
 } from '@/lib/live/call-slot';
 import { liveGiftResult } from '@/lib/live/gifts';
 import { takeLiveReturnNote } from '@/lib/live/return-note';
+import { BLOCKED_IDS_KEY, withoutBlockedComments } from '@/lib/moderation';
 import { compactCount, formatCallSlotPrice, LIVE_FEED_POLL_MS, livePath, stableRooms } from '@/lib/live/feed';
 import type { LiveSession, LiveState } from '@/lib/live/session';
 import { callBannerText, countdownTone, feedItems, formatCountdown, neighbours, swipeDirection, type SwipePoint } from '@/lib/live/ui';
@@ -73,6 +75,13 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
     refetchInterval: LIVE_FEED_POLL_MS,
     staleTime: 10_000,
   });
+  // People either side blocked: their comments are hidden here (the chat goes through LiveKit, not the backend).
+  const blocked = useQuery({
+    queryKey: BLOCKED_IDS_KEY,
+    queryFn: () => backend.get<string[]>('/blocks/ids'),
+    staleTime: 60_000,
+  });
+  const blockedIds = useMemo(() => new Set(Array.isArray(blocked.data) ? blocked.data : []), [blocked.data]);
   const [order, setOrder] = useState<{ source: LiveRoomSummary[] | undefined; shown: LiveRoomSummary[] }>({
     source: undefined,
     shown: [],
@@ -271,6 +280,12 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
         </p>
       </div>
       <FollowButton astrologerId={current.astrologerId} large />
+      {state?.phase !== 'in-call' ? (
+        <StreamOptions
+          room={current}
+          triggerClassName="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full border border-[#BE7B71] text-primary"
+        />
+      ) : null}
     </div>
   ) : null;
 
@@ -346,7 +361,7 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
           <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col gap-2 p-3 pb-[max(12px,env(safe-area-inset-bottom))] lg:hidden">
             <div className="flex items-end gap-2">
               <div className="pointer-events-auto min-w-0 flex-1">
-                {state ? <LiveChatFeed items={feedItems(state.messages, state.gifts, astrologerId)} className="max-h-[38vh]" /> : null}
+                {state ? <LiveChatFeed items={withoutBlockedComments(feedItems(state.messages, state.gifts, astrologerId), blockedIds)} className="max-h-[38vh]" roomName={current?.roomName} /> : null}
               </div>
               <div className="pointer-events-auto">
                 {session && state ? (
@@ -395,7 +410,7 @@ export function LiveViewer({ astrologerId: initialId, me }: { astrologerId: stri
               {state ? <span className="font-app text-[13px] text-[#6d6d6d]">{compactCount(state.viewerCount)} watching</span> : null}
             </div>
             <div className="min-h-0 flex-1 p-3">
-              {state ? <LiveChatFeed items={feedItems(state.messages, state.gifts, astrologerId)} className="h-full" tone="light" /> : null}
+              {state ? <LiveChatFeed items={withoutBlockedComments(feedItems(state.messages, state.gifts, astrologerId), blockedIds)} className="h-full" tone="light" roomName={current?.roomName} /> : null}
             </div>
             <div className="border-t border-[#BE7B71]/40 p-3">
               <LiveComposer onSend={text => session?.sendChat(text) ?? false} disabled={!state || ended} tone="light" />
@@ -682,6 +697,12 @@ function LiveHeader({ room, state, me, onClose }: { room: LiveRoomSummary; state
           </div>
           <FollowButton astrologerId={room.astrologerId} />
         </div>
+        {state?.phase !== 'in-call' ? (
+          <StreamOptions
+            room={room}
+            triggerClassName="pointer-events-auto flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black/50 text-white"
+          />
+        ) : null}
         <button
           type="button"
           onClick={onClose}
@@ -768,6 +789,24 @@ function FollowButton({ astrologerId, large = false }: { astrologerId: string; l
 }
 
 /** The app's LiveSlotCountdownPill: time left in the call slot, amber under five minutes, red under one. */
+/** The app's stream options (header ⋮): Report the live stream / Block the host. Blocking leaves the stream. */
+function StreamOptions({ room, triggerClassName }: { room: LiveRoomSummary; triggerClassName: string }) {
+  const router = useRouter();
+  return (
+    <ModerationMenu
+      report={{
+        title: 'Report live stream',
+        target: { targetType: 'LIVE_STREAM', targetId: room.roomName, reportedUserId: room.astrologerId, roomName: room.roomName },
+      }}
+      block={{ userId: room.astrologerId, name: room.astrologerName ?? undefined, onBlocked: () => router.push('/live') }}
+      label="Stream options"
+      triggerClassName={triggerClassName}
+    >
+      <EllipsisVertical className="h-5 w-5" aria-hidden />
+    </ModerationMenu>
+  );
+}
+
 function CountdownPill({ endsAt }: { endsAt: number }) {
   const [left, setLeft] = useState(() => Math.ceil((endsAt - Date.now()) / 1000));
   useEffect(() => {

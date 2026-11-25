@@ -513,12 +513,22 @@ function readKundaliMatchingResult(): StoredKundaliMatchingResult | null {
 
 const subscribeKundaliMatchingResult = () => () => {};
 
-const KundaliMatchingResultSection: React.FC = () => {
-  const result = useSyncExternalStore(
+type KundaliMatchingResultSectionProps = {
+  /** A saved report from Astro Reports; without it the page shows what the form just made (sessionStorage). */
+  result?: StoredKundaliMatchingResult | null;
+};
+
+const KundaliMatchingResultSection: React.FC<KundaliMatchingResultSectionProps> = ({
+  result: given,
+}) => {
+  const stored = useSyncExternalStore(
     subscribeKundaliMatchingResult,
     readKundaliMatchingResult,
     () => null,
   );
+  const result = given ?? stored;
+  // Fresh from the form and saved to the account (logged-in clients): point at where it can be found again.
+  const justSaved = !given && !!result?.savedId;
   const [activeTab, setActiveTab] = useState<KundaliMatchingTab>('basic');
 
   if (!result) {
@@ -594,6 +604,18 @@ const KundaliMatchingResultSection: React.FC = () => {
               View the compatibility analysis for both people, including Kuta Score, Guna Milan,
               Dosha findings, planetary details, and lagna chart insights.
             </p>
+            {justSaved ? (
+              <p className="mt-3 font-mukta text-base text-[#141414]">
+                Saved to your{' '}
+                <Link
+                  href="/client/reports?tab=match"
+                  className="font-semibold text-primary underline"
+                >
+                  Astro Reports
+                </Link>
+                .
+              </p>
+            ) : null}
           </div>
         </section>
 
