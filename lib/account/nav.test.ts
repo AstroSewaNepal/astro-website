@@ -24,6 +24,12 @@ describe('parentPage', () => {
   it('has no parent for first-level pages', () => {
     expect(parentPage('/client/settings')).toBeNull();
     expect(parentPage('/astrologers')).toBeNull();
+    expect(parentPage('/client/reports')).toBeNull();
+  });
+  it('sends a saved report back to its Astro Reports tab, and its edit form back to it', () => {
+    expect(parentPage('/client/reports/kundali/k1')).toBe('/client/reports');
+    expect(parentPage('/client/reports/match/m1')).toBe('/client/reports?tab=match');
+    expect(parentPage('/client/reports/match/m1/edit')).toBe('/client/reports/match/m1');
   });
 });
 
@@ -32,6 +38,7 @@ it('knows the public pages clients see in their shell', () => {
   expect(isClientShellPage('/live/abc')).toBe(true);
   expect(isClientShellPage('/astrologer-profile/abc')).toBe(true);
   expect(isClientShellPage('/payment/return')).toBe(true);
+  expect(isClientShellPage('/free-services')).toBe(true);
   expect(isClientShellPage('/astrologer')).toBe(false);
   expect(isClientShellPage('/astrologers-x')).toBe(false);
 });

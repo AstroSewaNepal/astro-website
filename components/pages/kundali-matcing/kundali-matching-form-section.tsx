@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import clsx from 'clsx';
 import { ServiceReport } from '@/components/images/services';
 import DatePickerDropdown from '@/components/pages/free-kundali/date-picker-dropdown';
@@ -20,7 +21,17 @@ import {
 import {
   bundleToStoredResult,
   fetchKundaliMatchingBundle,
+  type KundaliMatchingBundle,
+  type KundaliMatchingBundleQuery,
 } from '@/lib/vedastro/fetch-kundali-matching-bundle';
+import { useBackendClient } from '@/hooks/use-backend-client';
+import {
+  REPORT_API,
+  reportPath,
+  type PersonPrefill,
+  type SaveResponse,
+} from '@/lib/astro-reports/reports';
+import { accountKind } from '@/lib/auth/account';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -212,6 +223,7 @@ type InputPillProps = {
   className?: string;
   disabled?: boolean;
   value?: string;
+  defaultValue?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onInput?: React.FormEventHandler<HTMLInputElement>;
   error?: string;
@@ -227,6 +239,7 @@ const InputPill = ({
   className,
   disabled,
   value,
+  defaultValue,
   onChange,
   onInput,
   error,
@@ -251,6 +264,7 @@ const InputPill = ({
         title={placeholder}
         disabled={disabled}
         value={value}
+        defaultValue={defaultValue}
         onChange={onChange}
         onInput={onInput}
         className="flex-1 min-w-0 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] placeholder:text-[#464646] outline-none disabled:opacity-50 disabled:cursor-not-allowed"
@@ -269,6 +283,7 @@ type SelectPillProps = {
   name: string;
   className?: string;
   error?: string;
+  defaultValue?: string;
 };
 
 const DatePickerPill = ({
@@ -323,7 +338,7 @@ const DatePickerPill = ({
   </div>
 );
 
-const SelectPill = ({ id, label, name, className, error }: SelectPillProps) => (
+const SelectPill = ({ id, label, name, className, error, defaultValue = '' }: SelectPillProps) => (
   <div className={['block', className].filter(Boolean).join(' ')}>
     <label htmlFor={id} className="mb-2 block font-mukta text-sm text-Trinary">
       {label}
@@ -339,7 +354,7 @@ const SelectPill = ({ id, label, name, className, error }: SelectPillProps) => (
       <select
         id={id}
         name={name}
-        defaultValue=""
+        defaultValue={defaultValue}
         className="flex-1 min-w-0 h-full border-none bg-transparent font-mukta text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#2f2f2f] outline-none cursor-pointer pr-10 appearance-none"
       >
         <option value="" disabled className="text-[#464646]">
@@ -405,6 +420,8 @@ type PersonSectionProps = {
   birthPlaceValue: string;
   onBirthPlaceChange: (value: string) => void;
   onBirthCitySelect: (city: CitySearchResult | null) => void;
+  /** Editing a saved match: the name and gender start from it. */
+  prefill?: PersonPrefill;
 };
 
 const PersonSection = ({
@@ -423,6 +440,7 @@ const PersonSection = ({
   birthPlaceValue,
   onBirthPlaceChange,
   onBirthCitySelect,
+  prefill,
 }: PersonSectionProps) => (
   <div className="space-y-3 md:space-y-3.5">
     <SectionPillHeader
@@ -446,6 +464,7 @@ const PersonSection = ({
       label="Enter full name"
       name={`${prefix}FullName`}
       placeholder="Full Name"
+      defaultValue={prefill?.fullName}
       onInput={e => {
         e.currentTarget.value = e.currentTarget.value.replace(/[^A-Za-z\s]/g, '');
       }}
@@ -500,6 +519,7 @@ const PersonSection = ({
         label="Select gender"
         name={`${prefix}Gender`}
         error={errors.gender}
+        defaultValue={prefill?.gender}
       />
     </div>
 
@@ -520,22 +540,44 @@ const PersonSection = ({
 
 const EMPTY_ERRORS: FormErrors = { man: {}, woman: {} };
 
-const KundaliMatchingFormSection: React.FC = () => {
+type KundaliMatchingFormSectionProps = {
+  /** Editing a saved Astro Report: the form starts from it and saves over it; `onSaved` drops cached copies. */
+  edit?: {
+    id: string;
+    prefill: { man: PersonPrefill; woman: PersonPrefill };
+    onSaved?: () => void;
+  };
+};
+
+const KundaliMatchingFormSection: React.FC<KundaliMatchingFormSectionProps> = ({ edit }) => {
   const router = useRouter();
+  const backend = useBackendClient();
+  const { data: session } = useSession();
+  // Logged-in clients get every match saved to their Astro Reports, as in the app.
+  const saveToAccount = accountKind(session?.user?.roles) === 'client';
+  const manPrefill = edit?.prefill.man;
+  const womanPrefill = edit?.prefill.woman;
 
   const [manUnknownTime, setManUnknownTime] = useState(false);
   const [womanUnknownTime, setWomanUnknownTime] = useState(false);
-  const [manBirthTime, setManBirthTime] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
-  const [womanBirthTime, setWomanBirthTime] = useState<BirthTimeParts>(EMPTY_BIRTH_TIME);
-  const [manDateOfBirth, setManDateOfBirth] = useState('');
-  const [womanDateOfBirth, setWomanDateOfBirth] = useState('');
+  const [manBirthTime, setManBirthTime] = useState<BirthTimeParts>(
+    manPrefill?.time ?? EMPTY_BIRTH_TIME,
+  );
+  const [womanBirthTime, setWomanBirthTime] = useState<BirthTimeParts>(
+    womanPrefill?.time ?? EMPTY_BIRTH_TIME,
+  );
+  const [manDateOfBirth, setManDateOfBirth] = useState(manPrefill?.dateOfBirth ?? '');
+  const [womanDateOfBirth, setWomanDateOfBirth] = useState(womanPrefill?.dateOfBirth ?? '');
   const [isManDatePickerOpen, setIsManDatePickerOpen] = useState(false);
   const [isWomanDatePickerOpen, setIsWomanDatePickerOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStage, setSubmitStage] = useState<'idle' | 'generating' | 'almost-complete'>('idle');
   const [formErrors, setFormErrors] = useState<FormErrors>(EMPTY_ERRORS);
-  const [manBirthPlace, setManBirthPlace] = useState('');
-  const [womanBirthPlace, setWomanBirthPlace] = useState('');
+  const [manBirthPlace, setManBirthPlace] = useState(manPrefill?.birthPlace ?? '');
+  const [womanBirthPlace, setWomanBirthPlace] = useState(womanPrefill?.birthPlace ?? '');
+  // The saved report's coordinates and offsets, used until a place is typed again.
+  const [manSavedGeo, setManSavedGeo] = useState(manPrefill?.geo ?? null);
+  const [womanSavedGeo, setWomanSavedGeo] = useState(womanPrefill?.geo ?? null);
   const [manSelectedCity, setManSelectedCity] = useState<CitySearchResult | null>(null);
   const [womanSelectedCity, setWomanSelectedCity] = useState<CitySearchResult | null>(null);
 
@@ -665,7 +707,9 @@ const KundaliMatchingFormSection: React.FC = () => {
         birthPlace: string,
         dateOfBirth: string,
         selectedCity: CitySearchResult | null,
+        savedGeo: PersonPrefill['geo'],
       ) => {
+        if (!selectedCity && savedGeo) return savedGeo;
         if (selectedCity) {
           const geo = cityToGeocodeResult(selectedCity);
           return {
@@ -685,8 +729,8 @@ const KundaliMatchingFormSection: React.FC = () => {
       };
 
       const [manGeo, womanGeo] = await Promise.all([
-        resolvePersonGeo(man.birthPlace, man.dateOfBirth, manSelectedCity),
-        resolvePersonGeo(woman.birthPlace, woman.dateOfBirth, womanSelectedCity),
+        resolvePersonGeo(man.birthPlace, man.dateOfBirth, manSelectedCity, manSavedGeo),
+        resolvePersonGeo(woman.birthPlace, woman.dateOfBirth, womanSelectedCity, womanSavedGeo),
       ]);
 
       const manPerson = {
@@ -708,7 +752,7 @@ const KundaliMatchingFormSection: React.FC = () => {
         longitude: womanGeo.lon,
       };
 
-      const bundle = await fetchKundaliMatchingBundle({
+      const query: KundaliMatchingBundleQuery = {
         manLat: manGeo.lat,
         manLon: manGeo.lon,
         manDate: man.dateOfBirth,
@@ -725,14 +769,35 @@ const KundaliMatchingFormSection: React.FC = () => {
         womanLocation: womanGeo.location,
         womanName: woman.fullName,
         womanGender: woman.gender,
-      });
+      };
 
-      if (typeof window !== 'undefined') {
-        window.sessionStorage.setItem(
-          'kundaliMatchingResult',
-          JSON.stringify(bundleToStoredResult(manPerson, womanPerson, bundle)),
+      if (edit) {
+        await backend.patch<SaveResponse<KundaliMatchingBundle>>(
+          `${REPORT_API.match}/${edit.id}`,
+          query,
         );
+        edit.onSaved?.();
+        router.push(reportPath('match', edit.id));
+        return;
       }
+
+      let bundle: KundaliMatchingBundle;
+      let savedId: string | undefined;
+      if (saveToAccount) {
+        const saved = await backend.post<SaveResponse<KundaliMatchingBundle>>(
+          `${REPORT_API.match}/save`,
+          query,
+        );
+        bundle = saved.bundle;
+        savedId = saved.savedId;
+      } else {
+        bundle = await fetchKundaliMatchingBundle(query);
+      }
+
+      window.sessionStorage.setItem(
+        'kundaliMatchingResult',
+        JSON.stringify({ ...bundleToStoredResult(manPerson, womanPerson, bundle), savedId }),
+      );
 
       router.push('/kundali-matching/result');
     } catch (submitError) {
@@ -753,7 +818,7 @@ const KundaliMatchingFormSection: React.FC = () => {
   return (
     <section className="w-full mt-6 md:mt-8">
       <h2 className="w-full text-left font-sahitya font-bold text-[20px] leading-[38px] md:text-[28px] md:leading-[38px] text-primary mb-4 md:mb-6 opacity-100">
-        Enter Birth Details to Match Kundali
+        {edit ? 'Edit Match Making' : 'Enter Birth Details to Match Kundali'}
       </h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 md:gap-6 items-stretch">
@@ -761,7 +826,11 @@ const KundaliMatchingFormSection: React.FC = () => {
         <form
           onSubmit={onSubmit}
           noValidate
-          className="w-full max-w-[760px] mx-auto lg:mx-0 lg:max-w-none lg:col-span-8 rounded-[32.41px] md:rounded-[32px] border border-Trinary shadow-[0_10px_30px_rgba(97,21,8,0.08)] p-4 pb-[12.96px] md:p-6"
+          className={clsx(
+            'w-full max-w-[760px] mx-auto lg:mx-0 lg:max-w-none rounded-[32.41px] md:rounded-[32px] border border-Trinary shadow-[0_10px_30px_rgba(97,21,8,0.08)] p-4 pb-[12.96px] md:p-6',
+            // Editing has no side card, so the form takes the whole row.
+            edit ? 'lg:col-span-12' : 'lg:col-span-8',
+          )}
         >
           <div>
             <div className="relative grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
@@ -798,7 +867,9 @@ const KundaliMatchingFormSection: React.FC = () => {
                 }}
                 onBirthCitySelect={city => {
                   setManSelectedCity(city);
+                  if (!city) setManSavedGeo(null);
                 }}
+                prefill={manPrefill}
               />
 
               <div
@@ -844,7 +915,9 @@ const KundaliMatchingFormSection: React.FC = () => {
                 }}
                 onBirthCitySelect={city => {
                   setWomanSelectedCity(city);
+                  if (!city) setWomanSavedGeo(null);
                 }}
+                prefill={womanPrefill}
               />
             </div>
 
@@ -859,7 +932,9 @@ const KundaliMatchingFormSection: React.FC = () => {
                   ? submitStage === 'generating'
                     ? 'Generating…'
                     : 'Almost complete...'
-                  : 'Generate Now'}
+                  : edit
+                    ? 'Update'
+                    : 'Generate Now'}
               </button>
 
               {formErrors.general ? (
@@ -871,7 +946,10 @@ const KundaliMatchingFormSection: React.FC = () => {
           </div>
         </form>
 
-        <aside className="w-full max-w-[398px] h-[392px] mx-auto lg:mx-0 lg:max-w-none lg:h-auto lg:col-span-4 rounded-[40px] md:rounded-[32px] border border-primary bg-primary text-secondary shadow-[0_12px_34px_rgba(97,21,8,0.22)] p-4 md:p-7 lg:pt-8 lg:pb-6 flex flex-col items-center justify-center lg:justify-between gap-4 md:gap-6 lg:gap-4">
+        <aside
+          hidden={!!edit}
+          className="w-full max-w-[398px] h-[392px] mx-auto lg:mx-0 lg:max-w-none lg:h-auto lg:col-span-4 rounded-[40px] md:rounded-[32px] border border-primary bg-primary text-secondary shadow-[0_12px_34px_rgba(97,21,8,0.22)] p-4 md:p-7 lg:pt-8 lg:pb-6 flex flex-col items-center justify-center lg:justify-between gap-4 md:gap-6 lg:gap-4"
+        >
           <div className="hidden lg:block lg:h-2" />
           <div className="flex flex-col items-center gap-4 lg:gap-6">
             <div
@@ -892,7 +970,10 @@ const KundaliMatchingFormSection: React.FC = () => {
             </h3>
           </div>
 
-          <FreeKundaliGoogleSignIn buttonClassName="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-[#f8f1e7] px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60" />
+          <FreeKundaliGoogleSignIn
+            tab="match"
+            buttonClassName="inline-flex items-center justify-center gap-2 w-full h-[60px] rounded-full border border-[#e9d6cb] bg-[#f8f1e7] px-6 py-3 font-raleway text-[20px] font-semibold leading-[26px] tracking-[0] text-primary transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+          />
         </aside>
       </div>
     </section>

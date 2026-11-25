@@ -35,7 +35,10 @@ export const CityAutocompleteInput = ({
   const [activeIndex, setActiveIndex] = useState(-1);
   const [hasSearched, setHasSearched] = useState(false);
   const requestSequenceRef = useRef(0);
-  const skipNextSearchRef = useRef(false);
+  // A value that is not a search: a picked city's label, or the value the box starts with (a saved place in an
+  // Astro Report edit form, where open suggestions covered the form and the first tap on Update only closed them).
+  // Compared by value, not used up once, so React running the effect twice in development changes nothing.
+  const notSearchRef = useRef<string | null>(value);
   const rootRef = useRef<HTMLDivElement | null>(null);
   const listId = useId();
 
@@ -48,10 +51,8 @@ export const CityAutocompleteInput = ({
       return;
     }
 
-    if (skipNextSearchRef.current) {
-      skipNextSearchRef.current = false;
-      return;
-    }
+    if (notSearchRef.current !== null && value === notSearchRef.current) return;
+    notSearchRef.current = null;
 
     const query = value.trim();
     if (query.length < 2) {
@@ -100,7 +101,7 @@ export const CityAutocompleteInput = ({
   }, []);
 
   const selectCity = (city: CitySearchResult) => {
-    skipNextSearchRef.current = true;
+    notSearchRef.current = formatCityLabel(city);
     onChange(formatCityLabel(city));
     onCitySelect(city);
     setSuggestions([]);

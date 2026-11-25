@@ -62,7 +62,7 @@ const c = {
   following: { label: 'My Following', href: '/client/following', icon: UsersRound },
   payments: { label: 'My Payments', href: '/client/payments', icon: Wallet },
   reports: { label: 'Astro Reports', href: '/client/reports', icon: ScrollText },
-  freeServices: { label: 'Free Services', href: '/free-services', icon: CalendarCheck, soon: true },
+  freeServices: { label: 'Free Services', href: '/free-services', icon: CalendarCheck },
   support: { label: 'Customer Support', href: '/client/support', icon: Headset },
   settings: { label: 'Settings', href: '/client/settings', icon: Settings },
 } satisfies Record<string, AccountNavItem>;
@@ -127,6 +127,7 @@ export function isAccountPage(pathname: string | null): boolean {
  */
 // /payment: the return page after a gateway (logged-in clients only).
 const CLIENT_SHELL_PAGES = [
+  '/free-services',
   '/astrologers',
   '/astrologer-profile',
   '/payment',
@@ -155,6 +156,11 @@ const PARENT_PAGES: {
   { pattern: /^\/remedies\/[^/]+$/, parent: () => '/remedies' },
   { pattern: /^\/remedy\/[^/]+$/, parent: () => '/remedies' },
   { pattern: /^\/client\/cart$/, parent: () => '/remedies' },
+  // A saved report goes back to its tab of Astro Reports (its edit form goes back to it, one level up).
+  {
+    pattern: /^\/client\/reports\/(kundali|match)\/[^/]+$/,
+    parent: m => (m[1] === 'match' ? '/client/reports?tab=match' : '/client/reports'),
+  },
   {
     pattern: /^(\/astrologer-profile\/[^/]+)\/schedule$/,
     // Booking from a plan and moving a booking both start on My Consultations.
