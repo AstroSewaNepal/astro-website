@@ -18,6 +18,7 @@ import {
   type MeResponse,
 } from '@/lib/account/profile';
 import { COUNTRIES } from '@/lib/data/countries';
+import { cn } from '@/lib/utils';
 import type { Purchase } from '@/lib/payments/checkout';
 import {
   CART_QUERY_KEY,
@@ -395,7 +396,8 @@ export function RemedyCart() {
                 aria-label="Country code"
                 value={form.countryCode}
                 onChange={e => set('countryCode')(e.target.value)}
-                className={clsx(field, 'h-[48px] w-[112px] shrink-0 appearance-none')}
+                // cn, not clsx: the field's w-full must give way to the fixed width, or the phone input is pushed off-screen.
+                className={cn(field, 'h-[48px] w-[112px] shrink-0 appearance-none')}
               >
                 {COUNTRIES.map(c => (
                   <option key={`${c.code}-${c.dialCode}`} value={c.dialCode}>
@@ -412,7 +414,7 @@ export function RemedyCart() {
                 value={form.phone}
                 onChange={e => set('phone')(e.target.value.replace(/\D/g, ''))}
                 placeholder="Phone"
-                className={clsx(field, 'h-[48px] min-w-0 flex-1')}
+                className={cn(field, 'h-[48px] min-w-0 flex-1')}
               />
             </div>
             <FieldError text={errors.countryCode ?? errors.phone} />
