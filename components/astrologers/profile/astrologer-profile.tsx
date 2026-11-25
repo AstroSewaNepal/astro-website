@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Award,
@@ -21,6 +22,7 @@ import { GiftsSection } from '@/components/astrologers/profile/gifts-section';
 import { PhotoGallery } from '@/components/astrologers/profile/photo-gallery';
 import { RatingsSummary, ReviewsList } from '@/components/astrologers/profile/profile-reviews';
 import { VerifiedBadge } from '@/components/astrologers/verified-badge';
+import { ModerationMenu, useCanModerate } from '@/components/moderation/moderation-menu';
 import { AstrologerImage } from '@/components/images';
 import type { Astrologer } from '@/components/pages/landing/talk-to-our-astrologer/types';
 import {
@@ -146,6 +148,9 @@ function HeaderCard({
   astrologerId: string;
   name: string;
 }) {
+  const router = useRouter();
+  // The ⋮ menu adds a third button to the top-right group: keep the name clear of it.
+  const withMenu = useCanModerate(astrologerId);
   const photo =
     astrologer.user?.profilePicture?.url || astrologer.user?.profilePicture?.thumbnail?.url;
   const tier = tierLabel(astrologer.tier?.name);
@@ -210,7 +215,12 @@ function HeaderCard({
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 sm:pr-[170px]">
+          <div
+            className={clsx(
+              'flex items-center gap-2',
+              withMenu ? 'sm:pr-[225px]' : 'sm:pr-[170px]',
+            )}
+          >
             <h1 className="min-w-0 overflow-x-auto whitespace-nowrap font-app text-[20px] font-semibold leading-tight text-[#4a1a1a] [scrollbar-width:none] sm:text-[24px] lg:overflow-visible lg:whitespace-normal [&::-webkit-scrollbar]:hidden">
               {name}
             </h1>
@@ -243,6 +253,20 @@ function HeaderCard({
       <div className="mt-5 flex gap-3 sm:absolute sm:right-5 sm:top-5 sm:mt-0">
         <FollowButton astrologerId={astrologerId} />
         <ShareButton astrologerId={astrologerId} name={name} />
+        {/* The app's header ⋮: Report / Block (logged in, not on your own profile). */}
+        <ModerationMenu
+          report={{
+            title: 'Report astrologer',
+            target: {
+              targetType: 'ASTROLOGER',
+              targetId: astrologerId,
+              reportedUserId: astrologerId,
+            },
+          }}
+          block={{ userId: astrologerId, name, onBlocked: () => router.push('/astrologers') }}
+          label="More options"
+          triggerClassName="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full border border-[#BE7B71] text-primary"
+        />
       </div>
     </section>
   );

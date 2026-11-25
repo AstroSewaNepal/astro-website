@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { blockConfirmText, REPORT_REASONS, reportBody, reportProblem } from '@/lib/moderation';
+import {
+  blockConfirmText,
+  REPORT_REASONS,
+  reportBody,
+  reportProblem,
+  withoutBlockedComments,
+} from '@/lib/moderation';
 
 describe('reportProblem', () => {
   it('needs a reason', () => {
@@ -54,4 +60,28 @@ it('lists the app reasons with "Something else" last', () => {
 it('names who is blocked', () => {
   expect(blockConfirmText('Rohan').title).toBe('Block Rohan?');
   expect(blockConfirmText(' ').title).toBe('Block this user?');
+});
+
+describe('withoutBlockedComments', () => {
+  const items = [
+    { kind: 'comment', id: '1', senderId: 'a' },
+    { kind: 'comment', id: '2', senderId: 'b' },
+    { kind: 'gift', id: '3' },
+    { kind: 'comment', id: '4' },
+  ];
+  it('drops comments from blocked people only (gifts and unknown senders stay)', () => {
+    expect(withoutBlockedComments(items, new Set(['a'])).map(i => i.id)).toEqual(['2', '3', '4']);
+  });
+  it('keeps the same list when nobody is blocked', () => {
+    expect(withoutBlockedComments(items, new Set())).toBe(items);
+  });
+  it('sends live reports with their room', () => {
+    expect(
+      reportBody(
+        { targetType: 'LIVE_STREAM', targetId: 'room-1', reportedUserId: 'h', roomName: 'room-1' },
+        'SPAM',
+        '',
+      ),
+    ).toMatchObject({ roomName: 'room-1', reason: 'SPAM' });
+  });
 });

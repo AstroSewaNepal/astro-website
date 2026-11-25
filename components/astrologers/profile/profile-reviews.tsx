@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Lock } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { Flag, Lock } from 'lucide-react';
 
 import { Stars } from '@/components/astrologers/profile/stars';
+import { ReportDialog } from '@/components/moderation/report-dialog';
 import {
   averageRating,
   type RatingReview,
@@ -54,9 +56,12 @@ export function RatingsSummary({ reviews }: { reviews: RatingReview[] }) {
   );
 }
 
-/** The app's UserReviewsSection ("What others are saying"); Report on a review comes with doc 13. */
+/** The app's UserReviewsSection ("What others are saying"), with Report on other people's reviews. */
 export function ReviewsList({ reviews }: { reviews: RatingReview[] }) {
   const [showAll, setShowAll] = useState(false);
+  const { data: session } = useSession();
+  const me = session?.user?.id;
+  const [reporting, setReporting] = useState<RatingReview | null>(null);
   const shown = showAll ? reviews : reviews.slice(0, REVIEWS_SHOWN);
   return (
     <section>
@@ -67,7 +72,16 @@ export function ReviewsList({ reviews }: { reviews: RatingReview[] }) {
         <>
           <ul className="divide-y divide-[#e3c9b5]">
             {shown.map(review => (
-              <ReviewItem key={review.reviewId} review={review} />
+              <ReviewItem
+                key={review.reviewId}
+                review={review}
+                // Logged in, and not your own review (the app's rule).
+                onReport={
+                  me && review.user?._id && review.user._id !== me
+                    ? () => setReporting(review)
+                    : undefined
+                }
+              />
             ))}
           </ul>
           {reviews.length > REVIEWS_SHOWN ? (
@@ -85,11 +99,23 @@ export function ReviewsList({ reviews }: { reviews: RatingReview[] }) {
       ) : (
         <p className="font-app text-[15px] text-[#6d6d6d]">No reviews yet.</p>
       )}
+      {reporting?.user?._id ? (
+        <ReportDialog
+          title="Report review"
+          target={{
+            targetType: 'REVIEW',
+            targetId: reporting.reviewId,
+            reportedUserId: reporting.user._id,
+            contentSnapshot: reporting.ratingMessage || undefined,
+          }}
+          onClose={() => setReporting(null)}
+        />
+      ) : null}
     </section>
   );
 }
 
-function ReviewItem({ review }: { review: RatingReview }) {
+function ReviewItem({ review, onReport }: { review: RatingReview; onReport?: () => void }) {
   const hidden = Boolean(review.user?.hideProfile);
   const name = review.user?.name?.trim() || 'Anonymous';
   const message = review.ratingMessage?.trim();
@@ -114,6 +140,16 @@ function ReviewItem({ review }: { review: RatingReview }) {
             </span>
           ) : null}
           <Stars rating={review.overallRating} size={13} />
+          {onReport ? (
+            <button
+              type="button"
+              onClick={onReport}
+              className="ml-auto flex items-center gap-1 rounded-full px-2 py-0.5 font-app text-xs text-[#8a8583] hover:bg-primary/5 hover:text-primary"
+            >
+              <Flag className="h-3.5 w-3.5" aria-hidden />
+              Report
+            </button>
+          ) : null}
         </div>
         <p className="font-app text-xs text-[#8a8583]">{reviewDate(review)}</p>
         <p
