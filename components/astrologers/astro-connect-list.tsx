@@ -13,6 +13,7 @@ import AstrologerCardSkeleton from '@/components/pages/landing/talk-to-our-astro
 import type { Astrologer } from '@/components/pages/landing/talk-to-our-astrologer/types';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useBuyerCountry } from '@/hooks/use-buyer-country';
+import { useFreeChatLink } from '@/hooks/use-free-chat';
 import {
   ALL_TAGS,
   filtersFromSearch,
@@ -33,6 +34,7 @@ const SEARCH_DELAY_MS = 400;
 /** Astro Connect (the app's AstroConnectScreen): open to guests; a card's profile asks them to log in. */
 export function AstroConnectList() {
   const backend = useBackendClient();
+  const freeChatLink = useFreeChatLink();
   const router = useRouter();
   const pathname = usePathname() ?? '/astrologers';
   const searchParams = useSearchParams();
@@ -208,6 +210,7 @@ export function AstroConnectList() {
                   astrologer={astrologer}
                   href={astrologer.user?._id ? profilePath(astrologer.user._id) : undefined}
                   bookHref={astrologer.user?._id ? packagesPath(astrologer.user._id) : undefined}
+                  freeChatHref={freeChatLink(astrologer)}
                 />
               </li>
             ))}
@@ -222,6 +225,7 @@ export function AstroConnectList() {
                 priorityImage={i < 2}
                 profileHref={astrologer.user?._id ? profilePath(astrologer.user._id) : undefined}
                 bookHref={astrologer.user?._id ? packagesPath(astrologer.user._id) : undefined}
+                freeChatHref={freeChatLink(astrologer)}
               />
             ))}
       </div>

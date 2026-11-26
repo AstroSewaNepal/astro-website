@@ -1,5 +1,13 @@
 import Link from 'next/link';
-import { Award, CalendarDays, GraduationCap, Languages, Phone, Trophy } from 'lucide-react';
+import {
+  Award,
+  CalendarDays,
+  GraduationCap,
+  Languages,
+  MessageCircle,
+  Phone,
+  Trophy,
+} from 'lucide-react';
 import clsx from 'clsx';
 
 import { Stars } from '@/components/astrologers/profile/stars';
@@ -19,17 +27,21 @@ const slideRow =
 /**
  * The app's AstrologerNewCard (Astro Connect list on phones): photo + stars on the left; name, languages, skills and
  * expertise (one line each, sliding sideways), experience and the cheapest price on the right; Schedule / Connect Now.
+ * Connect Now reads Free chat while the client's free chat is open with this astrologer (hooks/use-free-chat).
  */
 export function AstrologerAppCard({
   astrologer,
   href,
   bookHref = href,
+  freeChatHref,
 }: {
   astrologer: Astrologer;
   /** The profile. */
   href?: string;
   /** Schedule / Connect Now (the packages). */
   bookHref?: string;
+  /** Set while the free chat is open: Connect Now becomes Free chat. */
+  freeChatHref?: string;
 }) {
   const name = astrologer.user?.fullName?.trim() || 'Astrologer';
   const photo =
@@ -116,10 +128,17 @@ export function AstrologerAppCard({
           <CalendarDays className="h-4 w-4" aria-hidden />
           Schedule
         </Action>
-        <Action href={bookHref} label={`Connect with ${name}`}>
-          <Phone className="h-4 w-4" aria-hidden />
-          Connect Now
-        </Action>
+        {freeChatHref ? (
+          <Action href={freeChatHref} label={`Free chat with ${name}`}>
+            <MessageCircle className="h-4 w-4" aria-hidden />
+            Free chat
+          </Action>
+        ) : (
+          <Action href={bookHref} label={`Connect with ${name}`}>
+            <Phone className="h-4 w-4" aria-hidden />
+            Connect Now
+          </Action>
+        )}
       </div>
     </article>
   );

@@ -15,6 +15,7 @@ import {
   Banknote,
   BarChart3,
   Flag,
+  MessageCircle,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -30,6 +31,7 @@ const NAV_ITEMS = [
   { href: '/admin/commission', icon: Percent, label: 'Commission' },
   { href: '/admin/astrologer-verification', icon: BadgeCheck, label: 'Astrologer Verification' },
   { href: '/admin/astrologers', icon: Users, label: 'Astrologers' },
+  { href: '/admin/free-chat', icon: MessageCircle, label: 'Free Chat' },
   { href: '/admin/payouts', icon: Banknote, label: 'Payouts' },
   { href: '/admin/reports', icon: Flag, label: 'Content Reports' },
   { href: '/admin/remedy-analytics', icon: BarChart3, label: 'Remedy Analytics' },

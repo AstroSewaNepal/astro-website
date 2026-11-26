@@ -10,8 +10,15 @@ import type { Astrologer } from '@/components/pages/landing/talk-to-our-astrolog
 import { CheckoutSheet } from '@/components/payments/checkout-sheet';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useBuyerCountry } from '@/hooks/use-buyer-country';
+import { useFreeChatStatus } from '@/hooks/use-free-chat';
 import { profilePath } from '@/lib/astrologers/list';
 import { BackendError } from '@/lib/backend/client';
+import {
+  FREE_CHAT_BOOK_PATH,
+  FREE_CHAT_STATUS_KEY,
+  freeChatSlotsPath,
+  type FreeChatStatus,
+} from '@/lib/booking/free-chat';
 import {
   formatDuration,
   packagesPath,
@@ -61,12 +68,16 @@ import { rebookApiPath } from '@/lib/payments/rebook';
 const noSubscribe = () => () => {};
 const timeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kathmandu';
 
-/** What's being booked: a per-session package, a session from a plan the buyer owns, or a new time for a booking. */
+/**
+ * What's being booked: a per-session package, a session from a plan the buyer owns, a new time for a booking, or the
+ * client's free chat (chat only, no payment, slots every 15 minutes).
+ */
 export type BookingOffer =
   // paidWith: a paid package that couldn't be booked, booked now with that payment (lib/payments/rebook).
   | { kind: 'package'; packageId: string; paidWith?: string }
   | { kind: 'plan'; subscriptionId: string }
-  | { kind: 'reschedule'; bookingId: string };
+  | { kind: 'reschedule'; bookingId: string }
+  | { kind: 'free' };
 
 /**
  * The app's Schedule Appointment: pick a day (first free one preselected), then a slot, in the buyer's time zone.
@@ -127,6 +138,11 @@ export function ScheduleScreen({
     retry: (count, error) => !(error instanceof BackendError && error.status < 500) && count < 2,
   });
 
+  // The free chat's length and whether it's still open come from the client's free chat status.
+  const freeChat = useFreeChatStatus(offer.kind === 'free');
+  const freeOpen =
+    offer.kind === 'free' && freeChat.data?.state === 'available' ? freeChat.data : null;
+
   const pkg =
     offer.kind === 'package' ? (packages.data?.find(p => p.id === offer.packageId) ?? null) : null;
   // Another astrologer's plan in the URL books nothing here.
@@ -134,15 +150,18 @@ export function ScheduleScreen({
   // A plan session's booking has no package: its length is the plan's.
   const planLoading = offer.kind === 'reschedule' && !!subscriptionId && plan.isPending;
   const found =
-    offer.kind === 'package'
-      ? pkg
-      : offer.kind === 'plan'
-        ? ownPlan
-        : planLoading
-          ? null
-          : ownBooking;
+    offer.kind === 'free'
+      ? freeOpen
+      : offer.kind === 'package'
+        ? pkg
+        : offer.kind === 'plan'
+          ? ownPlan
+          : planLoading
+            ? null
+            : ownBooking;
   const minutes =
-    (pkg?.consultationMinutes ??
+    (freeOpen?.minutes ??
+      pkg?.consultationMinutes ??
       ownBooking?.package?.consultationMinutes ??
       ownPlan?.plan.consultationMinutes) ||
     15;
@@ -164,13 +183,17 @@ export function ScheduleScreen({
       ? offer.packageId
       : offer.kind === 'plan'
         ? offer.subscriptionId
-        : offer.bookingId;
+        : offer.kind === 'reschedule'
+          ? offer.bookingId
+          : 'free';
   const booked = ownBooking ? bookedSlot(ownBooking) : null;
   const blocked = ownBooking ? rescheduleBlock(ownBooking, new Date()) : null;
   const bookedDayAhead = !!booked && !!today && dateKey(booked.date) >= dateKey(today);
 
   const slotsPath = (date: CalendarDate) =>
-    `/astrologers/${id}/available-slots?date=${dateKey(date)}&duration=${minutes}&${new URLSearchParams(ref)}`;
+    offer.kind === 'free'
+      ? freeChatSlotsPath(astrologerId, dateKey(date))
+      : `/astrologers/${id}/available-slots?date=${dateKey(date)}&duration=${minutes}&${new URLSearchParams(ref)}`;
 
   const slotsKey = (day: CalendarDate | null) =>
     ['booking', 'slots', astrologerId, refId, minutes, day && dateKey(day)] as const;
@@ -233,11 +256,13 @@ export function ScheduleScreen({
   const paid = offer.kind === 'package' && !free && !!price && price.value > 0 && !paidWith;
   // Plans are prepaid; a booking moves while it's upcoming.
   const bookable =
-    offer.kind === 'plan'
-      ? !!ownPlan && canBookFromPlan(ownPlan)
-      : offer.kind === 'reschedule'
-        ? !!ownBooking && !blocked
-        : free || paid || !!paidWith;
+    offer.kind === 'free'
+      ? !!freeOpen
+      : offer.kind === 'plan'
+        ? !!ownPlan && canBookFromPlan(ownPlan)
+        : offer.kind === 'reschedule'
+          ? !!ownBooking && !blocked
+          : free || paid || !!paidWith;
   const isBookedSlot = (s: Pick<Slot, 'start' | 'end'>) =>
     !!booked &&
     !!date &&
@@ -249,6 +274,15 @@ export function ScheduleScreen({
     mutationFn: async (choice: Slot) => {
       const times = bookingTimes(date!, choice);
       const zone = timeZone();
+      // The free chat: the server checks the slot and the client's free chat itself; the length is the server's.
+      if (offer.kind === 'free') {
+        await backend.post(FREE_CHAT_BOOK_PATH, {
+          astrologerId,
+          // The slot's time in the browser's zone, as an instant.
+          scheduledStartAt: new Date(times.scheduledStartAt).toISOString(),
+        });
+        return null;
+      }
       // Re-checked first, so nobody books a slot taken in the meantime (the app does it before paying).
       try {
         await backend.post('/connection-schedule/validate-slot', {
@@ -286,8 +320,10 @@ export function ScheduleScreen({
         return;
       }
       setDone(true);
-      // My Consultations and the plan's counts change.
+      // My Consultations and the plan's counts change; a booked free chat turns Free chat back into Connect Now.
       void queryClient.invalidateQueries({ queryKey: ['consultations'] });
+      if (offer.kind === 'free')
+        void queryClient.invalidateQueries({ queryKey: FREE_CHAT_STATUS_KEY });
       // A paid session booked with its payment leaves the waiting list.
       if (paidWith)
         void queryClient.invalidateQueries({ queryKey: ['payments', 'waiting-packages'] });
@@ -322,6 +358,9 @@ export function ScheduleScreen({
       // The slot is gone or the booking was refused: show fresh slots and drop the stale choice, like the app.
       setSlot(null);
       void queryClient.invalidateQueries({ queryKey: ['booking', 'slots', astrologerId] });
+      // A free chat booked meanwhile (another tab) shows as booked.
+      if (offer.kind === 'free')
+        void queryClient.invalidateQueries({ queryKey: FREE_CHAT_STATUS_KEY });
     }
     setProblem(
       error instanceof SlotTaken
@@ -338,35 +377,52 @@ export function ScheduleScreen({
   }
 
   if (done) {
-    return <BookedPanel astrologerId={astrologerId} rescheduled={offer.kind === 'reschedule'} />;
+    return (
+      <BookedPanel
+        astrologerId={astrologerId}
+        rescheduled={offer.kind === 'reschedule'}
+        freeChat={offer.kind === 'free'}
+      />
+    );
   }
 
   // A plan session's booking needs its plan for the session length.
   const source =
-    offer.kind === 'package'
-      ? packages
-      : offer.kind === 'plan'
-        ? plan
-        : booking.isError || !subscriptionId
-          ? booking
-          : plan;
+    offer.kind === 'free'
+      ? freeChat
+      : offer.kind === 'package'
+        ? packages
+        : offer.kind === 'plan'
+          ? plan
+          : booking.isError || !subscriptionId
+            ? booking
+            : plan;
   const notFound = source.error instanceof BackendError && source.error.status < 500;
   const loading =
-    offer.kind === 'package'
-      ? !isResolved || packages.isPending
-      : offer.kind === 'plan'
-        ? plan.isPending
-        : booking.isPending || planLoading;
+    offer.kind === 'free'
+      ? freeChat.isPending
+      : offer.kind === 'package'
+        ? !isResolved || packages.isPending
+        : offer.kind === 'plan'
+          ? plan.isPending
+          : booking.isPending || planLoading;
   if (loading) {
     return <Spinner />;
   }
   if (source.isError && !notFound) {
     return (
       <Retry
-        text={`We could not load this ${offer.kind === 'package' ? 'package' : offer.kind === 'plan' ? 'plan' : 'consultation'}.`}
+        text={
+          offer.kind === 'free'
+            ? 'We could not load your free chat.'
+            : `We could not load this ${offer.kind === 'package' ? 'package' : offer.kind === 'plan' ? 'plan' : 'consultation'}.`
+        }
         onRetry={() => source.refetch()}
       />
     );
+  }
+  if (!found && offer.kind === 'free') {
+    return <FreeChatClosed status={freeChat.data} astrologerId={astrologerId} />;
   }
   if (!found) {
     return (
@@ -391,13 +447,15 @@ export function ScheduleScreen({
 
   const pay = pkg ? priceParts(pkg).pay : null;
   const subtitle =
-    offer.kind === 'reschedule'
-      ? `${formatDuration(minutes)} consultation${booked ? ` · now booked for ${shortDate(ownBooking!.scheduledStartAt)}, ${formatTime12(booked.start)}` : ''}`
-      : pkg
-        ? `${pkg.packageType} · ${formatDuration(pkg.consultationMinutes)} · ${free ? 'Free' : paidWith ? 'Already paid' : pay ? priceLabel(pay) : ''}`
-        : ownPlan
-          ? `${planLabel(ownPlan.plan.durationMonths)} plan · ${formatDuration(minutes)} · ${ownPlan.availableToSchedule} of ${ownPlan.totalConsultations} left to book`
-          : '';
+    offer.kind === 'free'
+      ? `Free chat · ${formatDuration(minutes)} · Chat only`
+      : offer.kind === 'reschedule'
+        ? `${formatDuration(minutes)} consultation${booked ? ` · now booked for ${shortDate(ownBooking!.scheduledStartAt)}, ${formatTime12(booked.start)}` : ''}`
+        : pkg
+          ? `${pkg.packageType} · ${formatDuration(pkg.consultationMinutes)} · ${free ? 'Free' : paidWith ? 'Already paid' : pay ? priceLabel(pay) : ''}`
+          : ownPlan
+            ? `${planLabel(ownPlan.plan.durationMonths)} plan · ${formatDuration(minutes)} · ${ownPlan.availableToSchedule} of ${ownPlan.totalConsultations} left to book`
+            : '';
   const working = book.isPending || move.isPending;
   const busy = !date || slots.isPending;
   const listed =
@@ -427,6 +485,14 @@ export function ScheduleScreen({
 
       {busy ? (
         <Spinner />
+      ) : slots.isError &&
+        offer.kind === 'free' &&
+        slots.error instanceof BackendError &&
+        slots.error.status < 500 ? (
+        // The astrologer stopped giving free chats, or free chat was switched off.
+        <p className="py-16 text-center font-app text-[17px] text-[#4a1a1a]">
+          {slots.error.message || 'Free chat is not available with this astrologer.'}
+        </p>
       ) : slots.isError ? (
         <Retry text="We could not load the slots." onRetry={() => slots.refetch()} />
       ) : !anySlot ? (
@@ -503,8 +569,17 @@ export function ScheduleScreen({
           className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[32px] bg-primary font-app text-[17px] text-white disabled:opacity-60 lg:mx-auto lg:max-w-[420px]"
         >
           {working ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : null}
-          {offer.kind === 'reschedule' ? 'Reschedule Appointment' : 'Confirm Appointment'}
+          {offer.kind === 'reschedule'
+            ? 'Reschedule Appointment'
+            : offer.kind === 'free'
+              ? 'Book Free Chat'
+              : 'Confirm Appointment'}
         </button>
+        {offer.kind === 'free' ? (
+          <p className="text-center font-app text-sm text-[#6d6d6d]">
+            Chat only: voice and video calls come with paid consultations.
+          </p>
+        ) : null}
         {paidWith ? (
           <p className="text-center font-app text-sm text-[#6d6d6d]">
             You&apos;ve already paid for this session. Pick a new time; no new payment is taken.
@@ -518,7 +593,9 @@ export function ScheduleScreen({
                 ? blocked === 'inProgress'
                   ? 'You cannot reschedule during the scheduled consultation time.'
                   : 'This consultation can no longer be rescheduled.'
-                : 'This package is not available.'}
+                : offer.kind === 'free'
+                  ? 'Free chat is not available.'
+                  : 'This package is not available.'}
           </p>
         ) : null}
       </div>
@@ -692,9 +769,11 @@ function Pill({
 function BookedPanel({
   astrologerId,
   rescheduled,
+  freeChat = false,
 }: {
   astrologerId: string;
   rescheduled: boolean;
+  freeChat?: boolean;
 }) {
   const backend = useBackendClient();
   const { countryCode } = useBuyerCountry();
@@ -712,8 +791,8 @@ function BookedPanel({
         <Check className="h-10 w-10 text-primary" aria-hidden />
       </span>
       <h1 className="mt-5 font-raleway text-[24px] font-semibold leading-tight text-primary">
-        Your consultation{name ? ` with ${name}` : ''} is successfully{' '}
-        {rescheduled ? 'rescheduled' : 'booked'}.
+        {freeChat ? 'Your free chat' : 'Your consultation'}
+        {name ? ` with ${name}` : ''} is successfully {rescheduled ? 'rescheduled' : 'booked'}.
       </h1>
       <p className="mt-3 font-app text-[15px] text-[#6d6d6d]">
         You can view your booking in My Consultations.
@@ -732,6 +811,37 @@ function BookedPanel({
           View Profile
         </Link>
       </div>
+    </div>
+  );
+}
+
+/** The free chat link opened while the free chat isn't open (booked, used, or switched off). */
+function FreeChatClosed({
+  status,
+  astrologerId,
+}: {
+  status: FreeChatStatus | undefined;
+  astrologerId: string;
+}) {
+  const booked = status?.state === 'booked';
+  const opensOn =
+    status?.state === 'waiting' && status.availableFrom ? shortDate(status.availableFrom) : '';
+  return (
+    <div className="flex flex-col items-center gap-3 py-16 text-center">
+      <CalendarX2 className="h-14 w-14 text-primary/60" aria-hidden />
+      <p className="max-w-[420px] font-app text-[17px] text-[#4a1a1a]">
+        {booked
+          ? 'Your free chat is already booked.'
+          : opensOn
+            ? `You've used your free chat. Your next one opens on ${opensOn}.`
+            : 'Free chat is not available right now.'}
+      </p>
+      <Link
+        href={booked ? '/client/consultations' : packagesPath(astrologerId)}
+        className="font-app text-primary underline"
+      >
+        {booked ? 'My Consultations' : 'See the packages'}
+      </Link>
     </div>
   );
 }

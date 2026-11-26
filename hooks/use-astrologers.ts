@@ -8,6 +8,11 @@ import {
   updateRemedyManagementEnabled,
   type AdminAstrologerList,
 } from '@/lib/astrologers-admin-api';
+import {
+  fetchFreeConsultationSettings,
+  updateFreeConsultationEligible,
+  updateFreeConsultationSettings,
+} from '@/lib/free-consultation-admin-api';
 
 function optimisticallyPatchAstrologer(
   queryClient: ReturnType<typeof useQueryClient>,
@@ -40,11 +45,16 @@ function useBackendToken(): string | null {
   return session?.backendAccessToken ?? null;
 }
 
-export function useAdminAstrologers(page: number, limit = 20, search?: string) {
+export function useAdminAstrologers(
+  page: number,
+  limit = 20,
+  search?: string,
+  freeConsultationOnly = false,
+) {
   const token = useBackendToken();
   return useQuery({
-    queryKey: ['astrologers', page, limit, search ?? ''],
-    queryFn: () => fetchAdminAstrologers(token!, page, limit, search),
+    queryKey: ['astrologers', page, limit, search ?? '', freeConsultationOnly],
+    queryFn: () => fetchAdminAstrologers(token!, page, limit, search, freeConsultationOnly),
     enabled: !!token,
     staleTime: 30 * 1000,
     placeholderData: keepPreviousData,
@@ -94,5 +104,43 @@ export function useUpdateRemedyManagementEnabled() {
     },
     onError: (_err, _vars, context) => rollbackAstrologers(queryClient, context?.previous),
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['astrologers'] }),
+  });
+}
+
+export function useUpdateFreeConsultationEligible() {
+  const token = useBackendToken();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ astrologerUserId, eligible }: { astrologerUserId: string; eligible: boolean }) =>
+      updateFreeConsultationEligible(token!, astrologerUserId, eligible),
+    onMutate: async ({ astrologerUserId, eligible }) => {
+      await queryClient.cancelQueries({ queryKey: ['astrologers'] });
+      const previous = optimisticallyPatchAstrologer(queryClient, astrologerUserId, {
+        freeConsultationEligible: eligible,
+      });
+      return { previous };
+    },
+    onError: (_err, _vars, context) => rollbackAstrologers(queryClient, context?.previous),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['astrologers'] }),
+  });
+}
+
+export function useFreeConsultationSettings() {
+  const token = useBackendToken();
+  return useQuery({
+    queryKey: ['free-consultation-settings'],
+    queryFn: () => fetchFreeConsultationSettings(token!),
+    enabled: !!token,
+    staleTime: 30 * 1000,
+  });
+}
+
+export function useUpdateFreeConsultationSettings() {
+  const token = useBackendToken();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { minutes: number; cooldownMonths: number }) =>
+      updateFreeConsultationSettings(token!, input),
+    onSuccess: data => queryClient.setQueryData(['free-consultation-settings'], data),
   });
 }

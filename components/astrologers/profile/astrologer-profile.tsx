@@ -11,6 +11,7 @@ import {
   GraduationCap,
   Languages,
   Loader2,
+  MessageCircle,
   Phone,
   Share2,
   Trophy,
@@ -33,6 +34,7 @@ import {
 } from '@/components/pages/landing/talk-to-our-astrologer/utils';
 import { useBackendClient } from '@/hooks/use-backend-client';
 import { useBuyerCountry } from '@/hooks/use-buyer-country';
+import { useFreeChatLink } from '@/hooks/use-free-chat';
 import {
   profileShareUrl,
   type RatingReview,
@@ -356,6 +358,7 @@ function PriceCard({ astrologer, astrologerId }: { astrologer: Astrologer; astro
   const cheapest = getLowestPackage(astrologer.packages);
   const free = cheapest?.discountedPrice?.value === 0;
   const discounted = (cheapest?.discountPercent ?? 0) > 0 && !free;
+  const freeChatHref = useFreeChatLink()(astrologer);
   return (
     <section className={clsx(card, 'text-center')}>
       {cheapest ? (
@@ -383,7 +386,8 @@ function PriceCard({ astrologer, astrologerId }: { astrologer: Astrologer; astro
       ) : (
         <p className="font-app text-[16px] text-[#6d6d6d]">No packages yet</p>
       )}
-      {/* Both open the packages, like the app's card (Connect Now has no instant call of its own). */}
+      {/* Both open the packages, like the app's card (Connect Now has no instant call of its own). Connect Now reads
+          Free chat while the client's free chat is open with this astrologer. */}
       <div className="mt-4 flex gap-3">
         <Link
           href={packagesPath(astrologerId)}
@@ -392,13 +396,23 @@ function PriceCard({ astrologer, astrologerId }: { astrologer: Astrologer; astro
           <CalendarDays className="h-5 w-5" aria-hidden />
           Schedule
         </Link>
-        <Link
-          href={packagesPath(astrologerId)}
-          className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full border border-[#611508] font-app text-[16px] text-[#611508]"
-        >
-          <Phone className="h-5 w-5" aria-hidden />
-          Connect Now
-        </Link>
+        {freeChatHref ? (
+          <Link
+            href={freeChatHref}
+            className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full border border-[#611508] font-app text-[16px] text-[#611508]"
+          >
+            <MessageCircle className="h-5 w-5" aria-hidden />
+            Free chat
+          </Link>
+        ) : (
+          <Link
+            href={packagesPath(astrologerId)}
+            className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-full border border-[#611508] font-app text-[16px] text-[#611508]"
+          >
+            <Phone className="h-5 w-5" aria-hidden />
+            Connect Now
+          </Link>
+        )}
       </div>
     </section>
   );

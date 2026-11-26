@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 
 import Pagination from '@/components/common/pagination';
+import { useFreeChatLink } from '@/hooks/use-free-chat';
 import { fetchTopAstrologers } from '@/lib/astrologer-api';
 import { profilePath } from '@/lib/astrologers/list';
 
@@ -23,6 +24,7 @@ export type TopAstrologersProps = AstrologerCardActions;
 
 const TopAstrologers: React.FC<TopAstrologersProps> = ({ onChat, onCall, onSchedule }) => {
   const swiperRef = useRef<SwiperType | null>(null);
+  const freeChatLink = useFreeChatLink();
   const [currentPage, setCurrentPage] = useState(1);
   const [astrologers, setAstrologers] = useState<Astrologer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -183,6 +185,7 @@ const TopAstrologers: React.FC<TopAstrologersProps> = ({ onChat, onCall, onSched
                     profileHref={
                       astrologer.user?._id ? profilePath(astrologer.user._id) : undefined
                     }
+                    freeChatHref={freeChatLink(astrologer)}
                     onChat={onChat}
                     onCall={onCall}
                     onSchedule={onSchedule}
