@@ -27,12 +27,13 @@ import { useTiers } from '@/hooks/use-tiers';
 import {
   useUpdateLiveStreamingEnabled,
   useUpdateRemedyManagementEnabled,
+  useUpdateFreeConsultationEligible,
 } from '@/hooks/use-astrologers';
 import type { AdminAstrologer } from '@/lib/astrologers-admin-api';
 
 const ROWS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
 const SKELETON_ROW_IDS = ['sk-1', 'sk-2', 'sk-3', 'sk-4', 'sk-5'];
-const COLUMN_COUNT = 7;
+const COLUMN_COUNT = 8;
 
 interface AstrologersTableProps {
   data: AdminAstrologer[];
@@ -148,6 +149,23 @@ function RemedyManagementCell({ astrologer }: { astrologer: AdminAstrologer }) {
   );
 }
 
+/** Any admin may switch it (unpaid exposure the boss arranges with the astrologer). */
+function FreeConsultationCell({ astrologer }: { astrologer: AdminAstrologer }) {
+  const userId = astrologer.user?._id ?? undefined;
+  const mutation = useUpdateFreeConsultationEligible();
+  return (
+    <Switch
+      checked={astrologer.freeConsultationEligible ?? false}
+      disabled={!userId || mutation.isPending}
+      onCheckedChange={checked => {
+        if (!userId) return;
+        mutation.mutate({ astrologerUserId: userId, eligible: checked });
+      }}
+      aria-label="Toggle free chat"
+    />
+  );
+}
+
 export default function AstrologersTable({
   data,
   isLoading,
@@ -175,6 +193,7 @@ export default function AstrologersTable({
               'Booking',
               'Live Streaming',
               'Manage Remedies',
+              'Free Chat',
             ].map(label => (
               <TableHead
                 key={label}
@@ -244,6 +263,9 @@ export default function AstrologersTable({
                   </TableCell>
                   <TableCell>
                     <RemedyManagementCell astrologer={astrologer} />
+                  </TableCell>
+                  <TableCell>
+                    <FreeConsultationCell astrologer={astrologer} />
                   </TableCell>
                 </TableRow>
               );

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { useAdminAstrologers } from '@/hooks/use-astrologers';
 import AstrologersTable from '@/components/admin/astrologers/astrologers-table';
 
@@ -16,12 +17,14 @@ export default function AstrologersPage() {
   const page = Math.max(1, Number(searchParams.get('page') ?? '1'));
   const limit = Math.max(1, Number(searchParams.get('limit') ?? String(DEFAULT_LIMIT)));
   const search = searchParams.get('search') ?? '';
+  const freeOnly = searchParams.get('free') === '1';
   const [searchInput, setSearchInput] = useState(search);
 
   const { data, isLoading, isFetching, isError } = useAdminAstrologers(
     page,
     limit,
     search || undefined,
+    freeOnly,
   );
 
   function handlePageChange(next: number) {
@@ -33,6 +36,14 @@ export default function AstrologersPage() {
   function handleLimitChange(next: number) {
     const params = new URLSearchParams(searchParams.toString());
     params.set('limit', String(next));
+    params.set('page', '1');
+    router.push(`?${params.toString()}`);
+  }
+
+  function handleFreeOnlyChange(next: boolean) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (next) params.set('free', '1');
+    else params.delete('free');
     params.set('page', '1');
     router.push(`?${params.toString()}`);
   }
@@ -63,14 +74,20 @@ export default function AstrologersPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-        <Input
-          value={searchInput}
-          onChange={e => setSearchInput(e.target.value)}
-          placeholder="Search by name or email"
-          className="h-8 max-w-xs font-mukta text-sm"
-        />
-      </form>
+      <div className="flex flex-wrap items-center gap-4">
+        <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
+          <Input
+            value={searchInput}
+            onChange={e => setSearchInput(e.target.value)}
+            placeholder="Search by name or email"
+            className="h-8 w-72 max-w-full font-mukta text-sm"
+          />
+        </form>
+        <label className="flex cursor-pointer items-center gap-2 font-mukta text-sm text-neutral-600">
+          <Switch checked={freeOnly} onCheckedChange={handleFreeOnlyChange} />
+          Free chat astrologers only
+        </label>
+      </div>
 
       <Card className="rounded-2xl border-neutral-100 shadow-sm">
         <CardContent className="p-0">

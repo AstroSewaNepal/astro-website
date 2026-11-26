@@ -21,6 +21,7 @@ export interface AdminAstrologer {
   isBookingEnabled?: boolean;
   isLiveStreamingEnabled: boolean;
   isRemedyManagementEnabled: boolean;
+  freeConsultationEligible?: boolean;
   createdAt?: string;
 }
 
@@ -38,7 +39,7 @@ interface ApiResponse<T> {
   pagination?: { total: number; page: number; limit: number };
 }
 
-async function backendRequest<T>(
+export async function backendRequest<T>(
   path: string,
   token: string,
   method = 'GET',
@@ -74,6 +75,7 @@ export async function fetchAdminAstrologers(
   page: number,
   limit: number,
   search?: string,
+  freeConsultationOnly = false,
 ): Promise<AdminAstrologerList> {
   const params = new URLSearchParams({
     page: String(page),
@@ -88,6 +90,7 @@ export async function fetchAdminAstrologers(
     sortOrder: 'desc',
   });
   if (search) params.set('search', search);
+  if (freeConsultationOnly) params.set('freeConsultation', 'true');
   const res = await backendRequest<AdminAstrologer[]>(
     `astrologer-details?${params.toString()}`,
     token,
