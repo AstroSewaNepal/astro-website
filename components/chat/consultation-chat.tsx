@@ -52,6 +52,7 @@ import { CallIcon, VideoCallIcon } from '@/components/call/call-icons';
 import { useCalls } from '@/components/call/call-provider';
 import { settingsPaths } from '@/lib/account/settings';
 import { consultationsPath } from '@/lib/booking/consultations';
+import { FREE_CHAT_CALLS_MESSAGE } from '@/lib/booking/free-chat';
 import { CHAT_IMAGE_ACCEPT } from '@/lib/chat/image';
 import { timeline } from '@/lib/chat/live';
 import {
@@ -259,6 +260,15 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
   const callHere = callBookingId === bookingId;
   // Hidden while this booking's call is open: the call is on screen, and the name gets the room.
   const canCall = phase === 'active' && !sessionOver && !blocked && !!booking.data && !callHere;
+  // A free chat is chat only: its call buttons look switched off and say why when pressed (the backend refuses
+  // its calls too).
+  const freeChat = !!booking.data?.isFreeConsultation;
+  const [callsNote, setCallsNote] = useState(false);
+  useEffect(() => {
+    if (!callsNote) return;
+    const timer = window.setTimeout(() => setCallsNote(false), 4000);
+    return () => window.clearTimeout(timer);
+  }, [callsNote]);
   const startCall = (callType: 'audio' | 'video') => {
     if (!booking.data) return;
     openCall({
@@ -299,7 +309,7 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
         ref={panel}
         aria-label={`Chat with ${partner.name}`}
         className={clsx(
-          'fixed inset-0 z-[55] flex flex-col overflow-hidden bg-[#F8F3DF] lg:static lg:z-auto lg:h-[calc(100dvh-8.15rem)] lg:min-h-[420px] lg:rounded-2xl lg:border lg:border-[#e8ddd0] lg:shadow-[0_4px_16px_rgba(92,56,23,0.08)]',
+          'fixed inset-0 z-[55] flex flex-col overflow-hidden bg-[#F8F3DF] lg:relative lg:z-auto lg:h-[calc(100dvh-8.15rem)] lg:min-h-[420px] lg:rounded-2xl lg:border lg:border-[#e8ddd0] lg:shadow-[0_4px_16px_rgba(92,56,23,0.08)]',
           callHere && 'lg:w-[360px] lg:shrink-0 xl:w-[420px]',
         )}
       >
@@ -338,19 +348,27 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
             <div className="flex shrink-0 items-center gap-1">
               <button
                 type="button"
-                onClick={() => startCall('audio')}
-                disabled={callBusy}
+                onClick={() => (freeChat ? setCallsNote(true) : startCall('audio'))}
+                disabled={!freeChat && callBusy}
+                aria-disabled={freeChat || undefined}
                 aria-label="Voice call"
-                className="flex h-10 w-10 items-center justify-center rounded-lg text-[#720A0B] hover:bg-[#efe4d2] disabled:text-[#B6ACA6] focus-visible:outline-2 focus-visible:outline-[#611508]"
+                className={clsx(
+                  'flex h-10 w-10 items-center justify-center rounded-lg disabled:text-[#B6ACA6] focus-visible:outline-2 focus-visible:outline-[#611508]',
+                  freeChat ? 'text-[#B6ACA6]' : 'text-[#720A0B] hover:bg-[#efe4d2]',
+                )}
               >
                 <CallIcon className="h-6 w-6" />
               </button>
               <button
                 type="button"
-                onClick={() => startCall('video')}
-                disabled={callBusy}
+                onClick={() => (freeChat ? setCallsNote(true) : startCall('video'))}
+                disabled={!freeChat && callBusy}
+                aria-disabled={freeChat || undefined}
                 aria-label="Video call"
-                className="flex h-10 w-10 items-center justify-center rounded-lg text-[#720A0B] hover:bg-[#efe4d2] disabled:text-[#B6ACA6] focus-visible:outline-2 focus-visible:outline-[#611508]"
+                className={clsx(
+                  'flex h-10 w-10 items-center justify-center rounded-lg disabled:text-[#B6ACA6] focus-visible:outline-2 focus-visible:outline-[#611508]',
+                  freeChat ? 'text-[#B6ACA6]' : 'text-[#720A0B] hover:bg-[#efe4d2]',
+                )}
               >
                 <VideoCallIcon className="h-6 w-6" />
               </button>
@@ -402,6 +420,24 @@ export function ConsultationChat({ bookingId }: { bookingId: string }) {
             </DropdownMenu>
           ) : null}
         </header>
+
+        {/* The free chat's call buttons: a toast under the header for 4 s. */}
+        {callsNote ? (
+          <div
+            role="status"
+            className="absolute inset-x-4 top-[calc(4.5rem+env(safe-area-inset-top))] z-10 mx-auto flex max-w-sm items-start gap-2 rounded-xl bg-[#2b2b2b]/90 px-4 py-3 font-app text-[14px] text-white shadow-lg lg:top-[4.75rem]"
+          >
+            <span className="flex-1">{FREE_CHAT_CALLS_MESSAGE}</span>
+            <button
+              type="button"
+              aria-label="Dismiss"
+              onClick={() => setCallsNote(false)}
+              className="shrink-0 text-white/80"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ) : null}
 
         {notAvailable && booking.data ? (
           // Same paper as the message area (the app's chat screen keeps its background here too).

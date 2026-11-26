@@ -3,6 +3,7 @@
 import React, { memo, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { MessageCircle } from 'lucide-react';
 
 import { VerifiedBadge } from '@/components/astrologers/verified-badge';
 import { AstrologerImage } from '@/components/images';
@@ -35,6 +36,8 @@ export type AstrologerCardProps = AstrologerCardActions & {
   profileHref?: string;
   /** Schedule / Connect Now; defaults to the profile (the landing page). */
   bookHref?: string;
+  /** Set while the client's free chat is open with this astrologer: Connect Now becomes Free chat. */
+  freeChatHref?: string;
 };
 
 const AstrologerCard = memo(function AstrologerCard({
@@ -45,6 +48,7 @@ const AstrologerCard = memo(function AstrologerCard({
   priorityImage = false,
   profileHref,
   bookHref = profileHref,
+  freeChatHref,
 }: AstrologerCardProps) {
   const profileImage = getProfileImageUrl(astrologer);
   const name = getAstrologerName(astrologer);
@@ -252,17 +256,30 @@ const AstrologerCard = memo(function AstrologerCard({
             Schedule
           </span>
         </CardAction>
-        <CardAction
-          href={bookHref}
-          className="flex flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-[32px] border border-[#611508] bg-transparent py-2.5 sm:py-3 lg:py-3.5 transition-opacity hover:bg-[#611508]/5"
-          label={`Connect with ${name}`}
-          onClick={() => (onCall ? onCall(astrologer) : onChat?.(astrologer))}
-        >
-          <PhoneIcon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 shrink-0 text-[#611508]" />
-          <span className="font-mukta text-[11px] sm:text-[14px] lg:text-base font-medium text-[#611508]">
-            Connect Now
-          </span>
-        </CardAction>
+        {freeChatHref ? (
+          <CardAction
+            href={freeChatHref}
+            className="flex flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-[32px] border border-[#611508] bg-transparent py-2.5 sm:py-3 lg:py-3.5 transition-opacity hover:bg-[#611508]/5"
+            label={`Free chat with ${name}`}
+          >
+            <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 shrink-0 text-[#611508]" />
+            <span className="font-mukta text-[11px] sm:text-[14px] lg:text-base font-medium text-[#611508]">
+              Free chat
+            </span>
+          </CardAction>
+        ) : (
+          <CardAction
+            href={bookHref}
+            className="flex flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-[32px] border border-[#611508] bg-transparent py-2.5 sm:py-3 lg:py-3.5 transition-opacity hover:bg-[#611508]/5"
+            label={`Connect with ${name}`}
+            onClick={() => (onCall ? onCall(astrologer) : onChat?.(astrologer))}
+          >
+            <PhoneIcon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 shrink-0 text-[#611508]" />
+            <span className="font-mukta text-[11px] sm:text-[14px] lg:text-base font-medium text-[#611508]">
+              Connect Now
+            </span>
+          </CardAction>
+        )}
       </div>
     </article>
   );
@@ -298,7 +315,8 @@ function CardAction({
   href?: string;
   label: string;
   className: string;
-  onClick: () => void;
+  /** Without href only. */
+  onClick?: () => void;
   children: React.ReactNode;
 }) {
   if (href) {

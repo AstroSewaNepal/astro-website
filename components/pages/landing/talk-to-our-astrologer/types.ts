@@ -55,6 +55,8 @@ export interface Astrologer {
   bio?: string | null;
   media?: { _id: string; url: string; thumbnail?: { url?: string | null } | null }[] | null;
   tier?: { _id?: string; name?: string | null } | null;
+  /** An admin switched free chats on for this astrologer. */
+  freeConsultationEligible?: boolean;
 }
 
 export interface AstrologerListResponse {

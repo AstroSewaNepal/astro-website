@@ -80,6 +80,14 @@ describe('card', () => {
       'NPR 850 / paid',
     );
     expect(priceChip(null)).toBe('');
+    // The free chat (its snapshot from the search route).
+    expect(
+      priceChip({
+        packageType: 'Free',
+        consultationMinutes: 5,
+        discountedValue: { currency: 'NPR', value: 0 },
+      }),
+    ).toBe('Free · 5 min');
   });
 
   it('hides an astrologer whose account is being deleted', () => {

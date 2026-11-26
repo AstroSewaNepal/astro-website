@@ -2,6 +2,7 @@
 
 import type { Price } from '@/lib/booking/packages';
 import { shortDate, type UserSubscription } from '@/lib/booking/subscriptions';
+import { freeChatLabel } from '@/lib/booking/free-chat';
 
 /** GET /connection-schedule-search/:userId items (the parts the list uses). */
 export type Consultation = {
@@ -28,6 +29,8 @@ export type Consultation = {
   subscriptionId?: string | null;
   chatId?: string | null;
   reviewId?: string | null;
+  /** The client's free chat: chat only, can't be rescheduled (lib/booking/free-chat). */
+  isFreeConsultation?: boolean;
 };
 
 export type ConsultationTab = 'upcoming' | 'completed' | 'subscription';
@@ -146,10 +149,12 @@ export function consultationLines(
   ];
 }
 
-/** Top-right chip: "Included in Plan", "NPR 850 / paid" or "Free". */
+/** Top-right chip: "Included in Plan", "NPR 850 / paid", "Free" or "Free · 5 min" (the free chat). */
 export function priceChip(pkg: Consultation['package']): string {
   if (!pkg) return '';
   if (pkg.packageType === 'Subscription') return 'Included in Plan';
+  // The free chat's snapshot (backend search route).
+  if (pkg.packageType === 'Free') return freeChatLabel(pkg.consultationMinutes);
   const price = pkg.discountedPrice ?? pkg.discountedValue;
   if (!price) return '';
   if (price.value === 0) return 'Free';

@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import {
   CalendarDays,
   CalendarSearch,
@@ -18,6 +24,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 
+import { CancelFreeChatDialog } from '@/components/booking/cancel-free-chat-dialog';
 import { PillTabs } from '@/components/booking/pill-tabs';
 import { ReviewDialog } from '@/components/booking/review-dialog';
 import { WaitingPackages } from '@/components/payments/waiting-packages';
@@ -27,6 +34,7 @@ import { profilePath } from '@/lib/astrologers/list';
 import {
   CONSULTATION_TABS,
   astrologerShown,
+  clockTime,
   consultationLines,
   consultationsPath,
   defaultSort,
@@ -39,6 +47,7 @@ import {
   type Consultation,
   type ConsultationTab,
 } from '@/lib/booking/consultations';
+import { FREE_CHAT_STATUS_KEY } from '@/lib/booking/free-chat';
 import { packagesPath, planLabel, planSchedulePath } from '@/lib/booking/packages';
 import { reschedulePath } from '@/lib/booking/reschedule';
 import { chatPath } from '@/lib/chat/messages';
@@ -412,8 +421,22 @@ function ConsultationCard({
 }) {
   const { name, photo, gone } = astrologerShown(c);
   const profile = gone ? null : profilePath(c.astrologerId);
-  // The app's "Reschedule Unavailable" toast, shown under the buttons.
+  // The app's "Reschedule Unavailable" toast, shown under the buttons (Cancel Unavailable for a free chat).
   const [rescheduleNotice, setRescheduleNotice] = useState(false);
+  // A free chat can't be rescheduled: Cancel (after a confirm) frees it to book another time.
+  const free = !!c.isFreeConsultation;
+  const backend = useBackendClient();
+  const queryClient = useQueryClient();
+  const [cancelling, setCancelling] = useState(false);
+  const cancel = useMutation({
+    mutationFn: () => backend.patch(`/connection-schedule/${encodeURIComponent(c._id)}/cancel`, {}),
+    onSuccess: () => {
+      setCancelling(false);
+      void queryClient.invalidateQueries({ queryKey: ['consultations'] });
+      // The free chat is open again: Free chat comes back on the astrologers' cards.
+      void queryClient.invalidateQueries({ queryKey: FREE_CHAT_STATUS_KEY });
+    },
+  });
   const [reviewing, setReviewing] = useState(false);
   // The app's "Thank you!" toast after a review, shown under the buttons.
   const [reviewed, setReviewed] = useState(false);
@@ -513,7 +536,30 @@ function ConsultationCard({
             </>
           ) : (
             <>
-              {isInProgress(c, new Date()) ? (
+              {free ? (
+                isInProgress(c, new Date()) ? (
+                  <button
+                    type="button"
+                    onClick={() => setRescheduleNotice(true)}
+                    className={clsx(outlineButton, 'opacity-50')}
+                  >
+                    <X className="h-4 w-4" aria-hidden />
+                    Cancel
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      cancel.reset();
+                      setCancelling(true);
+                    }}
+                    className={outlineButton}
+                  >
+                    <X className="h-4 w-4" aria-hidden />
+                    Cancel
+                  </button>
+                )
+              ) : isInProgress(c, new Date()) ? (
                 <button
                   type="button"
                   onClick={() => setRescheduleNotice(true)}
@@ -542,8 +588,16 @@ function ConsultationCard({
           className="mt-3 flex items-start gap-2 rounded-xl lg:mt-0 lg:basis-full bg-[#fdecea] px-3 py-2 font-app text-[14px] text-[#4a1a1a]"
         >
           <span className="flex-1">
-            <b>Reschedule Unavailable.</b> You cannot reschedule during the scheduled consultation
-            time.
+            {free ? (
+              <>
+                <b>Cancel Unavailable.</b> You cannot cancel during the scheduled consultation time.
+              </>
+            ) : (
+              <>
+                <b>Reschedule Unavailable.</b> You cannot reschedule during the scheduled
+                consultation time.
+              </>
+            )}
           </span>
           <button type="button" aria-label="Dismiss" onClick={() => setRescheduleNotice(false)}>
             ×
@@ -562,6 +616,16 @@ function ConsultationCard({
             ×
           </button>
         </p>
+      ) : null}
+      {free ? (
+        <CancelFreeChatDialog
+          open={cancelling}
+          busy={cancel.isPending}
+          when={`${shortDate(c.scheduledStartAt)}, ${clockTime(c.scheduledStartAt)}`}
+          error={cancel.error ? cancel.error.message || 'Please try again.' : null}
+          onClose={() => setCancelling(false)}
+          onConfirm={() => cancel.mutate()}
+        />
       ) : null}
       {reviewing ? (
         <ReviewDialog
