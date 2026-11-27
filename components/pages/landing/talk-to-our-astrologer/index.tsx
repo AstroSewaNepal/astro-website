@@ -3,6 +3,8 @@
 import React from 'react';
 import clsx from 'clsx';
 
+import { EnsureQueryProvider } from '@/providers/ensure-query-provider';
+
 import TopAstrologers from './TopAstrologers';
 import type { AstrologerCardActions } from './types';
 
@@ -75,7 +77,9 @@ const TalkToOurAstrologer: React.FC<TalkToOurAstrologerProps> = ({
           </p>
         </div>
 
-        <TopAstrologers onChat={onChat} onCall={onCall} onSchedule={onSchedule} />
+        <EnsureQueryProvider>
+          <TopAstrologers onChat={onChat} onCall={onCall} onSchedule={onSchedule} />
+        </EnsureQueryProvider>
       </section>
     </>
   );
